@@ -34,11 +34,14 @@ public class Geci implements javax0.geci.api.Geci {
                 generator.process(source);
             }
         }
+        boolean generated = false;
         for (var source : sources) {
             source.consolidate();
-            source.save();
+            if( source.save() ){
+                generated = true;
+            }
         }
 
-        return false;
+        return generated;
     }
 }

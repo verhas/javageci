@@ -1,6 +1,5 @@
 package javax0.geci.util;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -16,7 +15,7 @@ public class TestFileCollector {
         var sources = Set.of("src/test/java/javax0/geci/util");
         var files = new FileCollector(sources).collect();
         assertEquals(1, files.size());
-        assertTrue(files.iterator().next().endsWith("TestFileCollector.java"));
+        assertTrue(files.iterator().next().file().endsWith("TestFileCollector.java"));
 
     }
 }

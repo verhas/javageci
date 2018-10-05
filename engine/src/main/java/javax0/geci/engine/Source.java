@@ -12,16 +12,16 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class Source implements javax0.geci.api.Source {
-    final String relativeFile;
-    final String file;
-    final Map<String, Segment> segments = new HashMap<>();
+    private final String relativeFile;
+    private final String absoluteFile;
+    private final Map<String, Segment> segments = new HashMap<>();
     final List<String> lines = new ArrayList<>();
-    final List<String> originals = new ArrayList<>();
+    private final List<String> originals = new ArrayList<>();
     boolean inMemory = false;
 
-    public Source(String relativeFile, String file) {
+    public Source(String relativeFile, String absoluteFile) {
         this.relativeFile = relativeFile;
-        this.file = file;
+        this.absoluteFile = absoluteFile;
     }
 
     @Override
@@ -34,8 +34,7 @@ public class Source implements javax0.geci.api.Source {
             if (seg == null) {
                 return null;
             }
-            var segment = new Segment();
-            segment.tabStop = seg.tab;
+            var segment = new Segment(seg.tab);
             segments.put(id, segment);
 
         }
@@ -88,15 +87,17 @@ public class Source implements javax0.geci.api.Source {
                     break;
                 }
             }
+        } else {
+            modified = true;
         }
         if (modified) {
-            Files.write(Paths.get(relativeFile), lines, Charset.forName("utf-8"));
+            Files.write(Paths.get(absoluteFile), lines, Charset.forName("utf-8"));
         }
         return modified;
     }
 
     private void readToMemory() throws IOException {
-        Files.lines(Paths.get(relativeFile)).forEach(line -> {
+        Files.lines(Paths.get(absoluteFile)).forEach(line -> {
             lines.add(line);
             originals.add(line);
         });
@@ -151,6 +152,11 @@ public class Source implements javax0.geci.api.Source {
 
     private boolean isStart(String line) {
         return startPattern.matcher(line).matches();
+    }
+
+    @Override
+    public String toString() {
+        return relativeFile;
     }
 
 }

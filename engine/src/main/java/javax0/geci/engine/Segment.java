@@ -5,11 +5,31 @@ import java.util.List;
 
 public class Segment implements javax0.geci.api.Segment {
     final List<String> lines = new LinkedList<>();
-    int tabStop = 0;
+    private int tabStop = 0;
+    final private int openingTabStop;
+
+    public Segment(int tabStop) {
+        this.openingTabStop = tabStop;
+        this.tabStop = tabStop;
+    }
+
+    @Override
+    public void close(){
+        tabStop = openingTabStop;
+    }
 
     @Override
     public void write(String s) {
-        lines.add(" ".repeat(tabStop) + s);
+        if (s.trim().length() == 0) {
+            newline();
+        } else {
+            lines.add(" ".repeat(tabStop) + s);
+        }
+    }
+
+    @Override
+    public void newline() {
+        lines.add("");
     }
 
     @Override

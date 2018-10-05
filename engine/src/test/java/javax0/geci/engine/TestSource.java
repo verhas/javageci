@@ -13,7 +13,7 @@ public class TestSource {
     @Test
     public void testSource() throws IOException {
 
-        var sut = new Source("xyz");
+        var sut = new Source("xyz","zzz");
         sut.inMemory = true;
         sut.lines.addAll(List.of(
                 "This is something there",

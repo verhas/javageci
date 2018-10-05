@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class FileCollector {
 
-    final Set<String> directories;
+    private final Set<String> directories;
 
     public FileCollector(Set<String> directories) {
         this.directories = directories;
@@ -26,17 +26,32 @@ public class FileCollector {
     public Set<Source> collect() throws IOException {
         var sources = new HashSet<Source>();
         for (var directory : directories) {
+            if( ! directory.endsWith("/") && ! directory.endsWith("\\")){
+                directory = directory + "/";
+            }
+            var dir = directory.replace("\\","/");
             Files.find(Paths.get(directory),
                     Integer.MAX_VALUE,
                     (filePath, fileAttr) -> fileAttr.isRegularFile()
-            ).forEach(path -> sources.add(new javax0.geci.engine.Source(path.toString(),toAbsolute(path))));
+            ).forEach(path -> sources.add(
+                    new javax0.geci.engine.Source(toRelative(dir,path), toAbsolute(path)))
+            );
         }
         return sources;
     }
 
-    private String toAbsolute(Path path){
+    private String normalize(String s){
+        return s.replace("\\.\\", "\\")
+                .replace("/./", "/");
+    }
+
+    private String toRelative(String directory,Path path) {
+        var s = path.toString().substring(directory.length());
+        return normalize(s);
+    }
+
+    private String toAbsolute(Path path) {
         var s = path.toAbsolutePath().toString();
-        return s.replace("\\.\\","\\")
-                .replace("/./","/");
+        return normalize(s);
     }
 }
