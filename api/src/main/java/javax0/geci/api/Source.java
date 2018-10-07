@@ -13,5 +13,19 @@ public interface Source {
      */
     Segment open(String id) throws IOException;
 
-    String file();
+    /**
+     * Get the name of the class that corresponds to this source. The class may not exist though.
+     *
+     * @return the class name that was calculated from the file name
+     */
+    String getKlassName();
+
+    /**
+     * Get the class that corresponds to this source. If the class does not exists, either because the
+     * source file is not a Java source or because the file was not compiled or just for any reason then
+     * the method returns {@code null}.
+     *
+     * @return the class object or {@code null}
+     */
+    Class<?> getKlass();
 }

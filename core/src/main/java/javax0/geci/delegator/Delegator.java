@@ -17,15 +17,12 @@ public class Delegator implements Generator {
     }
 
     private void process0(Source source) throws Exception {
-        final var klass = Tools.getClass(source);
+        final var klass = source.getKlass();
         if (klass != null) {
             final var fields = klass.getDeclaredFields();
             for (final var field : fields) {
                 var params = Tools.getParameters(field, "delegate");
                 if (params != null) {
-                    if (!params.containsKey("id")) {
-                        throw new RuntimeException("Field " + field + " in class " + klass + " has no 'id' in annotation Geci");
-                    }
                     var id = params.get("id");
                     var delClass = field.getType();
                     var methods = delClass.getDeclaredMethods();

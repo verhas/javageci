@@ -57,6 +57,11 @@
                 <version>${geci.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.javax0.geci</groupId>
+                <artifactId>annotation</artifactId>
+                <version>${geci.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
                 <version>5.2.0</version>

@@ -12,10 +12,10 @@ public class TestFileCollector {
 
     @Test
     public void collectAllFiles() throws IOException {
-        var sources = Set.of("src/test/java/javax0/geci/util");
+        final var sources = (Set)Set.of((Object)new String[]{"src/test/java/javax0/geci/util"});
         var files = new FileCollector(sources).collect();
         assertEquals(1, files.size());
-        assertTrue(files.iterator().next().file().endsWith("TestFileCollector.java"));
+        assertTrue(files.iterator().next().getKlassName().endsWith("TestFileCollector.java"));
 
     }
 }

@@ -2,7 +2,7 @@ package javax0.geci.tests.delegator;
 
 import javax0.geci.annotations.Geci;
 
-@Geci("accessor id='setters' include='private,protected'")
+@Geci("accessor include='private,protected'")
 public class Contained1 {
 
     public void callMe() {
@@ -21,7 +21,7 @@ public class Contained1 {
     protected int not_this;
 
 
-    //<editor-fold id="setters" desc="setters">
+    //<editor-fold id="accessor" desc="setters">
     public String getApple(){
         return apple;
     }

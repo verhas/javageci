@@ -11,11 +11,11 @@ import java.util.Set;
 
 public class Geci implements javax0.geci.api.Geci {
 
-    private final Set<String> directories = new HashSet<>();
+    private final Set<String[]> directories = new HashSet<>();
     private final List<Generator> generators = new ArrayList<>();
 
     @Override
-    public javax0.geci.api.Geci source(String directory) {
+    public javax0.geci.api.Geci source(String ...directory) {
         directories.add(directory);
         return this;
     }

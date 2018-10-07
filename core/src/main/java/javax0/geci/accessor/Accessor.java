@@ -20,7 +20,7 @@ public class Accessor implements Generator {
 
 
     private void process0(Source source) throws Exception {
-        final var klass = Tools.getClass(source);
+        final var klass = source.getKlass();
         if (klass != null) {
 
             var global = Tools.getParameters(klass, "accessor");

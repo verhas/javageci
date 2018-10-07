@@ -9,7 +9,7 @@ public class TestAccessor {
 
     @Test
     public void testAccessor() throws Exception {
-        if (new Geci().source("./src/main/java").register(new Accessor()).generate()) {
+        if (new Geci().source("./src/main/java","./tests/src/main/java").register(new Accessor()).generate()) {
             Assertions.fail("Code was changed during test phase.");
         }
     }

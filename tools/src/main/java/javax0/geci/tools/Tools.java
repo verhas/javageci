@@ -5,14 +5,16 @@ import javax0.geci.annotations.Gecis;
 import javax0.geci.api.Source;
 import javax0.geci.tools.reflection.ModifiersBuilder;
 
-import java.lang.reflect.*;
-import java.nio.file.Paths;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public class Tools {
+
+    private static final Pattern pattern = Pattern.compile("(\\w+)\\s*=\\s*'(.*?)'");
 
     public static String[] getGecis(AnnotatedElement element) {
         final var annotations = element.getDeclaredAnnotation(Gecis.class);
@@ -32,37 +34,31 @@ public class Tools {
         return gecis;
     }
 
-    private static final Pattern pattern = Pattern.compile("(\\w+)\\s*=\\s*'(.*?)'");
+    public static Map<String, String> getParameters(String s) {
+        var pars = new HashMap<String, String>();
+        var matcher = pattern.matcher(s);
+        while (matcher.find()) {
+            var key = matcher.group(1);
+            var value = matcher.group(2);
+            pars.put(key, value);
+        }
+        return pars;
+    }
 
-    public static Map<String, String> getParameters(AnnotatedElement element, String generatorMnemonic) {
+    public static CompoundParams getParameters(AnnotatedElement element, String generatorMnemonic) {
         final var strings = getGecis(element);
         for (var string : strings) {
-            if (string.startsWith(generatorMnemonic + " ")) {
-                var pars = new HashMap<String,String>();
-                var matcher = pattern.matcher(string.substring(generatorMnemonic.length()+1));
-                while (matcher.find()) {
-                    var key = matcher.group(1);
-                    var value = matcher.group(2);
-                    pars.put(key, value);
-                }
-                return Map.copyOf(pars);
+            if (string.startsWith(generatorMnemonic + " ") ) {
+                var parametersString = string.substring(generatorMnemonic.length() + 1);
+                return new CompoundParams(generatorMnemonic, Map.copyOf(getParameters(parametersString)));
+            }else if( string.equals(generatorMnemonic)){
+                return new CompoundParams(generatorMnemonic, Map.of());
             }
         }
         return null;
     }
 
-    public static Class<?> getClass(Source source) {
-        var file = source.file();
-        String className = source.file().replace("\\",".").replace("/",".")
-                .replaceAll("\\.java$","");
-        try {
-            return Class.forName(className);
-        } catch (ClassNotFoundException|NoClassDefFoundError e) {
-            return null;
-        }
-    }
-
-    public static String modifiersString(Method method){
+    public static String modifiersString(Method method) {
         return new ModifiersBuilder(method.getModifiers()).toString();
     }
 
@@ -80,10 +76,6 @@ public class Tools {
             s = s.substring("java.lang.".length());
         }
         return s;
-    }
-
-    public static String modifiersString(int modifiers){
-        return new ModifiersBuilder(modifiers).toString();
     }
 
 }

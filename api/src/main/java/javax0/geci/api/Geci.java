@@ -10,7 +10,7 @@ public interface Geci {
      * @param directory
      * @return {@code this}
      */
-    Geci source(String directory);
+    Geci source(String ...directory);
 
     /**
      * Register a generator instance.

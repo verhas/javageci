@@ -12,15 +12,15 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class Source implements javax0.geci.api.Source {
-    private final String relativeFile;
+    private final String className;
     private final String absoluteFile;
     private final Map<String, Segment> segments = new HashMap<>();
     final List<String> lines = new ArrayList<>();
     private final List<String> originals = new ArrayList<>();
     boolean inMemory = false;
 
-    public Source(String relativeFile, String absoluteFile) {
-        this.relativeFile = relativeFile;
+    public Source(String className, String absoluteFile) {
+        this.className = className;
         this.absoluteFile = absoluteFile;
     }
 
@@ -42,12 +42,18 @@ public class Source implements javax0.geci.api.Source {
     }
 
     @Override
-    public String file() {
-        return relativeFile;
+    public String getKlassName() {
+        return className;
     }
-    //<editor-fold desc="haha">
 
-    // </editor-fold>
+    @Override
+    public Class<?> getKlass() {
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
+            return null;
+        }
+    }
 
     /**
      * Replace the original content of the segments with the generated lines.
@@ -156,7 +162,7 @@ public class Source implements javax0.geci.api.Source {
 
     @Override
     public String toString() {
-        return relativeFile;
+        return className;
     }
 
 }

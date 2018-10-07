@@ -1,15 +1,27 @@
-package javax0.geci.tools.reflection;
+package javax0.geci.test.tools.reflection;
 
+import javax0.geci.engine.Geci;
+import javax0.geci.tools.reflection.ModifiersBuilder;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Modifier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@javax0.geci.annotations.Geci("TestModifierBuilderGenerator")
 public class TestModifierBuilder {
 
     @Test
+    public void testThatTestCodeIsGenerated() throws Exception {
+        if (new Geci().source("./src/test/java/", "./tests/src/test/java").register(new TestModifierBuilderGenerator()).generate()) {
+            Assertions.fail("testAll() was regenerated. Build and test again.");
+        }
+    }
+
+    @Test
     public void testAll() {
+        //<editor-fold id="allTests" desc="generated tests">
         assertEquals(new ModifiersBuilder(0).toString(), "");
         assertEquals(new ModifiersBuilder(Modifier.PRIVATE).toString(), "private ");
         assertEquals(new ModifiersBuilder(Modifier.PROTECTED).toString(), "protected ");
@@ -74,39 +86,7 @@ public class TestModifierBuilder {
         assertEquals(new ModifiersBuilder(Modifier.PRIVATE | Modifier.PUBLIC | Modifier.FINAL | Modifier.STATIC | Modifier.SYNCHRONIZED).toString(), "private public final static synchronized ");
         assertEquals(new ModifiersBuilder(Modifier.PROTECTED | Modifier.PUBLIC | Modifier.FINAL | Modifier.STATIC | Modifier.SYNCHRONIZED).toString(), "protected public final static synchronized ");
         assertEquals(new ModifiersBuilder(Modifier.PRIVATE | Modifier.PROTECTED | Modifier.PUBLIC | Modifier.FINAL | Modifier.STATIC | Modifier.SYNCHRONIZED).toString(), "private protected public final static synchronized ");
-
-        String[] a = new String[]{
-            "Modifier.PRIVATE",
-            "Modifier.PROTECTED",
-            "Modifier.PUBLIC",
-            "Modifier.FINAL",
-            "Modifier.STATIC",
-            "Modifier.SYNCHRONIZED"
-        };
-        String[] b = new String[]{
-            "private ",
-            "protected ",
-            "public ",
-            "final ",
-            "static ",
-            "synchronized "
-        };
-        for (int i = 0; i < 64; i++) {
-            var j = i;
-            var k = 0;
-            String aa = "0", bb = "";
-            while (j > 0) {
-                if (j % 2 > 0) {
-                    aa += "|" + a[k];
-                    bb += b[k];
-                }
-                j = j / 2;
-                k++;
-            }
-            System.out.println("assertEquals(new ModifiersBuilder(" + aa + ").toString(), \"" + bb + "\");");
-        }
-
-
+        //</editor-fold>
     }
 
 }
