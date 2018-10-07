@@ -2,7 +2,6 @@ package javax0.geci.tools;
 
 import javax0.geci.annotations.Geci;
 import javax0.geci.annotations.Gecis;
-import javax0.geci.api.Source;
 import javax0.geci.tools.reflection.ModifiersBuilder;
 
 import java.lang.reflect.AnnotatedElement;
@@ -48,10 +47,10 @@ public class Tools {
     public static CompoundParams getParameters(AnnotatedElement element, String generatorMnemonic) {
         final var strings = getGecis(element);
         for (var string : strings) {
-            if (string.startsWith(generatorMnemonic + " ") ) {
+            if (string.startsWith(generatorMnemonic + " ")) {
                 var parametersString = string.substring(generatorMnemonic.length() + 1);
                 return new CompoundParams(generatorMnemonic, Map.copyOf(getParameters(parametersString)));
-            }else if( string.equals(generatorMnemonic)){
+            } else if (string.equals(generatorMnemonic)) {
                 return new CompoundParams(generatorMnemonic, Map.of());
             }
         }
@@ -64,14 +63,17 @@ public class Tools {
 
     public static String typeAsString(Field field) {
         var s = field.getGenericType().getTypeName();
-        if (s.startsWith("java.lang.")) {
-            s = s.substring("java.lang.".length());
-        }
+        s = normalizeTypeName(s);
         return s;
     }
 
     public static String typeAsString(Method method) {
         var s = method.getReturnType().getTypeName();
+        s = normalizeTypeName(s);
+        return s;
+    }
+
+    private static String normalizeTypeName(String s) {
         if (s.startsWith("java.lang.")) {
             s = s.substring("java.lang.".length());
         }

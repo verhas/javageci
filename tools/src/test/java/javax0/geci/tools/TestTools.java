@@ -1,9 +1,12 @@
 package javax0.geci.tools;
 
 import javax0.geci.annotations.Geci;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -11,6 +14,7 @@ public class TestTools {
     @Geci("aaa a='b' b='c' c='d'")
     @Geci("xxx x='x' y='y' z='z'")
     private static Object something;
+    private HashMap<Map<String, Integer>, Object> b;
 
     @Test
     public void testParameterParser() {
@@ -29,5 +33,15 @@ public class TestTools {
         assertEquals(map.get("a"), "b");
         assertEquals(map.get("b"), "c");
         assertEquals(map.get("c"), "d");
+    }
+
+    @Test
+    public void testTypeGetting() throws NoSuchMethodException, NoSuchFieldException {
+        Assertions.assertEquals(
+            "void",
+            Tools.typeAsString(this.getClass().getDeclaredMethod("testTypeGetting", new Class[0])));
+        Assertions.assertEquals(
+            "java.util.HashMap<java.util.Map<java.lang.String, java.lang.Integer>, java.lang.Object>",
+            Tools.typeAsString(this.getClass().getDeclaredField("b")));
     }
 }

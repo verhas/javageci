@@ -14,6 +14,24 @@ public interface Source {
     Segment open(String id) throws IOException;
 
     /**
+     * Initialize a segment. This is needed in case it is possible that the code generator does not
+     * write anything into the segment. In that case the segment may not even be opened and in that
+     * case the segment is not touched and the old, presumably garbage may be there. For exmaple
+     * you have a setter/getter generated code that selects some of the fields only, say only the
+     * 'protected' onces. During the development you change the last 'protected' field to private
+     * and there remains no field for which setter and getter is to be generated. If the segment is
+     * not init-ed, then the code generator would not touch the segment and it may contain the
+     * setter and the getter for the last 'protected' by now 'private' field.
+     * <p>
+     * Technically calling init is similar to opening a segment, though init should be more lenient
+     * to opening non-existent segments.
+     *
+     *
+     * @param id the identifier of the segment
+     */
+    void init(String id) throws IOException;
+
+    /**
      * Get the name of the class that corresponds to this source. The class may not exist though.
      *
      * @return the class name that was calculated from the file name

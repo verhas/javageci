@@ -1,6 +1,7 @@
 package javax0.geci.accessor;
 
 import javax0.geci.api.Generator;
+import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.Tools;
@@ -9,6 +10,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 public class Accessor implements Generator {
+    private static final int PACKAGE = Modifier.PROTECTED | Modifier.PRIVATE | Modifier.PUBLIC;
+
     @Override
     public void process(Source source) {
         try {
@@ -18,7 +21,6 @@ public class Accessor implements Generator {
         }
     }
 
-
     private void process0(Source source) throws Exception {
         final var klass = source.getKlass();
         if (klass != null) {
@@ -27,36 +29,27 @@ public class Accessor implements Generator {
             if (global != null) {
                 var accessMask = mask(global.get("include"));
                 var gid = global.get("id");
-                if (gid != null) {
-                    source.open(gid);
-                }
+                source.init(gid);
                 final var fields = klass.getDeclaredFields();
                 for (final var field : fields) {
                     var local = Tools.getParameters(field, "accessor");
                     var params = new CompoundParams(local, global);
                     var isFinal = Modifier.isFinal(field.getModifiers());
-                    if (!params.is("exclude")) {
-                        var id = getId(field, params);
-                        source.open(id);
+                    if (params.isNot("exclude")) {
                         var name = nameAsString(field);
                         var ucName = cap(name);
                         var type = Tools.typeAsString(field);
                         var access = checkAccess(params.get("access", "public"));
                         var only = params.get("only");
                         if (matchMask(field, accessMask)) {
+                            var id = getId(field, params);
+                            source.init(id);
                             try (var segment = source.open(id)) {
-                                if (!isFinal && !"setter".equals(only)) {
-                                    segment.write_r(access + " void set" + ucName + "(" +
-                                            type + " " + name + "){");
-                                    segment.write_l("this." + name + " = " + name + ";");
-                                    segment.write("}");
-                                    segment.newline();
+                                if (!isFinal && !only.equals("setter")) {
+                                    writeSetter(name, ucName, type, access, segment);
                                 }
                                 if (!"getter".equals(only)) {
-                                    segment.write_r(access + " " + type + " get" + ucName + "(){");
-                                    segment.write_l("return " + name + ";");
-                                    segment.write("}");
-                                    segment.newline();
+                                    writeGetter(name, ucName, type, access, segment);
                                 }
                             }
                         }
@@ -66,11 +59,26 @@ public class Accessor implements Generator {
         }
     }
 
+    private void writeGetter(String name, String ucName, String type, String access, Segment segment) {
+        segment.write_r(access + " " + type + " get" + ucName + "(){");
+        segment.write_l("return " + name + ";");
+        segment.write("}");
+        segment.newline();
+    }
+
+    private void writeSetter(String name, String ucName, String type, String access, Segment segment) {
+        segment.write_r(access + " void set" + ucName + "(" +
+            type + " " + name + "){");
+        segment.write_l("this." + name + " = " + name + ";");
+        segment.write("}");
+        segment.newline();
+    }
+
     private String checkAccess(String access) {
         if (access.equals("public") ||
-                access.equals("protected") ||
-                access.equals("private")
-        ) {
+            access.equals("protected") ||
+            access.equals("private")
+            ) {
             return access;
         }
         if (access.equals("package")) {
@@ -79,8 +87,6 @@ public class Accessor implements Generator {
         throw new RuntimeException("Invalid acccess for setter/getter " + access);
 
     }
-
-    private static final int PACKAGE = Modifier.PROTECTED | Modifier.PRIVATE | Modifier.PUBLIC;
 
     private boolean matchMask(Field field, int mask) {
         int modifiers = field.getModifiers();

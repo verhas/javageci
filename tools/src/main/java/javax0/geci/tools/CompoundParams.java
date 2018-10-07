@@ -80,13 +80,13 @@ public class CompoundParams {
 
     /**
      * Get a parameter. The implementation looks through the underlying map array or compound parameters array in the
-     * order they were specified in the constructor. If the key is not found then {@code null} is returned.
+     * order they were specified in the constructor. If the key is not found then {@code ""} is returned.
      * <p>
      * The key "id" is handled in a special way. In case there is no "id" defined in the parameters then the
      * identifier of the parameter set is returned.
      *
      * @param key the name of the parameter.
-     * @return the parameter or {@code null} if the parameter is not defined. In case the key is {@code "id"} and is
+     * @return the parameter or {@code ""} if the parameter is not defined. In case the key is {@code "id"} and is
      * not defined in the underlying array then the parameter set identifier is returned.
      */
     public String get(String key) {
@@ -107,7 +107,7 @@ public class CompoundParams {
         if ("id".equals(key)) {
             return id;
         }
-        return null;
+        return "";
     }
 
     /**
@@ -125,6 +125,10 @@ public class CompoundParams {
                 s.equalsIgnoreCase("1") ||
                 s.equalsIgnoreCase("true")
         );
+    }
+
+    public boolean isNot(String key) {
+        return !is(key);
     }
 
 }

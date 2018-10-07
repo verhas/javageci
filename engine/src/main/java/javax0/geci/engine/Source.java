@@ -9,13 +9,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Source implements javax0.geci.api.Source {
+    private static final Pattern startPattern = Pattern.compile("^(\\s*)//\\s*<\\s*editor-fold\\s+(.*)>\\s*$");
+    private static final Pattern endPattern = Pattern.compile("^\\s*//\\s*<\\s*/\\s*editor-fold\\s*>\\s*$");
+    private static final Pattern attributePattern = Pattern.compile("(\\w+)\\s*=\\s*\"(.*?)\"");
+    final List<String> lines = new ArrayList<>();
     private final String className;
     private final String absoluteFile;
     private final Map<String, Segment> segments = new HashMap<>();
-    final List<String> lines = new ArrayList<>();
     private final List<String> originals = new ArrayList<>();
     boolean inMemory = false;
 
@@ -25,16 +29,24 @@ public class Source implements javax0.geci.api.Source {
     }
 
     @Override
+    public void init(String id) throws IOException {
+        if (id == null || id.equals("")) {
+            return;
+        }
+        open(id);
+    }
+
+    @Override
     public Segment open(String id) throws IOException {
         if (!inMemory) {
             readToMemory();
         }
         if (!segments.containsKey(id)) {
-            var seg = findSegmentStart(id);
-            if (seg == null) {
+            var segStart = findSegmentStart(id);
+            if (segStart == null) {
                 return null;
             }
-            var segment = new Segment(seg.tab);
+            var segment = new Segment(segStart.tab);
             segments.put(id, segment);
 
         }
@@ -65,14 +77,14 @@ public class Source implements javax0.geci.api.Source {
         for (var entry : segments.entrySet()) {
             var id = entry.getKey();
             var segment = entry.getValue();
-            var seg = findSegmentStart(id);
-            var endIndex = findSegmentEnd(seg.startLine);
-            for (int i = endIndex - 1; i > seg.startLine; i--) {
+            var segStart = findSegmentStart(id);
+            var endIndex = findSegmentEnd(segStart.startLine);
+            for (int i = endIndex - 1; i > segStart.startLine; i--) {
                 lines.remove(i);
             }
             var i = 1;
             for (var line : segment.lines) {
-                lines.add(seg.startLine + i, line);
+                lines.add(segStart.startLine + i, line);
                 i++;
             }
         }
@@ -110,31 +122,16 @@ public class Source implements javax0.geci.api.Source {
         inMemory = true;
     }
 
-    private static final Pattern startPattern = Pattern.compile("^(\\s*)//\\s*<\\s*editor-fold\\s+(.*)>\\s*$");
-    private static final Pattern endPattern = Pattern.compile("^\\s*//\\s*<\\s*/\\s*editor-fold\\s*>\\s*$");
-    private static final Pattern attributePattern = Pattern.compile("(\\w+)\\s*=\\s*\"(.*?)\"");
-
-    private class SegmentStart {
-        int startLine;
-        Map<String, String> attr;
-        int tab;
-    }
-
     private SegmentStart findSegmentStart(String id) {
-        var seg = new SegmentStart();
         for (int i = 0; i < lines.size(); i++) {
             var line = lines.get(i);
             var lineMatcher = startPattern.matcher(line);
             if (lineMatcher.matches()) {
                 var attributes = lineMatcher.group(2);
                 var attributeMatcher = attributePattern.matcher(attributes);
-                var attr = new HashMap<String, String>();
-                while (attributeMatcher.find()) {
-                    var key = attributeMatcher.group(1);
-                    var value = attributeMatcher.group(2);
-                    attr.put(key, value);
-                }
-                if (attr.containsKey("id") && attr.get("id").equals(id)) {
+                var attr = parseParametersString(attributeMatcher);
+                if (id.equals(attr.get("id"))) {
+                    var seg = new SegmentStart();
                     seg.attr = attr;
                     seg.tab = lineMatcher.group(1).length();
                     seg.startLine = i;
@@ -143,6 +140,16 @@ public class Source implements javax0.geci.api.Source {
             }
         }
         return null;
+    }
+
+    private Map<String, String> parseParametersString(Matcher attributeMatcher) {
+        var attr = new HashMap<String, String>();
+        while (attributeMatcher.find()) {
+            var key = attributeMatcher.group(1);
+            var value = attributeMatcher.group(2);
+            attr.put(key, value);
+        }
+        return attr;
     }
 
     private int findSegmentEnd(int start) {
@@ -156,13 +163,15 @@ public class Source implements javax0.geci.api.Source {
         return lines.size();
     }
 
-    private boolean isStart(String line) {
-        return startPattern.matcher(line).matches();
-    }
-
     @Override
     public String toString() {
         return className;
+    }
+
+    private class SegmentStart {
+        int startLine;
+        Map<String, String> attr;
+        int tab;
     }
 
 }
