@@ -70,7 +70,7 @@ public class CompoundParams {
      * @return the value of the parameter
      */
     public String get(String key, String defaults) {
-        var s = get(key);
+        var s = get0(key);
         if (s == null) {
             return defaults;
         } else {
@@ -90,6 +90,15 @@ public class CompoundParams {
      * not defined in the underlying array then the parameter set identifier is returned.
      */
     public String get(String key) {
+        var s = get0(key);
+        if (s == null) {
+            return "";
+        } else {
+            return s;
+        }
+    }
+
+    private String get0(String key){
         if (params != null) {
             for (var param : params) {
                 if (param != null && param.containsKey(key)) {
@@ -107,7 +116,7 @@ public class CompoundParams {
         if ("id".equals(key)) {
             return id;
         }
-        return "";
+        return null;
     }
 
     /**

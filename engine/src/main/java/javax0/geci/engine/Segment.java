@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Segment implements javax0.geci.api.Segment {
+    private static final int TAB = 4;
     final List<String> lines = new LinkedList<>();
     private int tabStop = 0;
     final private int openingTabStop;
@@ -35,15 +36,15 @@ public class Segment implements javax0.geci.api.Segment {
     @Override
     public void write_r(String s) {
         write(s);
-        tabStop += 4;
+        tabStop += TAB;
     }
 
     @Override
     public void write_l(String s) {
-        write(s);
-        tabStop -= 4;
+        tabStop -= TAB;
         if (tabStop < 0) {
             tabStop = 0;
         }
+        write(s);
     }
 }

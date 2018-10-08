@@ -31,8 +31,8 @@ public class TestSource {
         seg.write("this is the replacement 2 line");
         seg.write("this is the replacement 3 line");
         seg.write_r("next is intended");
-        seg.write_l("intended line");
-        seg.write("normal line");
+        seg.write("intended line");
+        seg.write_l("normal line");
         sut.consolidate();
         assertEquals("This is something there\n" +
                 "    // <editor-fold id=\"myId\">\n" +
