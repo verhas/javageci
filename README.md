@@ -32,6 +32,53 @@ Java::Geci already includes several readily available code generators. These are
 and can generate
 
 * setter and getter
-* delegation methods
-* others will be under development   
-    
+* delegation methods (under development)
+* others will be under development
+
+## How to use Java:Geci
+
+If you look at the test code `TestAccessor.java` in the test module you can see that this is a proof of concept
+demonstration sample code:
+
+<!-- USE SNIPPET */TestAccessor -->
+```java
+package javax0.geci.tests.accessor;
+
+import javax0.geci.accessor.Accessor;
+import javax0.geci.engine.Geci;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+public class TestAccessor {
+
+    @Test
+    public void testAccessor() throws Exception {
+        if (new Geci().source("./src/main/java","./tests/src/main/java").register(new Accessor()).generate()) {
+            Assertions.fail("Code was changed during test phase.");
+        }
+    }
+}
+```
+
+The test runs during the build process and it generates files if that is needed. If files were genarted it means that
+the code was not up to date and a new compilation has to be done. In this case the `Assertions.fail()` will be invoked
+and you have to start the build process again. Second time the code generation will recognize that the code it could
+generate is already there and the process will not fail.
+
+`Geci` has a fluent interface.
+
+The method `source()` can be used to specify the directories where source files are. If you have the source files
+in different places you have to chain several `source()` invocations one after the other. Every single call to
+`source()` can specify several directories. These count as one single directory and the first that exists is used
+to discover the files.
+
+The method `register()` can register one or more source code generators. Each of them will be invoked on the code.
+ 
+Finally the method invocation `generate()` wil do the work, read the source files and generate the code.
+
+For further information visit the following documentations
+
+* [Tutorials](TUTORIAL.md)
+* [Reference documentation](REFERENCE.md)
+* [How to guides](HOWTO.md)
+* [Explanations](EXPLANATION.md)
