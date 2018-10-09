@@ -5,34 +5,6 @@ import java.util.Objects;
 
 public interface Source {
 
-    class Set {
-        private final String name;
-
-        private Set(String name) {
-            if (name == null) throw new IllegalArgumentException("Name can not be null");
-            this.name = name;
-        }
-
-        public static Set set(String name) {
-            return new Set(name);
-        }
-
-        @Override
-        public boolean equals(Object that) {
-            if (this == that) return true;
-            if (that == null || !(that instanceof Set)) {
-                return false;
-            }
-            Set set = (Set) that;
-            return Objects.equals(name, set.name);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(name);
-        }
-    }
-
     /**
      * Return the named segment that the generator can write. Return {@code null} if there is no such segment
      * in the file.
@@ -52,9 +24,9 @@ public interface Source {
      */
     Segment open() throws IOException;
 
-
     /**
      * Get the absolute file name of this source.
+     *
      * @return the absolute file name of the source
      */
     String getAbsoluteFile();
@@ -113,4 +85,47 @@ public interface Source {
      * @return the class object or {@code null}
      */
     Class<?> getKlass();
+
+    /**
+     * Set serves as an identifier class for a source set. This is used when a source is asked to open a new
+     * source that does not exist yet in another source set. When a source set is not identified
+     * calling {@link Geci#source(String...)} it will have a {@code new Set("")} object as identifier. When a
+     * generator needs to name a set it has to be identified and a specific first argument has to be passed to the
+     * {@link Geci#source(Set, String...)} usually naming the source set typically as {@code set("java")} or
+     * {@code set("resources")}.
+     */
+    class Set {
+        private final String name;
+
+        private Set(String name) {
+            if (name == null) throw new IllegalArgumentException("Name can not be null");
+            this.name = name;
+        }
+
+        /**
+         * Import this method as a static import into the generators and into the test code that invokes the code
+         * generator.
+         *
+         * @param name identifying string of the source set
+         * @return identifier object.
+         */
+        public static Set set(String name) {
+            return new Set(name);
+        }
+
+        @Override
+        public boolean equals(Object that) {
+            if (this == that) return true;
+            if (that == null || !(that instanceof Set)) {
+                return false;
+            }
+            Set set = (Set) that;
+            return Objects.equals(name, set.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name);
+        }
+    }
 }
