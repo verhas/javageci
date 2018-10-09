@@ -1,8 +1,38 @@
 package javax0.geci.api;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public interface Source {
+
+    class Set {
+        private final String name;
+
+        private Set(String name) {
+            if (name == null) throw new IllegalArgumentException("Name can not be null");
+            this.name = name;
+        }
+
+        public static Set set(String name) {
+            return new Set(name);
+        }
+
+        @Override
+        public boolean equals(Object that) {
+            if (this == that) return true;
+            if (that == null || !(that instanceof Set)) {
+                return false;
+            }
+            Set set = (Set) that;
+            return Objects.equals(name, set.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name);
+        }
+    }
+
     /**
      * Return the named segment that the generator can write. Return {@code null} if there is no such segment
      * in the file.
@@ -22,15 +52,33 @@ public interface Source {
      */
     Segment open() throws IOException;
 
+
+    /**
+     * Get the absolute file name of this source.
+     * @return the absolute file name of the source
+     */
+    String getAbsoluteFile();
+
     /**
      * Create a new source that may or may not exist. This source is going to be generated and if it already existed
      * it will be overwritten.
-     * @param fileName relative file name to the current source.
      *
+     * @param fileName relative file name to the current source.
      * @return the new {@code Source} object.
      * @throws IOException in case there is no file or file is not readable
      */
     Source newSource(String fileName) throws IOException;
+
+    /**
+     * Create a new source that may or may not exist. This source is going to be generated and if it already existed
+     * it will be overwritten. Create the new source file in the directory that was used to open the specified source
+     * set.
+     *
+     * @param fileName relative file name to the current source.
+     * @return the new {@code Source} object.
+     * @throws IOException in case there is no file or file is not readable
+     */
+    Source newSource(Source.Set set, String fileName) throws IOException;
 
     /**
      * Initialize a segment. This is needed in case it is possible that the code generator does not
@@ -44,7 +92,6 @@ public interface Source {
      * <p>
      * Technically calling init is similar to opening a segment, though init should be more lenient
      * to opening non-existent segments.
-     *
      *
      * @param id the identifier of the segment
      * @throws IOException in case there is no file or file is not readable

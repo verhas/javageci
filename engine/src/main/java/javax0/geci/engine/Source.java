@@ -1,11 +1,16 @@
 package javax0.geci.engine;
 
 
+import javax0.geci.util.FileCollector;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class Source implements javax0.geci.api.Source {
@@ -14,17 +19,24 @@ public class Source implements javax0.geci.api.Source {
     private static final Pattern attributePattern = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*\"(.*?)\"");
     final List<String> lines = new ArrayList<>();
     private final String className;
+    private final String relativeFile;
     private final String absoluteFile;
     private final Map<String, Segment> segments = new HashMap<>();
     private Segment globalSegment = null;
     private final List<String> originals = new ArrayList<>();
     boolean inMemory = false;
-    private final Set<Source> newSources;
+    private final FileCollector collector;
 
-    public Source(Set<Source> newSources, String className, String absoluteFile) {
-        this.newSources = newSources;
+    public Source(FileCollector collector, String className, String relativeFile, String absoluteFile) {
+        this.collector = collector;
         this.className = className;
+        this.relativeFile = relativeFile;
         this.absoluteFile = absoluteFile;
+    }
+
+    @Override
+    public String getAbsoluteFile() {
+        return absoluteFile;
     }
 
     @Override
@@ -35,15 +47,22 @@ public class Source implements javax0.geci.api.Source {
         open(id);
     }
 
+    public Source newSource(Source.Set sourceSet, String fileName) {
+        return null;
+    }
+
+    private static final String NOT_COMPILED_YET = null;
+
     public Source newSource(String fileName) {
-        for (final var source : newSources) {
+        for (final var source : collector.newSources) {
             if (this.absoluteFile.equals(source.absoluteFile)) {
                 return source;
             }
         }
-        var source = new Source(newSources, null,
-                Paths.get(absoluteFile).getParent().resolve(fileName).toAbsolutePath().toString());
-        newSources.add(source);
+        var source = new Source(collector, NOT_COMPILED_YET,
+                Paths.get(relativeFile).getParent().resolve(fileName).toString(),
+                Paths.get(relativeFile).getParent().resolve(fileName).toAbsolutePath().toString());
+        collector.addNewSource(source);
         return source;
     }
 

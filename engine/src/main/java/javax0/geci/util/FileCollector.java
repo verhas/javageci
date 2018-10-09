@@ -8,25 +8,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class FileCollector {
 
-    private final Set<String[]> directories;
+    private final Map<Source.Set, String[]> directories;
     final public Set<Source> newSources = new HashSet<>();
+    final public Set<Source> sources = new HashSet<>();
 
-    public FileCollector(Set<String[]> directories) {
+    public FileCollector(Map<Source.Set, String[]> directories) {
         this.directories = directories;
     }
 
     /**
      * Collect the names of the files that are in the directories given  in the sources.
-     *
-     * @return the list of the file names containing the full path absolute file names.
      */
-    public Set<Source> collect() {
-        var sources = new HashSet<Source>();
-        for (var dirAlternatives : directories) {
+    public void collect() {
+        for (var dirAlternatives : directories.values()) {
             var processed = false;
             for (String dirAlternative : dirAlternatives) {
                 var directory = dirAlternative;
@@ -38,7 +37,7 @@ public class FileCollector {
                     Files.find(Paths.get(directory), Integer.MAX_VALUE,
                             (filePath, fileAttr) -> fileAttr.isRegularFile()
                     ).forEach(path -> sources.add(
-                            new Source(newSources, calculateClassName(dir, path), toAbsolute(path)))
+                            new Source(this, calculateClassName(dir, path), calculateRelativeName(dir, path), toAbsolute(path)))
                     );
                     processed = true;
                 } catch (IOException ignore) {
@@ -48,7 +47,10 @@ public class FileCollector {
                 throw new RuntimeException("Source directory [" + String.join(",", dirAlternatives) + "] is not found");
             }
         }
-        return sources;
+    }
+
+    public void addNewSource(Source source) {
+        newSources.add(source);
     }
 
     /**
@@ -66,19 +68,35 @@ public class FileCollector {
      * Calculate the class name.
      *
      * @param directory as a reference
-     * @param path points to the source file
-     * @return
+     * @param path      points to the source file
+     * @return the name of the class calculated from the file name
      */
     private String calculateClassName(String directory, Path path) {
-        var s = normalize(path.toString())
-                .substring(directory.length())
+        return calculateRelativeName(directory, path)
                 .replaceAll("/", ".")
                 .replaceAll("\\.java$", "");
-        return normalize(s);
     }
 
+    /**
+     * Calculate the relative file name, relative to the start point of the source set.
+     *
+     * @param directory the starting, top level directory of the source set
+     * @param path      the path in the source set
+     * @return the relative file name
+     */
+    private String calculateRelativeName(String directory, Path path) {
+        return normalize(path.toString())
+                .substring(directory.length());
+    }
+
+    /**
+     * Convert the path to absolute path and also normalize off some weird stuff that may remain after
+     * applying the JDK methods (e.g.: {@code /./} inside the path)
+     *
+     * @param path
+     * @return the absolute path as a string
+     */
     private String toAbsolute(Path path) {
-        var s = path.toAbsolutePath().toString();
-        return normalize(s);
+        return normalize(path.toAbsolutePath().toString());
     }
 }
