@@ -1,7 +1,5 @@
 package javax0.geci.api;
 
-import java.io.IOException;
-
 public interface Geci {
 
     /**

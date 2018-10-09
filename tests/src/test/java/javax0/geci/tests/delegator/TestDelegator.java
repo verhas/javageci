@@ -1,8 +1,5 @@
 package javax0.geci.tests.delegator;
 
-import javax0.geci.delegator.Delegator;
-import javax0.geci.engine.Geci;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class TestDelegator {
