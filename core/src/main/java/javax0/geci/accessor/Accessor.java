@@ -1,5 +1,6 @@
 package javax0.geci.accessor;
 
+import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractGenerator;
@@ -109,7 +110,7 @@ public class Accessor extends AbstractGenerator {
     private static String getId(Field field, CompoundParams fieldParams) {
         var id = fieldParams.get("id");
         if (id == null) {
-            throw new RuntimeException("accessor field " + field + " has no segment id");
+            throw new GeciException("accessor field " + field + " has no segment id");
         }
         return id;
     }
