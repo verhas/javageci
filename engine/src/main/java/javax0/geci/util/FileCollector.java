@@ -1,6 +1,7 @@
 package javax0.geci.util;
 
 
+import javax0.geci.api.GeciException;
 import javax0.geci.engine.Source;
 
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class FileCollector {
                 }
             }
             if (!processed) {
-                throw new RuntimeException("Source directory [" + String.join(",", dirAlternatives) + "] is not found");
+                throw new GeciException("Source directory [" + String.join(",", dirAlternatives) + "] is not found");
             }
         }
     }

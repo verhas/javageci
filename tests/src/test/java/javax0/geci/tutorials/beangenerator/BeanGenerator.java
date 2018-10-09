@@ -1,6 +1,7 @@
 // START SNIPPET BeanGenerator
 package javax0.geci.tutorials.beangenerator;
 
+import javax0.geci.api.GeciException;
 import javax0.geci.api.Generator;
 import javax0.geci.api.Source;
 
@@ -25,7 +26,7 @@ public class BeanGenerator implements Generator {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GeciException(e);
         }
     }
 }

@@ -1,6 +1,7 @@
 package javax0.geci.engine;
 
 
+import javax0.geci.api.GeciException;
 import javax0.geci.util.FileCollector;
 
 import java.io.IOException;
@@ -69,7 +70,7 @@ public class Source implements javax0.geci.api.Source {
     @Override
     public Segment open() {
         if (!segments.isEmpty()) {
-            throw new RuntimeException("Global segment was opened when the there were already opened segments");
+            throw new GeciException("Global segment was opened when the there were already opened segments");
         }
         if (globalSegment == null) {
             inMemory = true;
@@ -81,7 +82,7 @@ public class Source implements javax0.geci.api.Source {
     @Override
     public Segment open(String id) throws IOException {
         if (globalSegment != null) {
-            throw new RuntimeException("Segment was opened after the global segment was already created.");
+            throw new GeciException("Segment was opened after the global segment was already created.");
         }
         if (!inMemory) {
             readToMemory();
@@ -117,7 +118,7 @@ public class Source implements javax0.geci.api.Source {
      */
     void consolidate() {
         if (!inMemory && !segments.isEmpty()) {
-            throw new RuntimeException(
+            throw new GeciException(
                     "This is an internal error: source was not read into memory but segments were generated");
         }
         if (globalSegment == null) {
@@ -126,7 +127,7 @@ public class Source implements javax0.geci.api.Source {
                 var segment = entry.getValue();
                 var segDesc = findSegment(id);
                 if (segDesc == null) {
-                    throw new RuntimeException("Segment " + id + " disappeared from source" + absoluteFile);
+                    throw new GeciException("Segment " + id + " disappeared from source" + absoluteFile);
                 }
                 lines.subList(segDesc.startLine + 1, segDesc.endLine).clear();
                 lines.addAll(segDesc.startLine + 1, segment.lines);
