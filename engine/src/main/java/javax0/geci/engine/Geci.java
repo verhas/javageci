@@ -15,33 +15,44 @@ public class Geci implements javax0.geci.api.Geci {
     private final List<Generator> generators = new ArrayList<>();
 
     @Override
-    public javax0.geci.api.Geci source(String ...directory) {
+    public javax0.geci.api.Geci source(String... directory) {
         directories.add(directory);
         return this;
     }
 
     @Override
-    public javax0.geci.api.Geci register(Generator generator) {
-        generators.add(generator);
+    public javax0.geci.api.Geci register(Generator... generatorArr) {
+        for (var generator : generatorArr) {
+            generators.add(generator);
+        }
         return this;
     }
 
     @Override
     public boolean generate() throws IOException {
-        var sources = new FileCollector(directories).collect();
-        for (var source : sources) {
+        final var collector = new FileCollector(directories);
+        final var sources = collector.collect();
+        for (final var source : sources) {
             for (var generator : generators) {
                 generator.process(source);
             }
         }
-        boolean generated = false;
+        var generated = false;
         for (var source : sources) {
             source.consolidate();
-            if( source.save() ){
+        }
+        for (var source : collector.newSources) {
+            source.consolidate();
+        }
+        for (var source : sources) {
+            if (source.isModified()) {
+                source.save();
                 generated = true;
             }
         }
-
+        for (var source : collector.newSources) {
+            source.save();
+        }
         return generated;
     }
 }

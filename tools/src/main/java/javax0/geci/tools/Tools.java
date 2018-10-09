@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class Tools {
 
-    private static final Pattern pattern = Pattern.compile("(\\w+)\\s*=\\s*'(.*?)'");
+    private static final Pattern pattern = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*'(.*?)'");
 
     public static String[] getGecis(AnnotatedElement element) {
         final var annotations = element.getDeclaredAnnotation(Gecis.class);

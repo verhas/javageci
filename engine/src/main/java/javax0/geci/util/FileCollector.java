@@ -13,6 +13,7 @@ import java.util.Set;
 public class FileCollector {
 
     private final Set<String[]> directories;
+    final public Set<Source> newSources = new HashSet<>();
 
     public FileCollector(Set<String[]> directories) {
         this.directories = directories;
@@ -35,13 +36,12 @@ public class FileCollector {
                 var dir = normalize(directory);
                 try {
                     Files.find(Paths.get(directory), Integer.MAX_VALUE,
-                        (filePath, fileAttr) -> fileAttr.isRegularFile()
+                            (filePath, fileAttr) -> fileAttr.isRegularFile()
                     ).forEach(path -> sources.add(
-                        new javax0.geci.engine.Source(calculateClassName(dir, path), toAbsolute(path)))
+                            new javax0.geci.engine.Source(newSources, calculateClassName(dir, path), toAbsolute(path)))
                     );
                     processed = true;
                 } catch (IOException ignore) {
-
                 }
             }
             if (!processed) {
@@ -54,12 +54,12 @@ public class FileCollector {
     /**
      * Normalize a directory name. Convert all \ separator to / and remove all '/./' path parts.
      *
-     * @param s the unnormalized directory name
+     * @param s the not yet normalized directory name
      * @return the normalized directory name
      */
     private String normalize(String s) {
         return s.replace("\\", "/")
-            .replace("/./", "/");
+                .replace("/./", "/");
     }
 
     /**
@@ -70,10 +70,10 @@ public class FileCollector {
      * @return
      */
     private String calculateClassName(String directory, Path path) {
-        var s = path.toString()
-            .substring(directory.length())
-            .replaceAll("/",".")
-            .replaceAll("\\.java$","");
+        var s = normalize(path.toString())
+                .substring(directory.length())
+                .replaceAll("/", ".")
+                .replaceAll("\\.java$", "");
         return normalize(s);
     }
 

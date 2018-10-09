@@ -5,25 +5,24 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class Source implements javax0.geci.api.Source {
     private static final Pattern startPattern = Pattern.compile("^(\\s*)//\\s*<\\s*editor-fold\\s+(.*)>\\s*$");
     private static final Pattern endPattern = Pattern.compile("^\\s*//\\s*<\\s*/\\s*editor-fold\\s*>\\s*$");
-    private static final Pattern attributePattern = Pattern.compile("(\\w+)\\s*=\\s*\"(.*?)\"");
+    private static final Pattern attributePattern = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*\"(.*?)\"");
     final List<String> lines = new ArrayList<>();
     private final String className;
     private final String absoluteFile;
     private final Map<String, Segment> segments = new HashMap<>();
+    private Segment globalSegment = null;
     private final List<String> originals = new ArrayList<>();
     boolean inMemory = false;
+    private final Set<Source> newSources;
 
-    public Source(String className, String absoluteFile) {
+    public Source(Set<Source> newSources, String className, String absoluteFile) {
+        this.newSources = newSources;
         this.className = className;
         this.absoluteFile = absoluteFile;
     }
@@ -36,17 +35,44 @@ public class Source implements javax0.geci.api.Source {
         open(id);
     }
 
+    public Source newSource(String fileName) {
+        for (final var source : newSources) {
+            if (this.absoluteFile.equals(source.absoluteFile)) {
+                return source;
+            }
+        }
+        var source = new Source(newSources, null,
+                Paths.get(absoluteFile).getParent().resolve(fileName).toAbsolutePath().toString());
+        newSources.add(source);
+        return source;
+    }
+
+    @Override
+    public Segment open() throws IOException {
+        if (!segments.isEmpty()) {
+            throw new RuntimeException("Global segment was opened when the there were already opened segments");
+        }
+        if (globalSegment == null) {
+            inMemory = true;
+            globalSegment = new Segment(0);
+        }
+        return globalSegment;
+    }
+
     @Override
     public Segment open(String id) throws IOException {
+        if (globalSegment != null) {
+            throw new RuntimeException("Segment was opened after the global segment was already created.");
+        }
         if (!inMemory) {
             readToMemory();
         }
         if (!segments.containsKey(id)) {
-            var segStart = findSegmentStart(id);
-            if (segStart == null) {
+            var segDesc = findSegment(id);
+            if (segDesc == null) {
                 return null;
             }
-            var segment = new Segment(segStart.tab);
+            var segment = new Segment(segDesc.tab);
             segments.put(id, segment);
 
         }
@@ -71,22 +97,52 @@ public class Source implements javax0.geci.api.Source {
      * Replace the original content of the segments with the generated lines.
      */
     void consolidate() throws IOException {
-        if (!inMemory) {
-            readToMemory();
+        if (!inMemory && !segments.isEmpty()) {
+            throw new RuntimeException(
+                    "This is an internal error: source was not read into memory but segments were generated");
         }
-        for (var entry : segments.entrySet()) {
-            var id = entry.getKey();
-            var segment = entry.getValue();
-            var segStart = findSegmentStart(id);
-            var endIndex = findSegmentEnd(segStart.startLine);
-            for (int i = endIndex - 1; i > segStart.startLine; i--) {
-                lines.remove(i);
+        if (globalSegment == null) {
+            for (var entry : segments.entrySet()) {
+                var id = entry.getKey();
+                var segment = entry.getValue();
+                var segDesc = findSegment(id);
+                removeLines(segDesc.startLine+1,segDesc.endLine-1);
+                insertLines(segDesc.startLine+1,segment);
             }
-            var i = 1;
-            for (var line : segment.lines) {
-                lines.add(segStart.startLine + i, line);
-                i++;
+        }else{
+            removeLines();
+            insertLines(0,globalSegment);
+        }
+    }
+
+    private void insertLines(int start, Segment segment){
+        var i = 0;
+        for (var line : segment.lines) {
+            lines.add(start + i, line);
+            i++;
+        }
+    }
+    private void removeLines(int start, int end){
+        for (int i = end ; i >= start; i--) {
+            lines.remove(i);
+        }
+    }
+    private void removeLines(){
+        while (lines.size() > 0) {
+            lines.remove(0);
+        }
+    }
+
+    boolean isModified() {
+        if (originals.size() == lines.size()) {
+            for (int i = 0; i < lines.size(); i++) {
+                if (!lines.get(i).equals(originals.get(i))) {
+                    return true;
+                }
             }
+            return false;
+        } else {
+            return true;
         }
     }
 
@@ -96,24 +152,18 @@ public class Source implements javax0.geci.api.Source {
      *
      * @return {@code true} if the file was modified and successfully saved
      */
-    boolean save() throws IOException {
-        boolean modified = false;
-        if (originals.size() == lines.size()) {
-            for (int i = 0; i < lines.size(); i++) {
-                if (!lines.get(i).equals(originals.get(i))) {
-                    modified = true;
-                    break;
-                }
-            }
-        } else {
-            modified = true;
-        }
-        if (modified) {
-            Files.write(Paths.get(absoluteFile), lines, Charset.forName("utf-8"));
-        }
-        return modified;
+    void save() throws IOException {
+        Files.write(Paths.get(absoluteFile), lines, Charset.forName("utf-8"));
     }
 
+    /**
+     * Reads the content of the file into the fields {@code lines} and {@code originals}.
+     * Each element of the list will contain one line of the file. The list in {@code lines}
+     * is updated by code generation, while {@code originals} is kept as a reference to decide
+     * during the save process if the lines have to be written back to the file or not.
+     *
+     * @throws IOException
+     */
     private void readToMemory() throws IOException {
         Files.lines(Paths.get(absoluteFile)).forEach(line -> {
             lines.add(line);
@@ -122,19 +172,25 @@ public class Source implements javax0.geci.api.Source {
         inMemory = true;
     }
 
-    private SegmentStart findSegmentStart(String id) {
+    /**
+     * Search the segment of the given 'id'.
+     *
+     * @param id is the identifier of the segment
+     * @return the {@link SegmentDescriptor} structure describing the segment start or {@code null} if there is no segment
+     * with the given 'id'.
+     */
+    private SegmentDescriptor findSegment(String id) {
         for (int i = 0; i < lines.size(); i++) {
             var line = lines.get(i);
             var lineMatcher = startPattern.matcher(line);
             if (lineMatcher.matches()) {
-                var attributes = lineMatcher.group(2);
-                var attributeMatcher = attributePattern.matcher(attributes);
-                var attr = parseParametersString(attributeMatcher);
+                var attr = parseParametersString(lineMatcher.group(2));
                 if (id.equals(attr.get("id"))) {
-                    var seg = new SegmentStart();
+                    var seg = new SegmentDescriptor();
                     seg.attr = attr;
                     seg.tab = lineMatcher.group(1).length();
                     seg.startLine = i;
+                    seg.endLine = findSegmentEnd(i);
                     return seg;
                 }
             }
@@ -142,7 +198,24 @@ public class Source implements javax0.geci.api.Source {
         return null;
     }
 
-    private Map<String, String> parseParametersString(Matcher attributeMatcher) {
+    /**
+     * Parses the parameters on the line that contains the {@code // <editor-fold...>} line. For example
+     * if the line is
+     * <pre>
+     *     // <editor-fold id="aa" desc="sample description" other_param="other">
+     * </pre>
+     * <p>
+     * then the map will contain the values:
+     * <pre>
+     *     Map.of("id","aa","desc","sample description","other_param","other")
+     * </pre>
+     *
+     * @param attributes the string containing the part of the line that is after the {@code editor-fold} and
+     *                   before the closing {@code >}
+     * @return the attributes map
+     */
+    private Map<String, String> parseParametersString(String attributes) {
+        var attributeMatcher = attributePattern.matcher(attributes);
         var attr = new HashMap<String, String>();
         while (attributeMatcher.find()) {
             var key = attributeMatcher.group(1);
@@ -152,6 +225,12 @@ public class Source implements javax0.geci.api.Source {
         return attr;
     }
 
+    /**
+     * Find the end of the segment that starts at line
+     *
+     * @param start
+     * @return
+     */
     private int findSegmentEnd(int start) {
         for (int i = start + 1; i < lines.size(); i++) {
             var line = lines.get(i);
@@ -168,8 +247,18 @@ public class Source implements javax0.geci.api.Source {
         return className;
     }
 
-    private class SegmentStart {
+    /**
+     * Structure that contains the index in the {@code lines} list where the segment starts,
+     * the attributes specified in the {@code <editor-fold ...>} line and the number of spaces
+     * at the start of the segment starting line. This is used as the initial indentation of the segment.
+     * <p>
+     * Note that this structure has to be short living and it is mainly to return these values from the function
+     * {@link #findSegment(String)}. When the segments are consolidated the index values in {@code lines}
+     * will change.
+     */
+    private class SegmentDescriptor {
         int startLine;
+        int endLine;
         Map<String, String> attr;
         int tab;
     }

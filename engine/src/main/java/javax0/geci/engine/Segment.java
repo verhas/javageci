@@ -42,8 +42,8 @@ public class Segment implements javax0.geci.api.Segment {
     @Override
     public void write_l(String s) {
         tabStop -= TAB;
-        if (tabStop < 0) {
-            tabStop = 0;
+        if (tabStop < openingTabStop) {
+            tabStop = openingTabStop;
         }
         write(s);
     }

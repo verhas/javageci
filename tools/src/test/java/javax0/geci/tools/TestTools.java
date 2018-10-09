@@ -11,7 +11,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestTools {
-    @Geci("aaa a='b' b='c' c='d'")
+    @Geci("aaa a='b' b='c' c='d' a$='dollared' b3='bthree' _='-'")
     @Geci("xxx x='x' y='y' z='z'")
     private static Object something;
     private HashMap<Map<String, Integer>, Object> b;
@@ -23,7 +23,6 @@ public class TestTools {
         assertEquals(map.get("a"), "b");
         assertEquals(map.get("b"), "c");
         assertEquals(map.get("c"), "d");
-
     }
 
     @Test
@@ -33,6 +32,10 @@ public class TestTools {
         assertEquals(map.get("a"), "b");
         assertEquals(map.get("b"), "c");
         assertEquals(map.get("c"), "d");
+        assertEquals(map.get("a$"), "dollared");
+        assertEquals(map.get("b3"), "bthree");
+        assertEquals(map.get("_"), "-");
+
     }
 
     @Test

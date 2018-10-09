@@ -15,10 +15,10 @@ public interface Geci {
     /**
      * Register a generator instance.
      *
-     * @param generator the generator to register
+     * @param generatorArr the generators to register
      * @return {@code this}
      */
-    Geci register(Generator generator);
+    Geci register(Generator ...generatorArr);
 
     /**
      * Run the code generation.

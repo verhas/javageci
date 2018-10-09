@@ -108,8 +108,8 @@ public class CompoundParams {
         }
         if (cparams != null) {
             for (var param : cparams) {
-                if (param != null && param.get(key) != null) {
-                    return param.get(key);
+                if (param != null && param.get0(key) != null) {
+                    return param.get0(key);
                 }
             }
         }

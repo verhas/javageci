@@ -14,6 +14,25 @@ public interface Source {
     Segment open(String id) throws IOException;
 
     /**
+     * Open the "global" segment that is the whole source file. Usually used on sources that are created calling
+     * {@link #newSource(String)}
+     *
+     * @return the new segment object.
+     * @throws IOException
+     */
+    Segment open() throws IOException;
+
+    /**
+     * Create a new source that may or may not exist. This source is going to be generated and if it already existed
+     * it will be overwritten.
+     * @param fileName relative file name to the current source.
+     *
+     * @return the new {@code Source} object.
+     * @throws IOException
+     */
+    Source newSource(String fileName) throws IOException;
+
+    /**
      * Initialize a segment. This is needed in case it is possible that the code generator does not
      * write anything into the segment. In that case the segment may not even be opened and in that
      * case the segment is not touched and the old, presumably garbage may be there. For exmaple
