@@ -14,9 +14,9 @@ import java.util.Set;
 
 public class FileCollector {
 
-    private final Map<Source.Set, String[]> directories;
-    final public Set<Source> newSources = new HashSet<>();
-    final public Set<Source> sources = new HashSet<>();
+    public final Map<Source.Set, String[]> directories;
+    public final Set<Source> newSources = new HashSet<>();
+    public final Set<Source> sources = new HashSet<>();
 
     public FileCollector(Map<Source.Set, String[]> directories) {
         this.directories = directories;
@@ -28,19 +28,17 @@ public class FileCollector {
     public void collect() {
         for (var dirAlternatives : directories.values()) {
             var processed = false;
-            for (String dirAlternative : dirAlternatives) {
-                var directory = dirAlternative;
-                if (!directory.endsWith("/") && !directory.endsWith("\\")) {
-                    directory = directory + "/";
-                }
-                var dir = normalize(directory);
+            for (final var directory : dirAlternatives) {
+                var dir = normalized(directory);
                 try {
-                    Files.find(Paths.get(directory), Integer.MAX_VALUE,
-                            (filePath, fileAttr) -> fileAttr.isRegularFile()
+                    Files.find(Paths.get(dir), Integer.MAX_VALUE,
+                        (filePath, fileAttr) -> fileAttr.isRegularFile()
                     ).forEach(path -> sources.add(
-                            new Source(this, calculateClassName(dir, path), calculateRelativeName(dir, path), toAbsolute(path)))
-                    );
+                        new Source(this,
+                            dir,
+                            path)));
                     processed = true;
+                    dirAlternatives[0] = dir;
                 } catch (IOException ignore) {
                 }
             }
@@ -55,14 +53,27 @@ public class FileCollector {
     }
 
     /**
-     * Normalize a directory name. Convert all \ separator to / and remove all '/./' path parts.
+     * Normalize a file name. Convert all \ separator to / and remove all '/./' path parts.
      *
+     * @param s the not yet normalized file name
+     * @return the file directory name
+     */
+    public static String normalize(String s) {
+        return s.replace("\\", "/")
+            .replace("/./", "/");
+    }
+
+    /**
+     * Normalize a directory name. The same as normalizing a file, but also adding a trailing / if that is missing.
      * @param s the not yet normalized directory name
      * @return the normalized directory name
      */
-    private String normalize(String s) {
-        return s.replace("\\", "/")
-                .replace("/./", "/");
+    private static String normalized(String s) {
+        s = normalize(s);
+        if (!s.endsWith("/")) {
+            s += "/";
+        }
+        return s;
     }
 
     /**
@@ -72,10 +83,10 @@ public class FileCollector {
      * @param path      points to the source file
      * @return the name of the class calculated from the file name
      */
-    private String calculateClassName(String directory, Path path) {
+    public static String calculateClassName(String directory, Path path) {
         return calculateRelativeName(directory, path)
-                .replaceAll("/", ".")
-                .replaceAll("\\.java$", "");
+            .replaceAll("/", ".")
+            .replaceAll("\\.java$", "");
     }
 
     /**
@@ -85,9 +96,9 @@ public class FileCollector {
      * @param path      the path in the source set
      * @return the relative file name
      */
-    private String calculateRelativeName(String directory, Path path) {
+    public static String calculateRelativeName(String directory, Path path) {
         return normalize(path.toString())
-                .substring(directory.length());
+            .substring(directory.length());
     }
 
     /**
@@ -97,7 +108,9 @@ public class FileCollector {
      * @param path
      * @return the absolute path as a string
      */
-    private String toAbsolute(Path path) {
+    public static String toAbsolute(Path path) {
         return normalize(path.toAbsolutePath().toString());
     }
+
+
 }

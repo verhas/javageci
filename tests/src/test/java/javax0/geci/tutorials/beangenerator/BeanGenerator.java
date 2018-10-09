@@ -19,9 +19,10 @@ public class BeanGenerator implements Generator {
                 var newFile = Paths.get(source.getAbsoluteFile())
                         .getFileName().toString().replaceAll(".xml$", ".java");
                 var target = source.newSource(set("java"), newFile);
-                try (var segment = source.open("HelloWorldTest")) {
-                    segment.write_r("private static String greeting(){");
-                    segment.write("return \"greetings\";");
+
+                try (var segment = target.open()) {
+                    segment.write("package javax0.geci.tutorials.beangenerator;");
+                    segment.write_r("public class SampleBean {");
                     segment.write_r("}");
                 }
             }

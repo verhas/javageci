@@ -7,6 +7,7 @@ import javax0.geci.util.FileCollector;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,21 +19,26 @@ public class Source implements javax0.geci.api.Source {
     private static final Pattern startPattern = Pattern.compile("^(\\s*)//\\s*<\\s*editor-fold\\s+(.*)>\\s*$");
     private static final Pattern endPattern = Pattern.compile("^\\s*//\\s*<\\s*/\\s*editor-fold\\s*>\\s*$");
     private static final Pattern attributePattern = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*\"(.*?)\"");
+    private static final String NOT_COMPILED_YET = null;
     final List<String> lines = new ArrayList<>();
+    private final String dir;
     private final String className;
     private final String relativeFile;
     private final String absoluteFile;
     private final Map<String, Segment> segments = new HashMap<>();
-    private Segment globalSegment = null;
     private final List<String> originals = new ArrayList<>();
-    boolean inMemory = false;
     private final FileCollector collector;
+    boolean inMemory = false;
+    private Path path;
+    private Segment globalSegment = null;
 
-    public Source(FileCollector collector, String className, String relativeFile, String absoluteFile) {
+    public Source(FileCollector collector, String dir, Path path) {
         this.collector = collector;
-        this.className = className;
-        this.relativeFile = relativeFile;
-        this.absoluteFile = absoluteFile;
+        this.dir = dir;
+        this.path = path;
+        this.className = FileCollector.calculateClassName(dir, path);
+        this.relativeFile = FileCollector.calculateRelativeName(dir, path);
+        this.absoluteFile = FileCollector.toAbsolute(path);
     }
 
     @Override
@@ -49,10 +55,11 @@ public class Source implements javax0.geci.api.Source {
     }
 
     public Source newSource(Source.Set sourceSet, String fileName) {
-        return null;
+        var directory = collector.directories.get(sourceSet)[0];
+        var source = new Source(collector, directory, inDir(directory, fileName));
+        collector.addNewSource(source);
+        return source;
     }
-
-    private static final String NOT_COMPILED_YET = null;
 
     public Source newSource(String fileName) {
         for (final var source : collector.newSources) {
@@ -60,11 +67,19 @@ public class Source implements javax0.geci.api.Source {
                 return source;
             }
         }
-        var source = new Source(collector, NOT_COMPILED_YET,
-                Paths.get(relativeFile).getParent().resolve(fileName).toString(),
-                Paths.get(relativeFile).getParent().resolve(fileName).toAbsolutePath().toString());
+        var source = new Source(collector, dir, inDir(dir, fileName));
         collector.addNewSource(source);
         return source;
+    }
+
+    private Path inDir(String dir, String fileName) {
+        return Paths.get(FileCollector.normalize(
+            dir +
+                Paths
+                    .get(relativeFile)
+                    .getParent()
+                    .resolve(fileName)
+                    .toString()));
     }
 
     @Override
@@ -73,8 +88,16 @@ public class Source implements javax0.geci.api.Source {
             throw new GeciException("Global segment was opened when the there were already opened segments");
         }
         if (globalSegment == null) {
-            inMemory = true;
             globalSegment = new Segment(0);
+        }
+        if (!inMemory) {
+            try {
+                readToMemory();
+            } catch (IOException e) {
+                inMemory = true;
+                originals.clear();
+                lines.clear();
+            }
         }
         return globalSegment;
     }
@@ -119,7 +142,7 @@ public class Source implements javax0.geci.api.Source {
     void consolidate() {
         if (!inMemory && !segments.isEmpty()) {
             throw new GeciException(
-                    "This is an internal error: source was not read into memory but segments were generated");
+                "This is an internal error: source was not read into memory but segments were generated");
         }
         if (globalSegment == null) {
             for (var entry : segments.entrySet()) {
@@ -268,5 +291,4 @@ public class Source implements javax0.geci.api.Source {
         Map<String, String> attr;
         int tab;
     }
-
 }

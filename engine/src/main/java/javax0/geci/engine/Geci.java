@@ -22,7 +22,8 @@ public class Geci implements javax0.geci.api.Geci {
 
     @Override
     public javax0.geci.api.Geci source(Source.Set set, String... directory) {
-        return null;
+        directories.put(set, directory);
+        return this;
     }
 
     @Override
@@ -54,7 +55,10 @@ public class Geci implements javax0.geci.api.Geci {
             }
         }
         for (var source : collector.newSources) {
-            source.save();
+            if (source.isModified()) {
+                source.save();
+                generated = true;
+            }
         }
         return generated;
     }
