@@ -48,7 +48,7 @@ public class Source implements javax0.geci.api.Source {
     }
 
     @Override
-    public Segment open() throws IOException {
+    public Segment open() {
         if (!segments.isEmpty()) {
             throw new RuntimeException("Global segment was opened when the there were already opened segments");
         }
@@ -96,7 +96,7 @@ public class Source implements javax0.geci.api.Source {
     /**
      * Replace the original content of the segments with the generated lines.
      */
-    void consolidate() throws IOException {
+    void consolidate() {
         if (!inMemory && !segments.isEmpty()) {
             throw new RuntimeException(
                     "This is an internal error: source was not read into memory but segments were generated");
@@ -106,33 +106,21 @@ public class Source implements javax0.geci.api.Source {
                 var id = entry.getKey();
                 var segment = entry.getValue();
                 var segDesc = findSegment(id);
-                removeLines(segDesc.startLine+1,segDesc.endLine-1);
-                insertLines(segDesc.startLine+1,segment);
+                if (segDesc == null) {
+                    throw new RuntimeException("Segment " + id + " disappeared from source" + absoluteFile);
+                }
+                lines.subList(segDesc.startLine + 1, segDesc.endLine).clear();
+                lines.addAll(segDesc.startLine + 1, segment.lines);
             }
-        }else{
-            removeLines();
-            insertLines(0,globalSegment);
+        } else {
+            lines.clear();
+            lines.addAll(globalSegment.lines);
         }
     }
 
-    private void insertLines(int start, Segment segment){
-        var i = 0;
-        for (var line : segment.lines) {
-            lines.add(start + i, line);
-            i++;
-        }
-    }
-    private void removeLines(int start, int end){
-        for (int i = end ; i >= start; i--) {
-            lines.remove(i);
-        }
-    }
-    private void removeLines(){
-        while (lines.size() > 0) {
-            lines.remove(0);
-        }
-    }
-
+    /**
+     * @return {@code true} if the file was modified
+     */
     boolean isModified() {
         if (originals.size() == lines.size()) {
             for (int i = 0; i < lines.size(); i++) {
@@ -149,8 +137,6 @@ public class Source implements javax0.geci.api.Source {
     /**
      * Saves the modified lines to the file and return {@code true}. If the lines were not modified then
      * do not touch the file and return {@code false}
-     *
-     * @return {@code true} if the file was modified and successfully saved
      */
     void save() throws IOException {
         Files.write(Paths.get(absoluteFile), lines, Charset.forName("utf-8"));
@@ -226,10 +212,10 @@ public class Source implements javax0.geci.api.Source {
     }
 
     /**
-     * Find the end of the segment that starts at line
+     * Find the end of the segment that starts at line {@code start}.
      *
-     * @param start
-     * @return
+     * @param start the start of the segment of which we seek the end
+     * @return the index of the line that contains the segment ending
      */
     private int findSegmentEnd(int start) {
         for (int i = start + 1; i < lines.size(); i++) {

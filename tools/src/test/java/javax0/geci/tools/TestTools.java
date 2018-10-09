@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TestTools {
     @Geci("aaa a='b' b='c' c='d' a$='dollared' b3='bthree' _='-'")
@@ -29,6 +30,7 @@ public class TestTools {
     public void testParameterFetcher() throws NoSuchFieldException {
         Field f = this.getClass().getDeclaredField("something");
         var map = Tools.getParameters(f, "aaa");
+        assertNotNull(map);
         assertEquals(map.get("a"), "b");
         assertEquals(map.get("b"), "c");
         assertEquals(map.get("c"), "d");
@@ -42,7 +44,7 @@ public class TestTools {
     public void testTypeGetting() throws NoSuchMethodException, NoSuchFieldException {
         Assertions.assertEquals(
             "void",
-            Tools.typeAsString(this.getClass().getDeclaredMethod("testTypeGetting", new Class[0])));
+            Tools.typeAsString(this.getClass().getDeclaredMethod("testTypeGetting")));
         Assertions.assertEquals(
             "java.util.HashMap<java.util.Map<java.lang.String, java.lang.Integer>, java.lang.Object>",
             Tools.typeAsString(this.getClass().getDeclaredField("b")));

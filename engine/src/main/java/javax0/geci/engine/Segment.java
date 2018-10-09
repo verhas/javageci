@@ -6,7 +6,7 @@ import java.util.List;
 public class Segment implements javax0.geci.api.Segment {
     private static final int TAB = 4;
     final List<String> lines = new LinkedList<>();
-    private int tabStop = 0;
+    private int tabStop;
     final private int openingTabStop;
 
     public Segment(int tabStop) {

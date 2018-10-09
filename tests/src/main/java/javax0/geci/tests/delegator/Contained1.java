@@ -9,6 +9,7 @@ public class Contained1 {
 
     }
 
+    @SuppressWarnings("FieldCanBeLocal")
     private final String apple = "";
     @Geci("accessors only='setter'")
     private int birnen;

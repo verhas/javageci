@@ -28,8 +28,8 @@ public class FileCollector {
         var sources = new HashSet<Source>();
         for (var dirAlternatives : directories) {
             var processed = false;
-            for (int i = 0; i < dirAlternatives.length; i++) {
-                var directory = dirAlternatives[i];
+            for (String dirAlternative : dirAlternatives) {
+                var directory = dirAlternative;
                 if (!directory.endsWith("/") && !directory.endsWith("\\")) {
                     directory = directory + "/";
                 }
@@ -38,7 +38,7 @@ public class FileCollector {
                     Files.find(Paths.get(directory), Integer.MAX_VALUE,
                             (filePath, fileAttr) -> fileAttr.isRegularFile()
                     ).forEach(path -> sources.add(
-                            new javax0.geci.engine.Source(newSources, calculateClassName(dir, path), toAbsolute(path)))
+                            new Source(newSources, calculateClassName(dir, path), toAbsolute(path)))
                     );
                     processed = true;
                 } catch (IOException ignore) {
@@ -63,10 +63,10 @@ public class FileCollector {
     }
 
     /**
-     * Calulate the class name.
+     * Calculate the class name.
      *
      * @param directory as a reference
-     * @param path
+     * @param path points to the source file
      * @return
      */
     private String calculateClassName(String directory, Path path) {

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 public class TestDelegator {
 
     @Test
-    public void testDelegator() throws Exception {
+    public void testDelegator() {
         /*
         if (new Geci().source("./src/main/java").register(new Delegator()).generate()){
             Assertions.fail("Delegator modified source code. Please compile again.");

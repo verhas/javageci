@@ -4,10 +4,7 @@ import javax0.geci.api.Generator;
 import javax0.geci.util.FileCollector;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Geci implements javax0.geci.api.Geci {
 
@@ -22,9 +19,7 @@ public class Geci implements javax0.geci.api.Geci {
 
     @Override
     public javax0.geci.api.Geci register(Generator... generatorArr) {
-        for (var generator : generatorArr) {
-            generators.add(generator);
-        }
+        Collections.addAll(generators, generatorArr);
         return this;
     }
 

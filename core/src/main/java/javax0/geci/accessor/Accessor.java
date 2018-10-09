@@ -12,10 +12,12 @@ import java.lang.reflect.Modifier;
 public class Accessor extends AbstractGenerator {
     private static final int PACKAGE = Modifier.PROTECTED | Modifier.PRIVATE | Modifier.PUBLIC;
 
+    @Override
     public String mnemonic() {
         return "accessor";
     }
 
+    @Override
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
         var accessMask = mask(global.get("include"));
         var gid = global.get("id");
@@ -47,14 +49,14 @@ public class Accessor extends AbstractGenerator {
         }
     }
 
-    private void writeGetter(String name, String ucName, String type, String access, Segment segment) {
+    private static void writeGetter(String name, String ucName, String type, String access, Segment segment) {
         segment.write_r(access + " " + type + " get" + ucName + "(){");
         segment.write("return " + name + ";");
         segment.write_l("}");
         segment.newline();
     }
 
-    private void writeSetter(String name, String ucName, String type, String access, Segment segment) {
+    private static void writeSetter(String name, String ucName, String type, String access, Segment segment) {
         segment.write_r(access + " void set" + ucName + "(" +
                 type + " " + name + "){");
         segment.write("this." + name + " = " + name + ";");
@@ -62,7 +64,7 @@ public class Accessor extends AbstractGenerator {
         segment.newline();
     }
 
-    private boolean matchMask(Field field, int mask) {
+    private static boolean matchMask(Field field, int mask) {
         int modifiers = field.getModifiers();
         if ((mask & Modifier.STRICT) != 0 && (modifiers & PACKAGE) == 0) {
             return true;
@@ -70,7 +72,7 @@ public class Accessor extends AbstractGenerator {
         return (modifiers & mask) != 0;
     }
 
-    private int mask(String includes) {
+    private static int mask(String includes) {
         int modMask = 0;
         if (includes == null) {
             modMask = Modifier.PRIVATE;
@@ -96,15 +98,15 @@ public class Accessor extends AbstractGenerator {
         return modMask;
     }
 
-    private String cap(String s) {
+    private static String cap(String s) {
         return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
 
-    private String nameAsString(Field field) {
+    private static String nameAsString(Field field) {
         return field.getName();
     }
 
-    private String getId(Field field, CompoundParams fieldParams) {
+    private static String getId(Field field, CompoundParams fieldParams) {
         var id = fieldParams.get("id");
         if (id == null) {
             throw new RuntimeException("accessor field " + field + " has no segment id");

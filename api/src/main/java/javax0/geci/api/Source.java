@@ -9,7 +9,7 @@ public interface Source {
      *
      * @param id the name of the segment as defined in the {@code id="..."} xml tag of the {@code <editor-fold ...>}
      * @return the segment or {@code null}.
-     * @throws IOException
+     * @throws IOException in case there is no file or file is not readable
      */
     Segment open(String id) throws IOException;
 
@@ -18,7 +18,7 @@ public interface Source {
      * {@link #newSource(String)}
      *
      * @return the new segment object.
-     * @throws IOException
+     * @throws IOException in case there is no file or file is not readable
      */
     Segment open() throws IOException;
 
@@ -28,7 +28,7 @@ public interface Source {
      * @param fileName relative file name to the current source.
      *
      * @return the new {@code Source} object.
-     * @throws IOException
+     * @throws IOException in case there is no file or file is not readable
      */
     Source newSource(String fileName) throws IOException;
 
@@ -47,6 +47,7 @@ public interface Source {
      *
      *
      * @param id the identifier of the segment
+     * @throws IOException in case there is no file or file is not readable
      */
     void init(String id) throws IOException;
 

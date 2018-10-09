@@ -1,6 +1,10 @@
 package javax0.geci.tools;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A parameter set that is composed from two or more parameter maps. The parameter maps are passed to the constructor
@@ -35,6 +39,7 @@ public class CompoundParams {
      * @param id     the identifier of the parameter set
      * @param params the array of parameter maps
      */
+    @SafeVarargs
     public CompoundParams(String id, Map<String, String>... params) {
         this.params = params;
         this.cparams = null;
@@ -90,15 +95,10 @@ public class CompoundParams {
      * not defined in the underlying array then the parameter set identifier is returned.
      */
     public String get(String key) {
-        var s = get0(key);
-        if (s == null) {
-            return "";
-        } else {
-            return s;
-        }
+        return Objects.requireNonNullElse(get0(key), "");
     }
 
-    private String get0(String key){
+    private String get0(String key) {
         if (params != null) {
             for (var param : params) {
                 if (param != null && param.containsKey(key)) {
@@ -129,10 +129,10 @@ public class CompoundParams {
     public boolean is(String key) {
         var s = get(key);
         return s != null && (
-            s.equalsIgnoreCase("yes") ||
-                s.equalsIgnoreCase("ok") ||
-                s.equalsIgnoreCase("1") ||
-                s.equalsIgnoreCase("true")
+                s.equalsIgnoreCase("yes") ||
+                        s.equalsIgnoreCase("ok") ||
+                        s.equalsIgnoreCase("1") ||
+                        s.equalsIgnoreCase("true")
         );
     }
 
@@ -140,4 +140,32 @@ public class CompoundParams {
         return !is(key);
     }
 
+
+    public Set<String> keySet() {
+        Set<String> keys = new HashSet<>();
+        if (params != null) {
+            for (var param : params) {
+                if (param != null) {
+                    keys.addAll(param.keySet());
+                }
+            }
+        } else {
+            for (var cparam : cparams) {
+                if (cparam != null) {
+                    keys.addAll(cparam.keySet());
+                }
+            }
+        }
+        return keys;
+    }
+
+    private static final String Q = "\"";
+
+    @Override
+    public String toString() {
+        return "{ " +
+                keySet().stream().map(k -> Q + k + Q + ":" + Q + get(k) + Q)
+                        .collect(Collectors.joining(","))
+                + " }";
+    }
 }

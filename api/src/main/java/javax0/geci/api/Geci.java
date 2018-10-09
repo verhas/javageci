@@ -5,7 +5,8 @@ public interface Geci {
     /**
      * Add a new directory to the list of source directories that Geci should process.
      *
-     * @param directory
+     * @param directory list of directories that can be used as alternatives. When looking for files the first is used
+     *                  at start, if that fails then the second and so on.
      * @return {@code this}
      */
     Geci source(String ...directory);
