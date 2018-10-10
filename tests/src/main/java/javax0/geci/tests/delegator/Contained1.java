@@ -2,6 +2,9 @@ package javax0.geci.tests.delegator;
 
 import javax0.geci.annotations.Geci;
 
+import java.util.Map;
+import java.util.Set;
+
 @Geci("accessor include='private,protected'")
 public class Contained1 {
 
@@ -21,6 +24,10 @@ public class Contained1 {
     protected boolean truth;
     @Geci("accessor exclude='yes'")
     protected int not_this;
+
+    public Map<String,Set<Map<Integer,Boolean>>> doNothingReally(int a, Map b, Set<Set> set){
+        return null;
+    }
 
 
     //<editor-fold id="accessor" desc="setters">

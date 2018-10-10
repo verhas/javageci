@@ -9,7 +9,7 @@ public class TestDelegator {
 
     @Test
     public void testDelegator() throws Exception {
-        if (new Geci().source("./src/main/java").register(new Delegator()).generate()) {
+        if (new Geci().source("./src/main/java", "./tests/src/main/java").register(new Delegator()).generate()) {
             Assertions.fail("Delegator modified source code. Please compile again.");
         }
     }

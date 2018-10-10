@@ -7,9 +7,14 @@ import javax0.geci.tools.reflection.ModifiersBuilder;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Tools {
 
@@ -68,7 +73,7 @@ public class Tools {
     }
 
     public static String typeAsString(Method method) {
-        var s = method.getReturnType().getTypeName();
+        var s = method.getGenericReturnType().getTypeName();
         s = normalizeTypeName(s);
         return s;
     }
@@ -79,5 +84,43 @@ public class Tools {
         }
         return s;
     }
+
+    public static Field[] getDeclaredFieldsSorted(Class<?> klass) {
+        final var fields = klass.getDeclaredFields();
+        Arrays.sort(fields, Comparator.comparing(Field::getName));
+        return fields;
+    }
+
+    public static Method[] getDeclaredMethodsSorted(Class<?> klass) {
+        final var methods = klass.getDeclaredMethods();
+        Arrays.sort(methods, Comparator.comparing(method -> methodSignature(method)));
+        return methods;
+    }
+
+    public static String methodSignature(Method method) {
+        var argCounter = new AtomicInteger(0);
+        var arglist = Arrays.stream(method.getGenericParameterTypes())
+            .map(t -> t.getTypeName() + " arg" + argCounter.addAndGet(1))
+            .collect(Collectors.joining(","));
+        var exceptionlist = Arrays.stream(method.getGenericExceptionTypes())
+            .map(t -> t.getTypeName())
+            .collect(Collectors.joining(","));
+        return new StringBuilder()
+            .append(modifiersString(method))
+            .append(typeAsString(method))
+            .append(" ")
+            .append(method.getName())
+            .append("(").append(arglist).append(") ")
+            .append(exceptionlist)
+            .toString();
+    }
+
+    public static String methodCall(Method method) {
+        var arglist = IntStream.range(1, method.getGenericParameterTypes().length + 1)
+            .mapToObj(index -> " arg" + index)
+            .collect(Collectors.joining(","));
+        return new StringBuilder().append(method.getName()).append("(").append(arglist).append(")").toString();
+    }
+
 
 }

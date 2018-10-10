@@ -7,9 +7,6 @@ import javax0.geci.tools.Tools;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class Delegator extends AbstractDeclaredFieldsGenerator {
     @Override
@@ -17,30 +14,23 @@ public class Delegator extends AbstractDeclaredFieldsGenerator {
         return "delegator";
     }
 
-
     public void processField(Source source, Class<?> klass, CompoundParams params, Field field) throws Exception {
         var id = params.get("id");
         var delClass = field.getType();
-        var methods = delClass.getDeclaredMethods();
+        var methods = Tools.getDeclaredMethodsSorted(delClass);
         var name = field.getName();
         try (var segment = source.open(id)) {
             for (var method : methods) {
                 var modifiers = method.getModifiers();
                 if (Modifier.isPublic(modifiers)) {
-                    var counter = new AtomicInteger(0);
-                    var arglist = Arrays.stream(method.getGenericParameterTypes()).map(t -> t.toString() + " i" + counter.addAndGet(1)).collect(Collectors.joining(","));
-                    var callCounter = new AtomicInteger(0);
-                    var callArglist = Arrays.stream(method.getGenericParameterTypes()).map(t -> " i" + callCounter.addAndGet(1)).collect(Collectors.joining(","));
-                    segment.write_r("" + Tools.modifiersString(method) +
-                            Tools.typeAsString(method) +
-                            " " + method.getName() + "(" +
-                            arglist + "){");
+                    segment.write_r(Tools.methodSignature(method) + "{");
                     if (!"void".equals(method.getReturnType().getName())) {
-                        segment.write("return " + name + "." + method.getName() + "(" + callArglist + ");");
+                        segment.write("return " + name + "." + Tools.methodCall(method) + ";");
                     } else {
-                        segment.write(name + "." + method.getName() + "(" + callArglist + ");");
+                        segment.write(name + "." + Tools.methodCall(method) + ";");
                     }
                     segment.write_l("}");
+                    segment.newline();
                 }
             }
         }

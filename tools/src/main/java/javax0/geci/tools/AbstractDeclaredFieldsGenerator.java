@@ -3,13 +3,15 @@ package javax0.geci.tools;
 import javax0.geci.api.Source;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public abstract class AbstractDeclaredFieldsGenerator extends AbstractGenerator {
 
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
         preprocess(source, klass, global);
-        final var fields = klass.getDeclaredFields();
+        final var fields = Tools.getDeclaredFieldsSorted(klass);
         for (final var field : fields) {
             var params = Tools.getParameters(field, mnemonic());
             if (params != null) {

@@ -8,18 +8,26 @@ public class SampleComposite {
     Contained1 contained1;
 
     // <editor-fold id="contained1" desc="delegated methods to contained1">
-    public String getApple(){
+    public String getApple() {
         return contained1.getApple();
     }
-    public void setBirnen(int i1){
-        contained1.setBirnen( i1);
-    }
-    public int getBirnen(){
+
+    public int getBirnen() {
         return contained1.getBirnen();
     }
-    public void callMe(){
+
+    public java.util.Map<java.lang.String, java.util.Set<java.util.Map<java.lang.Integer, java.lang.Boolean>>> doNothingReally(int arg1,java.util.Map arg2,java.util.Set<java.util.Set> arg3) {
+        return contained1.doNothingReally( arg1, arg2, arg3);
+    }
+
+    public void callMe() {
         contained1.callMe();
     }
+
+    public void setBirnen(int arg1) {
+        contained1.setBirnen( arg1);
+    }
+
     // </editor-fold>
 
 }
