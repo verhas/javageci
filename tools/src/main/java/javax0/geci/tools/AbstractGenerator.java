@@ -4,17 +4,9 @@ import javax0.geci.api.GeciException;
 import javax0.geci.api.Generator;
 import javax0.geci.api.Source;
 
-public abstract class AbstractGenerator implements Generator {
-    @Override
-    public void process(Source source) {
-        try {
-            process0(source);
-        } catch (Exception e) {
-            throw new GeciException(e);
-        }
-    }
+public abstract class AbstractGenerator extends AbstractGeneratorEx {
 
-    private void process0(Source source) throws Exception {
+    public void processEx(Source source) throws Exception {
         final var klass = source.getKlass();
         if (klass != null) {
             var global = Tools.getParameters(klass, mnemonic());

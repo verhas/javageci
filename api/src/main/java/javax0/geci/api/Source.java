@@ -72,10 +72,29 @@ public interface Source {
 
     /**
      * Get the name of the class that corresponds to this source. The class may not exist though.
+     * <p>
+     * When calculating the class name the directory structure is used and the name of the source file
+     * chopping off the {@code .java} or other extension. This results a class name that either
+     * <ul>
+     * <li></li>
+     * </ul>
      *
      * @return the class name that was calculated from the file name
      */
     String getKlassName();
+
+    /**
+     * Get the calculated class simple name. That is the name of the class without the package name in front of it.
+     * @return
+     */
+    String getKlassSimpleName();
+
+    /**
+     * Get the name of the class where the class corresponding to the source is or should be.
+     *
+     * @return the name of the package
+     */
+    String getPackageName();
 
     /**
      * Get the class that corresponds to this source. If the class does not exists, either because the
@@ -111,6 +130,11 @@ public interface Source {
          */
         public static Set set(String name) {
             return new Set(name);
+        }
+
+        @Override
+        public String toString() {
+            return name;
         }
 
         @Override

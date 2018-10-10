@@ -23,12 +23,14 @@ public class FileCollector {
     }
 
     /**
-     * Collect the names of the files that are in the directories given  in the sources.
+     * Collect the names of the files that are in the directories given  in the sources. Also modify the
+     * global {@code directories} map so that for each {@link Source.Set} key in the map there will be only
+     * a one element array containing the name of the directory that was used to collect the files.
      */
     public void collect() {
-        for (var dirAlternatives : directories.values()) {
+        for (var entry : directories.entrySet()) {
             var processed = false;
-            for (final var directory : dirAlternatives) {
+            for (final var directory : entry.getValue()) {
                 var dir = normalized(directory);
                 try {
                     Files.find(Paths.get(dir), Integer.MAX_VALUE,
@@ -38,12 +40,12 @@ public class FileCollector {
                             dir,
                             path)));
                     processed = true;
-                    dirAlternatives[0] = dir;
+                    entry.setValue( new String[]{ dir });
                 } catch (IOException ignore) {
                 }
             }
             if (!processed) {
-                throw new GeciException("Source directory [" + String.join(",", dirAlternatives) + "] is not found");
+                throw new GeciException("Source directory [" + String.join(",", entry.getValue()) + "] is not found");
             }
         }
     }
@@ -86,7 +88,7 @@ public class FileCollector {
     public static String calculateClassName(String directory, Path path) {
         return calculateRelativeName(directory, path)
             .replaceAll("/", ".")
-            .replaceAll("\\.java$", "");
+            .replaceAll("\\.\\w+$", "");
     }
 
     /**

@@ -55,6 +55,9 @@ public class Source implements javax0.geci.api.Source {
     }
 
     public Source newSource(Source.Set sourceSet, String fileName) {
+        if (!collector.directories.containsKey(sourceSet)) {
+            throw new GeciException("SourceSet '" + sourceSet + "' does not exist");
+        }
         var directory = collector.directories.get(sourceSet)[0];
         var source = new Source(collector, directory, inDir(directory, fileName));
         collector.addNewSource(source);
@@ -74,12 +77,24 @@ public class Source implements javax0.geci.api.Source {
 
     private Path inDir(String dir, String fileName) {
         return Paths.get(FileCollector.normalize(
-            dir +
-                Paths
-                    .get(relativeFile)
-                    .getParent()
-                    .resolve(fileName)
-                    .toString()));
+                dir +
+                        Paths
+                                .get(relativeFile)
+                                .getParent()
+                                .resolve(fileName)
+                                .toString()));
+    }
+
+    @Override
+    public String toString() {
+        if (!inMemory) {
+            try {
+                readToMemory();
+            } catch (IOException e) {
+                throw new GeciException(e);
+            }
+        }
+        return String.join("\n", lines);
     }
 
     @Override
@@ -128,6 +143,11 @@ public class Source implements javax0.geci.api.Source {
     }
 
     @Override
+    public String getKlassSimpleName() {
+        return className.replaceAll("^.*\\.", "");
+    }
+
+    @Override
     public Class<?> getKlass() {
         try {
             return Class.forName(className);
@@ -136,13 +156,18 @@ public class Source implements javax0.geci.api.Source {
         }
     }
 
+    @Override
+    public String getPackageName() {
+        return getKlassName().replaceAll("\\.\\w+$", "");
+    }
+
     /**
      * Replace the original content of the segments with the generated lines.
      */
     void consolidate() {
         if (!inMemory && !segments.isEmpty()) {
             throw new GeciException(
-                "This is an internal error: source was not read into memory but segments were generated");
+                    "This is an internal error: source was not read into memory but segments were generated");
         }
         if (globalSegment == null) {
             for (var entry : segments.entrySet()) {
@@ -182,6 +207,14 @@ public class Source implements javax0.geci.api.Source {
      * do not touch the file and return {@code false}
      */
     void save() throws IOException {
+        Path path = Paths.get(absoluteFile);
+        Path parent = path.getParent();
+        if (!Files.exists(parent)) {
+            try {
+                Files.createDirectories(parent);
+            } catch (Exception ignored) {
+            }
+        }
         Files.write(Paths.get(absoluteFile), lines, Charset.forName("utf-8"));
     }
 
@@ -269,11 +302,6 @@ public class Source implements javax0.geci.api.Source {
             }
         }
         return lines.size();
-    }
-
-    @Override
-    public String toString() {
-        return className;
     }
 
     /**
