@@ -31,6 +31,15 @@ public class Source implements javax0.geci.api.Source {
     boolean inMemory = false;
     private Segment globalSegment = null;
 
+    /**
+     * The constructor is not supposed to be used from outside, only through the {@link FileCollector} which indeed
+     * is invoked only from {@link Geci#generate()}.
+     *
+     * @param collector the file collector that this source belongs to. Note that the type {@link FileCollector}
+     *                  is not expoted by the module and this prevents the usres of the module to use this constructor.
+     * @param dir       the directory of the source
+     * @param path      the path of the source
+     */
     public Source(FileCollector collector, String dir, Path path) {
         this.collector = collector;
         this.dir = dir;
