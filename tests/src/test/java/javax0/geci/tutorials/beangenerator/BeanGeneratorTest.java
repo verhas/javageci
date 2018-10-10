@@ -1,6 +1,5 @@
 package javax0.geci.tutorials.beangenerator;
 
-import javax0.geci.api.Source;
 import javax0.geci.engine.Geci;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

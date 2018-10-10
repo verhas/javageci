@@ -5,6 +5,7 @@ import javax0.geci.engine.Geci;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings({"SameReturnValue", "EmptyMethod"})
 @javax0.geci.annotations.Geci("HelloWorldTest")
 public class HelloWorldTest2 {
 

@@ -107,7 +107,7 @@ public class FileCollector {
      * Convert the path to absolute path and also normalize off some weird stuff that may remain after
      * applying the JDK methods (e.g.: {@code /./} inside the path)
      *
-     * @param path
+     * @param path to convert to absolute path string
      * @return the absolute path as a string
      */
     public static String toAbsolute(Path path) {

@@ -1,7 +1,5 @@
 package javax0.geci.tools;
 
-import javax0.geci.api.GeciException;
-import javax0.geci.api.Generator;
 import javax0.geci.api.Source;
 
 public abstract class AbstractGenerator extends AbstractGeneratorEx {

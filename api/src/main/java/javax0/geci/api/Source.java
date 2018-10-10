@@ -20,9 +20,8 @@ public interface Source {
      * {@link #newSource(String)}
      *
      * @return the new segment object.
-     * @throws IOException in case there is no file or file is not readable
      */
-    Segment open() throws IOException;
+    Segment open();
 
     /**
      * Get the absolute file name of this source.
@@ -37,9 +36,8 @@ public interface Source {
      *
      * @param fileName relative file name to the current source.
      * @return the new {@code Source} object.
-     * @throws IOException in case there is no file or file is not readable
      */
-    Source newSource(String fileName) throws IOException;
+    Source newSource(String fileName);
 
     /**
      * Create a new source that may or may not exist. This source is going to be generated and if it already existed
@@ -48,9 +46,8 @@ public interface Source {
      *
      * @param fileName relative file name to the current source.
      * @return the new {@code Source} object.
-     * @throws IOException in case there is no file or file is not readable
      */
-    Source newSource(Source.Set set, String fileName) throws IOException;
+    Source newSource(Source.Set set, String fileName);
 
     /**
      * Initialize a segment. This is needed in case it is possible that the code generator does not
@@ -85,7 +82,8 @@ public interface Source {
 
     /**
      * Get the calculated class simple name. That is the name of the class without the package name in front of it.
-     * @return
+     *
+     * @return the simple name of the class
      */
     String getKlassSimpleName();
 
@@ -140,7 +138,7 @@ public interface Source {
         @Override
         public boolean equals(Object that) {
             if (this == that) return true;
-            if (that == null || !(that instanceof Set)) {
+            if (!(that instanceof Set)) {
                 return false;
             }
             Set set = (Set) that;

@@ -112,7 +112,7 @@ capitalizes the first character of a string:
 
 When we have the `target` source we need access the global segment of the source. A `Source` object cannot be written
 directly, but a source can have several segments that can be written. We have seen example in the
-[The simplest Code Generator...](TUTORAL_SIMPLE.md) where we inserted code into `editor-fold` segments. This case
+[The simplest Code Generator...](TUTORIAL_SIMPLE.md) where we inserted code into `editor-fold` segments. This case
 we want to write the whole source and thus we need a segment that starts from the very start of the file to the very end
 and writing into it will overwrite the whole file. This is the global segment of the source and can be accessed calling
 the `open()` method without argument. This is what we do in the `try-with-resources` command. After this we simply

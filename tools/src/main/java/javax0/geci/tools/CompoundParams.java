@@ -150,9 +150,11 @@ public class CompoundParams {
                 }
             }
         } else {
-            for (var cparam : cparams) {
-                if (cparam != null) {
-                    keys.addAll(cparam.keySet());
+            if (cparams != null) {
+                for (var cparam : cparams) {
+                    if (cparam != null) {
+                        keys.addAll(cparam.keySet());
+                    }
                 }
             }
         }

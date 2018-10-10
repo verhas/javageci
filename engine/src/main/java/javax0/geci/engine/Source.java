@@ -29,13 +29,11 @@ public class Source implements javax0.geci.api.Source {
     private final List<String> originals = new ArrayList<>();
     private final FileCollector collector;
     boolean inMemory = false;
-    private Path path;
     private Segment globalSegment = null;
 
     public Source(FileCollector collector, String dir, Path path) {
         this.collector = collector;
         this.dir = dir;
-        this.path = path;
         this.className = FileCollector.calculateClassName(dir, path);
         this.relativeFile = FileCollector.calculateRelativeName(dir, path);
         this.absoluteFile = FileCollector.toAbsolute(path);
@@ -224,7 +222,7 @@ public class Source implements javax0.geci.api.Source {
      * is updated by code generation, while {@code originals} is kept as a reference to decide
      * during the save process if the lines have to be written back to the file or not.
      *
-     * @throws IOException
+     * @throws IOException if the file cannot be read
      */
     private void readToMemory() throws IOException {
         Files.lines(Paths.get(absoluteFile)).forEach(line -> {

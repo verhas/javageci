@@ -1,11 +1,8 @@
 package javax0.geci.util;
 
-import javax0.geci.api.Source;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
 
 import static javax0.geci.api.Source.Set.set;
 import static org.junit.jupiter.api.Assertions.assertEquals;

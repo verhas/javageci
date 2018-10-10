@@ -5,6 +5,7 @@ import javax0.geci.annotations.Geci;
 @Geci("accessor include='private,protected'")
 public class Contained1 {
 
+    @SuppressWarnings("EmptyMethod")
     public void callMe() {
 
     }
