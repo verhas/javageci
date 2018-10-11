@@ -62,7 +62,7 @@ public interface Source {
      * Technically calling init is similar to opening a segment, though init should be more lenient
      * to opening non-existent segments.
      *
-     * @param id the identifier of the segment
+     * @param id the identifier of the segment. May be {@code null}.
      * @throws IOException in case there is no file or file is not readable
      */
     void init(String id) throws IOException;
