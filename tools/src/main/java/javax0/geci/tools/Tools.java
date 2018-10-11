@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -67,60 +68,160 @@ public class Tools {
     }
 
     public static String typeAsString(Field field) {
-        var s = field.getGenericType().getTypeName();
-        s = normalizeTypeName(s);
-        return s;
+        return normalizeTypeName(field.getGenericType().getTypeName());
     }
 
     public static String typeAsString(Method method) {
-        var s = method.getGenericReturnType().getTypeName();
-        s = normalizeTypeName(s);
-        return s;
+        return normalizeTypeName(method.getGenericReturnType().getTypeName());
     }
 
-    private static String normalizeTypeName(String s) {
+    /**
+     * Normalize a generic type name removing all {@code java.lang.} from the type names.
+     * <p>
+     * Even the generated code should be human readable, especially when you debug the working of the code. In that
+     * case the generic names with all the {@code java.lang.String}, {@code java.lang.Integer} and so on are disturbing.
+     * This method removes those prefixes.
+     * <p>
+     * Note that the prefixes {@code java.util.} and similar others that are usually imported by the class are NOT
+     * removed.
+     *
+     * @param s generic type name to be normalized
+     * @return the normalized type name
+     */
+    public static String normalizeTypeName(String s) {
+        s = s.replace(" ","");
         if (s.startsWith("java.lang.")) {
             s = s.substring("java.lang.".length());
         }
+        s = s.replaceAll("([^\\w\\d.^])java.lang.","$1");
         return s;
     }
 
+    /**
+     * Get the declared fields of the class sorted alphabetically. The actual order is usually not interesting
+     * for the code generators, but deterministic order is. When a code generator generates code for all or
+     * for some of the declared fields it is important that the order is always the same. If the order changes
+     * from time to time then it may happen that the code generation creates the code every time differently and
+     * breaking the build. It happends in practice, for example, when you have a different version of Java on the
+     * development machine and on the build server. In development you run the build, generate the code, run the build
+     * again, commit the code. You expect that on the build server the code generation will not fail because all the
+     * generated code is there in the repository in the files. However, you may use a different version of Java
+     * (even if only different build) on the build server and because of that the order of the fields is different and
+     * the generated code is different, although functionally it is the same.
+     * <p>
+     * This method and also the {@link #getDeclaredMethodsSorted(Class)} can and should be used by code generators to
+     * have a deterministic output.
+     *
+     * @param klass of which the fields are collected
+     * @return the sorted array of fields
+     */
     public static Field[] getDeclaredFieldsSorted(Class<?> klass) {
         final var fields = klass.getDeclaredFields();
         Arrays.sort(fields, Comparator.comparing(Field::getName));
         return fields;
     }
 
+    /**
+     * Get the declared methods of the class sorted.
+     * <p>
+     * See the notes at the javadoc of the method {@link #getDeclaredFieldsSorted(Class)}
+     * <p>
+     * The methods are sorted according to the string representation of the signature. How the
+     * method signature is created is document in the javadoc of the method {@link #methodSignature(Method, Function)}
+     *
+     * @param klass class of which the methods are returned
+     * @return the sorted array of the methods
+     */
     public static Method[] getDeclaredMethodsSorted(Class<?> klass) {
         final var methods = klass.getDeclaredMethods();
         Arrays.sort(methods, Comparator.comparing(method -> methodSignature(method)));
         return methods;
     }
 
+    /**
+     * The same as {@link #methodSignature(Method, Function)} but the decorator function is {@code null}.
+     *
+     * @param method see {@link #methodSignature(Method, Function)}
+     * @return see {@link #methodSignature(Method, Function)}
+     */
     public static String methodSignature(Method method) {
+        return methodSignature(method, null);
+    }
+
+    /**
+     * Create the string representation of the signature of the method. The method signature
+     * is the name of the class, then the arguments in parentheses with types comma separated and the exceptions
+     * after the keyword {@code throws} if there is any exception thrown by the method. The argument names are
+     * {@code arg1}, {@code arg2}, ... {@code argN}.
+     *
+     * @param method    of which the signature is needed
+     * @param decorator can be {@code null} or can be used to alter the name of the method in the signature. This is
+     *                  used when the code generation wants to create methods with different name and the same
+     *                  signature as other methods. For example a proxy method in the same class that does something,
+     *                  then calls the original method and then returns.
+     * @return the string of the method signature.
+     */
+    public static String methodSignature(Method method, Function<String, String> decorator) {
         var argCounter = new AtomicInteger(0);
         var arglist = Arrays.stream(method.getGenericParameterTypes())
-            .map(t -> t.getTypeName() + " arg" + argCounter.addAndGet(1))
-            .collect(Collectors.joining(","));
+                .map(t -> normalizeTypeName(t.getTypeName()) + " arg" + argCounter.addAndGet(1))
+                .collect(Collectors.joining(","));
         var exceptionlist = Arrays.stream(method.getGenericExceptionTypes())
-            .map(t -> t.getTypeName())
-            .collect(Collectors.joining(","));
+                .map(t -> normalizeTypeName(t.getTypeName()))
+                .collect(Collectors.joining(","));
         return new StringBuilder()
-            .append(modifiersString(method))
-            .append(typeAsString(method))
-            .append(" ")
-            .append(method.getName())
-            .append("(").append(arglist).append(") ")
-            .append(exceptionlist)
-            .toString();
+                .append(modifiersString(method))
+                .append(typeAsString(method))
+                .append(" ")
+                .append(decoratedName(method, decorator))
+                .append("(").append(arglist).append(") ")
+                .append(exceptionlist.length() == 0 ? "" : " throws " + exceptionlist)
+                .toString();
     }
-
+    /**
+     * The same as {@link #methodCall(Method, Function)} but the decorator function is {@code null}.
+     *
+     * @param method see {@link #methodCall(Method, Function)}
+     * @return see {@link #methodCall(Method, Function)}
+     */
     public static String methodCall(Method method) {
-        var arglist = IntStream.range(1, method.getGenericParameterTypes().length + 1)
-            .mapToObj(index -> " arg" + index)
-            .collect(Collectors.joining(","));
-        return new StringBuilder().append(method.getName()).append("(").append(arglist).append(")").toString();
+        return methodCall(method, null);
     }
 
+    /**
+     * Creates the string that calls a method. The string will start with the name of the method and then the
+     * arguments between parentheses comma separated. The argument names are
+     * {@code arg1}, {@code arg2}, ... {@code argN}.
+     *
+     * @param method    of which the signature is needed
+     * @param decorator a function to convert the name of the method. See {@link #methodSignature(Method, Function)}
+     *                  for examples when it is useful.
+     * @return
+     */
+    public static String methodCall(Method method, Function<String, String> decorator) {
+        var arglist = IntStream.range(1, method.getGenericParameterTypes().length + 1)
+                .mapToObj(index -> " arg" + index)
+                .collect(Collectors.joining(","));
+        return new StringBuilder()
+                .append(decoratedName(method, decorator))
+                .append("(")
+                .append(arglist)
+                .append(")")
+                .toString();
+    }
+
+    /**
+     * Decorate the method name if {@code decorator} is not {@code null}.
+     * @param method of which the name is retrieved
+     * @param decorator converting the name or {@code null}
+     * @return
+     */
+    private static String decoratedName(Method method, Function<String, String> decorator) {
+        if (decorator == null) {
+            return method.getName();
+        } else {
+            return decorator.apply(method.getName());
+        }
+    }
 
 }

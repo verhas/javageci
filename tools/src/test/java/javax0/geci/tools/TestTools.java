@@ -42,11 +42,27 @@ public class TestTools {
 
     @Test
     public void testTypeGetting() throws NoSuchMethodException, NoSuchFieldException {
-        Assertions.assertEquals(
-            "void",
-            Tools.typeAsString(this.getClass().getDeclaredMethod("testTypeGetting")));
-        Assertions.assertEquals(
-            "java.util.HashMap<java.util.Map<java.lang.String, java.lang.Integer>, java.lang.Object>",
-            Tools.typeAsString(this.getClass().getDeclaredField("b")));
+        assertEquals(
+                "void",
+                Tools.typeAsString(this.getClass().getDeclaredMethod("testTypeGetting")));
+        assertEquals(
+                "java.util.HashMap<java.util.Map<String,Integer>,Object>",
+                Tools.typeAsString(this.getClass().getDeclaredField("b")));
+    }
+
+    @Test
+    public void normalizesGenericNames() {
+        Assertions.assertAll(
+                () -> assertEquals("String", Tools.normalizeTypeName("java.lang.String")),
+                () -> assertEquals("java.util.Map", Tools.normalizeTypeName("java.util.Map")),
+                () -> assertEquals("java.util.Map<Integer,String>",
+                        Tools.normalizeTypeName("java.util.Map<java.lang.Integer,java.lang.String>")),
+                () -> assertEquals("java.util.Map<java.util.Set<Integer>,String>",
+                        Tools.normalizeTypeName("java.util.Map<java.util.Set<java.lang.Integer>,java.lang.String>")),
+                () -> assertEquals("java.util.Map<java.util.Set<Integer>,String>",
+                        Tools.normalizeTypeName("java.util.Map<java.util.Set< java.lang.Integer>,java.lang.String>")),
+                () -> assertEquals("java.util.Map<java.util.Set<com.java.lang.Integer>,String>",
+                        Tools.normalizeTypeName("java.util.Map<java.util.Set< com. java.lang.Integer>,java.lang.String>"))
+        );
     }
 }
