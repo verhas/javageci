@@ -7,6 +7,7 @@ import javax0.geci.tools.reflection.ModifiersBuilder;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -89,11 +90,11 @@ public class Tools {
      * @return the normalized type name
      */
     public static String normalizeTypeName(String s) {
-        s = s.replace(" ","");
+        s = s.replace(" ", "");
         if (s.startsWith("java.lang.")) {
             s = s.substring("java.lang.".length());
         }
-        s = s.replaceAll("([^\\w\\d.^])java.lang.","$1");
+        s = s.replaceAll("([^\\w\\d.^])java.lang.", "$1");
         return s;
     }
 
@@ -178,6 +179,7 @@ public class Tools {
                 .append(exceptionlist.length() == 0 ? "" : " throws " + exceptionlist)
                 .toString();
     }
+
     /**
      * The same as {@link #methodCall(Method, Function)} but the decorator function is {@code null}.
      *
@@ -212,7 +214,8 @@ public class Tools {
 
     /**
      * Decorate the method name if {@code decorator} is not {@code null}.
-     * @param method of which the name is retrieved
+     *
+     * @param method    of which the name is retrieved
      * @param decorator converting the name or {@code null}
      * @return
      */
@@ -222,6 +225,65 @@ public class Tools {
         } else {
             return decorator.apply(method.getName());
         }
+    }
+
+
+    public static final int PACKAGE= 0x00010000;
+    /**
+     * Convert a string that contains lower case letter Java modifiers comma separated into an access mask.
+     *
+     * @param masks is the comma separated list of modifiers. The list can also contain the word {@code package}
+     *                 that will be translated to {@link Tools#PACKAGE} since there is no modifier {@code package}
+     *                 in Java.
+     * @param dfault the mask to return in case the {@code includes} string is empty.
+     * @return
+     */
+    public static int mask(String masks, int dfault) {
+        int modMask = 0;
+        if (masks == null) {
+            modMask = dfault;
+        } else {
+            for (var maskString : masks.split(",")) {
+                var maskTrimmed = maskString.trim();
+                if (maskTrimmed.equals("private")) {
+                    modMask |= Modifier.PRIVATE;
+                }
+                if (maskTrimmed.equals("public")) {
+                    modMask |= Modifier.PUBLIC;
+                }
+                if (maskTrimmed.equals("protected")) {
+                    modMask |= Modifier.PROTECTED;
+                }
+                if (maskTrimmed.equals("static")) {
+                    modMask |= Modifier.STATIC;
+                }
+                if (maskTrimmed.equals("package")) {
+                    modMask |= Tools.PACKAGE;//reuse the bit
+                }
+                if (maskTrimmed.equals("abstract")) {
+                    modMask |= Modifier.ABSTRACT;
+                }
+                if (maskTrimmed.equals("final")) {
+                    modMask |= Modifier.FINAL;
+                }
+                if (maskTrimmed.equals("interface")) {
+                    modMask |= Modifier.INTERFACE;
+                }
+                if (maskTrimmed.equals("synchronized")) {
+                    modMask |= Modifier.SYNCHRONIZED;
+                }
+                if (maskTrimmed.equals("native")) {
+                    modMask |= Modifier.NATIVE;
+                }
+                if (maskTrimmed.equals("native")) {
+                    modMask |= Modifier.TRANSIENT;
+                }
+                if (maskTrimmed.equals("native")) {
+                    modMask |= Modifier.VOLATILE;
+                }
+            }
+        }
+        return modMask;
     }
 
 }

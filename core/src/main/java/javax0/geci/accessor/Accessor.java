@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 public class Accessor extends AbstractGenerator {
-    private static final int PACKAGE = Modifier.PROTECTED | Modifier.PRIVATE | Modifier.PUBLIC;
+    private static final int NOT_PACKAGE = Modifier.PROTECTED | Modifier.PRIVATE | Modifier.PUBLIC;
 
     @Override
     public String mnemonic() {
@@ -20,7 +20,7 @@ public class Accessor extends AbstractGenerator {
 
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
-        var accessMask = mask(global.get("include"));
+        var accessMask = Tools.mask(global.get("include"), Modifier.PRIVATE);
         var gid = global.get("id");
         source.init(gid);
         final var fields = klass.getDeclaredFields();
@@ -38,10 +38,10 @@ public class Accessor extends AbstractGenerator {
                     var id = getId(field, params);
                     source.init(id);
                     try (var segment = source.open(id)) {
-                        if (!isFinal && !only.equals("setter")) {
+                        if (!isFinal && !"getter".equals(only)) {
                             writeSetter(name, capName, fieldType, access, segment);
                         }
-                        if (!"getter".equals(only)) {
+                        if (!"setter".equals(only)) {
                             writeGetter(name, capName, fieldType, access, segment);
                         }
                     }
@@ -67,36 +67,10 @@ public class Accessor extends AbstractGenerator {
 
     private static boolean matchMask(Field field, int mask) {
         int modifiers = field.getModifiers();
-        if ((mask & Modifier.STRICT) != 0 && (modifiers & PACKAGE) == 0) {
+        if ((mask & Tools.PACKAGE) != 0 && (modifiers & NOT_PACKAGE) == 0) {
             return true;
         }
         return (modifiers & mask) != 0;
-    }
-
-    private static int mask(String includes) {
-        int modMask = 0;
-        if (includes == null) {
-            modMask = Modifier.PRIVATE;
-        } else {
-            for (var exclude : includes.split(",")) {
-                if (exclude.trim().equals("private")) {
-                    modMask |= Modifier.PRIVATE;
-                }
-                if (exclude.trim().equals("public")) {
-                    modMask |= Modifier.PUBLIC;
-                }
-                if (exclude.trim().equals("protected")) {
-                    modMask |= Modifier.PROTECTED;
-                }
-                if (exclude.trim().equals("static")) {
-                    modMask |= Modifier.STATIC;
-                }
-                if (exclude.trim().equals("package")) {
-                    modMask |= Modifier.STRICT;//reuse the bit
-                }
-            }
-        }
-        return modMask;
     }
 
     private static String cap(String s) {
