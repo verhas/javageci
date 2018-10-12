@@ -33,7 +33,7 @@ public class FluentBuilder {
         return new Tree(Node.ONCE, nodes);
     }
 
-    protected FluentBuilder copy() {
+    private FluentBuilder copy() {
         var klone = new FluentBuilder(klass);
         klone.nodes.addAll(nodes);
         return klone;
