@@ -19,11 +19,6 @@ import java.util.stream.Collectors;
 public class FluentBuilder {
 
     private final Class<?> klass;
-
-    public Tree getTree() {
-        return new Tree(Node.ONCE,nodes);
-    }
-
     private final List<Node> nodes = new ArrayList<>();
 
     private FluentBuilder(Class<?> klass) {
@@ -34,8 +29,11 @@ public class FluentBuilder {
         return new FluentBuilder(klass);
     }
 
-    protected FluentBuilder clone() throws CloneNotSupportedException {
-        super.clone();
+    public Tree get() {
+        return new Tree(Node.ONCE, nodes);
+    }
+
+    protected FluentBuilder copy() {
         var klone = new FluentBuilder(klass);
         klone.nodes.addAll(nodes);
         return klone;
@@ -49,46 +47,46 @@ public class FluentBuilder {
     }
 
     public FluentBuilder optional(String method) {
-        var next = clone();
+        var next = copy();
         next.nodes.add(new Terminal(Node.OPTIONAL, method));
         return next;
     }
 
     public FluentBuilder optional(FluentBuilder sub) {
         assertClass(sub);
-        var next = clone();
+        var next = copy();
         next.nodes.add(new Tree(Node.OPTIONAL, sub.nodes));
         return next;
     }
 
     public FluentBuilder many(String method) {
-        var next = clone();
+        var next = copy();
         next.nodes.add(new Terminal(Node.MANY, method));
         return next;
     }
 
     public FluentBuilder many(FluentBuilder sub) {
         assertClass(sub);
-        var next = clone();
+        var next = copy();
         next.nodes.add(new Tree(Node.MANY, sub.nodes));
         return next;
     }
 
     public FluentBuilder zeroOrMore(String method) {
-        var next = clone();
+        var next = copy();
         next.nodes.add(new Terminal(Node.ZERO_OR_MORE, method));
         return next;
     }
 
     public FluentBuilder zeroOrMore(FluentBuilder sub) {
         assertClass(sub);
-        var next = clone();
+        var next = copy();
         next.nodes.add(new Tree(Node.ZERO_OR_MORE, sub.nodes));
         return next;
     }
 
     public FluentBuilder oneOf(String... methods) {
-        var next = clone();
+        var next = copy();
 
         next.nodes.add(new Tree(Node.ONE_OF, Arrays.stream(methods)
                 .map(method -> new Terminal(Node.ONCE, method)).collect(Collectors.toList())));
@@ -99,14 +97,14 @@ public class FluentBuilder {
         for (var sub : subs) {
             assertClass(sub);
         }
-        var next = clone();
+        var next = copy();
         next.nodes.add(new Tree(Node.ONE_OF, Arrays.stream(subs)
                 .map(sub -> new Tree(Node.ONCE, sub.nodes)).collect(Collectors.toList())));
         return next;
     }
 
     public FluentBuilder call(String method) {
-        var next = clone();
+        var next = copy();
         next.nodes.add(new Terminal(Node.ONCE, method));
         return next;
     }
