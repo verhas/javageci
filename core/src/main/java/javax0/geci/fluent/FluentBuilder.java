@@ -59,16 +59,18 @@ public class FluentBuilder {
         return next;
     }
 
-    public FluentBuilder many(String method) {
+    public FluentBuilder oneOrMore(String method) {
         var next = copy();
-        next.nodes.add(new Terminal(Node.MANY, method));
+        next.nodes.add(new Terminal(Node.ONCE, method));
+        next.nodes.add(new Terminal(Node.ZERO_OR_MORE, method));
         return next;
     }
 
-    public FluentBuilder many(FluentBuilder sub) {
+    public FluentBuilder oneOrMore(FluentBuilder sub) {
         assertClass(sub);
         var next = copy();
-        next.nodes.add(new Tree(Node.MANY, sub.nodes));
+        next.nodes.add(new Tree(Node.ONCE, sub.nodes));
+        next.nodes.add(new Tree(Node.ZERO_OR_MORE, sub.nodes));
         return next;
     }
 

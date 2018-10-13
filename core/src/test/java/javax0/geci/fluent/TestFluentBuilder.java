@@ -1,4 +1,4 @@
-package javax0.geci;
+package javax0.geci.fluent;
 
 import javax0.geci.api.GeciException;
 import javax0.geci.fluent.FluentBuilder;
@@ -22,13 +22,13 @@ public class TestFluentBuilder {
     public void testComplexBuildup() {
         var t = FluentBuilder.from(Object.class);
         var s = t.oneOf("y", "x", "w", "z");
-        Assertions.assertEquals("once,optional?,((y,x,w,z){OR})?,(a,b,c,d){OR},h*,m+,((y,x,w,z){OR})*,((y,x,w,z){OR})?",
+        Assertions.assertEquals("once,optional?,((y,x,w,z){OR})?,(a,b,c,d){OR},h*,m,m*,((y,x,w,z){OR})*,((y,x,w,z){OR})?",
                 t.call("once")
                         .optional("optional")
                         .optional(s)
                         .oneOf("a", "b", "c", "d")
                         .zeroOrMore("h")
-                        .many("m")
+                        .oneOrMore("m")
                         .zeroOrMore(s)
                         .optional(s)
                         .toString()
@@ -45,7 +45,7 @@ public class TestFluentBuilder {
                         .optional(s)
                         .oneOf("a", "b", "c", "d")
                         .zeroOrMore("h")
-                        .many("m")
+                        .oneOrMore("m")
                         .zeroOrMore(s)
                         .optional(s)
                         .toString()
