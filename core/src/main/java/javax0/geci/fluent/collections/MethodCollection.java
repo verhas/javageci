@@ -1,4 +1,6 @@
-package javax0.geci.fluent;
+package javax0.geci.fluent.collections;
+
+import javax0.geci.api.GeciException;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -28,16 +30,32 @@ public class MethodCollection {
 
     /**
      * Get the method by name or by signature. If the name is unique then there is no need for signature.
-     * @param name
-     * @return
+     * The method throws {@link GeciException} if the method is specified by the name and it is ambiguous.
+     * @param name the name or the signature of the method
+     * @return the method or {@code null} if the method is not in the class
      */
     public Method get(String name){
-        //TODO
-        return null;
+        if( name.contains("(") ){
+            var key = normalize(name);
+            return methodMap.get(key);
+        }
+        Method method = null;
+        var start = name + "(";
+        boolean found = false;
+        for( var signature : methodMap.keySet()){
+            if( signature.startsWith(start)){
+                if( found ){
+                    throw new GeciException("The method name '"+name+"' is ambiguous.");
+                }
+                method = methodMap.get(signature);
+                found = true;
+            }
+        }
+        return method;
     }
 
     private static Stream<String> extractTypes(Type type) {
-        return Arrays.stream(type.getTypeName().split(",|<|>"));
+        return Arrays.stream(type.getTypeName().split("[,<>]"));
     }
 
     private static String simple(String type) {
@@ -57,7 +75,7 @@ public class MethodCollection {
      * imported in the actual class file and what is not. It may happen as an example that
      * {@code javax0.geci.annotations.Geci} is imported and can be used in the code as {@code Geci}
      * and {@code javax0.geci.api.Geci} is not imported. If these two types are used to describe method parameters then
-     * they should be specified with fully qualified names in the sluent API parameter strings and that is how this
+     * they should be specified with fully qualified names in the fluent API parameter strings and that is how this
      * method will normalize them.
      * <p>
      * Note: the implementation assumes that all package names are lower case and class names are capitalized and
@@ -84,11 +102,9 @@ public class MethodCollection {
         var exceptionlist = Arrays.stream(method.getGenericExceptionTypes())
             .map(t -> normalize(t.getTypeName()))
             .collect(Collectors.joining(","));
-        return new StringBuilder()
-            .append(method.getName())
-            .append("(").append(arglist).append(") ")
-            .append(exceptionlist.length() == 0 ? "" : " throws " + exceptionlist)
-            .toString();
+        return method.getName() +
+            "(" + arglist + ")" +
+            (exceptionlist.length() == 0 ? "" : " throws " + exceptionlist);
     }
 
     /**
@@ -118,7 +134,7 @@ public class MethodCollection {
 
     private void collectDuplicates(Set<String> types) {
         isMultiple.clear();
-        types.stream().forEach(type -> {
+        types.forEach(type -> {
             var s = simple(type);
             isMultiple.put(s, isMultiple.containsKey(s));
         });
@@ -133,7 +149,7 @@ public class MethodCollection {
     }
 
     private Map<String, Method> collect() {
-        return methodSet.stream().collect(Collectors.toMap(method -> signature(method), method -> method));
+        return methodSet.stream().collect(Collectors.toMap(this::signature, Function.identity()));
     }
 
     /**
@@ -144,8 +160,8 @@ public class MethodCollection {
     public String toString() {
         var s = new StringBuilder();
         s.append("{\n");
-        for (var key : new TreeSet(methodMap.keySet())) {
-            s.append("  \"" + key + "\" -> ").append(methodMap.get(key).getName()).append("\n");
+        for (var key : new TreeSet<>(methodMap.keySet())) {
+            s.append("  \"").append(key).append("\" -> ").append(methodMap.get(key).getName()).append("\n");
         }
         s.append("}");
         return s.toString();
