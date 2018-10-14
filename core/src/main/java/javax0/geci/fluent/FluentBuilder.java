@@ -1,7 +1,7 @@
 package javax0.geci.fluent;
 
 import javax0.geci.api.GeciException;
-import javax0.geci.fluent.collections.MethodCollection;
+import javax0.geci.fluent.internal.MethodCollection;
 import javax0.geci.fluent.tree.Node;
 import javax0.geci.fluent.tree.Terminal;
 import javax0.geci.fluent.tree.Tree;

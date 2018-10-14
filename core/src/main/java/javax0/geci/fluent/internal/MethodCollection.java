@@ -1,4 +1,4 @@
-package javax0.geci.fluent.collections;
+package javax0.geci.fluent.internal;
 
 import javax0.geci.api.GeciException;
 
