@@ -103,7 +103,11 @@ public class ClassBuilder {
             }
             if (i == 0) {
                 actualExtendedInterfaces = new HashSet<>(actualExtendedInterfaces);
-                actualExtendedInterfaces.add(lastBuilder.interfaceName);
+                if( lastBuilder != null ) {
+                    actualExtendedInterfaces.add(lastBuilder.interfaceName);
+                }else{
+                    actualExtendedInterfaces.add(nextInterface);
+                }
             }
 
             code.append(builder.build(node, actualNextInterface, actualExtendedInterfaces));
@@ -150,7 +154,11 @@ public class ClassBuilder {
             }
             if (i == 0) {
                 actualExtendedInterfaces = new HashSet<>(actualExtendedInterfaces);
-                actualExtendedInterfaces.add(lastBuilder.interfaceName);
+                if( lastBuilder != null ) {
+                    actualExtendedInterfaces.add(lastBuilder.interfaceName);
+                }else{
+                    actualExtendedInterfaces.add(nextInterface);
+                }
             }
 
             code.append(builder.build(node, nextInterface, actualExtendedInterfaces));
