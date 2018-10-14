@@ -1,8 +1,7 @@
-package javax0.geci.fluent;
+package javax0.geci.fluent.collections;
 
 import javax0.geci.api.Geci;
 import javax0.geci.api.GeciException;
-import javax0.geci.fluent.collections.MethodCollection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -55,7 +54,7 @@ public class TestMethodCollection {
                 .invoke(new TestClass(),new Object[]{"TEST",null}));
     }
 
-    private static class TestClass {
+    public static class TestClass {
         public void m1(Geci a, javax0.geci.annotations.Geci b) {
         }
 

@@ -3,6 +3,7 @@ package javax0.geci.fluent.collections;
 import javax0.geci.api.GeciException;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.Function;
@@ -28,38 +29,39 @@ public class MethodCollection {
         methodMap = collect();
     }
 
-    /**
-     * Get the method by name or by signature. If the name is unique then there is no need for signature.
-     * The method throws {@link GeciException} if the method is specified by the name and it is ambiguous.
-     * @param name the name or the signature of the method
-     * @return the method or {@code null} if the method is not in the class
-     */
-    public Method get(String name){
-        if( name.contains("(") ){
-            var key = normalize(name);
-            return methodMap.get(key);
-        }
-        Method method = null;
-        var start = name + "(";
-        boolean found = false;
-        for( var signature : methodMap.keySet()){
-            if( signature.startsWith(start)){
-                if( found ){
-                    throw new GeciException("The method name '"+name+"' is ambiguous.");
-                }
-                method = methodMap.get(signature);
-                found = true;
-            }
-        }
-        return method;
-    }
-
     private static Stream<String> extractTypes(Type type) {
         return Arrays.stream(type.getTypeName().split("[,<>]"));
     }
 
     private static String simple(String type) {
         return type.replaceAll("^(\\w+\\.)*", "");
+    }
+
+    /**
+     * Get the method by name or by signature. If the name is unique then there is no need for signature.
+     * The method throws {@link GeciException} if the method is specified by the name and it is ambiguous.
+     *
+     * @param name the name or the signature of the method
+     * @return the method or {@code null} if the method is not in the class
+     */
+    public Method get(String name) {
+        if (name.contains("(")) {
+            var key = normalize(name);
+            return methodMap.get(key);
+        }
+        Method method = null;
+        var start = name + "(";
+        boolean found = false;
+        for (var signature : methodMap.keySet()) {
+            if (signature.startsWith(start)) {
+                if (found) {
+                    throw new GeciException("The method name '" + name + "' is ambiguous.");
+                }
+                method = methodMap.get(signature);
+                found = true;
+            }
+        }
+        return method;
     }
 
     /**
@@ -118,7 +120,8 @@ public class MethodCollection {
     private Set<Method> collectMethods() {
         var set = new HashSet<Method>();
         for (var method : klass.getMethods()) {
-            if (method.getDeclaringClass() != Object.class || klass == Object.class) {
+            if ((method.getModifiers() & Modifier.STATIC) == 0 &&
+                (method.getDeclaringClass() != Object.class || klass == Object.class)) {
                 set.add(method);
             }
         }

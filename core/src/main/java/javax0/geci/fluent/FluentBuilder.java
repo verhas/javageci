@@ -6,6 +6,7 @@ import javax0.geci.fluent.tree.Node;
 import javax0.geci.fluent.tree.Terminal;
 import javax0.geci.fluent.tree.Tree;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +23,7 @@ public class FluentBuilder {
     private final Class<?> klass;
     private final List<Node> nodes = new ArrayList<>();
     private final MethodCollection methods;
+    private Method cloner = null;
 
     private FluentBuilder(Class<?> klass) {
         methods = new MethodCollection(klass);
@@ -31,6 +33,20 @@ public class FluentBuilder {
     public static FluentBuilder from(Class<?> klass) {
         return new FluentBuilder(klass);
 
+    }
+
+    public FluentBuilder cloner(String method) {
+        assertMethod(method);
+        Method clonerMethod = methods.get(method);
+        if (clonerMethod.getGenericExceptionTypes().length > 0) {
+            throw new GeciException("The cloner method should not have parameters");
+        }
+        if (clonerMethod.getReturnType() != klass) {
+            throw new GeciException("The cloner method should return the type of the class it is in.");
+        }
+        var next = copy();
+        next.cloner = clonerMethod;
+        return next;
     }
 
     public Tree get() {
@@ -121,7 +137,7 @@ public class FluentBuilder {
         return next;
     }
 
-    public FluentBuilder call(String method) {
+    public FluentBuilder one(String method) {
         assertMethod(method);
         var next = copy();
         next.nodes.add(new Terminal(Node.ONCE, method));

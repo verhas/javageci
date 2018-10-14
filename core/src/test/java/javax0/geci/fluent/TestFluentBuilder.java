@@ -10,7 +10,7 @@ public class TestFluentBuilder {
     public void testTerminalBuildup() {
         Assertions.assertEquals("once,optional?,(a,b,c,d){OR}",
             FluentBuilder.from(TestClass.class)
-                .call("once")
+                .one("once")
                 .optional("optional")
                 .oneOf("a", "b", "c", "d")
                 .toString()
@@ -22,7 +22,7 @@ public class TestFluentBuilder {
         var t = FluentBuilder.from(TestClass.class);
         var s = t.oneOf("y", "x", "w", "z");
         Assertions.assertEquals("once,optional?,((y,x,w,z){OR})?,(a,b,c,d){OR},h*,m,m*,((y,x,w,z){OR})*,((y,x,w,z){OR})?",
-            t.call("once")
+            t.cloner("a()").one("once")
                 .optional("optional")
                 .optional(s)
                 .oneOf("a", "b", "c", "d")
@@ -37,9 +37,10 @@ public class TestFluentBuilder {
     @Test
     public void testClassMismatch() {
         var t = FluentBuilder.from(TestClass.class);
-        var s = FluentBuilder.from( new TestClass(){}.getClass()).oneOf("y", "x", "w", "z");
+        var s = FluentBuilder.from(new TestClass() {
+        }.getClass()).oneOf("y", "x", "w", "z");
         Assertions.assertThrows(GeciException.class, () ->
-            t.call("once")
+            t.one("once")
                 .optional("optional")
                 .optional(s)
                 .oneOf("a", "b", "c", "d")
@@ -57,7 +58,8 @@ public class TestFluentBuilder {
         public void optional() {
         }
 
-        public void a() {
+        public TestClass a() {
+            return null;
         }
 
         public void b() {

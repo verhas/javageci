@@ -20,6 +20,7 @@ import java.util.stream.IntStream;
 
 public class Tools {
 
+    public static final int PACKAGE = 0x00010000;
     private static final Pattern pattern = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*'(.*?)'");
 
     public static String[] getGecis(AnnotatedElement element) {
@@ -140,13 +141,24 @@ public class Tools {
     }
 
     /**
-     * The same as {@link #methodSignature(Method, Function)} but the decorator function is {@code null}.
+     * Same as {@link #methodSignature(Method, Function)} but the decorator function is {@code null}.
      *
-     * @param method see {@link #methodSignature(Method, Function)}
-     * @return see {@link #methodSignature(Method, Function)}
+     * @param method see {@link #methodSignature(Method, Function, String)}
+     * @return see {@link #methodSignature(Method, Function, String)}
      */
     public static String methodSignature(Method method) {
         return methodSignature(method, null);
+    }
+
+    /**
+     * Same as {@link #methodSignature(Method, Function, String)} but the {@code replaceReturnType} is {@code null}.
+     *
+     * @param method    see {@link #methodSignature(Method, Function, String)}
+     * @param decorator see {@link #methodSignature(Method, Function, String)}
+     * @return see {@link #methodSignature(Method, Function, String)}
+     */
+    public static String methodSignature(Method method, Function<String, String> decorator) {
+        return methodSignature(method, decorator, null);
     }
 
     /**
@@ -155,29 +167,33 @@ public class Tools {
      * after the keyword {@code throws} if there is any exception thrown by the method. The argument names are
      * {@code arg1}, {@code arg2}, ... {@code argN}.
      *
-     * @param method    of which the signature is needed
-     * @param decorator can be {@code null} or can be used to alter the name of the method in the signature. This is
-     *                  used when the code generation wants to create methods with different name and the same
-     *                  signature as other methods. For example a proxy method in the same class that does something,
-     *                  then calls the original method and then returns.
+     * @param method            of which the signature is needed
+     * @param decorator         can be {@code null} or can be used to alter the name of the method in the signature. This is
+     *                          used when the code generation wants to create methods with different name and the same
+     *                          signature as other methods. For example a proxy method in the same class that does something,
+     *                          then calls the original method and then returns.
+     * @param replaceReturnType when null then it has no effect. When is is not null then the prototype will use this
+     *                          string in place of the method return type.
      * @return the string of the method signature.
      */
-    public static String methodSignature(Method method, Function<String, String> decorator) {
+    public static String methodSignature(Method method,
+                                         Function<String, String> decorator,
+                                         String replaceReturnType) {
         var argCounter = new AtomicInteger(0);
         var arglist = Arrays.stream(method.getGenericParameterTypes())
-                .map(t -> normalizeTypeName(t.getTypeName()) + " arg" + argCounter.addAndGet(1))
-                .collect(Collectors.joining(","));
+            .map(t -> normalizeTypeName(t.getTypeName()) + " arg" + argCounter.addAndGet(1))
+            .collect(Collectors.joining(","));
         var exceptionlist = Arrays.stream(method.getGenericExceptionTypes())
-                .map(t -> normalizeTypeName(t.getTypeName()))
-                .collect(Collectors.joining(","));
+            .map(t -> normalizeTypeName(t.getTypeName()))
+            .collect(Collectors.joining(","));
         return new StringBuilder()
-                .append(modifiersString(method))
-                .append(typeAsString(method))
-                .append(" ")
-                .append(decoratedName(method, decorator))
-                .append("(").append(arglist).append(") ")
-                .append(exceptionlist.length() == 0 ? "" : " throws " + exceptionlist)
-                .toString();
+            .append(modifiersString(method))
+            .append(replaceReturnType == null ? typeAsString(method) : replaceReturnType)
+            .append(" ")
+            .append(decoratedName(method, decorator))
+            .append("(").append(arglist).append(") ")
+            .append(exceptionlist.length() == 0 ? "" : " throws " + exceptionlist)
+            .toString();
     }
 
     /**
@@ -202,14 +218,14 @@ public class Tools {
      */
     public static String methodCall(Method method, Function<String, String> decorator) {
         var arglist = IntStream.range(1, method.getGenericParameterTypes().length + 1)
-                .mapToObj(index -> " arg" + index)
-                .collect(Collectors.joining(","));
+            .mapToObj(index -> " arg" + index)
+            .collect(Collectors.joining(","));
         return new StringBuilder()
-                .append(decoratedName(method, decorator))
-                .append("(")
-                .append(arglist)
-                .append(")")
-                .toString();
+            .append(decoratedName(method, decorator))
+            .append("(")
+            .append(arglist)
+            .append(")")
+            .toString();
     }
 
     /**
@@ -227,14 +243,12 @@ public class Tools {
         }
     }
 
-
-    public static final int PACKAGE= 0x00010000;
     /**
      * Convert a string that contains lower case letter Java modifiers comma separated into an access mask.
      *
-     * @param masks is the comma separated list of modifiers. The list can also contain the word {@code package}
-     *                 that will be translated to {@link Tools#PACKAGE} since there is no modifier {@code package}
-     *                 in Java.
+     * @param masks  is the comma separated list of modifiers. The list can also contain the word {@code package}
+     *               that will be translated to {@link Tools#PACKAGE} since there is no modifier {@code package}
+     *               in Java.
      * @param dfault the mask to return in case the {@code includes} string is empty.
      * @return
      */
