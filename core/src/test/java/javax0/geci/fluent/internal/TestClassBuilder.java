@@ -7,54 +7,146 @@ import org.junit.jupiter.api.Test;
 public class TestClassBuilder {
 
     @Test
-    public void testTerminalBuildup() {
-        /*
-interface If0{
-  public void a() ;
-}
-interface If1{
-  public void b() ;
-}
-interface If2{
-  public void c() ;
-}
-interface If3{
-  public void d() ;
-}
-interface If4 extends If0,If2,If1,If3{}
-interface If5 extends If4{
-  public If4 b() ;
-}
-interface If6{
-  public If5 a() ;
-}*/
+    public void testTerminalsBuildup() {
+// interface If0{
+//   void a() ;
+//   void b() ;
+//   void c() ;
+//   void d() ;
+// }
+// interface If1 extends If0{
+//   If0 b() ;
+// }
+// interface If2{
+//   If1 a() ;
+// }
         var fluent = FluentBuilder.from(TestClass.class)
-                .one("a")
-                .optional("b")
-                .oneOf("a", "b", "c", "d");
+            .one("a")
+            .optional("b")
+            .oneOf("a", "b", "c", "d");
         Assertions.assertEquals("interface If0{\n" +
-                        "  public void a() ;\n" +
-                        "}\n" +
-                        "interface If1{\n" +
-                        "  public void b() ;\n" +
-                        "}\n" +
-                        "interface If2{\n" +
-                        "  public void c() ;\n" +
-                        "}\n" +
-                        "interface If3{\n" +
-                        "  public void d() ;\n" +
-                        "}\n" +
-                        "interface If4 extends If0,If2,If1,If3{}\n" +
-                        "interface If5 extends If4{\n" +
-                        "  public If4 b() ;\n" +
-                        "}\n" +
-                        "interface If6{\n" +
-                        "  public If5 a() ;\n" +
-                        "}\n",
-                new ClassBuilder(fluent).build()
+                "  void a() ;\n" +
+                "  void b() ;\n" +
+                "  void c() ;\n" +
+                "  void d() ;\n" +
+                "}\n" +
+                "interface If1 extends If0{\n" +
+                "  If0 b() ;\n" +
+                "}\n" +
+                "interface If2{\n" +
+                "  If1 a() ;\n" +
+                "}\n",
+            new ClassBuilder(fluent).build()
         );
     }
 
+    @Test
+    public void testTerminalsBuildupFullSample() {
+//        interface If0{
+//            void a() ;
+//            void b() ;
+//        }
+//        interface If1 extends If0{
+//            If1 d() ;
+//        }
+//        interface If2 extends If1{
+//            If2 c() ;
+//        }
+//        interface If3{
+//            If2 c() ;
+//        }
+//        interface If4 extends If3{
+//            If3 b() ;
+//        }
+//        interface If5{
+//            If4 a() ;
+//        }
+        var fluent = FluentBuilder.from(TestClass.class)
+            .one("a")
+            .optional("b")
+            .oneOrMore("c")
+            .zeroOrMore("d")
+            .oneOf("a","b");
+
+        Assertions.assertEquals("interface If0{\n" +
+                "  void a() ;\n" +
+                "  void b() ;\n" +
+                "}\n" +
+                "interface If1 extends If0{\n" +
+                "  If1 d() ;\n" +
+                "}\n" +
+                "interface If2 extends If1{\n" +
+                "  If2 c() ;\n" +
+                "}\n" +
+                "interface If3{\n" +
+                "  If2 c() ;\n" +
+                "}\n" +
+                "interface If4 extends If3{\n" +
+                "  If3 b() ;\n" +
+                "}\n" +
+                "interface If5{\n" +
+                "  If4 a() ;\n" +
+                "}\n",
+            new ClassBuilder(fluent).build()
+        );
+    }
+
+        @Test
+    public void testTreeBuildup() {
+        var f = FluentBuilder.from(TestClass.class);
+        var aOrB = f.oneOf("a", "b");
+        var fluent = f.one("a")
+            .optional(aOrB)
+            .oneOf("a", "b", "c", "d");
+        Assertions.assertEquals("interface If0{\n" +
+                "  void a() ;\n" +
+                "  void b() ;\n" +
+                "  void c() ;\n" +
+                "  void d() ;\n" +
+                "}\n" +
+                "interface If1 extends If0 {\n" +
+                "  If0 a() ;\n" +
+                "  If0 b() ;\n" +
+                "}\n" +
+                "interface If2{\n" +
+                "  If1 a() ;\n" +
+                "}\n",
+            new ClassBuilder(fluent).build()
+        );
+    }
+
+    @Test
+    public void testComplexTreeBuildup() {
+        var f = FluentBuilder.from(TestClass.class);
+        var aOrB = f.oneOf("a", "b");
+        var fluent = f.one("a")
+            .optional(aOrB)
+            .one("c")
+            .zeroOrMore(aOrB)
+            .oneOf("a", "b", "c", "d");
+        Assertions.assertEquals("interface If0{\n" +
+                "  void a() ;\n" +
+                "  void b() ;\n" +
+                "  void c() ;\n" +
+                "  void d() ;\n" +
+                "}\n" +
+                "interface If2 extends If0 {\n" +
+                "  If1 a() ;\n" +
+                "  If1 b() ;\n" +
+                "}\n" +
+                "interface If1 extends If2{}interface If3{\n" +
+                "  If1 c() ;\n" +
+                "}\n" +
+                "interface If4 extends If3 {\n" +
+                "  If3 a() ;\n" +
+                "  If3 b() ;\n" +
+                "}\n" +
+                "interface If5{\n" +
+                "  If4 a() ;\n" +
+                "}\n",
+            new ClassBuilder(fluent).build()
+        );
+    }
 
     public static class TestClass {
         public void a() {
@@ -63,7 +155,7 @@ interface If6{
         public void b() {
         }
 
-        public  void c() {
+        public void c() {
         }
 
         public void d() {

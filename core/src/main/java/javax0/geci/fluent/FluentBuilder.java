@@ -132,7 +132,7 @@ public class FluentBuilder {
         assertMethod(methods);
         var next = copy();
 
-        next.nodes.add(new Tree(Node.ONE_OF, Arrays.stream(methods)
+        next.nodes.add(new Tree(Node.ONE_TERMINAL_OF, Arrays.stream(methods)
                 .map(method -> new Terminal(Node.ONCE, method)).collect(Collectors.toList())));
         return next;
     }

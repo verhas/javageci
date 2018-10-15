@@ -136,29 +136,30 @@ public class Tools {
      */
     public static Method[] getDeclaredMethodsSorted(Class<?> klass) {
         final var methods = klass.getDeclaredMethods();
-        Arrays.sort(methods, Comparator.comparing(method -> methodSignature(method)));
+        Arrays.sort(methods, Comparator.comparing(Tools::methodSignature));
         return methods;
     }
 
     /**
      * Same as {@link #methodSignature(Method, Function)} but the decorator function is {@code null}.
      *
-     * @param method see {@link #methodSignature(Method, Function, String)}
-     * @return see {@link #methodSignature(Method, Function, String)}
+     * @param method see {@link #methodSignature(Method, Function, String, boolean)}
+     * @return see {@link #methodSignature(Method, Function, String, boolean)}
      */
     public static String methodSignature(Method method) {
         return methodSignature(method, null);
     }
 
     /**
-     * Same as {@link #methodSignature(Method, Function, String)} but the {@code replaceReturnType} is {@code null}.
+     * Same as {@link #methodSignature(Method, Function, String, boolean)} but the
+     * y{@code replaceReturnType} is {@code null}.
      *
-     * @param method    see {@link #methodSignature(Method, Function, String)}
-     * @param decorator see {@link #methodSignature(Method, Function, String)}
-     * @return see {@link #methodSignature(Method, Function, String)}
+     * @param method    see {@link #methodSignature(Method, Function, String, boolean)}
+     * @param decorator see {@link #methodSignature(Method, Function, String, boolean)}
+     * @return see {@link #methodSignature(Method, Function, String, boolean)}
      */
     public static String methodSignature(Method method, Function<String, String> decorator) {
-        return methodSignature(method, decorator, null);
+        return methodSignature(method, decorator, null, false);
     }
 
     /**
@@ -174,11 +175,13 @@ public class Tools {
      *                          then calls the original method and then returns.
      * @param replaceReturnType when null then it has no effect. When is is not null then the prototype will use this
      *                          string in place of the method return type.
+     * @param interfce          if {@code true} then the signature will not contain modifiers because in this case it
+     *                          is assumed that the signature will be used in generation an interface.
      * @return the string of the method signature.
      */
     public static String methodSignature(Method method,
                                          Function<String, String> decorator,
-                                         String replaceReturnType) {
+                                         String replaceReturnType, boolean interfce) {
         var argCounter = new AtomicInteger(0);
         var arglist = Arrays.stream(method.getGenericParameterTypes())
             .map(t -> normalizeTypeName(t.getTypeName()) + " arg" + argCounter.addAndGet(1))
@@ -186,14 +189,12 @@ public class Tools {
         var exceptionlist = Arrays.stream(method.getGenericExceptionTypes())
             .map(t -> normalizeTypeName(t.getTypeName()))
             .collect(Collectors.joining(","));
-        return new StringBuilder()
-            .append(modifiersString(method))
-            .append(replaceReturnType == null ? typeAsString(method) : replaceReturnType)
-            .append(" ")
-            .append(decoratedName(method, decorator))
-            .append("(").append(arglist).append(") ")
-            .append(exceptionlist.length() == 0 ? "" : " throws " + exceptionlist)
-            .toString();
+        return (interfce ? "" : modifiersString(method)) +
+            (replaceReturnType == null ? typeAsString(method) : replaceReturnType) +
+            " " +
+            decoratedName(method, decorator) +
+            "(" + arglist + ") " +
+            (exceptionlist.length() == 0 ? "" : " throws " + exceptionlist);
     }
 
     /**
@@ -214,7 +215,7 @@ public class Tools {
      * @param method    of which the signature is needed
      * @param decorator a function to convert the name of the method. See {@link #methodSignature(Method, Function)}
      *                  for examples when it is useful.
-     * @return
+     * @return the string that is the method call in Java syntax
      */
     public static String methodCall(Method method, Function<String, String> decorator) {
         var arglist = IntStream.range(1, method.getGenericParameterTypes().length + 1)
@@ -233,7 +234,7 @@ public class Tools {
      *
      * @param method    of which the name is retrieved
      * @param decorator converting the name or {@code null}
-     * @return
+     * @return the decorated name
      */
     private static String decoratedName(Method method, Function<String, String> decorator) {
         if (decorator == null) {
@@ -250,7 +251,7 @@ public class Tools {
      *               that will be translated to {@link Tools#PACKAGE} since there is no modifier {@code package}
      *               in Java.
      * @param dfault the mask to return in case the {@code includes} string is empty.
-     * @return
+     * @return the mask converted from String
      */
     public static int mask(String masks, int dfault) {
         int modMask = 0;

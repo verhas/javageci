@@ -29,20 +29,38 @@ public class MethodCollection {
         methodMap = collect();
     }
 
+    /**
+     * Extract the non-generic type names that are used to build up a generic type.
+     * @param type the generic type that includes presumably subtypes
+     * @return the stream of the individual type strings without duplicates
+     */
     private static Stream<String> extractTypes(Type type) {
         return Arrays.stream(type.getTypeName().split("[,<>]"));
     }
 
+    /**
+     * Revome the package name from a fully qualified class name.
+     * @param type the fully qualified name
+     * @return the simple name, which is essentially the class name and nothing else
+     */
     private static String simple(String type) {
         return type.replaceAll("^(\\w+\\.)*", "");
     }
 
     /**
+     * @return the set of the normalized method signatures.
+     */
+    public Set<String> methodSignatures(){
+        return methodMap.keySet();
+    }
+
+    /**
      * Get the method by name or by signature. If the name is unique then there is no need for signature.
      * The method throws {@link GeciException} if the method is specified by the name and it is ambiguous.
+     * Returns {@code null} if the method is not found.
      *
      * @param name the name or the signature of the method
-     * @return the method or {@code null} if the method is not in the class
+     * @return the method object or {@code null} if the method is not in the class
      */
     public Method get(String name) {
         if (name.contains("(")) {
