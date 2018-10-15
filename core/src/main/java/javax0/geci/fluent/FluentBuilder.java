@@ -22,9 +22,13 @@ public class FluentBuilder {
 
     private final Class<?> klass;
     private final List<Node> nodes = new ArrayList<>();
+
+    public MethodCollection getMethods() {
+        return methods;
+    }
+
     private final MethodCollection methods;
     private Method cloner = null;
-
     private FluentBuilder(Class<?> klass) {
         methods = new MethodCollection(klass);
         this.klass = klass;
@@ -33,6 +37,10 @@ public class FluentBuilder {
     public static FluentBuilder from(Class<?> klass) {
         return new FluentBuilder(klass);
 
+    }
+
+    public List<Node> getNodes() {
+        return nodes;
     }
 
     public FluentBuilder cloner(String method) {
@@ -125,7 +133,7 @@ public class FluentBuilder {
         var next = copy();
 
         next.nodes.add(new Tree(Node.ONE_OF, Arrays.stream(methods)
-            .map(method -> new Terminal(Node.ONCE, method)).collect(Collectors.toList())));
+                .map(method -> new Terminal(Node.ONCE, method)).collect(Collectors.toList())));
         return next;
     }
 
@@ -133,7 +141,7 @@ public class FluentBuilder {
         assertClass(subs);
         var next = copy();
         next.nodes.add(new Tree(Node.ONE_OF, Arrays.stream(subs)
-            .map(sub -> new Tree(Node.ONCE, sub.nodes)).collect(Collectors.toList())));
+                .map(sub -> new Tree(Node.ONCE, sub.nodes)).collect(Collectors.toList())));
         return next;
     }
 
