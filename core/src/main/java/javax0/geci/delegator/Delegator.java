@@ -23,7 +23,7 @@ public class Delegator extends AbstractDeclaredFieldsGenerator {
             for (var method : methods) {
                 var modifiers = method.getModifiers();
                 if (Modifier.isPublic(modifiers)) {
-                    segment.write_r(Tools.methodSignature(method) + "{");
+                    segment.write_r(Tools.methodSignature(method) + " {");
                     if (!"void".equals(method.getReturnType().getName())) {
                         segment.write("return " + name + "." + Tools.methodCall(method) + ";");
                     } else {

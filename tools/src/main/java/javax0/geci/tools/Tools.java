@@ -193,7 +193,7 @@ public class Tools {
             (replaceReturnType == null ? typeAsString(method) : replaceReturnType) +
             " " +
             decoratedName(method, decorator) +
-            "(" + arglist + ") " +
+            "(" + arglist + ")" +
             (exceptionlist.length() == 0 ? "" : " throws " + exceptionlist);
     }
 
