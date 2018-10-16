@@ -15,26 +15,26 @@ public class ClassBuilder {
     private final InterfaceNameProvider interfaceNameProvider;
     private final MethodCollection methods;
     private final FluentBuilder fluent;
-    private final Set<String> allInterfaces = new HashSet<>();
+    private final Set<String> allInterfaces;
     private String interfaceName;
     private Set<String> extendedInterfaces = Set.of();
-    private String fluentStartInterface;
 
     public ClassBuilder(FluentBuilder fluent) {
         this.interfaceNameProvider = new InterfaceNameProvider();
         this.fluent = fluent;
         this.methods = fluent.getMethods();
+        this.allInterfaces = new HashSet<>();
     }
 
-    private ClassBuilder(InterfaceNameProvider interfaceNameProvider, MethodCollection methods, FluentBuilder fluent) {
-        this.interfaceNameProvider = interfaceNameProvider;
-        this.methods = methods;
-        this.fluent = fluent;
+    private ClassBuilder(ClassBuilder that) {
+        this.interfaceNameProvider = that.interfaceNameProvider;
+        this.methods = that.methods;
+        this.fluent = that.fluent;
+        this.allInterfaces = that.allInterfaces;
     }
 
     private String newInterfaceName() {
         var newInterfaceName = interfaceNameProvider.getNewInterfaceName();
-        fluentStartInterface = newInterfaceName;
         allInterfaces.add(newInterfaceName);
         return newInterfaceName;
     }
@@ -103,8 +103,44 @@ public class ClassBuilder {
         var tree = new Tree(Node.ONCE, list);
         var lastInterface = getLastNodeReturnType(list.get(list.size() - 1));
         var interfaces = build(tree, lastInterface, Set.of());
-        // create here the delegator class
-        return interfaces;
+        var code = new StringBuilder();
+        var startMethod = fluent.getStartMethod() == null ? "start" : fluent.getStartMethod();
+        code.append("  public static ").append(interfaceNameProvider.getLastInterfaceName()).append(" ").append(startMethod).append("(){\n")
+            .append("    return new Wrapper(null);\n")
+            .append("  }\n");
+        code.append("public static class Wrapper implements ").append(String.join(",", allInterfaces)).append(" {\n")
+            .append("  private final ").append(fluent.getKlass().getCanonicalName()).append(" that;\n")
+            .append("  public Wrapper(").append(fluent.getKlass().getCanonicalName()).append(" that").append(") {\n")
+            .append("    if( that == null ){\n")
+            .append("       this.that = new ").append(fluent.getKlass().getCanonicalName()).append("();\n")
+            .append("     }else{\n")
+            .append("       this.that = that;\n")
+            .append("     }\n")
+            .append("  }\n");
+        for (var signature : methods.methodSignatures()) {
+            var method = methods.get(signature);
+            if (fluent.getCloner() == null || !fluent.getCloner().equals(method)) {
+                code.append("  ");
+                code.append(Tools.methodSignature(method, null, "Wrapper", false));
+                code.append(" {\n");
+                if (fluent.getCloner() != null) {
+                    code.append("  var next = new Wrapper(that.")
+                        .append(Tools.methodCall(fluent.getCloner()))
+                        .append(");\n")
+                        .append("    next.").append(Tools.methodCall(method)).append(";\n")
+                        .append("    return next;\n")
+                        .append("    }\n");
+
+                } else {
+                    code.append("    that.").append(Tools.methodCall(method)).append(";\n")
+                        .append("    return this;\n")
+                        .append("    }\n");
+                }
+            }
+        }
+        code.append("}\n");
+        code.append(interfaces);
+        return code.toString();
     }
 
     private String build(Node node, String nextInterface, Set<String> extendedInterfaces) {
@@ -183,7 +219,7 @@ public class ClassBuilder {
         var code = new StringBuilder();
         var alternativeInterfaces = new HashSet<String>();
         for (var node : list) {
-            var builder = new ClassBuilder(interfaceNameProvider, methods, fluent);
+            var builder = new ClassBuilder(this);
             code.append(builder.build(node, nextInterface, extendedInterfaces));
             alternativeInterfaces.add(builder.interfaceName);
         }
@@ -203,7 +239,7 @@ public class ClassBuilder {
         this.interfaceName = newInterfaceName();
         for (var i = list.size() - 1; i >= 0; i--) {
             final var node = list.get(i);
-            var builder = new ClassBuilder(interfaceNameProvider, methods, fluent);
+            var builder = new ClassBuilder(this);
             var actualExtendedInterfaces = extendedInterfaces;
             var actualNextInterface = nextInterface;
             if (lastBuilder != null) {
@@ -238,7 +274,7 @@ public class ClassBuilder {
         ClassBuilder lastBuilder = null;
         for (var i = list.size() - 1; i >= 0; i--) {
             final var node = list.get(i);
-            var builder = new ClassBuilder(interfaceNameProvider, methods, fluent);
+            var builder = new ClassBuilder(this);
             var actualExtendedInterfaces = extendedInterfaces;
             var actualNextInterface = nextInterface;
             if (lastBuilder != null) {
@@ -259,7 +295,7 @@ public class ClassBuilder {
         ClassBuilder lastBuilder = null;
         for (var i = list.size() - 1; i >= 0; i--) {
             final var node = list.get(i);
-            var builder = new ClassBuilder(interfaceNameProvider, methods, fluent);
+            var builder = new ClassBuilder(this);
             var actualExtendedInterfaces = extendedInterfaces;
             if (lastBuilder != null) {
                 actualExtendedInterfaces = lastBuilder.extendedInterfaces;

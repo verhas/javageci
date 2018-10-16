@@ -167,7 +167,7 @@ public class TestClassBuilder {
         var aOrB = f.oneOf(f.optional("a"), f.one("b"));
         var fluent = f.one("a")
                 .optional(aOrB)
-                .one("c");
+                .one("c").cloner("copy");
         Assertions.assertEquals("interface If0{\n" +
                         "  void c();\n" +
                         "}\n" +
@@ -185,6 +185,9 @@ public class TestClassBuilder {
         );
     }
     public static class TestClass {
+        public TestClass copy(){
+            return this;
+        }
         public void a() {
         }
 
