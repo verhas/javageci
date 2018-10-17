@@ -24,7 +24,48 @@ public class TestClassBuilder {
             .one("a")
             .optional("b")
             .oneOf("a", "b", "c", "d");
-        Assertions.assertEquals("interface If0{\n" +
+        Assertions.assertEquals("  public static If2 start(){\n" +
+                "    return new Wrapper(null);\n" +
+                "  }\n" +
+                "public static class Wrapper implements If0,If2,If1 {\n" +
+                "  private final javax0.geci.fluent.internal.TestClassBuilder.TestClass that;\n" +
+                "  public Wrapper(javax0.geci.fluent.internal.TestClassBuilder.TestClass that) {\n" +
+                "    if( that == null ){\n" +
+                "       this.that = new javax0.geci.fluent.internal.TestClassBuilder.TestClass();\n" +
+                "     }else{\n" +
+                "       this.that = that;\n" +
+                "     }\n" +
+                "  }\n" +
+                "  public Wrapper b() {\n" +
+                "    that.b();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper a() {\n" +
+                "    that.a();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper d() {\n" +
+                "    that.d();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper c() {\n" +
+                "    that.c();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper f() {\n" +
+                "    that.f();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper copy() {\n" +
+                "    that.copy();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper e() {\n" +
+                "    that.e();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "}\n" +
+                "interface If0{\n" +
                 "  void a();\n" +
                 "  void b();\n" +
                 "  void c();\n" +
@@ -68,7 +109,48 @@ public class TestClassBuilder {
             .zeroOrMore("d")
             .oneOf("a","b");
 
-        Assertions.assertEquals("interface If0{\n" +
+        Assertions.assertEquals("  public static If5 start(){\n" +
+                "    return new Wrapper(null);\n" +
+                "  }\n" +
+                "public static class Wrapper implements If0,If2,If1,If4,If3,If5 {\n" +
+                "  private final javax0.geci.fluent.internal.TestClassBuilder.TestClass that;\n" +
+                "  public Wrapper(javax0.geci.fluent.internal.TestClassBuilder.TestClass that) {\n" +
+                "    if( that == null ){\n" +
+                "       this.that = new javax0.geci.fluent.internal.TestClassBuilder.TestClass();\n" +
+                "     }else{\n" +
+                "       this.that = that;\n" +
+                "     }\n" +
+                "  }\n" +
+                "  public Wrapper b() {\n" +
+                "    that.b();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper a() {\n" +
+                "    that.a();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper d() {\n" +
+                "    that.d();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper c() {\n" +
+                "    that.c();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper f() {\n" +
+                "    that.f();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper copy() {\n" +
+                "    that.copy();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper e() {\n" +
+                "    that.e();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "}\n" +
+                "interface If0{\n" +
                 "  void a();\n" +
                 "  void b();\n" +
                 "}\n" +
@@ -98,7 +180,48 @@ public class TestClassBuilder {
         var fluent = f.one("a")
             .optional(aOrB)
             .oneOf("a", "b", "c", "d");
-        Assertions.assertEquals("interface If0{\n" +
+        Assertions.assertEquals("  public static If2 start(){\n" +
+                "    return new Wrapper(null);\n" +
+                "  }\n" +
+                "public static class Wrapper implements If0,If2,If1 {\n" +
+                "  private final javax0.geci.fluent.internal.TestClassBuilder.TestClass that;\n" +
+                "  public Wrapper(javax0.geci.fluent.internal.TestClassBuilder.TestClass that) {\n" +
+                "    if( that == null ){\n" +
+                "       this.that = new javax0.geci.fluent.internal.TestClassBuilder.TestClass();\n" +
+                "     }else{\n" +
+                "       this.that = that;\n" +
+                "     }\n" +
+                "  }\n" +
+                "  public Wrapper b() {\n" +
+                "    that.b();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper a() {\n" +
+                "    that.a();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper d() {\n" +
+                "    that.d();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper c() {\n" +
+                "    that.c();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper f() {\n" +
+                "    that.f();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper copy() {\n" +
+                "    that.copy();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper e() {\n" +
+                "    that.e();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "}\n" +
+                "interface If0{\n" +
                 "  void a();\n" +
                 "  void b();\n" +
                 "  void c();\n" +
@@ -124,7 +247,48 @@ public class TestClassBuilder {
             .one("c")
             .zeroOrMore(aOrB)
             .oneOf("a", "b", "c", "d");
-        Assertions.assertEquals("interface If0{\n" +
+        Assertions.assertEquals("  public static If5 start(){\n" +
+                "    return new Wrapper(null);\n" +
+                "  }\n" +
+                "public static class Wrapper implements If0,If2,If1,If4,If3,If5 {\n" +
+                "  private final javax0.geci.fluent.internal.TestClassBuilder.TestClass that;\n" +
+                "  public Wrapper(javax0.geci.fluent.internal.TestClassBuilder.TestClass that) {\n" +
+                "    if( that == null ){\n" +
+                "       this.that = new javax0.geci.fluent.internal.TestClassBuilder.TestClass();\n" +
+                "     }else{\n" +
+                "       this.that = that;\n" +
+                "     }\n" +
+                "  }\n" +
+                "  public Wrapper b() {\n" +
+                "    that.b();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper a() {\n" +
+                "    that.a();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper d() {\n" +
+                "    that.d();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper c() {\n" +
+                "    that.c();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper f() {\n" +
+                "    that.f();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper copy() {\n" +
+                "    that.copy();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "  public Wrapper e() {\n" +
+                "    that.e();\n" +
+                "    return this;\n" +
+                "    }\n" +
+                "}\n" +
+                "interface If0{\n" +
                 "  void a();\n" +
                 "  void b();\n" +
                 "  void c();\n" +
@@ -168,19 +332,62 @@ public class TestClassBuilder {
         var fluent = f.one("a")
                 .optional(aOrB)
                 .one("c").cloner("copy");
-        Assertions.assertEquals("interface If0{\n" +
-                        "  void c();\n" +
-                        "}\n" +
-                        "interface If1 extends If0{\n" +
-                        "  If0 a();\n" +
-                        "}\n" +
-                        "interface If2{\n" +
-                        "  If0 b();\n" +
-                        "}\n" +
-                        "interface If3 extends If2,If1{}\n" +
-                        "interface If4{\n" +
-                        "  If3 a();\n" +
-                        "}\n",
+        Assertions.assertEquals("  public static If4 start(){\n" +
+                "    return new Wrapper(null);\n" +
+                "  }\n" +
+                "public static class Wrapper implements If0,If2,If1,If4,If3 {\n" +
+                "  private final javax0.geci.fluent.internal.TestClassBuilder.TestClass that;\n" +
+                "  public Wrapper(javax0.geci.fluent.internal.TestClassBuilder.TestClass that) {\n" +
+                "    if( that == null ){\n" +
+                "       this.that = new javax0.geci.fluent.internal.TestClassBuilder.TestClass();\n" +
+                "     }else{\n" +
+                "       this.that = that;\n" +
+                "     }\n" +
+                "  }\n" +
+                "  public Wrapper b() {\n" +
+                "  var next = new Wrapper(that.copy());\n" +
+                "    next.b();\n" +
+                "    return next;\n" +
+                "    }\n" +
+                "  public Wrapper a() {\n" +
+                "  var next = new Wrapper(that.copy());\n" +
+                "    next.a();\n" +
+                "    return next;\n" +
+                "    }\n" +
+                "  public Wrapper d() {\n" +
+                "  var next = new Wrapper(that.copy());\n" +
+                "    next.d();\n" +
+                "    return next;\n" +
+                "    }\n" +
+                "  public Wrapper c() {\n" +
+                "  var next = new Wrapper(that.copy());\n" +
+                "    next.c();\n" +
+                "    return next;\n" +
+                "    }\n" +
+                "  public Wrapper f() {\n" +
+                "  var next = new Wrapper(that.copy());\n" +
+                "    next.f();\n" +
+                "    return next;\n" +
+                "    }\n" +
+                "  public Wrapper e() {\n" +
+                "  var next = new Wrapper(that.copy());\n" +
+                "    next.e();\n" +
+                "    return next;\n" +
+                "    }\n" +
+                "}\n" +
+                "interface If0{\n" +
+                "  void c();\n" +
+                "}\n" +
+                "interface If1 extends If0{\n" +
+                "  If0 a();\n" +
+                "}\n" +
+                "interface If2{\n" +
+                "  If0 b();\n" +
+                "}\n" +
+                "interface If3 extends If2,If1{}\n" +
+                "interface If4{\n" +
+                "  If3 a();\n" +
+                "}\n",
                 new ClassBuilder(fluent).build()
         );
     }

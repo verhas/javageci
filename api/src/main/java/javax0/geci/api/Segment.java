@@ -12,7 +12,7 @@ public interface Segment extends AutoCloseable {
      * Write a line to the segment after the last line.
      * @param s the content of the line
      */
-    void write(String s);
+    void write(String s, Object ... parameters);
 
     /**
      * Insert a new line into the segment.
@@ -24,14 +24,14 @@ public interface Segment extends AutoCloseable {
      * Usually you use this method when the line ends with a '{' character.
      * @param s the content of the line
      */
-    void write_r(String s);
+    void write_r(String s, Object ... parameters);
 
     /**
      * Write a line into the segment after the last line and after decreasing the indenting. Usually you
      * use this method to put the '}' at the end of the code blocks.
      * @param s the content of the line
      */
-    void write_l(String s);
+    void write_l(String s, Object ... parameters);
 
     /**
      * Usually is not implemented separately and is needed for to be auto cloaseable so that the segment

@@ -1,13 +1,14 @@
 package javax0.geci.engine;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Segment implements javax0.geci.api.Segment {
     private static final int TAB = 4;
     final List<String> lines = new LinkedList<>();
-    private int tabStop;
     final private int openingTabStop;
+    private int tabStop;
 
     public Segment(int tabStop) {
         this.openingTabStop = tabStop;
@@ -15,16 +16,21 @@ public class Segment implements javax0.geci.api.Segment {
     }
 
     @Override
-    public void close(){
+    public void close() {
         tabStop = openingTabStop;
     }
 
     @Override
-    public void write(String s) {
+    public void write(String s, Object... parameters) {
         if (s.trim().length() == 0) {
             newline();
         } else {
-            lines.add(" ".repeat(tabStop) + s);
+            var formatted = String.format(s, parameters);
+            if (formatted.contains("\n")) {
+                Arrays.stream(formatted.split("\n")).forEach(this::write);
+            } else {
+                lines.add(" ".repeat(tabStop) + formatted);
+            }
         }
     }
 
@@ -34,17 +40,17 @@ public class Segment implements javax0.geci.api.Segment {
     }
 
     @Override
-    public void write_r(String s) {
-        write(s);
+    public void write_r(String s, Object... parameters) {
+        write(s, parameters);
         tabStop += TAB;
     }
 
     @Override
-    public void write_l(String s) {
+    public void write_l(String s, Object... parameters) {
         tabStop -= TAB;
         if (tabStop < openingTabStop) {
             tabStop = openingTabStop;
         }
-        write(s);
+        write(s, parameters);
     }
 }
