@@ -19,7 +19,7 @@ public class TestFluent {
         if (new Geci().source("./src/main/java", "./tests/src/main/java").register(new Fluent()).generate()) {
             Assertions.fail("Fluent modified source code. Please compile again.");
         }
-        SimpleSample.sample().a("ss").b("bb").c("").d("");
+        Assertions.assertEquals("",SimpleSample.sample().a("ss").b("bb").c("").get());
     }
 
 }

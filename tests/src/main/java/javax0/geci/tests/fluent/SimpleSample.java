@@ -11,13 +11,13 @@ public class SimpleSample {
         sb.append("A(").append(s).append(")");
     }
     public void b(String s){
-        sb.append("A(").append(s).append(")");
+        sb.append("B(").append(s).append(")");
     }
     public void c(String s){
-        sb.append("A(").append(s).append(")");
+        sb.append("C(").append(s).append(")");
     }
     public void d(String s){
-        sb.append("A(").append(s).append(")");
+        sb.append("D(").append(s).append(")");
     }
 
     public String get(){
@@ -64,19 +64,19 @@ public class SimpleSample {
         }
     }
     interface If0 {
-        java.lang.String get();
-        java.lang.String got();
+        String get();
+        String got();
     }
-    interface If2  {
+    interface If2  extends If0 {
         If1 b(String arg1);
     }
-    interface If3  {
+    interface If3  extends If0 {
         If2 a(String arg1);
     }
-    interface If4  {
+    interface If4  extends If0 {
         If1 d(String arg1);
     }
-    interface If5  {
+    interface If5  extends If0 {
         If4 c(String arg1);
     }
     interface If6 extends If3,If5{

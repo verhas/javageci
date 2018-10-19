@@ -102,7 +102,7 @@ public class ClassBuilder {
     public String build() {
         var list = fluent.getNodes();
         var tree = new Tree(Node.ONCE, list);
-        var lastInterface = getLastNodeReturnType(list.get(list.size() - 1));
+        var lastInterface = Tools.normalizeTypeName(getLastNodeReturnType(list.get(list.size() - 1)));
         var interfaces = build(tree, lastInterface, Set.of());
         var code = new JavaSourceBuilder();
         var startMethod = fluent.getStartMethod() == null ? "start" : fluent.getStartMethod();
@@ -127,10 +127,10 @@ public class ClassBuilder {
                         isFinalNode ? null : "Wrapper",
                         false))) {
                         if (isFinalNode) {
-                            if( method.getReturnType() == Void.class ){
-                                code.statement("that.%s",Tools.methodCall(method));
-                            }else{
-                                code.statement("return that.%s",Tools.methodCall(method));
+                            if (method.getReturnType() == Void.class) {
+                                code.statement("that.%s", Tools.methodCall(method));
+                            } else {
+                                code.statement("return that.%s", Tools.methodCall(method));
                             }
                         } else {
                             if (fluent.getCloner() != null) {
@@ -163,11 +163,15 @@ public class ClassBuilder {
         this.extendedInterfaces = extendedInterfaces;
         interfaceName = newInterfaceName();
         var code = new JavaSourceBuilder();
-
-        var extendsList = "";
+        final Set<String> actualExtendedInterfaces;
         if ((terminal.getModifier() & (Node.OPTIONAL | Node.ZERO_OR_MORE)) != 0) {
-            var actualExtendedInterfaces = new HashSet<>(extendedInterfaces);
+            actualExtendedInterfaces = new HashSet<>(extendedInterfaces);
             actualExtendedInterfaces.add(nextInterface);
+        } else {
+            actualExtendedInterfaces = new HashSet<>(extendedInterfaces);
+        }
+        var extendsList = "";
+        if (!actualExtendedInterfaces.isEmpty()) {
             extendsList = " extends " + String.join(",", actualExtendedInterfaces);
         }
         try (var ifcB = code.open("interface %s %s ", interfaceName, extendsList)) {
