@@ -1,10 +1,10 @@
 package javax0.geci.fluent.internal;
 
 import javax0.geci.api.GeciException;
-import javax0.geci.fluent.FluentBuilder;
 import javax0.geci.fluent.tree.Node;
 import javax0.geci.fluent.tree.Terminal;
 import javax0.geci.fluent.tree.Tree;
+import javax0.geci.tools.JavaSourceBuilder;
 import javax0.geci.tools.Tools;
 
 import java.util.HashSet;
@@ -14,12 +14,12 @@ import java.util.Set;
 public class ClassBuilder {
     private final InterfaceNameProvider interfaceNameProvider;
     private final MethodCollection methods;
-    private final FluentBuilder fluent;
+    private final FluentBuilderImpl fluent;
     private final Set<String> allInterfaces;
     private String interfaceName;
     private Set<String> extendedInterfaces = Set.of();
 
-    public ClassBuilder(FluentBuilder fluent) {
+    public ClassBuilder(FluentBuilderImpl fluent) {
         this.interfaceNameProvider = new InterfaceNameProvider();
         this.fluent = fluent;
         this.methods = fluent.getMethods();
@@ -49,6 +49,7 @@ public class ClassBuilder {
 
     private String getLastNodeReturnType(Terminal lastNode) {
         if (lastNode.getModifier() == Node.ONCE) {
+            methods.setFinalNode(lastNode.getMethod());
             return methods.get(lastNode.getMethod()).getGenericReturnType().getTypeName();
         }
         if (lastNode.getModifier() == Node.ONE_OF) {
@@ -103,43 +104,50 @@ public class ClassBuilder {
         var tree = new Tree(Node.ONCE, list);
         var lastInterface = getLastNodeReturnType(list.get(list.size() - 1));
         var interfaces = build(tree, lastInterface, Set.of());
-        var code = new StringBuilder();
+        var code = new JavaSourceBuilder();
         var startMethod = fluent.getStartMethod() == null ? "start" : fluent.getStartMethod();
-        code.append("  public static ").append(interfaceNameProvider.getLastInterfaceName()).append(" ").append(startMethod).append("(){\n")
-            .append("    return new Wrapper(null);\n")
-            .append("  }\n");
-        code.append("public static class Wrapper implements ").append(String.join(",", allInterfaces)).append(" {\n")
-            .append("  private final ").append(fluent.getKlass().getCanonicalName()).append(" that;\n")
-            .append("  public Wrapper(").append(fluent.getKlass().getCanonicalName()).append(" that").append(") {\n")
-            .append("    if( that == null ){\n")
-            .append("       this.that = new ").append(fluent.getKlass().getCanonicalName()).append("();\n")
-            .append("     }else{\n")
-            .append("       this.that = that;\n")
-            .append("     }\n")
-            .append("  }\n");
-        for (var signature : methods.methodSignatures()) {
-            var method = methods.get(signature);
-            if (fluent.getCloner() == null || !fluent.getCloner().equals(method)) {
-                code.append("  ");
-                code.append(Tools.methodSignature(method, null, "Wrapper", false));
-                code.append(" {\n");
-                if (fluent.getCloner() != null) {
-                    code.append("  var next = new Wrapper(that.")
-                        .append(Tools.methodCall(fluent.getCloner()))
-                        .append(");\n")
-                        .append("    next.").append(Tools.methodCall(method)).append(";\n")
-                        .append("    return next;\n")
-                        .append("    }\n");
+        try (var mtBl = code.open("public static %s %s()", interfaceNameProvider.getLastInterfaceName(), startMethod)) {
+            mtBl.statement("return new Wrapper(null)");
+        }
+        try (var klBl = code.open("public static class Wrapper implements %s", String.join(",", allInterfaces))) {
+            klBl.statement("private final %s that", fluent.getKlass().getCanonicalName());
+            try (var coBl = klBl.open("public Wrapper(%s that)", fluent.getKlass().getCanonicalName())) {
+                try (var ifBl = coBl.ifStatement("that == null")) {
+                    ifBl.statement("this.that = new %s()", fluent.getKlass().getCanonicalName())
+                        .elseStatement()
+                        .statement("this.that = that");
+                }
+            }
+            for (var signature : methods.methodSignatures()) {
+                var method = methods.get(signature);
+                if (fluent.getCloner() == null || !fluent.getCloner().equals(method)) {
+                    var isFinalNode = methods.isFinalNode(signature);
+                    try (var mtBl = code.open(Tools.methodSignature(method,
+                        null,
+                        isFinalNode ? null : "Wrapper",
+                        false))) {
+                        if (isFinalNode) {
+                            if( method.getReturnType() == Void.class ){
+                                code.statement("that.%s",Tools.methodCall(method));
+                            }else{
+                                code.statement("return that.%s",Tools.methodCall(method));
+                            }
+                        } else {
+                            if (fluent.getCloner() != null) {
+                                code.statement("var next = new Wrapper(that.%s)", Tools.methodCall(fluent.getCloner()))
+                                    .statement("next.%s", Tools.methodCall(method))
+                                    .returnStatement("next");
 
-                } else {
-                    code.append("    that.").append(Tools.methodCall(method)).append(";\n")
-                        .append("    return this;\n")
-                        .append("    }\n");
+                            } else {
+                                code.statement("that.%s", Tools.methodCall(method))
+                                    .returnStatement("this");
+                            }
+                        }
+                    }
                 }
             }
         }
-        code.append("}\n");
-        code.append(interfaces);
+        code.write(interfaces);
         return code.toString();
     }
 
@@ -154,18 +162,18 @@ public class ClassBuilder {
     private String build(Terminal terminal, String nextInterface, Set<String> extendedInterfaces) {
         this.extendedInterfaces = extendedInterfaces;
         interfaceName = newInterfaceName();
-        var code = new StringBuilder();
-        code.append("interface ").append(interfaceName);
+        var code = new JavaSourceBuilder();
+
+        var extendsList = "";
         if ((terminal.getModifier() & (Node.OPTIONAL | Node.ZERO_OR_MORE)) != 0) {
             var actualExtendedInterfaces = new HashSet<>(extendedInterfaces);
             actualExtendedInterfaces.add(nextInterface);
-            code.append(" extends ").append(String.join(",", actualExtendedInterfaces));
+            extendsList = " extends " + String.join(",", actualExtendedInterfaces);
         }
-        code.append("{\n  ");
-        code.append(Tools.methodSignature(methods.get(terminal.getMethod()), null,
-            (terminal.getModifier() & Node.ZERO_OR_MORE) != 0 ? interfaceName : nextInterface, true));
-        code.append(";\n");
-        code.append("}\n");
+        try (var ifcB = code.open("interface %s %s ", interfaceName, extendsList)) {
+            ifcB.statement(Tools.methodSignature(methods.get(terminal.getMethod()), null,
+                (terminal.getModifier() & Node.ZERO_OR_MORE) != 0 ? interfaceName : nextInterface, true));
+        }
         return code.toString();
     }
 
@@ -191,50 +199,43 @@ public class ClassBuilder {
 
     private String buildOneTerminalOf(Tree tree, String nextInterface, Set<String> extendedInterfaces) {
         this.interfaceName = newInterfaceName();
-        var code = new StringBuilder();
-        code.append("interface ")
-            .append(this.interfaceName);
-        if (!extendedInterfaces.isEmpty()) {
-            code.append(" extends ").append(String.join(",", extendedInterfaces));
-            code.append(" ");
-        }
-        code.append("{\n");
-        List<Node> list = tree.getList();
-        for (var node : list) {
-            if (node instanceof Tree) {
-                throw new GeciException("Internal error, ON_TERMINAL_OF contains a non-terminal sub.");
-            } else {
-                var terminal = (Terminal) node;
-                code.append("  ")
-                    .append(Tools.methodSignature(methods.get(terminal.getMethod()), null, nextInterface, true))
-                    .append(";\n");
+        var code = new JavaSourceBuilder();
+        try (
+            var ifcB = code.open("interface %s %s",
+                this.interfaceName,
+                extendedInterfaces.isEmpty() ? "" : " extends " + String.join(",", extendedInterfaces))) {
+            List<Node> list = tree.getList();
+            for (var node : list) {
+                if (node instanceof Tree) {
+                    throw new GeciException("Internal error, ON_TERMINAL_OF contains a non-terminal sub.");
+                } else {
+                    var terminal = (Terminal) node;
+                    ifcB.statement(Tools.methodSignature(methods.get(terminal.getMethod()), null, nextInterface, true));
+                }
             }
         }
-        code.append("}\n");
         return code.toString();
     }
 
     private String buildOneOf(Tree tree, String nextInterface, Set<String> extendedInterfaces) {
         List<Node> list = tree.getList();
-        var code = new StringBuilder();
+        var code = new JavaSourceBuilder();
         var alternativeInterfaces = new HashSet<String>();
         for (var node : list) {
             var builder = new ClassBuilder(this);
-            code.append(builder.build(node, nextInterface, extendedInterfaces));
+            code.write(builder.build(node, nextInterface, extendedInterfaces));
             alternativeInterfaces.add(builder.interfaceName);
         }
         this.interfaceName = newInterfaceName();
-        code.append("interface ")
-            .append(this.interfaceName)
-            .append(" extends ")
-            .append(String.join(",", alternativeInterfaces))
-            .append("{}\n");
+        try (var ifcB = code.open("interface %s extends %s", this.interfaceName
+            , String.join(",", alternativeInterfaces))) {
+        }
         return code.toString();
     }
 
     private String buildZeroOrMore(Tree tree, String nextInterface, Set<String> extendedInterfaces) {
         List<Node> list = tree.getList();
-        var code = new StringBuilder();
+        var code = new JavaSourceBuilder();
         ClassBuilder lastBuilder = null;
         this.interfaceName = newInterfaceName();
         for (var i = list.size() - 1; i >= 0; i--) {
@@ -257,20 +258,18 @@ public class ClassBuilder {
                 }
             }
 
-            code.append(builder.build(node, actualNextInterface, actualExtendedInterfaces));
+            code.write(builder.build(node, actualNextInterface, actualExtendedInterfaces));
             lastBuilder = builder;
         }
-        code.append("interface ")
-            .append(this.interfaceName)
-            .append(" extends ")
-            .append(lastBuilder.interfaceName)
-            .append("{}");
+        try (var ifcB = code.open("interface %s extends %s", this.interfaceName, lastBuilder.interfaceName)) {
+
+        }
         return code.toString();
     }
 
     private String buildOnce(Tree tree, String nextInterface, Set<String> extendedInterfaces) {
         List<Node> list = tree.getList();
-        var code = new StringBuilder();
+        var code = new JavaSourceBuilder();
         ClassBuilder lastBuilder = null;
         for (var i = list.size() - 1; i >= 0; i--) {
             final var node = list.get(i);
@@ -282,7 +281,7 @@ public class ClassBuilder {
                 this.extendedInterfaces = actualExtendedInterfaces;
                 actualNextInterface = lastBuilder.interfaceName;
             }
-            code.append(builder.build(node, actualNextInterface, actualExtendedInterfaces));
+            code.write(builder.build(node, actualNextInterface, actualExtendedInterfaces));
             lastBuilder = builder;
         }
         this.interfaceName = lastBuilder.interfaceName;
@@ -291,7 +290,7 @@ public class ClassBuilder {
 
     private String buildOptional(Tree tree, String nextInterface, Set<String> extendedInterfaces) {
         List<Node> list = tree.getList();
-        var code = new StringBuilder();
+        var code = new JavaSourceBuilder();
         ClassBuilder lastBuilder = null;
         for (var i = list.size() - 1; i >= 0; i--) {
             final var node = list.get(i);
@@ -310,7 +309,7 @@ public class ClassBuilder {
                 }
             }
 
-            code.append(builder.build(node, nextInterface, actualExtendedInterfaces));
+            code.write(builder.build(node, nextInterface, actualExtendedInterfaces));
             lastBuilder = builder;
         }
         this.interfaceName = lastBuilder.interfaceName;

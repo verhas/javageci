@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 public class MethodCollection {
     private final Class<?> klass;
     private final Set<Method> methodSet;
-    private final Map<String, Method> methodMap;
+    private final Map<String, MethodData> methodMap;
     private final Map<String, String> typeMapping = new HashMap<>();
     private final Map<String, Boolean> isMultiple = new HashMap<>();
 
@@ -31,6 +31,7 @@ public class MethodCollection {
 
     /**
      * Extract the non-generic type names that are used to build up a generic type.
+     *
      * @param type the generic type that includes presumably subtypes
      * @return the stream of the individual type strings without duplicates
      */
@@ -40,6 +41,7 @@ public class MethodCollection {
 
     /**
      * Revome the package name from a fully qualified class name.
+     *
      * @param type the fully qualified name
      * @return the simple name, which is essentially the class name and nothing else
      */
@@ -50,7 +52,7 @@ public class MethodCollection {
     /**
      * @return the set of the normalized method signatures.
      */
-    public Set<String> methodSignatures(){
+    public Set<String> methodSignatures() {
         return methodMap.keySet();
     }
 
@@ -63,11 +65,50 @@ public class MethodCollection {
      * @return the method object or {@code null} if the method is not in the class
      */
     public Method get(String name) {
+        var md = get0(name);
+        if( md == null ){
+            return null;
+        }else{
+            return md.method;
+        }
+    }
+
+    /**
+     * Get the method by name or by signature. If the name is unique then there is no need for signature.
+     * The method throws {@link GeciException} if the method is specified by the name and it is ambiguous.
+     * Returns {@code null} if the method is not found.
+     *
+     * @param name the name or the signature of the method
+     * @return true is the method is a final in the fluent api call, and false otherwise
+     */
+    public Boolean isFinalNode(String name){
+        var md = get0(name);
+        if( md == null ){
+            return null;
+        }else{
+            return md.isFinalNodeMethod;
+        }
+    }
+
+    /**
+     * Declare that the method specified by the name (signature) is a final in the fluent call.
+     * <p>
+     * Final methods are special because they have the original return type in the interfaces as well as in the
+     * wrapper class and they are not chainable.
+     *
+     * @param name the name or the signature of the method
+     */
+    public void setFinalNode(String name){
+        var md = get0(name);
+        md.isFinalNodeMethod = true;
+    }
+
+    private MethodData get0(String name){
         if (name.contains("(")) {
             var key = normalize(name);
             return methodMap.get(key);
         }
-        Method method = null;
+        MethodData methodData = null;
         var start = name + "(";
         boolean found = false;
         for (var signature : methodMap.keySet()) {
@@ -75,11 +116,11 @@ public class MethodCollection {
                 if (found) {
                     throw new GeciException("The method name '" + name + "' is ambiguous.");
                 }
-                method = methodMap.get(signature);
+                methodData = methodMap.get(signature);
                 found = true;
             }
         }
-        return method;
+        return methodData;
     }
 
     /**
@@ -169,8 +210,8 @@ public class MethodCollection {
                 type -> isMultiple.get(simple(type)) ? type : simple(type))));
     }
 
-    private Map<String, Method> collect() {
-        return methodSet.stream().collect(Collectors.toMap(this::signature, Function.identity()));
+    private Map<String, MethodData> collect() {
+        return methodSet.stream().collect(Collectors.toMap(this::signature, MethodCollection::methodData));
     }
 
     /**
@@ -182,9 +223,20 @@ public class MethodCollection {
         var s = new StringBuilder();
         s.append("{\n");
         for (var key : new TreeSet<>(methodMap.keySet())) {
-            s.append("  \"").append(key).append("\" -> ").append(methodMap.get(key).getName()).append("\n");
+            s.append("  \"").append(key).append("\" -> ").append(methodMap.get(key).method.getName()).append("\n");
         }
         s.append("}");
         return s.toString();
+    }
+
+    private static MethodData methodData(Method method){
+        MethodData md = new MethodData();
+        md.method = method;
+        return md;
+    }
+
+    private static class MethodData {
+        Method method;
+        boolean isFinalNodeMethod = false;
     }
 }

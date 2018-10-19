@@ -3,4 +3,5 @@ module geci.core {
     requires geci.tools;
     exports javax0.geci.delegator;
     exports javax0.geci.accessor;
+    exports javax0.geci.fluent;
 }

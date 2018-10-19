@@ -1,6 +1,7 @@
-package javax0.geci.fluent;
+package javax0.geci.fluent.internal;
 
 import javax0.geci.api.GeciException;
+import javax0.geci.fluent.FluentBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

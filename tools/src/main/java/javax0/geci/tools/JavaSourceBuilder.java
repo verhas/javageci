@@ -29,7 +29,7 @@ public class JavaSourceBuilder implements AutoCloseable {
                 Arrays.stream(formatted.split("\n")).forEach(this::write);
             } else {
                 formatted = formatted.replaceAll("\n+$", "");
-                code.append(" ".repeat(tabStop) + formatted + "\n");
+                code.append(" ".repeat(tabStop)).append(formatted).append("\n");
             }
         }
         return this;
@@ -109,36 +109,46 @@ public class JavaSourceBuilder implements AutoCloseable {
 
     public JavaSourceBuilder comment(String s, Object... parameters) {
         s = "// " + s;
-        write(s);
+        write(s,parameters);
         return this;
     }
 
     public JavaSourceBuilder statement(String s, Object... parameters) {
         s += ";";
-        write(s);
+        write(s,parameters);
         return this;
     }
 
     public JavaSourceBuilder whileStatement(String s, Object... parameters) {
         s = "while( " + s + " ){";
-        write_r(s);
+        write_r(s,parameters);
         return this;
     }
 
     public JavaSourceBuilder forStatement(String s, Object... parameters) {
         s = "for( " + s + " ){";
-        write_r(s);
+        write_r(s,parameters);
         return this;
     }
 
     public JavaSourceBuilder ifStatement(String s, Object... parameters) {
         s = "if( " + s + " ){";
-        write_r(s);
+        write_r(s,parameters);
         return this;
     }
 
     public JavaSourceBuilder elseStatement() {
         write_lr("}else{");
+        return this;
+    }
+
+    public JavaSourceBuilder returnStatement() {
+        statement("return");
+        return this;
+    }
+    public JavaSourceBuilder returnStatement(String s, Object... parameters) {
+        s = "return "+s;
+        statement(s,parameters);
         return this;
     }
 
