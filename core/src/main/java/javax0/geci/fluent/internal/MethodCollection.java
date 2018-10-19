@@ -81,12 +81,12 @@ public class MethodCollection {
      * @param name the name or the signature of the method
      * @return true is the method is a final in the fluent api call, and false otherwise
      */
-    public Boolean isFinalNode(String name){
+    public Boolean isExitNode(String name){
         var md = get0(name);
         if( md == null ){
             return null;
         }else{
-            return md.isFinalNodeMethod;
+            return md.isExitNodeMethod;
         }
     }
 
@@ -98,9 +98,9 @@ public class MethodCollection {
      *
      * @param name the name or the signature of the method
      */
-    public void setFinalNode(String name){
+    public void exitNode(String name){
         var md = get0(name);
-        md.isFinalNodeMethod = true;
+        md.isExitNodeMethod = true;
     }
 
     private MethodData get0(String name){
@@ -237,6 +237,6 @@ public class MethodCollection {
 
     private static class MethodData {
         Method method;
-        boolean isFinalNodeMethod = false;
+        boolean isExitNodeMethod = false;
     }
 }

@@ -169,7 +169,7 @@ public class Tools {
      * {@code arg1}, {@code arg2}, ... {@code argN}.
      *
      * @param method            of which the signature is needed
-     * @param decorator         can be {@code null} or can be used to alter the name of the method in the signature. This is
+     * @param nameDecorator         can be {@code null} or can be used to alter the name of the method in the signature. This is
      *                          used when the code generation wants to create methods with different name and the same
      *                          signature as other methods. For example a proxy method in the same class that does something,
      *                          then calls the original method and then returns.
@@ -180,7 +180,7 @@ public class Tools {
      * @return the string of the method signature.
      */
     public static String methodSignature(Method method,
-                                         Function<String, String> decorator,
+                                         Function<String, String> nameDecorator,
                                          String replaceReturnType, boolean interfce) {
         var argCounter = new AtomicInteger(0);
         var arglist = Arrays.stream(method.getGenericParameterTypes())
@@ -192,7 +192,7 @@ public class Tools {
         return (interfce ? "" : modifiersString(method)) +
             (replaceReturnType == null ? typeAsString(method) : replaceReturnType) +
             " " +
-            decoratedName(method, decorator) +
+            decoratedName(method, nameDecorator) +
             "(" + arglist + ")" +
             (exceptionlist.length() == 0 ? "" : " throws " + exceptionlist);
     }

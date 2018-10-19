@@ -5,6 +5,10 @@ import javax0.geci.annotations.Geci;
 @Geci("fluent definedBy='javax0.geci.tests.fluent.TestFluent::definition'")
 public class SimpleSample {
 
+    public SimpleSample copy(){
+        return  this;
+    }
+
     private final StringBuilder sb = new StringBuilder();
 
     public void a(String s){
@@ -29,60 +33,62 @@ public class SimpleSample {
 
     //<editor-fold id="fluent" desc="generated fluent code">
     public static If11 sample(){
-        return new Wrapper(null);
+        return new Wrapper();
     }
     public static class Wrapper implements If0,If2,If1,If4,If3,If6,If5,If8,If7,If9,If10,If11{
         private final javax0.geci.tests.fluent.SimpleSample that;
         public Wrapper(javax0.geci.tests.fluent.SimpleSample that){
-            if( that == null ){
-                this.that = new javax0.geci.tests.fluent.SimpleSample();
-            }else{
-                this.that = that;
-            }
+            this.that = that;
+        }
+        public Wrapper(){
+            this.that = new javax0.geci.tests.fluent.SimpleSample();
         }
         public Wrapper b(String arg1){
-            that.b( arg1);
-            return this;
+            var next = new Wrapper(that.copy());
+            next.b( arg1);
+            return next;
         }
         public String got(){
             return that.got();
         }
         public Wrapper c(String arg1){
-            that.c( arg1);
-            return this;
+            var next = new Wrapper(that.copy());
+            next.c( arg1);
+            return next;
         }
         public String get(){
             return that.get();
         }
         public Wrapper a(String arg1){
-            that.a( arg1);
-            return this;
+            var next = new Wrapper(that.copy());
+            next.a( arg1);
+            return next;
         }
         public Wrapper d(String arg1){
-            that.d( arg1);
-            return this;
+            var next = new Wrapper(that.copy());
+            next.d( arg1);
+            return next;
         }
     }
-    interface If0 {
+    interface If0{
         String get();
         String got();
     }
-    interface If2  extends If0 {
+    interface If2  {
         If1 b(String arg1);
     }
-    interface If3  extends If0 {
+    interface If3  {
         If2 a(String arg1);
     }
-    interface If4  extends If0 {
+    interface If4  {
         If1 d(String arg1);
     }
-    interface If5  extends If0 {
+    interface If5  {
         If4 c(String arg1);
     }
     interface If6 extends If3,If5{
     }
-    interface If1 extends If6{
-    }
+    interface If1 extends If0,If6 {};
     interface If7  {
         If1 b(String arg1);
     }
