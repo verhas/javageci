@@ -59,10 +59,12 @@ public class ClassBuilder {
         final var interfaces = build(tree, lastInterface);
         final var code = new JavaSourceBuilder();
         writeStartMethod(code);
+        writeWrapperInterface(code);
         writeWrapperClass(code);
         code.write(interfaces);
         return code.toString();
     }
+
 
     /**
      * Write the source code of the start method into the source builder.
@@ -76,6 +78,13 @@ public class ClassBuilder {
         final var startMethod = fluent.getStartMethod() == null ? "start" : fluent.getStartMethod();
         try (final var mtBl = code.open("public static %s %s()", ifNameFactory.getLastName(), startMethod)) {
             mtBl.statement("return new Wrapper()");
+        }
+    }
+
+    private void writeWrapperInterface(JavaSourceBuilder code) {
+        if (methods.needWrapperInterface()) {
+            try (var ifBl = code.open("public interface WrapperInterface")) {
+            }
         }
     }
 
@@ -105,8 +114,13 @@ public class ClassBuilder {
             var method = methods.get(signature);
             if (fluent.getCloner() == null || !fluent.getCloner().equals(method)) {
                 var isExitNode = methods.isExitNode(signature);
-                var replaceReturnType = isExitNode ? null : "Wrapper";
-                try (var mtBl = code.open(Tools.methodSignature(method, null, replaceReturnType, false))) {
+                var actualReturnType = isExitNode ? null : "Wrapper";
+                var signatureString = MethodTool
+                        .from(fluent.getKlass())
+                        .forThe(method)
+                        .withType(actualReturnType)
+                        .signature();
+                try (var mtBl = code.open(signatureString)) {
                     if (isExitNode) {
                         writeExitMethodWrapper(method, mtBl);
                     } else {
@@ -118,23 +132,27 @@ public class ClassBuilder {
     }
 
     private void writeWrapperMethodBody(Method method, JavaSourceBuilder mtBl) {
+        var callString = MethodTool.from(fluent.getKlass()).forThe(method).call();
         if (fluent.getCloner() != null) {
             mtBl.statement("var next = new Wrapper(that.%s)", Tools.methodCall(fluent.getCloner()))
-                .statement("next.%s", Tools.methodCall(method))
-                .returnStatement("next");
+                    .statement("next.that.%s", callString)
+                    .returnStatement("next");
 
         } else {
-            mtBl.statement("that.%s", Tools.methodCall(method))
-                .returnStatement("this");
+            mtBl.statement("that.%s", callString)
+                    .returnStatement("this");
         }
     }
 
     private void writeExitMethodWrapper(Method method, JavaSourceBuilder mtBl) {
+        final String returnKw;
         if (method.getReturnType() == Void.class) {
-            mtBl.statement("that.%s", Tools.methodCall(method));
+            returnKw = "";
         } else {
-            mtBl.statement("return that.%s", Tools.methodCall(method));
+            returnKw = "return ";
         }
+        var callString = MethodTool.from(fluent.getKlass()).forThe(method).call();
+        mtBl.statement("%sthat.%s", returnKw, callString);
     }
 
     private String build(Node node, String nextInterface) {
@@ -148,11 +166,16 @@ public class ClassBuilder {
     private String build(Terminal terminal, String nextInterface) {
         interfaceName = ifNameFactory.getNewName();
         var code = new JavaSourceBuilder();
-        var extendsList = (terminal.getModifier() & (Node.OPTIONAL | Node.ZERO_OR_MORE)) != 0 ?
-            " extends " + nextInterface : "";
-        try (var ifcB = code.open("interface %s %s ", interfaceName, extendsList)) {
-            ifcB.statement(Tools.methodSignature(methods.get(terminal.getMethod()), null,
-                (terminal.getModifier() & Node.ZERO_OR_MORE) != 0 ? interfaceName : nextInterface, true));
+        var list = InterfaceList.builderFor(methods)
+                .when((terminal.getModifier() & (Node.OPTIONAL | Node.ZERO_OR_MORE)) != 0).then(nextInterface)
+                .buildList();
+        try (var ifcB = code.open("interface %s%s ", interfaceName, list)) {
+            ifcB.statement(MethodTool
+                    .from(fluent.getKlass())
+                    .forThe(methods.get(terminal.getMethod()))
+                    .withType((terminal.getModifier() & Node.ZERO_OR_MORE) != 0 ? interfaceName : nextInterface)
+                    .asInterface()
+                    .signature());
         }
         return code.toString();
     }
@@ -181,14 +204,19 @@ public class ClassBuilder {
         this.interfaceName = ifNameFactory.getNewName();
         var code = new JavaSourceBuilder();
         try (
-            var ifcB = code.open("interface %s", this.interfaceName)) {
+                var ifcB = code.open("interface %s", this.interfaceName)) {
             List<Node> list = tree.getList();
             for (var node : list) {
                 if (node instanceof Tree) {
                     throw new GeciException("Internal error, ON_TERMINAL_OF contains a non-terminal sub.");
                 } else {
                     var terminal = (Terminal) node;
-                    ifcB.statement(Tools.methodSignature(methods.get(terminal.getMethod()), null, nextInterface, true));
+                    ifcB.statement(MethodTool
+                            .from(fluent.getKlass())
+                            .forThe(methods.get(terminal.getMethod()))
+                            .withType(nextInterface)
+                            .asInterface()
+                            .signature());
                 }
             }
         }
@@ -205,7 +233,8 @@ public class ClassBuilder {
             alternativeInterfaces.add(builder.interfaceName);
         }
         this.interfaceName = ifNameFactory.getNewName();
-        try (var ifcB = code.open("interface %s extends %s", this.interfaceName, setJoin(alternativeInterfaces))) {
+        var ifs = InterfaceList.builderFor(methods).set(alternativeInterfaces).buildList();
+        try (var ifcB = code.open("interface %s%s", this.interfaceName, ifs)) {
         }
         return code.toString();
     }
@@ -229,7 +258,8 @@ public class ClassBuilder {
             code.write(builder.build(node, actualNextInterface));
             lastBuilder = builder;
         }
-        code.statement("interface %s extends %s,%s {}", this.interfaceName, nextInterface, lastBuilder.interfaceName);
+        var ifs = InterfaceList.builderFor(methods).set(nextInterface, lastBuilder.interfaceName).buildList();
+        code.write("interface %s%s {}", this.interfaceName, ifs);
         return code.toString();
     }
 
@@ -248,7 +278,8 @@ public class ClassBuilder {
             code.write(builder.build(node, actualNextInterface));
             lastBuilder = builder;
         }
-        code.statement("interface %s extends %s,%s {}", this.interfaceName, nextInterface, lastBuilder.interfaceName);
+        var ifs = InterfaceList.builderFor(methods).set(nextInterface, lastBuilder.interfaceName).buildList();
+        code.statement("interface %s%s {}", this.interfaceName, ifs);
         return code.toString();
     }
 

@@ -45,7 +45,7 @@ public class SimpleSample {
         }
         public Wrapper b(String arg1){
             var next = new Wrapper(that.copy());
-            next.b( arg1);
+            next.that.b(arg1);
             return next;
         }
         public String got(){
@@ -53,7 +53,7 @@ public class SimpleSample {
         }
         public Wrapper c(String arg1){
             var next = new Wrapper(that.copy());
-            next.c( arg1);
+            next.that.c(arg1);
             return next;
         }
         public String get(){
@@ -61,12 +61,12 @@ public class SimpleSample {
         }
         public Wrapper a(String arg1){
             var next = new Wrapper(that.copy());
-            next.a( arg1);
+            next.that.a(arg1);
             return next;
         }
         public Wrapper d(String arg1){
             var next = new Wrapper(that.copy());
-            next.d( arg1);
+            next.that.d(arg1);
             return next;
         }
     }
@@ -74,31 +74,31 @@ public class SimpleSample {
         String get();
         String got();
     }
-    interface If2  {
+    interface If2 {
         If1 b(String arg1);
     }
-    interface If3  {
+    interface If3 {
         If2 a(String arg1);
     }
-    interface If4  {
+    interface If4 {
         If1 d(String arg1);
     }
-    interface If5  {
+    interface If5 {
         If4 c(String arg1);
     }
     interface If6 extends If3,If5{
     }
-    interface If1 extends If0,If6 {};
-    interface If7  {
+    interface If1 extends If0,If6 {}
+    interface If7 {
         If1 b(String arg1);
     }
-    interface If8  {
+    interface If8 {
         If7 a(String arg1);
     }
-    interface If9  {
+    interface If9 {
         If1 d(String arg1);
     }
-    interface If10  {
+    interface If10 {
         If9 c(String arg1);
     }
     interface If11 extends If8,If10{
