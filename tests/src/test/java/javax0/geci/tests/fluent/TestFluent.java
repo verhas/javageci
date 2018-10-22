@@ -14,6 +14,11 @@ public class TestFluent {
         return t.oneOrMore(t.oneOf(t.one("a").one("b"),t.one("c").one("d"))).oneOf("get","got");
     }
 
+    public static FluentBuilder regex() {
+        var t = FluentBuilder.from(SimpleSample.class).start("sample").cloner("copy");
+        return t.oneOrMore(t.oneOf(t.one("a").one("b"),t.one("c").one("d"))).oneOf("get","got");
+    }
+
     @Test
     public void testFluent() throws Exception {
         if (new Geci().source("./src/main/java", "./tests/src/main/java").register(new Fluent()).generate()) {

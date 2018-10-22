@@ -13,10 +13,9 @@ import java.util.List;
 import java.util.Set;
 
 public class ClassBuilder {
-    private final InterfaceNameProvider interfaceNameProvider;
+    private final InterfaceNameFactory ifNameFactory;
     private final MethodCollection methods;
     private final FluentBuilderImpl fluent;
-    private final Set<String> allInterfaces;
     private String interfaceName;
 
     /**
@@ -25,10 +24,9 @@ public class ClassBuilder {
      * @param fluent the fluent definition.
      */
     public ClassBuilder(FluentBuilderImpl fluent) {
-        this.interfaceNameProvider = new InterfaceNameProvider();
+        this.ifNameFactory = new InterfaceNameFactory();
         this.fluent = fluent;
         this.methods = fluent.getMethods();
-        this.allInterfaces = new HashSet<>();
     }
 
     /**
@@ -37,108 +35,12 @@ public class ClassBuilder {
      * @param that the other class builder
      */
     private ClassBuilder(ClassBuilder that) {
-        this.interfaceNameProvider = that.interfaceNameProvider;
+        this.ifNameFactory = that.ifNameFactory;
         this.methods = that.methods;
         this.fluent = that.fluent;
-        this.allInterfaces = that.allInterfaces;
+        this.interfaceName = that.interfaceName;
     }
 
-    /**
-     * Create a new interface name and add it to the set of the interfaces.
-     *
-     * @return the name of the new interface
-     */
-    private String newInterfaceName() {
-        var newInterfaceName = interfaceNameProvider.getNewInterfaceName();
-        allInterfaces.add(newInterfaceName);
-        return newInterfaceName;
-    }
-
-    /**
-     * Get the return type of the last node in the fluent tree. The methods that are invoked inside the
-     * chaned calls all return the same object (or a clone), except those that can be invoked last. There are usually
-     * one of those in the typical fluent api, but there can be more. They cannot be present in the middle of the
-     * call chain because they return usually the composed result that the whole chain was aiming to get.
-     * <p>
-     * This method seeks the last method of the structure and returns the type of that method. In case there are more
-     * terminal methods then it also checks that they all have the same type.
-     *
-     * @param lastNode the last node of the node list of the fluent API.
-     * @return the type of the last method/node
-     */
-    private String getLastNodeReturnType(Node lastNode) {
-        if (lastNode instanceof Terminal) {
-            return getLastNodeReturnType((Terminal) lastNode);
-        } else {
-            return getLastNodeReturnType((Tree) lastNode);
-        }
-    }
-
-    /**
-     * Get the return type of the last method in case that is a terminal type (simple method call and not a complex
-     * fluent structure itself).
-     *
-     * @param lastNode the last node in the fluent structure
-     * @return the type of the last method/node
-     */
-    private String getLastNodeReturnType(Terminal lastNode) {
-        if (lastNode.getModifier() == Node.ONCE) {
-            methods.exitNode(lastNode.getMethod());
-            return methods.get(lastNode.getMethod()).getGenericReturnType().getTypeName();
-        }
-        if (lastNode.getModifier() == Node.ONE_OF) {
-            throw new GeciException("Inconsistent fluent tree. The last node is ONE_OF terminal.");
-        }
-        if (lastNode.getModifier() == Node.ZERO_OR_MORE) {
-            throw new GeciException("The last call can not be zeroOrMore(\""
-                + lastNode.getMethod()
-                + "\") in the fluent structure.");
-        }
-        if (lastNode.getModifier() == Node.OPTIONAL) {
-            throw new GeciException("The last call can not be optional(\""
-                + lastNode.getMethod()
-                + "\") in the fluent structure.");
-        }
-        throw new GeciException("Inconsistent fluent tree, last method modifier is " + lastNode.getModifier());
-    }
-
-    /**
-     * Get the return type of the last node/method in case the last node is a fluent structure.
-     * In this case recursive calls may be needed to find the really last methods.
-     *
-     * @param lastNode the last node in the fluent structure
-     * @return the type of the last method/node
-     */
-    private String getLastNodeReturnType(Tree lastNode) {
-        if (lastNode.getModifier() == Node.ONCE) {
-            var list = lastNode.getList();
-            return getLastNodeReturnType(list.get(list.size() - 1));
-        }
-        if (lastNode.getModifier() == Node.ONE_OF || lastNode.getModifier() == Node.ONE_TERMINAL_OF) {
-            var returnTypes = new HashSet<String>();
-            var returnType = "";
-            var list = lastNode.getList();
-            for (var node : list) {
-                returnType = getLastNodeReturnType(node);
-                returnTypes.add(returnType);
-            }
-            if (returnTypes.size() != 1) {
-                if (returnTypes.size() == 0) {
-                    throw new GeciException("The structure has no return type");
-                }
-                throw new GeciException("The structure has several return types:\n" +
-                    String.join("\n", returnTypes));
-            }
-            return returnType;
-        }
-        if (lastNode.getModifier() == Node.ZERO_OR_MORE) {
-            throw new GeciException("The last call can not be zeroOrMore(substructure) in the fluent structure.");
-        }
-        if (lastNode.getModifier() == Node.OPTIONAL) {
-            throw new GeciException("The last call can not be optional(substructure) in the fluent structure.");
-        }
-        throw new GeciException("Inconsistent fluent tree, last node structure modifier is " + lastNode.getModifier());
-    }
 
     /**
      * Build the interface and class structure that implements the fluent interface.
@@ -147,25 +49,43 @@ public class ClassBuilder {
      */
     public String build() {
         var list = fluent.getNodes();
-        var tree = new Tree(Node.ONCE, list);
-        var lastInterface = Tools.normalizeTypeName(getLastNodeReturnType(list.get(list.size() - 1)));
-        var interfaces = build(tree, lastInterface);
-        var code = new JavaSourceBuilder();
+        if (list.size() == 0) {
+            throw new GeciException("There are no actual calls in the fluent structure.");
+        }
+        final var tree = new Tree(Node.ONCE, list);
+        final var calculator = new LastNodeTypeCalculator(methods);
+        final var exitType = calculator.getLastNodeReturnType(list.get(list.size() - 1));
+        final var lastInterface = Tools.normalizeTypeName(exitType);
+        final var interfaces = build(tree, lastInterface);
+        final var code = new JavaSourceBuilder();
         writeStartMethod(code);
         writeWrapperClass(code);
         code.write(interfaces);
         return code.toString();
     }
 
+    /**
+     * Write the source code of the start method into the source builder.
+     * <p>
+     * The start method is a public static method with no argument that creates a new instance of the wrapper
+     * class and returns it as the interface type that can be used to start the fluent API structure.
+     *
+     * @param code to write the start method into
+     */
     private void writeStartMethod(JavaSourceBuilder code) {
-        var startMethod = fluent.getStartMethod() == null ? "start" : fluent.getStartMethod();
-        try (var mtBl = code.open("public static %s %s()", interfaceNameProvider.getLastInterfaceName(), startMethod)) {
+        final var startMethod = fluent.getStartMethod() == null ? "start" : fluent.getStartMethod();
+        try (final var mtBl = code.open("public static %s %s()", ifNameFactory.getLastName(), startMethod)) {
             mtBl.statement("return new Wrapper()");
         }
     }
 
+    /**
+     * Write the source code of the wrapper class into the source builder.
+     *
+     * @param code to write the start method into
+     */
     private void writeWrapperClass(JavaSourceBuilder code) {
-        try (var klBl = code.open("public static class Wrapper implements %s", String.join(",", allInterfaces))) {
+        try (var klBl = code.open("public static class Wrapper implements %s", setJoin(ifNameFactory.getAllNames()))) {
             klBl.statement("private final %s that", fluent.getKlass().getCanonicalName());
             if (fluent.getCloner() != null) {
                 try (var coBl = klBl.open("public Wrapper(%s that)", fluent.getKlass().getCanonicalName())) {
@@ -190,14 +110,14 @@ public class ClassBuilder {
                     if (isExitNode) {
                         writeExitMethodWrapper(method, mtBl);
                     } else {
-                        writeMethodWrapper(method, mtBl);
+                        writeWrapperMethodBody(method, mtBl);
                     }
                 }
             }
         }
     }
 
-    private void writeMethodWrapper(Method method, JavaSourceBuilder mtBl) {
+    private void writeWrapperMethodBody(Method method, JavaSourceBuilder mtBl) {
         if (fluent.getCloner() != null) {
             mtBl.statement("var next = new Wrapper(that.%s)", Tools.methodCall(fluent.getCloner()))
                 .statement("next.%s", Tools.methodCall(method))
@@ -226,7 +146,7 @@ public class ClassBuilder {
     }
 
     private String build(Terminal terminal, String nextInterface) {
-        interfaceName = newInterfaceName();
+        interfaceName = ifNameFactory.getNewName();
         var code = new JavaSourceBuilder();
         var extendsList = (terminal.getModifier() & (Node.OPTIONAL | Node.ZERO_OR_MORE)) != 0 ?
             " extends " + nextInterface : "";
@@ -258,7 +178,7 @@ public class ClassBuilder {
     }
 
     private String buildOneTerminalOf(Tree tree, String nextInterface) {
-        this.interfaceName = newInterfaceName();
+        this.interfaceName = ifNameFactory.getNewName();
         var code = new JavaSourceBuilder();
         try (
             var ifcB = code.open("interface %s", this.interfaceName)) {
@@ -284,18 +204,21 @@ public class ClassBuilder {
             code.write(builder.build(node, nextInterface));
             alternativeInterfaces.add(builder.interfaceName);
         }
-        this.interfaceName = newInterfaceName();
-        try (var ifcB = code.open("interface %s extends %s", this.interfaceName
-            , String.join(",", alternativeInterfaces))) {
+        this.interfaceName = ifNameFactory.getNewName();
+        try (var ifcB = code.open("interface %s extends %s", this.interfaceName, setJoin(alternativeInterfaces))) {
         }
         return code.toString();
+    }
+
+    private String setJoin(Set<String> set) {
+        return String.join(",", set);
     }
 
     private String buildZeroOrMore(Tree tree, String nextInterface) {
         List<Node> list = tree.getList();
         var code = new JavaSourceBuilder();
         ClassBuilder lastBuilder = null;
-        this.interfaceName = newInterfaceName();
+        this.interfaceName = ifNameFactory.getNewName();
         for (var i = list.size() - 1; i >= 0; i--) {
             final var node = list.get(i);
             var builder = new ClassBuilder(this);
@@ -314,7 +237,7 @@ public class ClassBuilder {
         List<Node> list = tree.getList();
         var code = new JavaSourceBuilder();
         ClassBuilder lastBuilder = null;
-        this.interfaceName = newInterfaceName();
+        this.interfaceName = ifNameFactory.getNewName();
         for (var i = list.size() - 1; i >= 0; i--) {
             final var node = list.get(i);
             var builder = new ClassBuilder(this);
