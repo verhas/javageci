@@ -39,9 +39,19 @@ public class MethodTool {
     }
 
     public String signature() {
-        var arglist = Arrays.stream(method.getGenericParameterTypes())
-                .map(this::getArg)
-                .collect(Collectors.joining(","));
+        final var types = method.getGenericParameterTypes();
+        final var sb = new StringBuilder();
+        for (int i = 0; i < types.length; i++) {
+            if( i > 0 ){
+                sb.append(", ");
+            }
+            if (i == types.length - 1 && method.isVarArgs()) {
+                sb.append(getVarArg(types[i]));
+            } else {
+                sb.append(getArg(types[i]));
+            }
+        }
+        var arglist = sb.toString();
         var exceptionlist = Arrays.stream(method.getGenericExceptionTypes())
                 .map(t -> Tools.normalizeTypeName(t.getTypeName()))
                 .collect(Collectors.joining(","));
@@ -70,6 +80,12 @@ public class MethodTool {
             arg = "arg" + argCounter.addAndGet(1);
         }
         return arg;
+    }
+
+    private String getVarArg(Type t) {
+        final var normType = Tools.normalizeTypeName(t.getTypeName());
+        final String actualType = normType.substring(0,normType.length() - 2) + "... ";
+        return actualType + " arg" + argCounter.addAndGet(1);
     }
 
     private String getArg(Type t) {

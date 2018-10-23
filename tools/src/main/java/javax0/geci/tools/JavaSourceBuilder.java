@@ -28,12 +28,12 @@ public class JavaSourceBuilder implements AutoCloseable {
         public Wrapper(){
             this.that = new javax0.geci.tools.JavaSourceBuilder();
         }
-        public Wrapper ifStatement(String arg1,Object[] arg2){
+        public Wrapper ifStatement(String arg1, Object...  arg2){
             var next = new Wrapper(that.copy());
             next.that.ifStatement(arg1,arg2);
             return next;
         }
-        public Wrapper statement(String arg1,Object[] arg2){
+        public Wrapper statement(String arg1, Object...  arg2){
             var next = new Wrapper(that.copy());
             next.that.statement(arg1,arg2);
             return next;
@@ -43,12 +43,12 @@ public class JavaSourceBuilder implements AutoCloseable {
             next.that.returnStatement();
             return next;
         }
-        public Wrapper forStatement(String arg1,Object[] arg2){
+        public Wrapper forStatement(String arg1, Object...  arg2){
             var next = new Wrapper(that.copy());
             next.that.forStatement(arg1,arg2);
             return next;
         }
-        public Wrapper write_r(String arg1,Object[] arg2){
+        public Wrapper write_r(String arg1, Object...  arg2){
             var next = new Wrapper(that.copy());
             next.that.write_r(arg1,arg2);
             return next;
@@ -61,7 +61,7 @@ public class JavaSourceBuilder implements AutoCloseable {
             next.that.elseStatement();
             return next;
         }
-        public Wrapper open(String arg1,Object[] arg2){
+        public Wrapper open(String arg1, Object...  arg2){
             var next = new Wrapper(that.copy());
             next.that.open(arg1,arg2);
             return next;
@@ -76,12 +76,12 @@ public class JavaSourceBuilder implements AutoCloseable {
             next.that.noArgs();
             return next;
         }
-        public Wrapper returnStatement(String arg1,Object[] arg2){
+        public Wrapper returnStatement(String arg1, Object...  arg2){
             var next = new Wrapper(that.copy());
             next.that.returnStatement(arg1,arg2);
             return next;
         }
-        public Wrapper comment(String arg1,Object[] arg2){
+        public Wrapper comment(String arg1, Object...  arg2){
             var next = new Wrapper(that.copy());
             next.that.comment(arg1,arg2);
             return next;
@@ -91,17 +91,17 @@ public class JavaSourceBuilder implements AutoCloseable {
             next.that.modifiers(arg1);
             return next;
         }
-        public Wrapper args(String[] arg1){
+        public Wrapper args(String...  arg1){
             var next = new Wrapper(that.copy());
             next.that.args(arg1);
             return next;
         }
-        public Wrapper write_l(String arg1,Object[] arg2){
+        public Wrapper write_l(String arg1, Object...  arg2){
             var next = new Wrapper(that.copy());
             next.that.write_l(arg1,arg2);
             return next;
         }
-        public Wrapper whileStatement(String arg1,Object[] arg2){
+        public Wrapper whileStatement(String arg1, Object...  arg2){
             var next = new Wrapper(that.copy());
             next.that.whileStatement(arg1,arg2);
             return next;
@@ -116,12 +116,12 @@ public class JavaSourceBuilder implements AutoCloseable {
             next.that.returnType(arg1);
             return next;
         }
-        public Wrapper write_lr(String arg1,Object[] arg2){
+        public Wrapper write_lr(String arg1, Object...  arg2){
             var next = new Wrapper(that.copy());
             next.that.write_lr(arg1,arg2);
             return next;
         }
-        public Wrapper write(String arg1,Object[] arg2){
+        public Wrapper write(String arg1, Object...  arg2){
             var next = new Wrapper(that.copy());
             next.that.write(arg1,arg2);
             return next;
@@ -139,22 +139,22 @@ public class JavaSourceBuilder implements AutoCloseable {
         String toString();
     }
     interface If2{
-        If1 comment(String arg1,Object[] arg2);
-        If1 statement(String arg1,Object[] arg2);
-        If1 write(String arg1,Object[] arg2);
-        If1 write_r(String arg1,Object[] arg2);
-        If1 write_l(String arg1,Object[] arg2);
+        If1 comment(String arg1, Object...  arg2);
+        If1 statement(String arg1, Object...  arg2);
+        If1 write(String arg1, Object...  arg2);
+        If1 write_r(String arg1, Object...  arg2);
+        If1 write_l(String arg1, Object...  arg2);
         If1 newline();
-        If1 open(String arg1,Object[] arg2);
+        If1 open(String arg1, Object...  arg2);
     }
     interface If5{
-        If4 comment(String arg1,Object[] arg2);
-        If4 statement(String arg1,Object[] arg2);
-        If4 write(String arg1,Object[] arg2);
-        If4 write_r(String arg1,Object[] arg2);
-        If4 write_l(String arg1,Object[] arg2);
+        If4 comment(String arg1, Object...  arg2);
+        If4 statement(String arg1, Object...  arg2);
+        If4 write(String arg1, Object...  arg2);
+        If4 write_r(String arg1, Object...  arg2);
+        If4 write_l(String arg1, Object...  arg2);
         If4 newline();
-        If4 open(String arg1,Object[] arg2);
+        If4 open(String arg1, Object...  arg2);
     }
     interface If4 extends If1,AutoCloseable,If5 {}
     interface If6 {
@@ -162,47 +162,47 @@ public class JavaSourceBuilder implements AutoCloseable {
     }
     interface If3 extends If1,AutoCloseable,If6 {};
     interface If8{
-        If7 comment(String arg1,Object[] arg2);
-        If7 statement(String arg1,Object[] arg2);
-        If7 write(String arg1,Object[] arg2);
-        If7 write_r(String arg1,Object[] arg2);
-        If7 write_l(String arg1,Object[] arg2);
+        If7 comment(String arg1, Object...  arg2);
+        If7 statement(String arg1, Object...  arg2);
+        If7 write(String arg1, Object...  arg2);
+        If7 write_r(String arg1, Object...  arg2);
+        If7 write_l(String arg1, Object...  arg2);
         If7 newline();
-        If7 open(String arg1,Object[] arg2);
+        If7 open(String arg1, Object...  arg2);
     }
     interface If7 extends If3,AutoCloseable,If8 {}
     interface If9 {
-        If7 ifStatement(String arg1,Object[] arg2);
+        If7 ifStatement(String arg1, Object...  arg2);
     }
     interface If11{
-        If10 comment(String arg1,Object[] arg2);
-        If10 statement(String arg1,Object[] arg2);
-        If10 write(String arg1,Object[] arg2);
-        If10 write_r(String arg1,Object[] arg2);
-        If10 write_l(String arg1,Object[] arg2);
+        If10 comment(String arg1, Object...  arg2);
+        If10 statement(String arg1, Object...  arg2);
+        If10 write(String arg1, Object...  arg2);
+        If10 write_r(String arg1, Object...  arg2);
+        If10 write_l(String arg1, Object...  arg2);
         If10 newline();
-        If10 open(String arg1,Object[] arg2);
+        If10 open(String arg1, Object...  arg2);
     }
     interface If10 extends If1,AutoCloseable,If11 {}
     interface If12 {
-        If10 whileStatement(String arg1,Object[] arg2);
+        If10 whileStatement(String arg1, Object...  arg2);
     }
     interface If14{
-        If13 comment(String arg1,Object[] arg2);
-        If13 statement(String arg1,Object[] arg2);
-        If13 write(String arg1,Object[] arg2);
-        If13 write_r(String arg1,Object[] arg2);
-        If13 write_l(String arg1,Object[] arg2);
+        If13 comment(String arg1, Object...  arg2);
+        If13 statement(String arg1, Object...  arg2);
+        If13 write(String arg1, Object...  arg2);
+        If13 write_r(String arg1, Object...  arg2);
+        If13 write_l(String arg1, Object...  arg2);
         If13 newline();
-        If13 open(String arg1,Object[] arg2);
+        If13 open(String arg1, Object...  arg2);
     }
     interface If13 extends If14,If1,AutoCloseable {}
     interface If15 {
-        If13 forStatement(String arg1,Object[] arg2);
+        If13 forStatement(String arg1, Object...  arg2);
     }
     interface If16{
         If1 noArgs();
-        If1 args(String[] arg1);
+        If1 args(String...  arg1);
     }
     interface If17 extends If16,AutoCloseable {
         If16 exceptions(String arg1);
