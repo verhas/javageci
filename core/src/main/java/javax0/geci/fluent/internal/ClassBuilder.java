@@ -4,7 +4,8 @@ import javax0.geci.api.GeciException;
 import javax0.geci.fluent.tree.Node;
 import javax0.geci.fluent.tree.Terminal;
 import javax0.geci.fluent.tree.Tree;
-import javax0.geci.tools.JavaSourceBuilder;
+import javax0.geci.tools.JavaSource;
+import javax0.geci.tools.MethodTool;
 import javax0.geci.tools.Tools;
 
 import java.lang.reflect.Method;
@@ -56,7 +57,7 @@ public class ClassBuilder {
         final var exitType = calculator.getLastNodeReturnType(list.get(list.size() - 1));
         final var lastInterface = Tools.normalizeTypeName(exitType);
         final var interfaces = build(tree, lastInterface);
-        final var code = new JavaSourceBuilder();
+        final var code = new JavaSource();
         writeStartMethod(code);
         writeWrapperInterface(code);
         writeWrapperClass(code);
@@ -73,7 +74,7 @@ public class ClassBuilder {
      *
      * @param code to write the start method into
      */
-    private void writeStartMethod(JavaSourceBuilder code) {
+    private void writeStartMethod(JavaSource code) {
         final var startMethod = fluent.getStartMethod() == null ? "start" : fluent.getStartMethod();
         final String lastType;
         if (fluent.getLastType() != null) {
@@ -87,7 +88,7 @@ public class ClassBuilder {
         }
     }
 
-    private void writeWrapperInterface(JavaSourceBuilder code) {
+    private void writeWrapperInterface(JavaSource code) {
         if (methods.needWrapperInterface()) {
             try (var ifBl = code.open("public interface WrapperInterface")) {
             }
@@ -99,7 +100,7 @@ public class ClassBuilder {
      *
      * @param code to write the start method into
      */
-    private void writeWrapperClass(JavaSourceBuilder code) {
+    private void writeWrapperClass(JavaSource code) {
         try (var klBl = code.open("public static class Wrapper implements %s", setJoin(ifNameFactory.getAllNames(), fluent.getLastType(), fluent.getInterfaces()))) {
             klBl.statement("private final %s that", fluent.getKlass().getCanonicalName());
             if (fluent.getCloner() != null) {
@@ -115,13 +116,13 @@ public class ClassBuilder {
     }
 
 
-    private void writeWrapperMethods(JavaSourceBuilder code) {
+    private void writeWrapperMethods(JavaSource code) {
         for (var signature : methods.methodSignatures()) {
             var method = methods.get(signature);
             if (fluent.getCloner() == null || !fluent.getCloner().equals(method)) {
                 var notFluent = methods.isExitNode(signature) || !methods.isFluentNode(signature);
                 var actualReturnType = notFluent ? null : "Wrapper";
-                var signatureString = MethodTool
+                var signatureString = FluentMethodTool
                         .from(fluent.getKlass())
                         .forThe(method)
                         .withType(actualReturnType)
@@ -137,10 +138,10 @@ public class ClassBuilder {
         }
     }
 
-    private void writeWrapperMethodBody(Method method, JavaSourceBuilder mtBl) {
-        var callString = MethodTool.from(fluent.getKlass()).forThe(method).call();
+    private void writeWrapperMethodBody(Method method, JavaSource mtBl) {
+        var callString = FluentMethodTool.from(fluent.getKlass()).forThe(method).call();
         if (fluent.getCloner() != null) {
-            mtBl.statement("var next = new Wrapper(that.%s)", Tools.methodCall(fluent.getCloner()))
+            mtBl.statement("var next = new Wrapper(that.%s)", MethodTool.with(fluent.getCloner()).call())
                     .statement("next.that.%s", callString)
                     .returnStatement("next");
 
@@ -150,14 +151,14 @@ public class ClassBuilder {
         }
     }
 
-    private void writeNonFluentMethodWrapper(Method method, JavaSourceBuilder mtBl) {
+    private void writeNonFluentMethodWrapper(Method method, JavaSource mtBl) {
         final String returnKw;
         if (method.getReturnType() == Void.TYPE) {
             returnKw = "";
         } else {
             returnKw = "return ";
         }
-        var callString = MethodTool.from(fluent.getKlass()).forThe(method).call();
+        var callString = FluentMethodTool.from(fluent.getKlass()).forThe(method).call();
         mtBl.statement("%sthat.%s", returnKw, callString);
     }
 
@@ -171,12 +172,12 @@ public class ClassBuilder {
 
     private String build(Terminal terminal, String nextInterface) {
         interfaceName = ifNameFactory.getNewName();
-        var code = new JavaSourceBuilder();
+        var code = new JavaSource();
         var list = InterfaceList.builderFor(methods)
                 .when((terminal.getModifier() & (Node.OPTIONAL | Node.ZERO_OR_MORE)) != 0).then(nextInterface, fluent.getInterfaces())
                 .buildList();
         try (var ifcB = code.open("interface %s%s ", interfaceName, list)) {
-            ifcB.statement(MethodTool
+            ifcB.statement(FluentMethodTool
                     .from(fluent.getKlass())
                     .forThe(methods.get(terminal.getMethod()))
                     .withType((terminal.getModifier() & Node.ZERO_OR_MORE) != 0 ? interfaceName : nextInterface)
@@ -208,7 +209,7 @@ public class ClassBuilder {
 
     private String buildOneTerminalOf(Tree tree, String nextInterface) {
         this.interfaceName = ifNameFactory.getNewName();
-        var code = new JavaSourceBuilder();
+        var code = new JavaSource();
         try (
                 var ifcB = code.open("interface %s", this.interfaceName)) {
             List<Node> list = tree.getList();
@@ -217,7 +218,7 @@ public class ClassBuilder {
                     throw new GeciException("Internal error, ON_TERMINAL_OF contains a non-terminal sub.");
                 } else {
                     var terminal = (Terminal) node;
-                    ifcB.statement(MethodTool
+                    ifcB.statement(FluentMethodTool
                             .from(fluent.getKlass())
                             .forThe(methods.get(terminal.getMethod()))
                             .withType(nextInterface)
@@ -231,7 +232,7 @@ public class ClassBuilder {
 
     private String buildOneOf(Tree tree, String nextInterface) {
         List<Node> list = tree.getList();
-        var code = new JavaSourceBuilder();
+        var code = new JavaSource();
         var alternativeInterfaces = new HashSet<String>();
         for (var node : list) {
             var builder = new ClassBuilder(this);
@@ -257,7 +258,7 @@ public class ClassBuilder {
 
     private String buildZeroOrMore(Tree tree, String nextInterface) {
         List<Node> list = tree.getList();
-        var code = new JavaSourceBuilder();
+        var code = new JavaSource();
         ClassBuilder lastBuilder = null;
         this.interfaceName = ifNameFactory.getNewName();
         for (var i = list.size() - 1; i >= 0; i--) {
@@ -280,7 +281,7 @@ public class ClassBuilder {
 
     private String buildOptional(Tree tree, String nextInterface) {
         List<Node> list = tree.getList();
-        var code = new JavaSourceBuilder();
+        var code = new JavaSource();
         ClassBuilder lastBuilder = null;
         this.interfaceName = ifNameFactory.getNewName();
         for (var i = list.size() - 1; i >= 0; i--) {
@@ -303,7 +304,7 @@ public class ClassBuilder {
 
     private String buildOnce(Tree tree, String nextInterface) {
         List<Node> list = tree.getList();
-        var code = new JavaSourceBuilder();
+        var code = new JavaSource();
         ClassBuilder lastBuilder = null;
         for (var i = list.size() - 1; i >= 0; i--) {
             final var node = list.get(i);

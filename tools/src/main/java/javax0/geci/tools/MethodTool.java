@@ -1,26 +1,23 @@
-package javax0.geci.fluent.internal;
-
-import javax0.geci.tools.Tools;
+package javax0.geci.tools;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MethodTool {
-    final private AtomicInteger argCounter = new AtomicInteger(0);
-    final private String klassName;
-    private Method method;
+    final protected AtomicInteger argCounter = new AtomicInteger(0);
+    protected Method method;
     private String type = null;
     private boolean isInterface = false;
+    private Function<String, String> decorator;
 
-    private MethodTool(Class klass) {
-        this.klassName = Tools.normalizeTypeName(klass.getName());
-    }
-
-    public static MethodTool from(Class klass) {
-        return new MethodTool(klass);
+    public static MethodTool with(Method method) {
+        var it = new MethodTool();
+        it.method = method;
+        return it;
     }
 
     public MethodTool forThe(Method method) {
@@ -33,16 +30,25 @@ public class MethodTool {
         return this;
     }
 
+    public MethodTool decorateNameWith(Function<String, String> decorator) {
+        this.decorator = decorator;
+        return this;
+    }
+
     public MethodTool asInterface() {
         this.isInterface = true;
         return this;
+    }
+
+    public static String methodSignature(Method method){
+        return with(method).signature();
     }
 
     public String signature() {
         final var types = method.getGenericParameterTypes();
         final var sb = new StringBuilder();
         for (int i = 0; i < types.length; i++) {
-            if( i > 0 ){
+            if (i > 0) {
                 sb.append(", ");
             }
             if (i == types.length - 1 && method.isVarArgs()) {
@@ -58,7 +64,7 @@ public class MethodTool {
         return (isInterface ? "" : (Tools.modifiersString(method))) +
                 (type == null ? Tools.typeAsString(method) : type) +
                 " " +
-                method.getName() +
+                decoratedName(method) +
                 "(" + arglist + ")" +
                 (exceptionlist.length() == 0 ? "" : " throws " + exceptionlist);
     }
@@ -68,34 +74,36 @@ public class MethodTool {
                 .map(this::getArgCall)
                 .collect(Collectors.joining(","));
 
-        return method.getName() + "(" + arglist + ")";
+        return decoratedName(method) + "(" + arglist + ")";
     }
 
-    private String getArgCall(Type t) {
+    public String getArgCall(Type t) {
         final var normType = Tools.normalizeTypeName(t.getTypeName());
-        final String arg;
-        if (normType.equals(klassName)) {
-            arg = "((Wrapper)arg" + argCounter.addAndGet(1) + ").that";
-        } else {
-            arg = "arg" + argCounter.addAndGet(1);
-        }
-        return arg;
+        return "arg" + argCounter.addAndGet(1);
     }
 
-    private String getVarArg(Type t) {
+    public String getVarArg(Type t) {
         final var normType = Tools.normalizeTypeName(t.getTypeName());
-        final String actualType = normType.substring(0,normType.length() - 2) + "... ";
+        final String actualType = normType.substring(0, normType.length() - 2) + "... ";
         return actualType + " arg" + argCounter.addAndGet(1);
     }
 
-    private String getArg(Type t) {
+    public String getArg(Type t) {
         final var normType = Tools.normalizeTypeName(t.getTypeName());
-        final String actualType;
-        if (normType.equals(klassName)) {
-            actualType = "WrapperInterface";
+        return normType + " arg" + argCounter.addAndGet(1);
+    }
+
+    /**
+     * Decorate the method name if {@code decorator} is not {@code null}.
+     *
+     * @param method of which the name is retrieved
+     * @return the decorated name
+     */
+    private String decoratedName(Method method) {
+        if (decorator == null) {
+            return method.getName();
         } else {
-            actualType = normType;
+            return decorator.apply(method.getName());
         }
-        return actualType + " arg" + argCounter.addAndGet(1);
     }
 }

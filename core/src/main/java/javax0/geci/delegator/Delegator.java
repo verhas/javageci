@@ -3,6 +3,7 @@ package javax0.geci.delegator;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractDeclaredFieldsGenerator;
 import javax0.geci.tools.CompoundParams;
+import javax0.geci.tools.MethodTool;
 import javax0.geci.tools.Tools;
 
 import java.lang.reflect.Field;
@@ -23,11 +24,11 @@ public class Delegator extends AbstractDeclaredFieldsGenerator {
             for (var method : methods) {
                 var modifiers = method.getModifiers();
                 if (Modifier.isPublic(modifiers)) {
-                    segment.write_r(Tools.methodSignature(method) + " {");
+                    segment.write_r(MethodTool.with(method).signature() + " {");
                     if (!"void".equals(method.getReturnType().getName())) {
-                        segment.write("return " + name + "." + Tools.methodCall(method) + ";");
+                        segment.write("return " + name + "." + MethodTool.with(method).call() + ";");
                     } else {
-                        segment.write(name + "." + Tools.methodCall(method) + ";");
+                        segment.write(name + "." + MethodTool.with(method).call() + ";");
                     }
                     segment.write_l("}");
                     segment.newline();

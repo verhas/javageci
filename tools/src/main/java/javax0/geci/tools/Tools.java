@@ -12,11 +12,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class Tools {
 
@@ -129,119 +125,15 @@ public class Tools {
      * See the notes at the javadoc of the method {@link #getDeclaredFieldsSorted(Class)}
      * <p>
      * The methods are sorted according to the string representation of the signature. How the
-     * method signature is created is document in the javadoc of the method {@link #methodSignature(Method, Function)}
+     * method signature is created is document in the javadoc of the method {@link MethodTool#methodSignature(Method)}
      *
      * @param klass class of which the methods are returned
      * @return the sorted array of the methods
      */
     public static Method[] getDeclaredMethodsSorted(Class<?> klass) {
         final var methods = klass.getDeclaredMethods();
-        Arrays.sort(methods, Comparator.comparing(Tools::methodSignature));
+        Arrays.sort(methods, Comparator.comparing(MethodTool::methodSignature));
         return methods;
-    }
-
-    /**
-     * Same as {@link #methodSignature(Method, Function)} but the decorator function is {@code null}.
-     *
-     * @param method see {@link #methodSignature(Method, Function, String, boolean)}
-     * @return see {@link #methodSignature(Method, Function, String, boolean)}
-     */
-    public static String methodSignature(Method method) {
-        return methodSignature(method, null);
-    }
-
-    /**
-     * Same as {@link #methodSignature(Method, Function, String, boolean)} but the
-     * y{@code replaceReturnType} is {@code null}.
-     *
-     * @param method    see {@link #methodSignature(Method, Function, String, boolean)}
-     * @param decorator see {@link #methodSignature(Method, Function, String, boolean)}
-     * @return see {@link #methodSignature(Method, Function, String, boolean)}
-     */
-    public static String methodSignature(Method method, Function<String, String> decorator) {
-        return methodSignature(method, decorator, null, false);
-    }
-
-    /**
-     * Create the string representation of the signature of the method. The method signature
-     * is the name of the class, then the arguments in parentheses with types comma separated and the exceptions
-     * after the keyword {@code throws} if there is any exception thrown by the method. The argument names are
-     * {@code arg1}, {@code arg2}, ... {@code argN}.
-     *
-     * @param method            of which the signature is needed
-     * @param nameDecorator         can be {@code null} or can be used to alter the name of the method in the signature. This is
-     *                          used when the code generation wants to create methods with different name and the same
-     *                          signature as other methods. For example a proxy method in the same class that does something,
-     *                          then calls the original method and then returns.
-     * @param replaceReturnType when null then it has no effect. When is is not null then the prototype will use this
-     *                          string in place of the method return type.
-     * @param interfce          if {@code true} then the signature will not contain modifiers because in this case it
-     *                          is assumed that the signature will be used in generation an interface.
-     * @return the string of the method signature.
-     */
-    public static String methodSignature(Method method,
-                                         Function<String, String> nameDecorator,
-                                         String replaceReturnType, boolean interfce) {
-        var argCounter = new AtomicInteger(0);
-        var arglist = Arrays.stream(method.getGenericParameterTypes())
-            .map(t -> normalizeTypeName(t.getTypeName()) + " arg" + argCounter.addAndGet(1))
-            .collect(Collectors.joining(","));
-        var exceptionlist = Arrays.stream(method.getGenericExceptionTypes())
-            .map(t -> normalizeTypeName(t.getTypeName()))
-            .collect(Collectors.joining(","));
-        return (interfce ? "" : modifiersString(method)) +
-            (replaceReturnType == null ? typeAsString(method) : replaceReturnType) +
-            " " +
-            decoratedName(method, nameDecorator) +
-            "(" + arglist + ")" +
-            (exceptionlist.length() == 0 ? "" : " throws " + exceptionlist);
-    }
-
-    /**
-     * The same as {@link #methodCall(Method, Function)} but the decorator function is {@code null}.
-     *
-     * @param method see {@link #methodCall(Method, Function)}
-     * @return see {@link #methodCall(Method, Function)}
-     */
-    public static String methodCall(Method method) {
-        return methodCall(method, null);
-    }
-
-    /**
-     * Creates the string that calls a method. The string will start with the name of the method and then the
-     * arguments between parentheses comma separated. The argument names are
-     * {@code arg1}, {@code arg2}, ... {@code argN}.
-     *
-     * @param method    of which the signature is needed
-     * @param decorator a function to convert the name of the method. See {@link #methodSignature(Method, Function)}
-     *                  for examples when it is useful.
-     * @return the string that is the method call in Java syntax
-     */
-    public static String methodCall(Method method, Function<String, String> decorator) {
-        var arglist = IntStream.range(1, method.getGenericParameterTypes().length + 1)
-            .mapToObj(index -> " arg" + index)
-            .collect(Collectors.joining(","));
-        return new StringBuilder()
-            .append(decoratedName(method, decorator))
-            .append("(")
-            .append(arglist)
-            .append(")")
-            .toString();
-    }
-
-    /**
-     * Decorate the method name if {@code decorator} is not {@code null}.
-     *
-     * @param method    of which the name is retrieved
-     * @param decorator converting the name or {@code null}
-     * @return the decorated name
-     */
-    private static String decoratedName(Method method, Function<String, String> decorator) {
-        if (decorator == null) {
-            return method.getName();
-        } else {
-            return decorator.apply(method.getName());
-        }
     }
 
     /**

@@ -14,7 +14,7 @@ public class TestClassBuilder {
     }
 
     @Test
-    public void testTerminalsBuildup() {
+    public void testTerminalsBuildup() throws Exception {
         var fluent = FluentBuilder.from(TestClass.class)
                 .one("a")
                 .optional("b")
@@ -69,7 +69,7 @@ public class TestClassBuilder {
     }
 
     @Test
-    public void testTerminalsBuildupFullSample() {
+    public void testTerminalsBuildupFullSample() throws Exception {
         var fluent = FluentBuilder.from(TestClass.class)
                 .one("a")
                 .optional("b")
@@ -136,7 +136,7 @@ public class TestClassBuilder {
     }
 
     @Test
-    public void testTreeBuildup() {
+    public void testTreeBuildup() throws Exception {
         var f = FluentBuilder.from(TestClass.class);
         var aOrB = f.oneOf("a", "b");
         var fluent = f.one("a")
@@ -194,7 +194,7 @@ public class TestClassBuilder {
     }
 
     @Test
-    public void testComplexTreeBuildup() {
+    public void testComplexTreeBuildup() throws Exception {
         var f = FluentBuilder.from(TestClass.class);
         var aOrB = f.oneOf("a", "b");
         var fluent = f.one("a")
@@ -262,7 +262,7 @@ public class TestClassBuilder {
     }
 
     @Test
-    public void testOptionalInOptionalTreeBuildup() {
+    public void testOptionalInOptionalTreeBuildup() throws Exception {
         var f = FluentBuilder.from(TestClass.class);
         var aOrB = f.oneOf(f.optional("a"), f.one("b"));
         var fluent = f.one("a")

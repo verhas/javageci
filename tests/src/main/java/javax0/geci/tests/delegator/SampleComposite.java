@@ -16,8 +16,8 @@ public class SampleComposite {
         return contained1.getBirnen();
     }
 
-    public java.util.Map<String,java.util.Set<java.util.Map<Integer,Boolean>>> doNothingReally(int arg1,java.util.Map arg2,java.util.Set<java.util.Set> arg3) {
-        return contained1.doNothingReally( arg1, arg2, arg3);
+    public java.util.Map<String,java.util.Set<java.util.Map<Integer,Boolean>>> doNothingReally(int arg1, java.util.Map arg2, java.util.Set<java.util.Set> arg3) {
+        return contained1.doNothingReally(arg1,arg2,arg3);
     }
 
     public void callMe() {
@@ -25,7 +25,7 @@ public class SampleComposite {
     }
 
     public void setBirnen(int arg1) {
-        contained1.setBirnen( arg1);
+        contained1.setBirnen(arg1);
     }
 
     // </editor-fold>

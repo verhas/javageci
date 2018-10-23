@@ -57,7 +57,7 @@ public class Regex {
         public Wrapper(){
             this.that = new javax0.geci.tests.fluent.Regex();
         }
-        public Wrapper more(WrapperInterface arg1,int arg2,int arg3){
+        public Wrapper more(WrapperInterface arg1, int arg2, int arg3){
             var next = new Wrapper(that.copy());
             next.that.more(((Wrapper)arg1).that,arg2,arg3);
             return next;
@@ -100,7 +100,7 @@ public class Regex {
         If1 optional(WrapperInterface arg1);
         If1 zeroOrMore(WrapperInterface arg1);
         If1 oneOrMore(WrapperInterface arg1);
-        If1 more(WrapperInterface arg1,int arg2,int arg3);
+        If1 more(WrapperInterface arg1, int arg2, int arg3);
     }
     interface If1 extends If0,WrapperInterface,If2 {}
     interface If3{
@@ -109,7 +109,7 @@ public class Regex {
         If1 optional(WrapperInterface arg1);
         If1 zeroOrMore(WrapperInterface arg1);
         If1 oneOrMore(WrapperInterface arg1);
-        If1 more(WrapperInterface arg1,int arg2,int arg3);
+        If1 more(WrapperInterface arg1, int arg2, int arg3);
     }
     //</editor-fold>
 
