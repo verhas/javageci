@@ -78,7 +78,7 @@ public class ClassBuilder {
         final String lastType;
         if (fluent.getLastType() != null) {
             lastType = fluent.getLastType();
-            code.write("interface %s extends %s {}", lastType, ifNameFactory.getLastName());
+            code.write("public interface %s extends %s {}", lastType, ifNameFactory.getLastName());
         } else {
             lastType = ifNameFactory.getLastName();
         }

@@ -16,11 +16,11 @@ public class JavaSourceBuilder implements AutoCloseable {
     private int tabStop = 0;
 
     //<editor-fold id="fluent" desc="fluent API interfaces and classes">
-    interface JavaBuilder extends If0 {}
+    public interface JavaBuilder extends If21 {}
     public static JavaBuilder source(){
         return new Wrapper();
     }
-    public static class Wrapper implements JavaBuilder,If0,AutoCloseable{
+    public static class Wrapper implements If16,If17,If14,If15,If18,If19,AutoCloseable,JavaBuilder,If0,If2,If1,If4,If3,If6,If5,If20,If8,If7,If12,If9,If13,If10,If21,If11{
         private final javax0.geci.tools.JavaSourceBuilder that;
         public Wrapper(javax0.geci.tools.JavaSourceBuilder that){
             this.that = that;
@@ -138,6 +138,87 @@ public class JavaSourceBuilder implements AutoCloseable {
     interface If0 {
         String toString();
     }
+    interface If2{
+        If1 comment(String arg1,Object[] arg2);
+        If1 statement(String arg1,Object[] arg2);
+        If1 write(String arg1,Object[] arg2);
+        If1 write_r(String arg1,Object[] arg2);
+        If1 write_l(String arg1,Object[] arg2);
+        If1 newline();
+        If1 open(String arg1,Object[] arg2);
+    }
+    interface If5{
+        If4 comment(String arg1,Object[] arg2);
+        If4 statement(String arg1,Object[] arg2);
+        If4 write(String arg1,Object[] arg2);
+        If4 write_r(String arg1,Object[] arg2);
+        If4 write_l(String arg1,Object[] arg2);
+        If4 newline();
+        If4 open(String arg1,Object[] arg2);
+    }
+    interface If4 extends If1,AutoCloseable,If5 {}
+    interface If6 {
+        If4 elseStatement();
+    }
+    interface If3 extends If1,AutoCloseable,If6 {};
+    interface If8{
+        If7 comment(String arg1,Object[] arg2);
+        If7 statement(String arg1,Object[] arg2);
+        If7 write(String arg1,Object[] arg2);
+        If7 write_r(String arg1,Object[] arg2);
+        If7 write_l(String arg1,Object[] arg2);
+        If7 newline();
+        If7 open(String arg1,Object[] arg2);
+    }
+    interface If7 extends If3,AutoCloseable,If8 {}
+    interface If9 {
+        If7 ifStatement(String arg1,Object[] arg2);
+    }
+    interface If11{
+        If10 comment(String arg1,Object[] arg2);
+        If10 statement(String arg1,Object[] arg2);
+        If10 write(String arg1,Object[] arg2);
+        If10 write_r(String arg1,Object[] arg2);
+        If10 write_l(String arg1,Object[] arg2);
+        If10 newline();
+        If10 open(String arg1,Object[] arg2);
+    }
+    interface If10 extends If1,AutoCloseable,If11 {}
+    interface If12 {
+        If10 whileStatement(String arg1,Object[] arg2);
+    }
+    interface If14{
+        If13 comment(String arg1,Object[] arg2);
+        If13 statement(String arg1,Object[] arg2);
+        If13 write(String arg1,Object[] arg2);
+        If13 write_r(String arg1,Object[] arg2);
+        If13 write_l(String arg1,Object[] arg2);
+        If13 newline();
+        If13 open(String arg1,Object[] arg2);
+    }
+    interface If13 extends If14,If1,AutoCloseable {}
+    interface If15 {
+        If13 forStatement(String arg1,Object[] arg2);
+    }
+    interface If16{
+        If1 noArgs();
+        If1 args(String[] arg1);
+    }
+    interface If17 extends If16,AutoCloseable {
+        If16 exceptions(String arg1);
+    }
+    interface If18 extends If17,AutoCloseable {
+        If17 returnType(String arg1);
+    }
+    interface If19 extends If18,AutoCloseable {
+        If18 modifiers(String arg1);
+    }
+    interface If20 {
+        If19 method(String arg1);
+    }
+    interface If21 extends If15,If2,AutoCloseable,If20,If12,If9{
+    }
+    interface If1 extends If0,AutoCloseable,If21 {}
     //</editor-fold>
 
     public JavaSourceBuilder copy() {
