@@ -2,6 +2,7 @@ package javax0.geci.fluent.internal;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,7 @@ public class InterfaceList {
     }
 
     public InterfaceList set(String... interfaces) {
-        this.interfaceSet.addAll(Arrays.stream(interfaces).collect(Collectors.toSet()));
+        this.interfaceSet.addAll(Arrays.stream(interfaces).filter(Objects::nonNull).collect(Collectors.toSet()));
         return this;
     }
 

@@ -102,6 +102,25 @@ public class MethodCollection {
         }
     }
 
+
+    public void exclude(String method){
+        var md = get0(method);
+        if (md == null) {
+            throw new GeciException("Method '"+method+"' does not exist, can not be exlcuded from the fluent interface.");
+        } else {
+            md.isFluent = false;
+        }
+
+    }
+    public Boolean isFluentNode(String name){
+        var md = get0(name);
+        if (md == null) {
+            return null;
+        } else {
+            return md.isFluent;
+        }
+    }
+
     /**
      * Declare that the method specified by the name (signature) is a final in the fluent call.
      * <p>
@@ -270,5 +289,6 @@ public class MethodCollection {
     private static class MethodData {
         Method method;
         boolean isExitNodeMethod = false;
+        boolean isFluent = true;
     }
 }

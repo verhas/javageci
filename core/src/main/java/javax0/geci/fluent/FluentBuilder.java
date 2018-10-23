@@ -10,6 +10,12 @@ public interface FluentBuilder {
 
     FluentBuilder start(String method);
 
+    FluentBuilder implement(String interfaces);
+
+    FluentBuilder fluentType(String type);
+
+    FluentBuilder exclude(String method);
+
     FluentBuilder cloner(String method);
 
     FluentBuilder optional(String method);

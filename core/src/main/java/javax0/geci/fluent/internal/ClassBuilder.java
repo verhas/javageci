@@ -8,9 +8,8 @@ import javax0.geci.tools.JavaSourceBuilder;
 import javax0.geci.tools.Tools;
 
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ClassBuilder {
     private final InterfaceNameFactory ifNameFactory;
@@ -76,7 +75,14 @@ public class ClassBuilder {
      */
     private void writeStartMethod(JavaSourceBuilder code) {
         final var startMethod = fluent.getStartMethod() == null ? "start" : fluent.getStartMethod();
-        try (final var mtBl = code.method(startMethod).modifiers("public static").returnType(ifNameFactory.getLastName()).noArgs()) {
+        final String lastType;
+        if (fluent.getLastType() != null) {
+            lastType = fluent.getLastType();
+            code.write("interface %s extends %s {}", lastType, ifNameFactory.getLastName());
+        } else {
+            lastType = ifNameFactory.getLastName();
+        }
+        try (final var mtBl = code.method(startMethod).modifiers("public static").returnType(lastType).noArgs()) {
             mtBl.statement("return new Wrapper()");
         }
     }
@@ -94,7 +100,7 @@ public class ClassBuilder {
      * @param code to write the start method into
      */
     private void writeWrapperClass(JavaSourceBuilder code) {
-        try (var klBl = code.open("public static class Wrapper implements %s", setJoin(ifNameFactory.getAllNames()))) {
+        try (var klBl = code.open("public static class Wrapper implements %s", setJoin(ifNameFactory.getAllNames(), fluent.getLastType(), fluent.getInterfaces()))) {
             klBl.statement("private final %s that", fluent.getKlass().getCanonicalName());
             if (fluent.getCloner() != null) {
                 try (var coBl = klBl.open("public Wrapper(%s that)", fluent.getKlass().getCanonicalName())) {
@@ -113,16 +119,16 @@ public class ClassBuilder {
         for (var signature : methods.methodSignatures()) {
             var method = methods.get(signature);
             if (fluent.getCloner() == null || !fluent.getCloner().equals(method)) {
-                var isExitNode = methods.isExitNode(signature);
-                var actualReturnType = isExitNode ? null : "Wrapper";
+                var notFluent = methods.isExitNode(signature) || !methods.isFluentNode(signature);
+                var actualReturnType = notFluent ? null : "Wrapper";
                 var signatureString = MethodTool
                         .from(fluent.getKlass())
                         .forThe(method)
                         .withType(actualReturnType)
                         .signature();
                 try (var mtBl = code.open(signatureString)) {
-                    if (isExitNode) {
-                        writeExitMethodWrapper(method, mtBl);
+                    if (notFluent) {
+                        writeNonFluentMethodWrapper(method, mtBl);
                     } else {
                         writeWrapperMethodBody(method, mtBl);
                     }
@@ -144,9 +150,9 @@ public class ClassBuilder {
         }
     }
 
-    private void writeExitMethodWrapper(Method method, JavaSourceBuilder mtBl) {
+    private void writeNonFluentMethodWrapper(Method method, JavaSourceBuilder mtBl) {
         final String returnKw;
-        if (method.getReturnType() == Void.class) {
+        if (method.getReturnType() == Void.TYPE) {
             returnKw = "";
         } else {
             returnKw = "return ";
@@ -167,7 +173,7 @@ public class ClassBuilder {
         interfaceName = ifNameFactory.getNewName();
         var code = new JavaSourceBuilder();
         var list = InterfaceList.builderFor(methods)
-                .when((terminal.getModifier() & (Node.OPTIONAL | Node.ZERO_OR_MORE)) != 0).then(nextInterface)
+                .when((terminal.getModifier() & (Node.OPTIONAL | Node.ZERO_OR_MORE)) != 0).then(nextInterface, fluent.getInterfaces())
                 .buildList();
         try (var ifcB = code.open("interface %s%s ", interfaceName, list)) {
             ifcB.statement(MethodTool
@@ -233,14 +239,20 @@ public class ClassBuilder {
             alternativeInterfaces.add(builder.interfaceName);
         }
         this.interfaceName = ifNameFactory.getNewName();
-        var ifs = InterfaceList.builderFor(methods).set(alternativeInterfaces).buildList();
+        var ifs = InterfaceList.builderFor(methods).set(fluent.getInterfaces()).set(alternativeInterfaces).buildList();
         try (var ifcB = code.open("interface %s%s", this.interfaceName, ifs)) {
         }
         return code.toString();
     }
 
-    private String setJoin(Set<String> set) {
-        return String.join(",", set);
+    private String setJoin(Set<String> set, String... other) {
+        if (other != null && other.length > 0) {
+            var local = new HashSet<>(set);
+            local.addAll(Arrays.stream(other).filter(Objects::nonNull).collect(Collectors.toSet()));
+            return String.join(",", local);
+        } else {
+            return String.join(",", set);
+        }
     }
 
     private String buildZeroOrMore(Tree tree, String nextInterface) {
@@ -258,7 +270,10 @@ public class ClassBuilder {
             code.write(builder.build(node, actualNextInterface));
             lastBuilder = builder;
         }
-        var ifs = InterfaceList.builderFor(methods).set(nextInterface, lastBuilder.interfaceName).buildList();
+        if( lastBuilder == null ){
+            throw new GeciException("Internal error");
+        }
+        var ifs = InterfaceList.builderFor(methods).set(nextInterface, lastBuilder.interfaceName, fluent.getInterfaces()).buildList();
         code.write("interface %s%s {}", this.interfaceName, ifs);
         return code.toString();
     }
@@ -278,7 +293,10 @@ public class ClassBuilder {
             code.write(builder.build(node, actualNextInterface));
             lastBuilder = builder;
         }
-        var ifs = InterfaceList.builderFor(methods).set(nextInterface, lastBuilder.interfaceName).buildList();
+        if( lastBuilder == null ){
+            throw new GeciException("Internal error");
+        }
+        var ifs = InterfaceList.builderFor(methods).set(nextInterface, lastBuilder.interfaceName, fluent.getInterfaces()).buildList();
         code.statement("interface %s%s {}", this.interfaceName, ifs);
         return code.toString();
     }
@@ -296,6 +314,9 @@ public class ClassBuilder {
             }
             code.write(builder.build(node, actualNextInterface));
             lastBuilder = builder;
+        }
+        if( lastBuilder == null ){
+            throw new GeciException("Internal error");
         }
         this.interfaceName = lastBuilder.interfaceName;
         return code.toString();

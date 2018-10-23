@@ -28,16 +28,16 @@ public class TestClassBuilder {
                         "        this.that = new javax0.geci.fluent.internal.TestClassBuilder.TestClass();\n" +
                         "    }\n" +
                         "    public void b(){\n" +
-                        "        return that.b();\n" +
+                        "        that.b();\n" +
                         "    }\n" +
                         "    public void a(){\n" +
-                        "        return that.a();\n" +
+                        "        that.a();\n" +
                         "    }\n" +
                         "    public void d(){\n" +
-                        "        return that.d();\n" +
+                        "        that.d();\n" +
                         "    }\n" +
                         "    public void c(){\n" +
-                        "        return that.c();\n" +
+                        "        that.c();\n" +
                         "    }\n" +
                         "    public Wrapper f(){\n" +
                         "        that.f();\n" +
@@ -86,10 +86,10 @@ public class TestClassBuilder {
                         "        this.that = new javax0.geci.fluent.internal.TestClassBuilder.TestClass();\n" +
                         "    }\n" +
                         "    public void b(){\n" +
-                        "        return that.b();\n" +
+                        "        that.b();\n" +
                         "    }\n" +
                         "    public void a(){\n" +
-                        "        return that.a();\n" +
+                        "        that.a();\n" +
                         "    }\n" +
                         "    public Wrapper d(){\n" +
                         "        that.d();\n" +
@@ -151,16 +151,16 @@ public class TestClassBuilder {
                         "        this.that = new javax0.geci.fluent.internal.TestClassBuilder.TestClass();\n" +
                         "    }\n" +
                         "    public void b(){\n" +
-                        "        return that.b();\n" +
+                        "        that.b();\n" +
                         "    }\n" +
                         "    public void a(){\n" +
-                        "        return that.a();\n" +
+                        "        that.a();\n" +
                         "    }\n" +
                         "    public void d(){\n" +
-                        "        return that.d();\n" +
+                        "        that.d();\n" +
                         "    }\n" +
                         "    public void c(){\n" +
-                        "        return that.c();\n" +
+                        "        that.c();\n" +
                         "    }\n" +
                         "    public Wrapper f(){\n" +
                         "        that.f();\n" +
@@ -211,16 +211,16 @@ public class TestClassBuilder {
                         "        this.that = new javax0.geci.fluent.internal.TestClassBuilder.TestClass();\n" +
                         "    }\n" +
                         "    public void b(){\n" +
-                        "        return that.b();\n" +
+                        "        that.b();\n" +
                         "    }\n" +
                         "    public void a(){\n" +
-                        "        return that.a();\n" +
+                        "        that.a();\n" +
                         "    }\n" +
                         "    public void d(){\n" +
-                        "        return that.d();\n" +
+                        "        that.d();\n" +
                         "    }\n" +
                         "    public void c(){\n" +
-                        "        return that.c();\n" +
+                        "        that.c();\n" +
                         "    }\n" +
                         "    public Wrapper f(){\n" +
                         "        that.f();\n" +
@@ -295,7 +295,7 @@ public class TestClassBuilder {
                         "        return next;\n" +
                         "    }\n" +
                         "    public void c(){\n" +
-                        "        return that.c();\n" +
+                        "        that.c();\n" +
                         "    }\n" +
                         "    public Wrapper f(){\n" +
                         "        var next = new Wrapper(that.copy());\n" +
