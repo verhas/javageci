@@ -76,7 +76,7 @@ public class ClassBuilder {
      */
     private void writeStartMethod(JavaSourceBuilder code) {
         final var startMethod = fluent.getStartMethod() == null ? "start" : fluent.getStartMethod();
-        try (final var mtBl = code.open("public static %s %s()", ifNameFactory.getLastName(), startMethod)) {
+        try (final var mtBl = code.method(startMethod).modifiers("public static").returnType(ifNameFactory.getLastName()).noArgs()) {
             mtBl.statement("return new Wrapper()");
         }
     }

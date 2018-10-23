@@ -245,7 +245,7 @@ public class TestClassBuilder {
                         "    If1 a();\n" +
                         "    If1 b();\n" +
                         "}\n" +
-                        "interface If1 extends If0,If2 {};\n" +
+                        "interface If1 extends If0,If2 {}\n" +
                         "interface If3 {\n" +
                         "    If1 c();\n" +
                         "}\n" +
@@ -281,17 +281,17 @@ public class TestClassBuilder {
                         "    }\n" +
                         "    public Wrapper b(){\n" +
                         "        var next = new Wrapper(that.copy());\n" +
-                        "        next.b();\n" +
+                        "        next.that.b();\n" +
                         "        return next;\n" +
                         "    }\n" +
                         "    public Wrapper a(){\n" +
                         "        var next = new Wrapper(that.copy());\n" +
-                        "        next.a();\n" +
+                        "        next.that.a();\n" +
                         "        return next;\n" +
                         "    }\n" +
                         "    public Wrapper d(){\n" +
                         "        var next = new Wrapper(that.copy());\n" +
-                        "        next.d();\n" +
+                        "        next.that.d();\n" +
                         "        return next;\n" +
                         "    }\n" +
                         "    public void c(){\n" +
@@ -299,12 +299,12 @@ public class TestClassBuilder {
                         "    }\n" +
                         "    public Wrapper f(){\n" +
                         "        var next = new Wrapper(that.copy());\n" +
-                        "        next.f();\n" +
+                        "        next.that.f();\n" +
                         "        return next;\n" +
                         "    }\n" +
                         "    public Wrapper e(){\n" +
                         "        var next = new Wrapper(that.copy());\n" +
-                        "        next.e();\n" +
+                        "        next.that.e();\n" +
                         "        return next;\n" +
                         "    }\n" +
                         "}\n" +

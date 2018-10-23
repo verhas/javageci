@@ -1,14 +1,29 @@
 package javax0.geci.tools;
 
+import javax0.geci.annotations.Geci;
+
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * A simple tool to write code into a string.
  */
+@Geci("fluent")
 public class JavaSourceBuilder implements AutoCloseable {
     private static final int TAB = 4;
     private final StringBuilder code = new StringBuilder();
+    private final MethodSetup lastMethod = new MethodSetup();
     private int tabStop = 0;
+
+    //<editor-fold id="fluent" desc="fluent API interfaces and classes">
+    //</editor-fold>
+
+    public JavaSourceBuilder copy() {
+        var next = new JavaSourceBuilder();
+        next.code.append(code);
+        next.tabStop = tabStop;
+        return next;
+    }
 
     /**
      * Write a string with format placeholders into the underlying string. If the string is multi line (contains \n)
@@ -93,6 +108,47 @@ public class JavaSourceBuilder implements AutoCloseable {
         return code.toString();
     }
 
+    public JavaSourceBuilder method(String name) {
+        lastMethod.name = name;
+        lastMethod.type = "void";
+        lastMethod.modifiers = "";
+        lastMethod.exceptions = "";
+        return this;
+    }
+
+    public JavaSourceBuilder modifiers(String modifiers) {
+        lastMethod.modifiers = modifiers;
+        return this;
+    }
+
+    public JavaSourceBuilder returnType(String type) {
+        lastMethod.type = type;
+        return this;
+    }
+
+    public JavaSourceBuilder exceptions(String exceptions) {
+        lastMethod.exceptions = exceptions;
+        return this;
+    }
+
+    public JavaSourceBuilder args(String... args) {
+        var argList = String.join(",", Arrays.stream(args).collect(Collectors.toList()));
+        var sb = new StringBuilder();
+        if( lastMethod.modifiers.length() > 0 ){
+            sb.append(lastMethod.modifiers).append(" ");
+        }
+        sb.append(lastMethod.type).append(" ");
+        sb.append(lastMethod.name).append("(").append(argList).append(")");
+        if( lastMethod.exceptions.length() > 0 ){
+            sb.append(" throws ").append(lastMethod.exceptions);
+        }
+        return open(sb.toString());
+    }
+
+    public JavaSourceBuilder noArgs() {
+        return args();
+    }
+
     /**
      * You can use this method in the try-with-resources output
      *
@@ -109,31 +165,31 @@ public class JavaSourceBuilder implements AutoCloseable {
 
     public JavaSourceBuilder comment(String s, Object... parameters) {
         s = "// " + s;
-        write(s,parameters);
+        write(s, parameters);
         return this;
     }
 
     public JavaSourceBuilder statement(String s, Object... parameters) {
         s += ";";
-        write(s,parameters);
+        write(s, parameters);
         return this;
     }
 
     public JavaSourceBuilder whileStatement(String s, Object... parameters) {
         s = "while( " + s + " ){";
-        write_r(s,parameters);
+        write_r(s, parameters);
         return this;
     }
 
     public JavaSourceBuilder forStatement(String s, Object... parameters) {
         s = "for( " + s + " ){";
-        write_r(s,parameters);
+        write_r(s, parameters);
         return this;
     }
 
     public JavaSourceBuilder ifStatement(String s, Object... parameters) {
         s = "if( " + s + " ){";
-        write_r(s,parameters);
+        write_r(s, parameters);
         return this;
     }
 
@@ -146,14 +202,22 @@ public class JavaSourceBuilder implements AutoCloseable {
         statement("return");
         return this;
     }
+
     public JavaSourceBuilder returnStatement(String s, Object... parameters) {
-        s = "return "+s;
-        statement(s,parameters);
+        s = "return " + s;
+        statement(s, parameters);
         return this;
     }
 
     @Override
     public void close() {
         write_l("}");
+    }
+
+    private static class MethodSetup {
+        String name;
+        String modifiers;
+        String type;
+        String exceptions;
     }
 }

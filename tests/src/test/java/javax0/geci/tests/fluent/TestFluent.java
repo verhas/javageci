@@ -25,7 +25,7 @@ public class TestFluent {
     public void testRegex() {
         var rx = Regex.pattern();
         Pattern pt = Regex.pattern().oneOrMore(Regex.pattern().terminal("a").oneOrMore(rx.terminal("b")).terminal("a")).get();
-        Assertions.assertEquals("(?:ab+a)+",pt.toString());
+        Assertions.assertEquals("(?:a(?:b)+a)+",pt.toString());
     }
 
     @Test

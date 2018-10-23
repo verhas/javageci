@@ -26,9 +26,9 @@
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
-            <groupId>com.javax0.geci</groupId>
-            <artifactId>api</artifactId>
-        </dependency>
+        <groupId>com.javax0.geci</groupId>
+        <artifactId>api</artifactId>
+    </dependency>
         <dependency>
             <groupId>com.javax0.geci</groupId>
             <artifactId>annotation</artifactId>
