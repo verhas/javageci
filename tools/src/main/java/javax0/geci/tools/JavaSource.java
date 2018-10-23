@@ -135,10 +135,10 @@ public class JavaSource implements AutoCloseable {
             return next;
         }
     }
-    interface If0 {
+    public interface If0 {
         String toString();
     }
-    interface If2{
+    public interface If2{
         If1 comment(String arg1, Object...  arg2);
         If1 statement(String arg1, Object...  arg2);
         If1 write(String arg1, Object...  arg2);
@@ -149,7 +149,7 @@ public class JavaSource implements AutoCloseable {
         If1 returnStatement();
         If1 returnStatement(String arg1, Object...  arg2);
     }
-    interface If5{
+    public interface If5{
         If4 comment(String arg1, Object...  arg2);
         If4 statement(String arg1, Object...  arg2);
         If4 write(String arg1, Object...  arg2);
@@ -160,12 +160,12 @@ public class JavaSource implements AutoCloseable {
         If4 returnStatement();
         If4 returnStatement(String arg1, Object...  arg2);
     }
-    interface If4 extends If1,AutoCloseable,If5 {}
-    interface If6 {
+    public interface If4 extends If1,AutoCloseable,If5 {}
+    public interface If6 {
         If4 elseStatement();
     }
-    interface If3 extends If1,AutoCloseable,If6 {};
-    interface If8{
+    public interface If3 extends If1,AutoCloseable,If6 {};
+    public interface If8{
         If7 comment(String arg1, Object...  arg2);
         If7 statement(String arg1, Object...  arg2);
         If7 write(String arg1, Object...  arg2);
@@ -176,11 +176,11 @@ public class JavaSource implements AutoCloseable {
         If7 returnStatement();
         If7 returnStatement(String arg1, Object...  arg2);
     }
-    interface If7 extends If3,AutoCloseable,If8 {}
-    interface If9 {
+    public interface If7 extends If3,AutoCloseable,If8 {}
+    public interface If9 {
         If7 ifStatement(String arg1, Object...  arg2);
     }
-    interface If11{
+    public interface If11{
         If10 comment(String arg1, Object...  arg2);
         If10 statement(String arg1, Object...  arg2);
         If10 write(String arg1, Object...  arg2);
@@ -191,11 +191,11 @@ public class JavaSource implements AutoCloseable {
         If10 returnStatement();
         If10 returnStatement(String arg1, Object...  arg2);
     }
-    interface If10 extends If1,AutoCloseable,If11 {}
-    interface If12 {
+    public interface If10 extends If1,AutoCloseable,If11 {}
+    public interface If12 {
         If10 whileStatement(String arg1, Object...  arg2);
     }
-    interface If14{
+    public interface If14{
         If13 comment(String arg1, Object...  arg2);
         If13 statement(String arg1, Object...  arg2);
         If13 write(String arg1, Object...  arg2);
@@ -206,29 +206,29 @@ public class JavaSource implements AutoCloseable {
         If13 returnStatement();
         If13 returnStatement(String arg1, Object...  arg2);
     }
-    interface If13 extends If14,If1,AutoCloseable {}
-    interface If15 {
+    public interface If13 extends If14,If1,AutoCloseable {}
+    public interface If15 {
         If13 forStatement(String arg1, Object...  arg2);
     }
-    interface If16{
+    public interface If16{
         If1 noArgs();
         If1 args(String...  arg1);
     }
-    interface If17 extends If16,AutoCloseable {
+    public interface If17 extends If16,AutoCloseable {
         If16 exceptions(String arg1);
     }
-    interface If18 extends If17,AutoCloseable {
+    public interface If18 extends If17,AutoCloseable {
         If17 returnType(String arg1);
     }
-    interface If19 extends If18,AutoCloseable {
+    public interface If19 extends If18,AutoCloseable {
         If18 modifiers(String arg1);
     }
-    interface If20 {
+    public interface If20 {
         If19 method(String arg1);
     }
-    interface If21 extends If15,If2,AutoCloseable,If20,If12,If9{
+    public interface If21 extends If15,If2,AutoCloseable,If20,If12,If9{
     }
-    interface If1 extends If0,AutoCloseable,If21 {}
+    public interface If1 extends If0,AutoCloseable,If21 {}
     //</editor-fold>
 
     public JavaSource copy() {
