@@ -36,7 +36,6 @@ public class TestFluent {
         if (new Geci().source(maven().module("examples").javaSource()).register(new Fluent()).generate()) {
             Assertions.fail("Fluent modified source code. Please compile again.");
         }
-        //Assertions.assertEquals("C(1)D(2)A(3)B(4)",SimpleSample.sample().c("1").d("2").a("3").b("4").got());
     }
 
 }
