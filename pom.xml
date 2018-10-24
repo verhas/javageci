@@ -12,7 +12,7 @@
         <module>tools</module>
         <module>core</module>
         <module>annotation</module>
-        <module>tests</module>
+        <module>examples</module>
     </modules>
     <properties>
         <geci.version>1.0.0-SNAPSHOT</geci.version>

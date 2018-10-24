@@ -11,8 +11,8 @@ public class BeanGeneratorTest {
     @Test
     public void testBeanGenerator() throws Exception {
         if (new Geci()
-            .source("./src/test/resources", "./tests/src/test/resources")
-            .source(set("java"),"./src/test/java", "./tests/src/test/java")
+            .source("./src/test/resources", "./examples/src/test/resources")
+            .source(set("java"),"./src/test/java", "./examples/src/test/java")
             .register(new BeanGenerator()).generate()) {
             Assertions.fail("Code was changed during test phase.");
         }
