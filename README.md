@@ -12,17 +12,20 @@ actual code structure it wants to generate.
 
 ## When do you need Java::Geci?
 
-There are several occasions when we need generated code. The simplest such sscenarios are also supported by the
+There are several occasions when we need generated code. The simplest such scenarios are also supported by the
 IDEs (Eclipse, NetBeans, IntelliJ). They can create setters, getters, constructors, `equals()` and `hashCode()`
-methods in different ways. There are two major problems with that solution. One is that the code generation
-is manual, and in case the developer forgets to regenerate the code after an influencing change the code becomes
-outdated. The other problem is that the code generation possibilities are not extendable. There is a limited set
-of code that the tools can generate and the developer cannot easily extend these possibilities.
+methods in different ways. There are two major problems with that solution.
+
+* One is that the code generation is manual, and in case the developer forgets to regenerate the code after an
+  influencing change the code becomes outdated.
+
+* The other problem is that the code generation possibilities are not extendable. There is a limited set
+  of code that the tools can generate and the developer cannot easily extend these possibilities.
 
 Java::Geci eliminates these two problems. It has an execution mode to check if all code generation is up-to-date and
 this can be used as a unit test. If the developer forgot to update some of the generated code after the program
-effecting the generated code, the test will fail. (As a matter of fact the test also updates the generated code,
-you only need to start the build phase again.)
+effecting the generated code was changed, the test will fail. 
+(As a matter of fact the test also updates the generated code, you only need to start the build phase again.)
 
 Java::Geci also has an extremely simple API supporting code generators so it is extremely simple to create new
 code generators that are project specific. You do not even need to package your code generator classes. Just put
@@ -33,6 +36,7 @@ and can generate
 
 * setter and getter
 * delegation methods (under development)
+* fluent API classes and interfaces
 * others will be under development
 
 ## How to use Java:Geci
@@ -49,18 +53,20 @@ import javax0.geci.engine.Geci;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static javax0.geci.api.Source.maven;
+
 public class TestAccessor {
 
     @Test
     public void testAccessor() throws Exception {
-        if (new Geci().source("./src/main/java","./tests/src/main/java").register(new Accessor()).generate()) {
+        if (new Geci().source(maven().module("tests").javaSource()).register(new Accessor()).generate()) {
             Assertions.fail("Code was changed during test phase.");
         }
     }
 }
 ```
 
-The test runs during the build process and it generates files if that is needed. If files were genarted it means that
+The test runs during the build process and it generates files if that is needed. If files were generated it means that
 the code was not up to date and a new compilation has to be done. In this case the `Assertions.fail()` will be invoked
 and you have to start the build process again. Second time the code generation will recognize that the code it could
 generate is already there and the process will not fail.

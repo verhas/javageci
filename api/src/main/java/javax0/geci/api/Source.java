@@ -151,11 +151,40 @@ public interface Source {
         }
     }
 
-    public static String[] maven() {
-        return new String[]{"./src/main/java"};
+    class Maven {
+        private String module = null;
+
+        private String[] source(String main, String java) {
+            if (module == null) {
+                return new String[]{"./src/" + main + "/" + java};
+            } else {
+                return new String[]{"./src/" + main + "/" + java, "./" + module + "/src/" + main + "/" + java};
+            }
+        }
+
+        public String[] javaSource() {
+            return source("main", "java");
+        }
+
+        public String[] testSource() {
+            return source("test", "java");
+        }
+
+        public String[] testResources() {
+            return source("test", "resources");
+        }
+
+        public String[] mainResources() {
+            return source("main", "resources");
+        }
+
+        public Maven module(String module) {
+            this.module = module;
+            return this;
+        }
     }
 
-    public static String[] mavenModule(String project) {
-        return new String[]{"./src/main/java", "./" + project + "/src/main/java"};
+    static Maven maven() {
+        return new Maven();
     }
 }
