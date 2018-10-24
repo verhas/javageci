@@ -39,16 +39,16 @@ public class Fluent extends AbstractGenerator {
             method = klass.getMethod(methodName, null);
         } catch (NoSuchMethodException e) {
             throw new GeciException("definedBy method '" + methodName +
-                "' can not be found in the class '" + className + "'");
+                    "' can not be found in the class '" + className + "'");
         }
         if ((method.getModifiers() & Modifier.STATIC) == 0) {
             throw new GeciException("definedBy method '" + methodName +
-                "' from the class '" + className + "' should be static");
+                    "' from the class '" + className + "' should be static");
         }
         if (!FluentBuilder.class.isAssignableFrom(method.getReturnType())) {
             throw new GeciException("definedBy method '" + methodName +
-                "' from the class '" + className + "' should return type " +
-                FluentBuilderImpl.class.getName());
+                    "' from the class '" + className + "' should return type " +
+                    FluentBuilderImpl.class.getName());
         }
         return method;
     }

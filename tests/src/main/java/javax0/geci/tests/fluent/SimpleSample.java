@@ -70,38 +70,38 @@ public class SimpleSample {
             return next;
         }
     }
-    interface If0{
+    public interface If0{
         String get();
         String got();
     }
-    interface If2 {
+    public interface If2 {
         If1 b(String arg1);
     }
-    interface If3 {
+    public interface If3 {
         If2 a(String arg1);
     }
-    interface If4 {
+    public interface If4 {
         If1 d(String arg1);
     }
-    interface If5 {
+    public interface If5 {
         If4 c(String arg1);
     }
-    interface If6 extends If3,If5{
+    public interface If6 extends If3,If5{
     }
-    interface If1 extends If0,If6 {}
-    interface If7 {
+    public interface If1 extends If0,If6 {}
+    public interface If7 {
         If1 b(String arg1);
     }
-    interface If8 {
+    public interface If8 {
         If7 a(String arg1);
     }
-    interface If9 {
+    public interface If9 {
         If1 d(String arg1);
     }
-    interface If10 {
+    public interface If10 {
         If9 c(String arg1);
     }
-    interface If11 extends If8,If10{
+    public interface If11 extends If8,If10{
     }
     //</editor-fold>
 

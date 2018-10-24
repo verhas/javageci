@@ -1,0 +1,55 @@
+public static If5 start(){
+    return new Wrapper();
+}
+public static class Wrapper implements If0,If2,If1,If4,If3,If5{
+    private final javax0.geci.fluent.internal.TestClassBuilder.TestClass that;
+    public Wrapper(javax0.geci.fluent.internal.TestClassBuilder.TestClass that){
+        this.that = that;
+    }
+    public Wrapper(){
+        this.that = new javax0.geci.fluent.internal.TestClassBuilder.TestClass();
+    }
+    public Wrapper b(){
+        var next = new Wrapper(that.copy());
+        next.that.b();
+        return next;
+    }
+    public Wrapper a(){
+        var next = new Wrapper(that.copy());
+        next.that.a();
+        return next;
+    }
+    public Wrapper d(){
+        var next = new Wrapper(that.copy());
+        next.that.d();
+        return next;
+    }
+    public void c(){
+        that.c();
+    }
+    public Wrapper f(){
+        var next = new Wrapper(that.copy());
+        next.that.f();
+        return next;
+    }
+    public Wrapper e(){
+        var next = new Wrapper(that.copy());
+        next.that.e();
+        return next;
+    }
+}
+public interface If0 {
+    void c();
+}
+public interface If2 extends If0 {
+    If0 a();
+}
+public interface If3 {
+    If0 b();
+}
+public interface If4 extends If2,If3{
+}
+public interface If1 extends If0,If4 {};
+public interface If5 {
+    If1 a();
+}
