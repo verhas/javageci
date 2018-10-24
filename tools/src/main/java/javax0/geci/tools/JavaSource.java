@@ -22,117 +22,94 @@ public class JavaSource implements AutoCloseable {
     }
     public static class Wrapper implements If16,If17,If14,If15,If18,If19,Builder,AutoCloseable,If0,If2,If1,If4,If3,If6,If5,If20,If8,If7,If12,If9,If13,If10,If21,If11{
         private final javax0.geci.tools.JavaSource that;
-        public Wrapper(javax0.geci.tools.JavaSource that){
-            this.that = that;
-        }
         public Wrapper(){
             this.that = new javax0.geci.tools.JavaSource();
         }
         public Wrapper ifStatement(String arg1, Object...  arg2){
-            var next = new Wrapper(that.copy());
-            next.that.ifStatement(arg1,arg2);
-            return next;
+            that.ifStatement(arg1,arg2);
+            return this;
         }
         public Wrapper statement(String arg1, Object...  arg2){
-            var next = new Wrapper(that.copy());
-            next.that.statement(arg1,arg2);
-            return next;
+            that.statement(arg1,arg2);
+            return this;
         }
         public Wrapper returnStatement(){
-            var next = new Wrapper(that.copy());
-            next.that.returnStatement();
-            return next;
+            that.returnStatement();
+            return this;
         }
         public Wrapper forStatement(String arg1, Object...  arg2){
-            var next = new Wrapper(that.copy());
-            next.that.forStatement(arg1,arg2);
-            return next;
+            that.forStatement(arg1,arg2);
+            return this;
         }
         public Wrapper write_r(String arg1, Object...  arg2){
-            var next = new Wrapper(that.copy());
-            next.that.write_r(arg1,arg2);
-            return next;
+            that.write_r(arg1,arg2);
+            return this;
         }
         public String toString(){
             return that.toString();
         }
         public Wrapper open(String arg1, Object...  arg2){
-            var next = new Wrapper(that.copy());
-            next.that.open(arg1,arg2);
-            return next;
+            that.open(arg1,arg2);
+            return this;
         }
         public Wrapper elseStatement(){
-            var next = new Wrapper(that.copy());
-            next.that.elseStatement();
-            return next;
+            that.elseStatement();
+            return this;
         }
         public Wrapper method(String arg1){
-            var next = new Wrapper(that.copy());
-            next.that.method(arg1);
-            return next;
+            that.method(arg1);
+            return this;
         }
         public Wrapper noArgs(){
-            var next = new Wrapper(that.copy());
-            next.that.noArgs();
-            return next;
+            that.noArgs();
+            return this;
         }
         public Wrapper returnStatement(String arg1, Object...  arg2){
-            var next = new Wrapper(that.copy());
-            next.that.returnStatement(arg1,arg2);
-            return next;
+            that.returnStatement(arg1,arg2);
+            return this;
         }
         public Wrapper comment(String arg1, Object...  arg2){
-            var next = new Wrapper(that.copy());
-            next.that.comment(arg1,arg2);
-            return next;
+            that.comment(arg1,arg2);
+            return this;
         }
         public Wrapper modifiers(String arg1){
-            var next = new Wrapper(that.copy());
-            next.that.modifiers(arg1);
-            return next;
+            that.modifiers(arg1);
+            return this;
         }
         public Wrapper args(String...  arg1){
-            var next = new Wrapper(that.copy());
-            next.that.args(arg1);
-            return next;
+            that.args(arg1);
+            return this;
         }
         public Wrapper write_l(String arg1, Object...  arg2){
-            var next = new Wrapper(that.copy());
-            next.that.write_l(arg1,arg2);
-            return next;
+            that.write_l(arg1,arg2);
+            return this;
         }
         public Wrapper whileStatement(String arg1, Object...  arg2){
-            var next = new Wrapper(that.copy());
-            next.that.whileStatement(arg1,arg2);
-            return next;
+            that.whileStatement(arg1,arg2);
+            return this;
         }
         public Wrapper exceptions(String arg1){
-            var next = new Wrapper(that.copy());
-            next.that.exceptions(arg1);
-            return next;
+            that.exceptions(arg1);
+            return this;
         }
         public Wrapper returnType(String arg1){
-            var next = new Wrapper(that.copy());
-            next.that.returnType(arg1);
-            return next;
+            that.returnType(arg1);
+            return this;
         }
         public Wrapper write_lr(String arg1, Object...  arg2){
-            var next = new Wrapper(that.copy());
-            next.that.write_lr(arg1,arg2);
-            return next;
+            that.write_lr(arg1,arg2);
+            return this;
         }
         public Wrapper write(String arg1, Object...  arg2){
-            var next = new Wrapper(that.copy());
-            next.that.write(arg1,arg2);
-            return next;
+            that.write(arg1,arg2);
+            return this;
         }
         public void close(){
             that.close();
         }
         public Wrapper newline(){
-            var next = new Wrapper(that.copy());
-            next.that.newline();
-            return next;
+            that.newline();
+            return this;
         }
     }
     public interface If0 {
@@ -230,13 +207,6 @@ public class JavaSource implements AutoCloseable {
     }
     public interface If1 extends If0,AutoCloseable,If21 {}
     //</editor-fold>
-
-    public JavaSource copy() {
-        var next = new JavaSource();
-        next.code.append(code);
-        next.tabStop = tabStop;
-        return next;
-    }
 
     /**
      * Write a string with format placeholders into the underlying string. If the string is multi line (contains \n)
