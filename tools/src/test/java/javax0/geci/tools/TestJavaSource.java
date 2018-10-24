@@ -3,11 +3,11 @@ package javax0.geci.tools;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class TestJavaSourceBuilder {
+public class TestJavaSource {
 
     @Test
     public void testSourceBuilder() {
-        var source = new JavaSourceBuilder();
+        var source = new JavaSource();
         var className = "MyClass";
         try (var klass = source.open("public class %s ", className)) {
             klass.write("private final String z;")
