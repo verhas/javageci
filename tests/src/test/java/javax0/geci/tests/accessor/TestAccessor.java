@@ -6,11 +6,13 @@ import javax0.geci.engine.Geci;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static javax0.geci.api.Source.mavenModule;
+
 public class TestAccessor {
 
     @Test
     public void testAccessor() throws Exception {
-        if (new Geci().source("./src/main/java","./tests/src/main/java").register(new Accessor()).generate()) {
+        if (new Geci().source(mavenModule("tests")).register(new Accessor()).generate()) {
             Assertions.fail("Code was changed during test phase.");
         }
     }

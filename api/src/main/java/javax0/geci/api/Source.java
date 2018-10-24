@@ -52,9 +52,9 @@ public interface Source {
     /**
      * Initialize a segment. This is needed in case it is possible that the code generator does not
      * write anything into the segment. In that case the segment may not even be opened and in that
-     * case the segment is not touched and the old, presumably garbage may be there. For exmaple
+     * case the segment is not touched and the old text, presumably garbage may be there. For example,
      * you have a setter/getter generated code that selects some of the fields only, say only the
-     * 'protected' onces. During the development you change the last 'protected' field to private
+     * 'protected' fields. During the development you change the last 'protected' field to private
      * and there remains no field for which setter and getter is to be generated. If the segment is
      * not init-ed, then the code generator would not touch the segment and it may contain the
      * setter and the getter for the last 'protected' by now 'private' field.
@@ -149,5 +149,13 @@ public interface Source {
         public int hashCode() {
             return Objects.hash(name);
         }
+    }
+
+    public static String[] maven() {
+        return new String[]{"./src/main/java"};
+    }
+
+    public static String[] mavenModule(String project) {
+        return new String[]{"./src/main/java", "./" + project + "/src/main/java"};
     }
 }
