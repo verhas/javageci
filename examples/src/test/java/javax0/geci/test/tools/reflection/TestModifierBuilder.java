@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Modifier;
 
+import static javax0.geci.api.Source.maven;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @javax0.geci.annotations.Geci("TestModifierBuilderGenerator")
@@ -14,7 +15,7 @@ public class TestModifierBuilder {
 
     @Test
     public void testThatTestCodeIsGenerated() throws Exception {
-        if (new Geci().source("./src/test/java/", "./examples/src/test/java").register(new TestModifierBuilderGenerator()).generate()) {
+        if (new Geci().source(maven().module("examples").testSource()).register(new TestModifierBuilderGenerator()).generate()) {
             Assertions.fail("testAll() was regenerated. Build and test again.");
         }
     }

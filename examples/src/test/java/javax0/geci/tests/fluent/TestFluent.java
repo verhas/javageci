@@ -1,5 +1,6 @@
 package javax0.geci.tests.fluent;
 
+import javax0.geci.api.Source;
 import javax0.geci.engine.Geci;
 import javax0.geci.fluent.Fluent;
 import javax0.geci.fluent.FluentBuilder;
@@ -7,6 +8,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.regex.Pattern;
+
+import static javax0.geci.api.Source.maven;
 
 public class TestFluent {
 
@@ -30,7 +33,7 @@ public class TestFluent {
 
     @Test
     public void testFluent() throws Exception {
-        if (new Geci().source("./src/main/java", "./examples/src/main/java").register(new Fluent()).generate()) {
+        if (new Geci().source(maven().module("examples").javaSource()).register(new Fluent()).generate()) {
             Assertions.fail("Fluent modified source code. Please compile again.");
         }
         //Assertions.assertEquals("C(1)D(2)A(3)B(4)",SimpleSample.sample().c("1").d("2").a("3").b("4").got());
