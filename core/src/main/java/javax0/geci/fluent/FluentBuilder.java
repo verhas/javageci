@@ -35,4 +35,6 @@ public interface FluentBuilder {
     FluentBuilder oneOf(FluentBuilder... subs);
 
     FluentBuilder one(String method);
+
+    FluentBuilder one(FluentBuilder builder);
 }

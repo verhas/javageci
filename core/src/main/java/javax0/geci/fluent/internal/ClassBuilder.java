@@ -143,11 +143,11 @@ public class ClassBuilder {
         if (fluent.getCloner() != null) {
             mtBl.statement("var next = new Wrapper(that.%s)", MethodTool.with(fluent.getCloner()).call())
                 .statement("next.that.%s", callString)
-                .returnStatement("next");
+                .statement("return next");
 
         } else {
             mtBl.statement("that.%s", callString)
-                .returnStatement("this");
+                .statement("return this");
         }
     }
 

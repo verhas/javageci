@@ -16,11 +16,11 @@ public class JavaSource implements AutoCloseable {
     private int tabStop = 0;
 
     //<editor-fold id="fluent" desc="fluent API interfaces and classes">
-    public interface Builder extends If21 {}
+    public interface Builder extends If23 {}
     public static Builder builder(){
         return new Wrapper();
     }
-    public static class Wrapper implements If16,If17,If14,If15,If18,If19,Builder,AutoCloseable,If0,If2,If1,If4,If3,If6,If5,If20,If8,If7,If12,If9,If13,If10,If21,If11{
+    public static class Wrapper implements If16,If17,If14,If15,If18,If19,Builder,If0,If2,If1,If4,If3,If6,If5,If20,If8,If7,If23,If9,If21,If22,AutoCloseable,If12,If13,If10,If11{
         private final javax0.geci.tools.JavaSource that;
         public Wrapper(){
             this.that = new javax0.geci.tools.JavaSource();
@@ -123,8 +123,6 @@ public class JavaSource implements AutoCloseable {
         If1 write_l(String arg1, Object...  arg2);
         If1 newline();
         If1 open(String arg1, Object...  arg2);
-        If1 returnStatement();
-        If1 returnStatement(String arg1, Object...  arg2);
     }
     public interface If5{
         If4 comment(String arg1, Object...  arg2);
@@ -134,8 +132,6 @@ public class JavaSource implements AutoCloseable {
         If4 write_l(String arg1, Object...  arg2);
         If4 newline();
         If4 open(String arg1, Object...  arg2);
-        If4 returnStatement();
-        If4 returnStatement(String arg1, Object...  arg2);
     }
     public interface If4 extends If1,AutoCloseable,If5 {}
     public interface If6 {
@@ -150,8 +146,6 @@ public class JavaSource implements AutoCloseable {
         If7 write_l(String arg1, Object...  arg2);
         If7 newline();
         If7 open(String arg1, Object...  arg2);
-        If7 returnStatement();
-        If7 returnStatement(String arg1, Object...  arg2);
     }
     public interface If7 extends If3,AutoCloseable,If8 {}
     public interface If9 {
@@ -165,8 +159,6 @@ public class JavaSource implements AutoCloseable {
         If10 write_l(String arg1, Object...  arg2);
         If10 newline();
         If10 open(String arg1, Object...  arg2);
-        If10 returnStatement();
-        If10 returnStatement(String arg1, Object...  arg2);
     }
     public interface If10 extends If1,AutoCloseable,If11 {}
     public interface If12 {
@@ -180,32 +172,42 @@ public class JavaSource implements AutoCloseable {
         If13 write_l(String arg1, Object...  arg2);
         If13 newline();
         If13 open(String arg1, Object...  arg2);
-        If13 returnStatement();
-        If13 returnStatement(String arg1, Object...  arg2);
     }
     public interface If13 extends If14,If1,AutoCloseable {}
     public interface If15 {
         If13 forStatement(String arg1, Object...  arg2);
     }
-    public interface If16{
-        If1 noArgs();
-        If1 args(String...  arg1);
+    public interface If17{
+        If16 comment(String arg1, Object...  arg2);
+        If16 statement(String arg1, Object...  arg2);
+        If16 write(String arg1, Object...  arg2);
+        If16 write_r(String arg1, Object...  arg2);
+        If16 write_l(String arg1, Object...  arg2);
+        If16 newline();
+        If16 open(String arg1, Object...  arg2);
+        If16 returnStatement();
+        If16 returnStatement(String arg1, Object...  arg2);
     }
-    public interface If17 extends If16,AutoCloseable {
-        If16 exceptions(String arg1);
-    }
-    public interface If18 extends If17,AutoCloseable {
-        If17 returnType(String arg1);
+    public interface If16 extends If17,If1,AutoCloseable {}
+    public interface If18{
+        If16 noArgs();
+        If16 args(String...  arg1);
     }
     public interface If19 extends If18,AutoCloseable {
-        If18 modifiers(String arg1);
+        If18 exceptions(String arg1);
     }
-    public interface If20 {
-        If19 method(String arg1);
+    public interface If20 extends If19,AutoCloseable {
+        If19 returnType(String arg1);
     }
-    public interface If21 extends If15,If2,AutoCloseable,If20,If12,If9{
+    public interface If21 extends AutoCloseable,If20 {
+        If20 modifiers(String arg1);
     }
-    public interface If1 extends If0,AutoCloseable,If21 {}
+    public interface If22 {
+        If21 method(String arg1);
+    }
+    public interface If23 extends If15,If2,AutoCloseable,If12,If9,If22{
+    }
+    public interface If1 extends If0,AutoCloseable,If23 {}
     //</editor-fold>
 
     /**

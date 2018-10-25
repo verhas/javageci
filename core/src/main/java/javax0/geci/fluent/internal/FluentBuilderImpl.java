@@ -206,6 +206,10 @@ public class FluentBuilderImpl implements FluentBuilder {
         return next;
     }
 
+    public FluentBuilder one(FluentBuilder builder) {
+        return builder;
+    }
+
     @Override
     public String toString() {
         return nodes.stream().map(Node::toString).collect(Collectors.joining(","));
