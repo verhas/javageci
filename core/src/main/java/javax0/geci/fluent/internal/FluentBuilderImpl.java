@@ -230,8 +230,8 @@ public class FluentBuilderImpl implements FluentBuilder {
         return next;
     }
 
-    public FluentBuilder one(FluentBuilder builder) {
-        var nodes = nodesOf(builder);
+    public FluentBuilder one(FluentBuilder sub) {
+        var nodes = nodesOf(sub);
         var next = copy();
         var tree = newTree(Node.ONCE,nodes);
         next.nodes.add(tree);

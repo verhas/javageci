@@ -5,6 +5,7 @@ import javax0.geci.fluent.FluentBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -21,10 +22,10 @@ public class TestClassBuilder {
         try (var output = Files.newOutputStream(
                 Path.of("target", resourceName),
                 StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
-            output.write(result.getBytes("utf-8"));
+            output.write(result.getBytes(StandardCharsets.UTF_8));
         }
         var is = TestClassBuilder.class.getResourceAsStream(resourceName);
-        var expected = new String(is.readAllBytes(), "utf-8").replace("\r", "");
+        var expected = new String(is.readAllBytes(), StandardCharsets.UTF_8).replace("\r", "");
         Assertions.assertEquals(expected, result);
     }
 

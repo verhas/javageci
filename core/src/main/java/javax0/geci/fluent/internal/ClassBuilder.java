@@ -4,6 +4,8 @@ import javax0.geci.api.GeciException;
 import javax0.geci.fluent.tree.Node;
 import javax0.geci.fluent.tree.Terminal;
 import javax0.geci.fluent.tree.Tree;
+import javax0.geci.log.Logger;
+import javax0.geci.log.LoggerFactory;
 import javax0.geci.tools.JavaSource;
 import javax0.geci.tools.MethodTool;
 import javax0.geci.tools.Tools;
@@ -17,6 +19,7 @@ public class ClassBuilder {
     private final MethodCollection methods;
     private final FluentBuilderImpl fluent;
     private String interfaceName;
+    private static final Logger LOG = LoggerFactory.getLogger();
 
     /**
      * Create a ClassBuilder that builds the interface and class structure from the fluent definition.
@@ -48,14 +51,17 @@ public class ClassBuilder {
      * @return the string of the code that was built up.
      */
     public String build() throws Exception {
+        LOG.info("Class building started for the class %s",fluent.getKlass().getSimpleName());
         var list = fluent.getNodes();
         if (list.size() == 0) {
             throw new GeciException("There are no actual calls in the fluent structure.");
         }
+        LOG.info("There are %d nodes on the top level",list.size());
         final var tree = new Tree(Node.ONCE, list);
         final var calculator = new LastNodeTypeCalculator(methods);
         final var exitType = calculator.getLastNodeReturnType(list.get(list.size() - 1));
         final var lastInterface = Tools.normalizeTypeName(exitType);
+        LOG.info("The last type is %s",lastInterface);
         final var interfaces = build(tree, lastInterface);
         final var code = JavaSource.builder();
         writeStartMethod(code);
@@ -76,6 +82,7 @@ public class ClassBuilder {
      */
     private void writeStartMethod(JavaSource.Builder code) throws Exception {
         final var startMethod = fluent.getStartMethod() == null ? "start" : fluent.getStartMethod();
+        LOG.info("Creating start method %s()",startMethod);
         final String lastType;
         if (fluent.getLastType() != null) {
             lastType = fluent.getLastType();
@@ -127,11 +134,11 @@ public class ClassBuilder {
                         .forThe(method)
                         .withType(actualReturnType)
                         .signature();
-                try (var mtBl = (JavaSource.MethodBody) code.open(signatureString)) {
+                try (var methodBody = (JavaSource.MethodBody) code.open(signatureString)) {
                     if (notFluent) {
-                        writeNonFluentMethodWrapper(method, mtBl);
+                        writeNonFluentMethodWrapper(method, methodBody);
                     } else {
-                        writeWrapperMethodBody(method, mtBl);
+                        writeWrapperMethodBody(method, methodBody);
                     }
                 }
             }
