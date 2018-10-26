@@ -47,7 +47,7 @@ public class ClassBuilder {
      *
      * @return the string of the code that was built up.
      */
-    public String build() throws Exception{
+    public String build() throws Exception {
         var list = fluent.getNodes();
         if (list.size() == 0) {
             throw new GeciException("There are no actual calls in the fluent structure.");
@@ -90,7 +90,7 @@ public class ClassBuilder {
 
     private void writeWrapperInterface(JavaSource.Builder code) throws Exception {
         if (methods.needWrapperInterface()) {
-            try (var ifBl = code.open("public interface WrapperInterface")) {
+            try (var ignored = code.open("public interface WrapperInterface")) {
             }
         }
     }
@@ -116,18 +116,18 @@ public class ClassBuilder {
     }
 
 
-    private void writeWrapperMethods(JavaSource.Builder code) throws Exception{
+    private void writeWrapperMethods(JavaSource.Builder code) throws Exception {
         for (var signature : methods.methodSignatures()) {
             var method = methods.get(signature);
             if (fluent.getCloner() == null || !fluent.getCloner().equals(method)) {
                 var notFluent = methods.isExitNode(signature) || !methods.isFluentNode(signature);
                 var actualReturnType = notFluent ? null : "Wrapper";
                 var signatureString = FluentMethodTool
-                    .from(fluent.getKlass())
-                    .forThe(method)
-                    .withType(actualReturnType)
-                    .signature();
-                try (var mtBl = (JavaSource.Builder)code.open(signatureString)) {
+                        .from(fluent.getKlass())
+                        .forThe(method)
+                        .withType(actualReturnType)
+                        .signature();
+                try (var mtBl = (JavaSource.MethodBody) code.open(signatureString)) {
                     if (notFluent) {
                         writeNonFluentMethodWrapper(method, mtBl);
                     } else {
@@ -138,28 +138,26 @@ public class ClassBuilder {
         }
     }
 
-    private void writeWrapperMethodBody(Method method, JavaSource.Builder mtBl) {
+    private void writeWrapperMethodBody(Method method, JavaSource.MethodBody mtBl) {
         var callString = FluentMethodTool.from(fluent.getKlass()).forThe(method).call();
         if (fluent.getCloner() != null) {
             mtBl.statement("var next = new Wrapper(that.%s)", MethodTool.with(fluent.getCloner()).call())
-                .statement("next.that.%s", callString)
-                .statement("return next");
+                    .statement("next.that.%s", callString)
+                    .returnStatement("next");
 
         } else {
             mtBl.statement("that.%s", callString)
-                .statement("return this");
+                    .returnStatement("this");
         }
     }
 
-    private void writeNonFluentMethodWrapper(Method method, JavaSource.Builder mtBl) {
-        final String returnKw;
-        if (method.getReturnType() == Void.TYPE) {
-            returnKw = "";
-        } else {
-            returnKw = "return ";
-        }
+    private void writeNonFluentMethodWrapper(Method method, JavaSource.MethodBody mtBl) {
         var callString = FluentMethodTool.from(fluent.getKlass()).forThe(method).call();
-        mtBl.statement("%sthat.%s", returnKw, callString);
+        if (method.getReturnType() == Void.TYPE) {
+            mtBl.statement("that.%s", callString);
+        } else {
+            mtBl.returnStatement("that.%s", callString);
+        }
     }
 
     private String build(Node node, String nextInterface) {
@@ -174,15 +172,15 @@ public class ClassBuilder {
         interfaceName = ifNameFactory.getNewName(terminal);
         var code = new JavaSource();
         var list = InterfaceList.builderFor(methods)
-            .when((terminal.getModifier() & (Node.OPTIONAL | Node.ZERO_OR_MORE)) != 0).then(nextInterface, fluent.getInterfaces())
-            .buildList();
+                .when((terminal.getModifier() & (Node.OPTIONAL | Node.ZERO_OR_MORE)) != 0).then(nextInterface, fluent.getInterfaces())
+                .buildList();
         try (var ifcB = code.open("public interface %s%s ", interfaceName, list)) {
             ifcB.statement(FluentMethodTool
-                .from(fluent.getKlass())
-                .forThe(methods.get(terminal.getMethod()))
-                .withType((terminal.getModifier() & Node.ZERO_OR_MORE) != 0 ? interfaceName : nextInterface)
-                .asInterface()
-                .signature());
+                    .from(fluent.getKlass())
+                    .forThe(methods.get(terminal.getMethod()))
+                    .withType((terminal.getModifier() & Node.ZERO_OR_MORE) != 0 ? interfaceName : nextInterface)
+                    .asInterface()
+                    .signature());
         }
         return code.toString();
     }
@@ -211,7 +209,7 @@ public class ClassBuilder {
         this.interfaceName = ifNameFactory.getNewName(tree);
         var code = new JavaSource();
         try (
-            var ifcB = code.open("public interface %s", this.interfaceName)) {
+                var ifcB = code.open("public interface %s", this.interfaceName)) {
             List<Node> list = tree.getList();
             for (var node : list) {
                 if (node instanceof Tree) {
@@ -219,11 +217,11 @@ public class ClassBuilder {
                 } else {
                     var terminal = (Terminal) node;
                     ifcB.statement(FluentMethodTool
-                        .from(fluent.getKlass())
-                        .forThe(methods.get(terminal.getMethod()))
-                        .withType(nextInterface)
-                        .asInterface()
-                        .signature());
+                            .from(fluent.getKlass())
+                            .forThe(methods.get(terminal.getMethod()))
+                            .withType(nextInterface)
+                            .asInterface()
+                            .signature());
                 }
             }
         }
