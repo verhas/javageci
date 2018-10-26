@@ -9,12 +9,26 @@ public abstract class Node {
     public static final int ONE_OF = 0x00000008;
     public static final int ONE_TERMINAL_OF = 0x00000010;
     private static final Map<Integer, String> stringMap =
-        Map.of(ONCE, "",
-            OPTIONAL, "?",
-            ZERO_OR_MORE, "*",
-            ONE_OF, "{OR}",
-            ONE_TERMINAL_OF,"{OR}");
+            Map.of(ONCE, "",
+                    OPTIONAL, "?",
+                    ZERO_OR_MORE, "*",
+                    ONE_OF, "{OR}",
+                    ONE_TERMINAL_OF, "{OR}");
     private final int modifier;
+
+    public boolean hasName() {
+        return name != null;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    private String name = null;
 
     Node(int modifier) {
         this.modifier = modifier;

@@ -20,8 +20,8 @@ public class BuildFluentForSourceBuilder {
 
     public static FluentBuilder sourceBuilderGrammar() {
         var source = FluentBuilder.from(JavaSource.class).start("builder").fluentType("Builder").implement("AutoCloseable").exclude("close");
-        var methodStatement = source.oneOf("comment", "statement", "write", "write_r", "write_l", "newline", "open", "returnStatement()", "returnStatement(String,Object[])");
         var statement = source.oneOf("comment", "statement", "write", "write_r", "write_l", "newline", "open");
+        var methodStatement = source.oneOf(statement, source.oneOf("returnStatement()", "returnStatement(String,Object[])"));
         var ifStatement = source.one("ifStatement").zeroOrMore(statement).optional(source.one("elseStatement").zeroOrMore(statement));
         var whileStatement = source.one("whileStatement").zeroOrMore(statement);
         var forStatement = source.one("forStatement").zeroOrMore(statement);

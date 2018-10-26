@@ -1,5 +1,7 @@
 package javax0.geci.fluent.internal;
 
+import javax0.geci.fluent.tree.Node;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,11 +24,16 @@ public class InterfaceNameFactory {
 
     /**
      * Calculate a new interface name.
-     *
+     * @param node for which the interface name is created. In case the node has a name then the name of the node is used
+     *             as interface name.
      * @return the new interface name.
      */
-    public String getNewName() {
-        lastInterface = "If" + counter++;
+    public String getNewName(Node node) {
+        if (node.hasName()) {
+            lastInterface = node.getName();
+        } else {
+            lastInterface = "If" + counter++;
+        }
         allInterfaces.add(lastInterface);
         return lastInterface;
     }

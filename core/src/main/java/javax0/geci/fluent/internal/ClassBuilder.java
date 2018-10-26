@@ -171,7 +171,7 @@ public class ClassBuilder {
     }
 
     private String build(Terminal terminal, String nextInterface) {
-        interfaceName = ifNameFactory.getNewName();
+        interfaceName = ifNameFactory.getNewName(terminal);
         var code = new JavaSource();
         var list = InterfaceList.builderFor(methods)
             .when((terminal.getModifier() & (Node.OPTIONAL | Node.ZERO_OR_MORE)) != 0).then(nextInterface, fluent.getInterfaces())
@@ -208,7 +208,7 @@ public class ClassBuilder {
     }
 
     private String buildOneTerminalOf(Tree tree, String nextInterface) {
-        this.interfaceName = ifNameFactory.getNewName();
+        this.interfaceName = ifNameFactory.getNewName(tree);
         var code = new JavaSource();
         try (
             var ifcB = code.open("public interface %s", this.interfaceName)) {
@@ -239,7 +239,7 @@ public class ClassBuilder {
             code.write(builder.build(node, nextInterface));
             alternativeInterfaces.add(builder.interfaceName);
         }
-        this.interfaceName = ifNameFactory.getNewName();
+        this.interfaceName = ifNameFactory.getNewName(tree);
         var ifs = InterfaceList.builderFor(methods).set(fluent.getInterfaces()).set(alternativeInterfaces).buildList();
         try (var ifcB = code.open("public interface %s%s", this.interfaceName, ifs)) {
         }
@@ -260,7 +260,7 @@ public class ClassBuilder {
         List<Node> list = tree.getList();
         var code = new JavaSource();
         ClassBuilder lastBuilder = null;
-        this.interfaceName = ifNameFactory.getNewName();
+        this.interfaceName = ifNameFactory.getNewName(tree);
         for (var i = list.size() - 1; i >= 0; i--) {
             final var node = list.get(i);
             var builder = new ClassBuilder(this);
@@ -283,7 +283,7 @@ public class ClassBuilder {
         List<Node> list = tree.getList();
         var code = new JavaSource();
         ClassBuilder lastBuilder = null;
-        this.interfaceName = ifNameFactory.getNewName();
+        this.interfaceName = ifNameFactory.getNewName(tree);
         for (var i = list.size() - 1; i >= 0; i--) {
             final var node = list.get(i);
             var builder = new ClassBuilder(this);

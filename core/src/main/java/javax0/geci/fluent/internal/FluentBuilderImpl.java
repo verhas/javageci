@@ -91,7 +91,7 @@ public class FluentBuilderImpl implements FluentBuilder {
     }
 
     public Tree get() {
-        return new Tree(Node.ONCE, nodes);
+        return newTree(Node.ONCE, nodes);
     }
 
     private FluentBuilderImpl copy() {
@@ -136,41 +136,55 @@ public class FluentBuilderImpl implements FluentBuilder {
         return this;
     }
 
+    private Terminal newTerminal(int modifiers, String method){
+        var terminal = new Terminal(modifiers,method);
+        terminal.setName(lastName);
+        lastName = null;
+        return terminal;
+    }
+    
     public FluentBuilder optional(String method) {
         assertMethod(method);
         var next = copy();
-        next.nodes.add(new Terminal(Node.OPTIONAL, method));
+        next.nodes.add(newTerminal(Node.OPTIONAL, method));
         return next;
     }
 
     public FluentBuilder optional(FluentBuilder sub) {
         assertClass(sub);
         var next = copy();
-        next.nodes.add(new Tree(Node.OPTIONAL, ((FluentBuilderImpl) sub).nodes));
+        next.nodes.add(newTree(Node.OPTIONAL, ((FluentBuilderImpl) sub).nodes));
         return next;
     }
 
     public FluentBuilder oneOrMore(String method) {
         assertMethod(method);
         var next = copy();
-        next.nodes.add(new Terminal(Node.ONCE, method));
-        next.nodes.add(new Terminal(Node.ZERO_OR_MORE, method));
+        next.nodes.add(newTerminal(Node.ONCE, method));
+        next.nodes.add(newTerminal(Node.ZERO_OR_MORE, method));
         return next;
     }
 
+    private Tree newTree(int modifiers, List<Node> nodes){
+        var tree = new Tree(modifiers,nodes);
+        tree.setName(lastName);
+        lastName = null;
+        return tree;
+    }
+    
     public FluentBuilder oneOrMore(FluentBuilder sub) {
         assertClass(sub);
         var next = copy();
         var subi = (FluentBuilderImpl) sub;
-        next.nodes.add(new Tree(Node.ONCE, subi.nodes));
-        next.nodes.add(new Tree(Node.ZERO_OR_MORE, subi.nodes));
+        next.nodes.add(newTree(Node.ONCE, subi.nodes));
+        next.nodes.add(newTree(Node.ZERO_OR_MORE, subi.nodes));
         return next;
     }
 
     public FluentBuilder zeroOrMore(String method) {
         assertMethod(method);
         var next = copy();
-        next.nodes.add(new Terminal(Node.ZERO_OR_MORE, method));
+        next.nodes.add(newTerminal(Node.ZERO_OR_MORE, method));
         return next;
     }
 
@@ -178,7 +192,7 @@ public class FluentBuilderImpl implements FluentBuilder {
         assertClass(sub);
         var subi = (FluentBuilderImpl) sub;
         var next = copy();
-        next.nodes.add(new Tree(Node.ZERO_OR_MORE, subi.nodes));
+        next.nodes.add(newTree(Node.ZERO_OR_MORE, subi.nodes));
         return next;
     }
 
@@ -186,23 +200,23 @@ public class FluentBuilderImpl implements FluentBuilder {
         assertMethod(methods);
         var next = copy();
 
-        next.nodes.add(new Tree(Node.ONE_TERMINAL_OF, Arrays.stream(methods)
-                .map(method -> new Terminal(Node.ONCE, method)).collect(Collectors.toList())));
+        next.nodes.add(newTree(Node.ONE_TERMINAL_OF, Arrays.stream(methods)
+                .map(method -> newTerminal(Node.ONCE, method)).collect(Collectors.toList())));
         return next;
     }
 
     public FluentBuilder oneOf(FluentBuilder... subs) {
         assertClass(subs);
         var next = copy();
-        next.nodes.add(new Tree(Node.ONE_OF, Arrays.stream(subs)
-                .map(sub -> new Tree(Node.ONCE, ((FluentBuilderImpl) sub).nodes)).collect(Collectors.toList())));
+        next.nodes.add(newTree(Node.ONE_OF, Arrays.stream(subs)
+                .map(sub -> newTree(Node.ONCE, ((FluentBuilderImpl) sub).nodes)).collect(Collectors.toList())));
         return next;
     }
 
     public FluentBuilder one(String method) {
         assertMethod(method);
         var next = copy();
-        next.nodes.add(new Terminal(Node.ONCE, method));
+        next.nodes.add(newTerminal(Node.ONCE, method));
         return next;
     }
 
@@ -210,6 +224,14 @@ public class FluentBuilderImpl implements FluentBuilder {
         return builder;
     }
 
+    private String lastName = null;
+    
+    public FluentBuilder name(String interfaceName){
+        var next = copy();
+        next.lastName = interfaceName;
+        return next;
+    }
+    
     @Override
     public String toString() {
         return nodes.stream().map(Node::toString).collect(Collectors.joining(","));

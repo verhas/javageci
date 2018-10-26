@@ -37,4 +37,6 @@ public interface FluentBuilder {
     FluentBuilder one(String method);
 
     FluentBuilder one(FluentBuilder builder);
+
+    FluentBuilder name(String interfaceName);
 }
