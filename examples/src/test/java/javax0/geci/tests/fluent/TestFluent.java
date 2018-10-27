@@ -37,7 +37,13 @@ public class TestFluent {
         try (xml) {
             xml.tag("hamar").close();
         }
-        Assertions.assertEquals("", xml.toString());
+        Assertions.assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
+            "<alma a=\"b\">\n" +
+            "kakukk\n" +
+            "  <hamar>\n" +
+            "\n" +
+            "  </hamar>\n" +
+            "</alma>", xml.toString());
     }
 
     @Test

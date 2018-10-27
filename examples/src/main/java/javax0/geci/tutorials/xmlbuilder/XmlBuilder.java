@@ -5,22 +5,20 @@ import javax0.geci.annotations.Geci;
 @Geci("fluent definedBy='javax0.geci.tests.fluent.TestFluent::xml'")
 public class XmlBuilder {
 
-    private StringBuilder xml = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
+    private static final int TABSIZE = 2;
+    private StringBuilder xml = new StringBuilder();
     private boolean tagIsOpen = false;
     private String openedTag;
     private int tab = 0;
-    private static final int TABSIZE = 2;
 
     public XmlBuilder copy() {
         var next = new XmlBuilder();
         next.xml = xml;
-        next.xml.append(xml);
         next.tagIsOpen = tagIsOpen;
         next.openedTag = openedTag;
         next.tab = tab;
         return next;
     }
-
 
     private void closeTag() {
         if (tagIsOpen) {
@@ -29,7 +27,6 @@ public class XmlBuilder {
         }
         tagIsOpen = false;
     }
-
 
     private void openTag(String name) {
         if (tagIsOpen) {
@@ -54,24 +51,26 @@ public class XmlBuilder {
         }
     }
 
-    private void tabulate(){
+    private void tabulate() {
         xml.append("\n").append(" ".repeat(tab));
     }
 
-    public void text(String text){
+    public void text(String text) {
+        closeTag();
         xml.append(text);
     }
 
     public void close() {
+        closeTag();
         tab -= TABSIZE;
-        if( tab < 0 )tab = 0;
+        if (tab < 0) tab = 0;
         tabulate();
         xml.append("</").append(openedTag).append(">");
     }
 
     @Override
-    public String toString(){
-        return xml.toString();
+    public String toString() {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + xml.toString();
     }
 
     //<editor-fold id="fluent">
