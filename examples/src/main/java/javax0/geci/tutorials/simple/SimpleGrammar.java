@@ -2,7 +2,7 @@ package javax0.geci.tutorials.simple;
 
 import javax0.geci.annotations.Geci;
 
-@Geci("fluent definedBy=''")
+@Geci("fluent definedBy='javax0.geci.tutorials.simple.TestSimpleGrammar::defineSimpleGrammar'")
 public class SimpleGrammar {
 
     public void singleWord() {
@@ -27,6 +27,9 @@ public class SimpleGrammar {
     }
 
     public void optionalWord() {
+    }
+
+    public void end() {
     }
     //<editor-fold id="fluent" desc="Java::Geci generated code">
     //</editor-fold>
