@@ -16,17 +16,21 @@ public class TestSimpleGrammar {
         if (new Geci().source(maven().module("examples").javaSource())
             .source(Source.Set.set("java"), "./src/test/java", "./examples/src/test/java")
             .register(new Fluent()).generate()) {
-            Assertions.fail("Code was changed during test phase.");
+            Assertions.fail(Geci.FAILED);
         }
     }
-
+    public void test(){
+        SimpleGrammar.start().word3().word3().word3().end();
+    }
     public static FluentBuilder defineSimpleGrammar() {
         FluentBuilder b = FluentBuilder.from(SimpleGrammar.class);
         return b.oneOf(
             b.one("singleWord"),
+            b.one("parameterisedWord"),
             b.one("word1").optional("optionalWord"),
             b.one("word2").oneOf("wordChoiceA", "wordChoiceB"),
-            b.oneOf("word3")).one("end");
+            b.oneOrMore("word3"))
+            .one("end");
     }
 
 }

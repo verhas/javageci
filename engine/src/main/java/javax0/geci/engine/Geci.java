@@ -11,6 +11,8 @@ import static javax0.geci.api.Source.Set.set;
 
 public class Geci implements javax0.geci.api.Geci {
 
+    public static final String FAILED = "Geci modified source code. Please compile and test again.";
+
     private final Map<Source.Set, String[]> directories = new HashMap<>();
     private final List<Generator> generators = new ArrayList<>();
 
