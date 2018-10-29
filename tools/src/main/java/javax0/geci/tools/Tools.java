@@ -2,6 +2,7 @@ package javax0.geci.tools;
 
 import javax0.geci.annotations.Geci;
 import javax0.geci.annotations.Gecis;
+import javax0.geci.annotations.Generated;
 import javax0.geci.tools.reflection.ModifiersBuilder;
 
 import java.lang.reflect.AnnotatedElement;
@@ -87,7 +88,8 @@ public class Tools {
      * @return the normalized type name
      */
     public static String normalizeTypeName(String s) {
-        s = s.replace(" ", "");
+        //s = s.replace(" ", "");
+        s = s.replace("$",".");
         if (s.startsWith("java.lang.")) {
             s = s.substring("java.lang.".length());
         }
@@ -191,6 +193,10 @@ public class Tools {
             }
         }
         return modMask;
+    }
+
+    public static boolean isGenerated(AnnotatedElement element){
+        return element.getDeclaredAnnotation(Generated.class) != null;
     }
 
 }

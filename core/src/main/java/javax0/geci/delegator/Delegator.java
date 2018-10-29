@@ -7,6 +7,7 @@ import javax0.geci.tools.MethodTool;
 import javax0.geci.tools.Tools;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 public class Delegator extends AbstractDeclaredFieldsGenerator {
@@ -23,17 +24,44 @@ public class Delegator extends AbstractDeclaredFieldsGenerator {
         try (var segment = source.open(id)) {
             for (var method : methods) {
                 var modifiers = method.getModifiers();
-                if (Modifier.isPublic(modifiers)) {
+                if (Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers) && !implemented(method).inClass(klass)) {
+                    segment.write("@javax0.geci.annotations.Generated()");
                     segment.write_r(MethodTool.with(method).signature() + " {");
-                    if (!"void".equals(method.getReturnType().getName())) {
-                        segment.write("return " + name + "." + MethodTool.with(method).call() + ";");
-                    } else {
+                    if ("void".equals(method.getReturnType().getName())) {
                         segment.write(name + "." + MethodTool.with(method).call() + ";");
+                    } else {
+                        segment.write("return " + name + "." + MethodTool.with(method).call() + ";");
                     }
                     segment.write_l("}");
                     segment.newline();
                 }
             }
         }
+    }
+
+    private static class MethodHolder {
+        final private Method method;
+
+        private MethodHolder(Method method) {
+            this.method = method;
+        }
+
+        public boolean inClass(Class<?> klass){
+            try {
+                var localMethod = klass.getDeclaredMethod(method.getName(),method.getParameterTypes());
+                return !Tools.isGenerated(localMethod);
+            } catch (NoSuchMethodException e) {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * Returns true if the method
+     * @param method
+     * @return
+     */
+    private MethodHolder implemented(Method method){
+        return new MethodHolder(method);
     }
 }
