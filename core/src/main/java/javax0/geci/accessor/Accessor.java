@@ -20,8 +20,8 @@ public class Accessor extends AbstractGenerator {
 
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
-        var accessMask = Tools.mask(global.get("include"), Modifier.PRIVATE);
-        var gid = global.get("id");
+        final var accessMask = Tools.mask(global.get("include"), Modifier.PRIVATE);
+        final var gid = global.get("id");
         source.init(gid);
         final var fields = klass.getDeclaredFields();
         for (final var field : fields) {

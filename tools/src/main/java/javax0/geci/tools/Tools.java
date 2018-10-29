@@ -182,10 +182,10 @@ public class Tools {
                 if (maskTrimmed.equals("native")) {
                     modMask |= Modifier.NATIVE;
                 }
-                if (maskTrimmed.equals("native")) {
+                if (maskTrimmed.equals("transient")) {
                     modMask |= Modifier.TRANSIENT;
                 }
-                if (maskTrimmed.equals("native")) {
+                if (maskTrimmed.equals("volatile")) {
                     modMask |= Modifier.VOLATILE;
                 }
             }

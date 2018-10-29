@@ -60,7 +60,7 @@ public class TestAccessor {
     @Test
     public void testAccessor() throws Exception {
         if (new Geci().source(maven().module("examples").javaSource()).register(new Accessor()).generate()) {
-            Assertions.fail("Code was changed during test phase.");
+            Assertions.fail(Geci.FAILED);
         }
     }
 }
@@ -88,3 +88,14 @@ For further information visit the following documentations
 * [Reference documentation](REFERENCE.md)
 * [How to guides](HOWTO.md)
 * [Explanations](EXPLANATION.md)
+* [Frequently Asked Questions](FAQ.md)
+
+Generators provided with Java::Geci out of the box
+
+* [Setter and getter](ACCESSOR.md)
+* [Delegation](DELEGATOR.md)
+* [Fluent API](FLUENT.md)
+* [equals() and hashCode()](EQUALS.md) (planned)
+* [object cloner](CLONER.md) (planned)
+* [static dependency injection](INJECT.md) (planned)
+* [proxy class](PROXY.md) (planned)
