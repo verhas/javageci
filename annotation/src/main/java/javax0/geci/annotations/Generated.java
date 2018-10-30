@@ -1,6 +1,5 @@
 package javax0.geci.annotations;
 
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -13,4 +12,10 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Generated {
+    /**
+     * Documentation string. It is recommended that the generator puts its own mnemonic into this parameter.
+     *
+     * @return ""
+     */
+    String value() default "";
 }

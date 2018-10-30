@@ -25,7 +25,7 @@ public class Delegator extends AbstractDeclaredFieldsGenerator {
             for (var method : methods) {
                 var modifiers = method.getModifiers();
                 if (Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers) && !implemented(method).inClass(klass)) {
-                    segment.write("@javax0.geci.annotations.Generated()");
+                    segment.write("@javax0.geci.annotations.Generated(\""+mnemonic()+"\")");
                     segment.write_r(MethodTool.with(method).signature() + " {");
                     if ("void".equals(method.getReturnType().getName())) {
                         segment.write(name + "." + MethodTool.with(method).call() + ";");

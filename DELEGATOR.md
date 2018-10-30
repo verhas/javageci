@@ -13,7 +13,8 @@ method that the `Map` interface defines, each calling the same method and the sa
 Delegator creates these methods automatically. If you want to create some of the methods yourself then delegator
 will just skip those during code generation.
 
-The appropriate workflow is to create the test code:
+The appropriate workflow is to create first the test code that will check the generated code or
+generate the code when the check fails.
 
 ```java
     @Test
@@ -26,10 +27,52 @@ The appropriate workflow is to create the test code:
 then annotate the class and the field:
 
 ```java
+@Geci("delegator")
+public class SampleComposite<K,V> {
+    @Geci("delegator id='contained1'")
+    Map<K,V> contained1;
+```
 
+When this is done then you can run the test code from the IDE and get the methods:
 
+```java
+    @javax0.geci.annotations.Generated("delegator")
+    public V compute(K arg1, java.util.function.BiFunction<? super K,? super V,? extends V> arg2) {
+        return contained1.compute(arg1,arg2);
+    }
+
+    @javax0.geci.annotations.Generated("delegator")
+    public V computeIfAbsent(K arg1, java.util.function.Function<? super K,? extends V> arg2) {
+        return contained1.computeIfAbsent(arg1,arg2);
+    }
+
+    @javax0.geci.annotations.Generated("delegator")
+    public V computeIfPresent(K arg1, java.util.function.BiFunction<? super K,? super V,? extends V> arg2) {
+        return contained1.computeIfPresent(arg1,arg2);
+    }
+
+    @javax0.geci.annotations.Generated("delegator")
+    public V get(Object arg1) {
+        return contained1.get(arg1);
+    }
+
+    ...
 ```
 
 
-To use the delegator the class
-containing the field 
+Then you can extend the header of the class to
+
+```java
+@Geci("delegator")
+public class SampleComposite<K,V> implements Map<K,V>{
+    @Geci("delegator id='contained1'")
+    Map<K,V> contained1;
+```
+
+Now, that the generator implemented the delegating methods the class implements the interface. If you
+run the code generating test it will run fine without fail.
+
+The delegator creates each delegating method annotated with the `Generated()` annotation. This helps the delegator
+reaize when the programmer manually implements some of the delegator methods. The manually create method
+should not be annotated with the `Generated()` annotation and the delegator will simply skip this method
+and does not generate this specific method.
