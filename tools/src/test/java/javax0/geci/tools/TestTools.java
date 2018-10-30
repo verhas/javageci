@@ -62,7 +62,28 @@ public class TestTools {
                 () -> assertEquals("java.util.Map<java.util.Set<Integer>,String>",
                         Tools.normalizeTypeName("java.util.Map<java.util.Set< java.lang.Integer>,java.lang.String>")),
                 () -> assertEquals("java.util.Map<java.util.Set<com.java.lang.Integer>,String>",
-                        Tools.normalizeTypeName("java.util.Map<java.util.Set< com. java.lang.Integer>,java.lang.String>"))
+                        Tools.normalizeTypeName("java.util.Map<java.util.Set< com. java.lang.Integer>,java.lang.String>")),
+                () -> assertEquals("java.util.Map<java.util.Set<? extends com.java.lang.Integer>,String>",
+                        Tools.normalizeTypeName("java.util.Map<java.util.Set<? extends    com. java.lang.Integer> , java.lang.String>"))
         );
+    }
+
+    private static java.util.Map.Entry<String, Integer>[] m1() {
+        return null;
+    }
+
+    private static java.util.Map.Entry<? extends String, ? super Integer>[] m2() {
+        return null;
+    }
+
+    @Test
+    public void normalizeType() {
+        Assertions.assertAll(
+                () -> assertEquals("java.util.Set<java.util.Map.Entry<K,V>>", Tools.getGenericTypeName(Map.class.getDeclaredMethod("entrySet").getGenericReturnType())),
+                () -> assertEquals("java.util.Map.Entry", Tools.getGenericTypeName(java.util.Map.Entry.class)),
+                () -> assertEquals("java.util.Map.Entry<String,Integer>[]", Tools.getGenericTypeName(this.getClass().getDeclaredMethod("m1").getGenericReturnType())),
+                () -> assertEquals("java.util.Map.Entry<? extends String,? super Integer>[]", Tools.getGenericTypeName(this.getClass().getDeclaredMethod("m2").getGenericReturnType()))
+        );
+
     }
 }

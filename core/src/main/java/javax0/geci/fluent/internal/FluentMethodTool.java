@@ -16,12 +16,12 @@ public class FluentMethodTool extends MethodTool {
 
     private FluentMethodTool(Class klass) {
         super();
-        this.klassName = Tools.normalizeTypeName(klass.getName());
+        this.klassName = Tools.getGenericTypeName(klass);
     }
 
     @Override
     public String getArgCall(Type t) {
-        final var normType = Tools.normalizeTypeName(t.getTypeName());
+        final var normType = Tools.getGenericTypeName(t);
         final String arg;
         if (normType.equals(klassName)) {
             arg = "((Wrapper)arg" + argCounter.addAndGet(1) + ").that";
@@ -33,7 +33,7 @@ public class FluentMethodTool extends MethodTool {
 
     @Override
     public String getArg(Type t) {
-        final var normType = Tools.normalizeTypeName(t.getTypeName());
+        final var normType = Tools.getGenericTypeName(t);
         final String actualType;
         if (normType.equals(klassName)) {
             actualType = "WrapperInterface";

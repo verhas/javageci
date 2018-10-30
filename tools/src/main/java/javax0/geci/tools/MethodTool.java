@@ -59,7 +59,7 @@ public class MethodTool {
         }
         var arglist = sb.toString();
         var exceptionlist = Arrays.stream(method.getGenericExceptionTypes())
-                .map(t -> Tools.normalizeTypeName(t.getTypeName()))
+                .map(t -> Tools.getGenericTypeName(t))
                 .collect(Collectors.joining(","));
         return (isInterface ? "" : (Tools.modifiersString(method))) +
                 (type == null ? Tools.typeAsString(method) : type) +
@@ -78,18 +78,18 @@ public class MethodTool {
     }
 
     public String getArgCall(Type t) {
-        final var normType = Tools.normalizeTypeName(t.getTypeName());
+        final var normType = Tools.getGenericTypeName(t);
         return "arg" + argCounter.addAndGet(1);
     }
 
     public String getVarArg(Type t) {
-        final var normType = Tools.normalizeTypeName(t.getTypeName());
+        final var normType = Tools.getGenericTypeName(t);
         final String actualType = normType.substring(0, normType.length() - 2) + "... ";
         return actualType + " arg" + argCounter.addAndGet(1);
     }
 
     public String getArg(Type t) {
-        final var normType = Tools.normalizeTypeName(t.getTypeName());
+        final var normType = Tools.getGenericTypeName(t);
         return normType + " arg" + argCounter.addAndGet(1);
     }
 

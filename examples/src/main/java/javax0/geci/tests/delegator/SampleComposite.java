@@ -11,17 +11,17 @@ public class SampleComposite<K,V> implements Map<K,V>{
 
     // <editor-fold id="contained1" desc="delegated methods to contained1">
     @javax0.geci.annotations.Generated()
-    public V compute(K arg1, java.util.function.BiFunction<? super K, ? super V, ? extends V> arg2) {
+    public V compute(K arg1, java.util.function.BiFunction<? super K,? super V,? extends V> arg2) {
         return contained1.compute(arg1,arg2);
     }
 
     @javax0.geci.annotations.Generated()
-    public V computeIfAbsent(K arg1, java.util.function.Function<? super K, ? extends V> arg2) {
+    public V computeIfAbsent(K arg1, java.util.function.Function<? super K,? extends V> arg2) {
         return contained1.computeIfAbsent(arg1,arg2);
     }
 
     @javax0.geci.annotations.Generated()
-    public V computeIfPresent(K arg1, java.util.function.BiFunction<? super K, ? super V, ? extends V> arg2) {
+    public V computeIfPresent(K arg1, java.util.function.BiFunction<? super K,? super V,? extends V> arg2) {
         return contained1.computeIfPresent(arg1,arg2);
     }
 
@@ -36,7 +36,7 @@ public class SampleComposite<K,V> implements Map<K,V>{
     }
 
     @javax0.geci.annotations.Generated()
-    public V merge(K arg1, V arg2, java.util.function.BiFunction<? super V, ? super V, ? extends V> arg3) {
+    public V merge(K arg1, V arg2, java.util.function.BiFunction<? super V,? super V,? extends V> arg3) {
         return contained1.merge(arg1,arg2,arg3);
     }
 
@@ -111,7 +111,7 @@ public class SampleComposite<K,V> implements Map<K,V>{
     }
 
     @javax0.geci.annotations.Generated()
-    public java.util.Set<java.util.Map.Entry<K, V>> entrySet() {
+    public java.util.Set<java.util.Map.Entry<K,V>> entrySet() {
         return contained1.entrySet();
     }
 
@@ -121,17 +121,17 @@ public class SampleComposite<K,V> implements Map<K,V>{
     }
 
     @javax0.geci.annotations.Generated()
-    public void forEach(java.util.function.BiConsumer<? super K, ? super V> arg1) {
+    public void forEach(java.util.function.BiConsumer<? super K,? super V> arg1) {
         contained1.forEach(arg1);
     }
 
     @javax0.geci.annotations.Generated()
-    public void putAll(java.util.Map<? extends K, ? extends V> arg1) {
+    public void putAll(java.util.Map<? extends K,? extends V> arg1) {
         contained1.putAll(arg1);
     }
 
     @javax0.geci.annotations.Generated()
-    public void replaceAll(java.util.function.BiFunction<? super K, ? super V, ? extends V> arg1) {
+    public void replaceAll(java.util.function.BiFunction<? super K,? super V,? extends V> arg1) {
         contained1.replaceAll(arg1);
     }
 
