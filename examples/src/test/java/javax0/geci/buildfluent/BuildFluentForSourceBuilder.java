@@ -7,14 +7,12 @@ import javax0.geci.tools.JavaSource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static javax0.geci.api.Source.maven;
-
 public class BuildFluentForSourceBuilder {
 
     @Test
-    public void testSourceBuilderGeneratedApiIsGood() throws Exception{
+    public void testSourceBuilderGeneratedApiIsGood() throws Exception {
         if (new Geci().source("../tools/src/main/java", "./tools/src/main/java").register(new Fluent()).generate()) {
-            Assertions.fail("Fluent modified source code. Please compile again.");
+            Assertions.fail(Geci.FAILED);
         }
     }
 

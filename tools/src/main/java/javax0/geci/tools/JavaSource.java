@@ -137,7 +137,7 @@ public class JavaSource implements AutoCloseable {
     public interface If6 {
         If4 elseStatement();
     }
-    public interface If3 extends If1,AutoCloseable,If6 {};
+    public interface If3 extends If1,AutoCloseable,If6 {}
     public interface If8{
         If7 comment(String arg1, Object...  arg2);
         If7 statement(String arg1, Object...  arg2);

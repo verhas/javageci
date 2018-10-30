@@ -49,7 +49,7 @@ public interface If5{
     If3 a();
     If3 b();
 }
-public interface If4 extends If3,If5 {};
+public interface If4 extends If3,If5 {}
 public interface If6 {
     If4 a();
 }

@@ -160,7 +160,7 @@ public class Tools {
     }
 
     private static String removeJavaLang(String s) {
-        if (s.matches("^java\\.lang\\.\\w+$")) {
+        if (s.matches("^java\\.lang\\.\\w+(\\.\\.\\.|\\[\\])?$")) {
             return s.substring("java.lang.".length());
         } else {
             return s;

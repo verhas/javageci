@@ -303,7 +303,7 @@ public class ClassBuilder {
             throw new GeciException("Internal error");
         }
         var ifs = InterfaceList.builderFor(methods).set(nextInterface, lastBuilder.interfaceName, fluent.getInterfaces()).buildList();
-        code.statement("public interface %s%s {}", this.interfaceName, ifs);
+        code.write("public interface %s%s {}", this.interfaceName, ifs);
         return code.toString();
     }
 

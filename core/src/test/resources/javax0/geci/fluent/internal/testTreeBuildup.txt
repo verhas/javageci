@@ -41,7 +41,7 @@ public interface If2{
     If0 a();
     If0 b();
 }
-public interface If1 extends If0,If2 {};
+public interface If1 extends If0,If2 {}
 public interface If3 {
     If1 a();
 }
