@@ -23,7 +23,7 @@ public class Accessor extends AbstractGenerator {
         final var accessMask = Tools.mask(global.get("include"), Modifier.PRIVATE);
         final var gid = global.get("id");
         source.init(gid);
-        final var fields = klass.getDeclaredFields();
+        final var fields = Tools.getDeclaredFieldsSorted(klass);
         for (final var field : fields) {
             var local = Tools.getParameters(field, mnemonic());
             var isFinal = Modifier.isFinal(field.getModifiers());

@@ -12,7 +12,7 @@ public class TestDelegator {
     @Test
     public void testDelegator() throws Exception {
         if (new Geci().source(maven().module("examples").javaSource()).register(new Delegator()).generate()) {
-            Assertions.fail("Delegator modified source code. Please compile again.");
+            Assertions.fail(Geci.FAILED);
         }
     }
 }

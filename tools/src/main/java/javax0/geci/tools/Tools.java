@@ -150,7 +150,7 @@ public class Tools {
         s = s.replaceAll("\\s*<\\s*", "<")
                 .replaceAll("\\s*>\\s*", ">")
                 .replaceAll("\\s*\\.\\s*", ".")
-                .replaceAll("\\s*\\,\\s*", ",")
+                .replaceAll("\\s*,\\s*", ",")
                 .replaceAll("\\s+", " ");
         if (s.startsWith("java.lang.")) {
             s = s.substring("java.lang.".length());
@@ -160,7 +160,7 @@ public class Tools {
     }
 
     private static String removeJavaLang(String s) {
-        if (s.matches("^java\\.lang\\.\\w+(\\.\\.\\.|\\[\\])?$")) {
+        if (s.matches("^java\\.lang\\.\\w+(\\.\\.\\.|\\[])?$")) {
             return s.substring("java.lang.".length());
         } else {
             return s;
@@ -197,9 +197,8 @@ public class Tools {
 
     private static String getGenericWildcardTypeName(WildcardType t) {
         String normalizedName;
-        var wt = t;
-        var ub = joinTypes(wt.getUpperBounds());
-        var lb = joinTypes(wt.getLowerBounds());
+        var ub = joinTypes(t.getUpperBounds());
+        var lb = joinTypes(t.getLowerBounds());
         normalizedName = "?" +
                 (lb.length() > 0 && !lb.equals("Object") ? " super " + lb : "") +
                 (ub.length() > 0 && !ub.equals("Object") ? " extends " + ub : "");
@@ -208,12 +207,11 @@ public class Tools {
 
     private static String getGenericParametrizedTypeName(ParameterizedType t) {
         String normalizedName;
-        var pt = t;
-        var types = pt.getActualTypeArguments();
-        if (!(pt.getRawType() instanceof Class<?>)) {
-            throw new GeciException("'getRawType()' returned something that is not a class : " + pt.getClass().getTypeName());
+        var types = t.getActualTypeArguments();
+        if (!(t.getRawType() instanceof Class<?>)) {
+            throw new GeciException("'getRawType()' returned something that is not a class : " + t.getClass().getTypeName());
         }
-        final var klass = (Class) pt.getRawType();
+        final var klass = (Class) t.getRawType();
         final String klassName = removeJavaLang(klass.getCanonicalName());
         if (types.length > 0) {
             normalizedName = klassName + "<" +
@@ -276,6 +274,28 @@ public class Tools {
         final var methods = klass.getDeclaredMethods();
         Arrays.sort(methods, Comparator.comparing(MethodTool::methodSignature));
         return methods;
+    }
+
+
+    public static class Separator {
+        private Separator(String sep) {
+            this.sep = sep;
+        }
+
+        private String sep;
+        private boolean first = true;
+        public String get(){
+            if( first ){
+                first = false;
+                return "";
+            }else{
+                return sep;
+            }
+        }
+    }
+
+    public static Separator separator(String sep){
+        return new Separator(sep);
     }
 
     /**
