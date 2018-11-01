@@ -52,7 +52,7 @@ public class XmlBuilder {
     }
 
     private void tabulate() {
-        xml.append("\n").append(" ".repeat(tab));
+        xml.append("\n").append(tab > 0 ? String.format("%" + tab + "s", " ") : "");
     }
 
     public void text(String text) {

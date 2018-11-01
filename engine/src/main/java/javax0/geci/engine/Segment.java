@@ -29,7 +29,7 @@ public class Segment implements javax0.geci.api.Segment {
             if (formatted.contains("\n")) {
                 Arrays.stream(formatted.split("\n")).forEach(this::write);
             } else {
-                lines.add(" ".repeat(tabStop) + formatted);
+                lines.add((tabStop > 0 ? String.format("%" + tabStop + "s", " ") : "") + formatted);
             }
         }
     }

@@ -16,202 +16,299 @@ public class JavaSource implements AutoCloseable {
     private int tabStop = 0;
 
     //<editor-fold id="fluent" desc="fluent API interfaces and classes">
-    public interface Builder extends If24 {}
-    public static Builder builder(){
+    public interface Builder extends If24 {
+    }
+
+    public static Builder builder() {
         return new Wrapper();
     }
-    public static class Wrapper implements If16,If17,If14,If15,If18,If19,Builder,If0,If2,If1,If4,If3,If6,If5,If20,If8,If7,If23,If9,If24,If21,If22,AutoCloseable,MethodBody,If12,If13,If10,If11{
+
+    public static class Wrapper implements If16, If17, If14, If15, If18, If19, Builder, If0, If2, If1, If4, If3, If6, If5, If20, If8, If7, If23, If9, If24, If21, If22, AutoCloseable, MethodBody, If12, If13, If10, If11 {
         private final javax0.geci.tools.JavaSource that;
-        public Wrapper(){
+
+        public Wrapper() {
             this.that = new javax0.geci.tools.JavaSource();
         }
-        public Wrapper ifStatement(String arg1, Object...  arg2){
-            that.ifStatement(arg1,arg2);
+
+        public Wrapper ifStatement(String arg1, Object... arg2) {
+            that.ifStatement(arg1, arg2);
             return this;
         }
-        public Wrapper statement(String arg1, Object...  arg2){
-            that.statement(arg1,arg2);
+
+        public Wrapper statement(String arg1, Object... arg2) {
+            that.statement(arg1, arg2);
             return this;
         }
-        public Wrapper returnStatement(){
+
+        public Wrapper returnStatement() {
             that.returnStatement();
             return this;
         }
-        public Wrapper forStatement(String arg1, Object...  arg2){
-            that.forStatement(arg1,arg2);
+
+        public Wrapper forStatement(String arg1, Object... arg2) {
+            that.forStatement(arg1, arg2);
             return this;
         }
-        public Wrapper write_r(String arg1, Object...  arg2){
-            that.write_r(arg1,arg2);
+
+        public Wrapper write_r(String arg1, Object... arg2) {
+            that.write_r(arg1, arg2);
             return this;
         }
-        public String toString(){
+
+        public String toString() {
             return that.toString();
         }
-        public Wrapper open(String arg1, Object...  arg2){
-            that.open(arg1,arg2);
+
+        public Wrapper open(String arg1, Object... arg2) {
+            that.open(arg1, arg2);
             return this;
         }
-        public Wrapper elseStatement(){
+
+        public Wrapper elseStatement() {
             that.elseStatement();
             return this;
         }
-        public Wrapper method(String arg1){
+
+        public Wrapper method(String arg1) {
             that.method(arg1);
             return this;
         }
-        public Wrapper noArgs(){
+
+        public Wrapper noArgs() {
             that.noArgs();
             return this;
         }
-        public Wrapper returnStatement(String arg1, Object...  arg2){
-            that.returnStatement(arg1,arg2);
+
+        public Wrapper returnStatement(String arg1, Object... arg2) {
+            that.returnStatement(arg1, arg2);
             return this;
         }
-        public Wrapper comment(String arg1, Object...  arg2){
-            that.comment(arg1,arg2);
+
+        public Wrapper comment(String arg1, Object... arg2) {
+            that.comment(arg1, arg2);
             return this;
         }
-        public Wrapper modifiers(String arg1){
+
+        public Wrapper modifiers(String arg1) {
             that.modifiers(arg1);
             return this;
         }
-        public Wrapper args(String...  arg1){
+
+        public Wrapper args(String... arg1) {
             that.args(arg1);
             return this;
         }
-        public Wrapper write_l(String arg1, Object...  arg2){
-            that.write_l(arg1,arg2);
+
+        public Wrapper write_l(String arg1, Object... arg2) {
+            that.write_l(arg1, arg2);
             return this;
         }
-        public Wrapper whileStatement(String arg1, Object...  arg2){
-            that.whileStatement(arg1,arg2);
+
+        public Wrapper whileStatement(String arg1, Object... arg2) {
+            that.whileStatement(arg1, arg2);
             return this;
         }
-        public Wrapper exceptions(String arg1){
+
+        public Wrapper exceptions(String arg1) {
             that.exceptions(arg1);
             return this;
         }
-        public Wrapper returnType(String arg1){
+
+        public Wrapper returnType(String arg1) {
             that.returnType(arg1);
             return this;
         }
-        public Wrapper write_lr(String arg1, Object...  arg2){
-            that.write_lr(arg1,arg2);
+
+        public Wrapper write_lr(String arg1, Object... arg2) {
+            that.write_lr(arg1, arg2);
             return this;
         }
-        public Wrapper write(String arg1, Object...  arg2){
-            that.write(arg1,arg2);
+
+        public Wrapper write(String arg1, Object... arg2) {
+            that.write(arg1, arg2);
             return this;
         }
-        public void close(){
+
+        public void close() {
             that.close();
         }
-        public Wrapper newline(){
+
+        public Wrapper newline() {
             that.newline();
             return this;
         }
     }
+
     public interface If0 {
         String toString();
     }
-    public interface If2{
-        If1 comment(String arg1, Object...  arg2);
-        If1 statement(String arg1, Object...  arg2);
-        If1 write(String arg1, Object...  arg2);
-        If1 write_r(String arg1, Object...  arg2);
-        If1 write_l(String arg1, Object...  arg2);
+
+    public interface If2 {
+        If1 comment(String arg1, Object... arg2);
+
+        If1 statement(String arg1, Object... arg2);
+
+        If1 write(String arg1, Object... arg2);
+
+        If1 write_r(String arg1, Object... arg2);
+
+        If1 write_l(String arg1, Object... arg2);
+
         If1 newline();
-        If1 open(String arg1, Object...  arg2);
+
+        If1 open(String arg1, Object... arg2);
     }
-    public interface If5{
-        If4 comment(String arg1, Object...  arg2);
-        If4 statement(String arg1, Object...  arg2);
-        If4 write(String arg1, Object...  arg2);
-        If4 write_r(String arg1, Object...  arg2);
-        If4 write_l(String arg1, Object...  arg2);
+
+    public interface If5 {
+        If4 comment(String arg1, Object... arg2);
+
+        If4 statement(String arg1, Object... arg2);
+
+        If4 write(String arg1, Object... arg2);
+
+        If4 write_r(String arg1, Object... arg2);
+
+        If4 write_l(String arg1, Object... arg2);
+
         If4 newline();
-        If4 open(String arg1, Object...  arg2);
+
+        If4 open(String arg1, Object... arg2);
     }
-    public interface If4 extends If1,AutoCloseable,If5 {}
+
+    public interface If4 extends If1, AutoCloseable, If5 {
+    }
+
     public interface If6 {
         If4 elseStatement();
     }
-    public interface If3 extends If1,AutoCloseable,If6 {}
-    public interface If8{
-        If7 comment(String arg1, Object...  arg2);
-        If7 statement(String arg1, Object...  arg2);
-        If7 write(String arg1, Object...  arg2);
-        If7 write_r(String arg1, Object...  arg2);
-        If7 write_l(String arg1, Object...  arg2);
+
+    public interface If3 extends If1, AutoCloseable, If6 {
+    }
+
+    public interface If8 {
+        If7 comment(String arg1, Object... arg2);
+
+        If7 statement(String arg1, Object... arg2);
+
+        If7 write(String arg1, Object... arg2);
+
+        If7 write_r(String arg1, Object... arg2);
+
+        If7 write_l(String arg1, Object... arg2);
+
         If7 newline();
-        If7 open(String arg1, Object...  arg2);
+
+        If7 open(String arg1, Object... arg2);
     }
-    public interface If7 extends If3,AutoCloseable,If8 {}
+
+    public interface If7 extends If3, AutoCloseable, If8 {
+    }
+
     public interface If9 {
-        If7 ifStatement(String arg1, Object...  arg2);
+        If7 ifStatement(String arg1, Object... arg2);
     }
-    public interface If11{
-        If10 comment(String arg1, Object...  arg2);
-        If10 statement(String arg1, Object...  arg2);
-        If10 write(String arg1, Object...  arg2);
-        If10 write_r(String arg1, Object...  arg2);
-        If10 write_l(String arg1, Object...  arg2);
+
+    public interface If11 {
+        If10 comment(String arg1, Object... arg2);
+
+        If10 statement(String arg1, Object... arg2);
+
+        If10 write(String arg1, Object... arg2);
+
+        If10 write_r(String arg1, Object... arg2);
+
+        If10 write_l(String arg1, Object... arg2);
+
         If10 newline();
-        If10 open(String arg1, Object...  arg2);
+
+        If10 open(String arg1, Object... arg2);
     }
-    public interface If10 extends If1,AutoCloseable,If11 {}
+
+    public interface If10 extends If1, AutoCloseable, If11 {
+    }
+
     public interface If12 {
-        If10 whileStatement(String arg1, Object...  arg2);
+        If10 whileStatement(String arg1, Object... arg2);
     }
-    public interface If14{
-        If13 comment(String arg1, Object...  arg2);
-        If13 statement(String arg1, Object...  arg2);
-        If13 write(String arg1, Object...  arg2);
-        If13 write_r(String arg1, Object...  arg2);
-        If13 write_l(String arg1, Object...  arg2);
+
+    public interface If14 {
+        If13 comment(String arg1, Object... arg2);
+
+        If13 statement(String arg1, Object... arg2);
+
+        If13 write(String arg1, Object... arg2);
+
+        If13 write_r(String arg1, Object... arg2);
+
+        If13 write_l(String arg1, Object... arg2);
+
         If13 newline();
-        If13 open(String arg1, Object...  arg2);
+
+        If13 open(String arg1, Object... arg2);
     }
-    public interface If13 extends If14,If1,AutoCloseable {}
+
+    public interface If13 extends If14, If1, AutoCloseable {
+    }
+
     public interface If15 {
-        If13 forStatement(String arg1, Object...  arg2);
+        If13 forStatement(String arg1, Object... arg2);
     }
-    public interface If16{
-        MethodBody comment(String arg1, Object...  arg2);
-        MethodBody statement(String arg1, Object...  arg2);
-        MethodBody write(String arg1, Object...  arg2);
-        MethodBody write_r(String arg1, Object...  arg2);
-        MethodBody write_l(String arg1, Object...  arg2);
+
+    public interface If16 {
+        MethodBody comment(String arg1, Object... arg2);
+
+        MethodBody statement(String arg1, Object... arg2);
+
+        MethodBody write(String arg1, Object... arg2);
+
+        MethodBody write_r(String arg1, Object... arg2);
+
+        MethodBody write_l(String arg1, Object... arg2);
+
         MethodBody newline();
-        MethodBody open(String arg1, Object...  arg2);
+
+        MethodBody open(String arg1, Object... arg2);
     }
-    public interface If17{
+
+    public interface If17 {
         MethodBody returnStatement();
-        MethodBody returnStatement(String arg1, Object...  arg2);
+
+        MethodBody returnStatement(String arg1, Object... arg2);
     }
-    public interface If18 extends If16,If17,AutoCloseable{
+
+    public interface If18 extends If16, If17, AutoCloseable {
     }
-    public interface MethodBody extends If1,If18,AutoCloseable {}
-    public interface If19{
+
+    public interface MethodBody extends If1, If18, AutoCloseable {
+    }
+
+    public interface If19 {
         MethodBody noArgs();
-        MethodBody args(String...  arg1);
+
+        MethodBody args(String... arg1);
     }
-    public interface If20 extends If19,AutoCloseable {
+
+    public interface If20 extends If19, AutoCloseable {
         If19 exceptions(String arg1);
     }
-    public interface If21 extends AutoCloseable,If20 {
+
+    public interface If21 extends AutoCloseable, If20 {
         If20 returnType(String arg1);
     }
-    public interface If22 extends AutoCloseable,If21 {
+
+    public interface If22 extends AutoCloseable, If21 {
         If21 modifiers(String arg1);
     }
+
     public interface If23 {
         If22 method(String arg1);
     }
-    public interface If24 extends If15,If2,AutoCloseable,If12,If23,If9{
+
+    public interface If24 extends If15, If2, AutoCloseable, If12, If23, If9 {
     }
-    public interface If1 extends If0,AutoCloseable,If24 {}
+
+    public interface If1 extends If0, AutoCloseable, If24 {
+    }
     //</editor-fold>
 
     /**
@@ -233,7 +330,7 @@ public class JavaSource implements AutoCloseable {
                 Arrays.stream(formatted.split("\n")).forEach(this::write);
             } else {
                 formatted = formatted.replaceAll("\n+$", "");
-                code.append(" ".repeat(tabStop)).append(formatted).append("\n");
+                code.append(tabStop > 0 ? String.format("%" + tabStop + "s", " ") : "").append(formatted).append("\n");
             }
         }
         return this;
