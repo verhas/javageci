@@ -87,7 +87,7 @@
         </dependency>
         <dependency>
             <groupId>com.javax0.geci</groupId>
-            <artifactId>annotation</artifactId>
+            <artifactId>javageci-annotation</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

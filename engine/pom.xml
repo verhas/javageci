@@ -71,15 +71,15 @@
     <dependencies>
         <dependency>
             <groupId>com.javax0.geci</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>javageci-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.javax0.geci</groupId>
-            <artifactId>tools</artifactId>
+            <artifactId>javageci-tools</artifactId>
         </dependency>
         <dependency>
             <groupId>com.javax0.geci</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>javageci-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

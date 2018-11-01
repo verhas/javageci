@@ -320,6 +320,7 @@ public class JavaSource implements AutoCloseable {
      *
      * @param s          the format string
      * @param parameters optional parameters
+     * @return this
      */
     public JavaSource write(String s, Object... parameters) {
         if (s.trim().length() == 0) {
@@ -338,6 +339,7 @@ public class JavaSource implements AutoCloseable {
 
     /**
      * Add a new line to the
+     * @return this
      */
     public JavaSource newline() {
         code.append("\n");
@@ -348,8 +350,9 @@ public class JavaSource implements AutoCloseable {
     /**
      * Write the string to the code and then increase the tab stop.
      *
-     * @param s
-     * @param parameters
+     * @param s          the format string
+     * @param parameters optional parameters
+     * @return this
      */
     public JavaSource write_r(String s, Object... parameters) {
         write(s, parameters);
@@ -360,8 +363,9 @@ public class JavaSource implements AutoCloseable {
     /**
      * Decrease the tab stop and then write the string to the code.
      *
-     * @param s
-     * @param parameters
+     * @param s          the format string
+     * @param parameters optional parameters
+     * @return this
      */
     public JavaSource write_l(String s, Object... parameters) {
         tabStop -= TAB;
@@ -438,7 +442,7 @@ public class JavaSource implements AutoCloseable {
     /**
      * You can use this method in the try-with-resources output
      *
-     * @param s          the line that opens the block without the {@code { } at the end of the line. That will automatically
+     * @param s          the line that opens the block without the {@code $&#123;}at the end of the line. That will automatically
      *                   be appended.
      * @param parameters parameters of the line
      * @return this

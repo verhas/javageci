@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -20,7 +21,7 @@ public class TestClassBuilder {
 
     private static void assertEqualToFile(String result, String resourceName) throws Exception {
         try (var output = Files.newOutputStream(
-                Path.of("target", resourceName),
+                FileSystems.getDefault().getPath("target", resourceName),
                 StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
             output.write(result.getBytes(StandardCharsets.UTF_8));
         }
