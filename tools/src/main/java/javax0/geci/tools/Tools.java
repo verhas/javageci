@@ -168,7 +168,7 @@ public class Tools {
     }
 
     /**
-     * Get the generic type name of the type passed as argument. The JDK {@link Type#getTypeName()} returns
+     * Get the generic type name of the type passed as argument. The JDK {@code Type#getTypeName()} returns
      * a string that contains the classes with their names and not with the canonical names (inner classes
      * have {@code $} in the names instead of dot). This method goes through the type structure and converts
      * the names (generic types also) to

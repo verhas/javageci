@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.javax0.geci</groupId>
@@ -18,12 +18,49 @@
         <geci.version>1.0.0-SNAPSHOT</geci.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Peter Verhas</name>
+            <email>peter@verhas.com</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git://github.com/verhas/javageci.git</connection>
+        <developerConnection>scm:git:ssh://github.com/verhas/javageci.git</developerConnection>
+        <url>http:/github.com/verhas/javageci/tree/master</url>
+    </scm>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -33,9 +70,10 @@
                     <source>10</source>
                     <target>10</target>
                     <release>10</release>
+                    <!--
                     <jdkToolchain>
                         <version>10</version>
-                    </jdkToolchain>
+                    </jdkToolchain> -->
                 </configuration>
             </plugin>
         </plugins>
@@ -44,27 +82,27 @@
         <dependencies>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
-                <artifactId>api</artifactId>
+                <artifactId>javageci-api</artifactId>
                 <version>${geci.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
-                <artifactId>core</artifactId>
+                <artifactId>javageci-core</artifactId>
                 <version>${geci.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
-                <artifactId>tools</artifactId>
+                <artifactId>javageci-tools</artifactId>
                 <version>${geci.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
-                <artifactId>engine</artifactId>
+                <artifactId>javageci-engine</artifactId>
                 <version>${geci.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
-                <artifactId>annotation</artifactId>
+                <artifactId>javageci-annotation</artifactId>
                 <version>${geci.version}</version>
             </dependency>
             <dependency>
