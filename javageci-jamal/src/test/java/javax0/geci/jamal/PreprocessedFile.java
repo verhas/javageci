@@ -4,12 +4,8 @@ public class PreprocessedFile {
     public void dummy(){
 
     /*!jamal
-    ~@define z=13!!
-    ~@sep/{{/}}!!
-    var i = {{z}};
+    {{@define z=13}}var i = {{z}};
      */
-
-
     var i = 13;
     //__END__
     }
