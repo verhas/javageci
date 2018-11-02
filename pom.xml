@@ -2,17 +2,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.javax0.geci</groupId>
-    <artifactId>multi</artifactId>
+    <artifactId>javageci-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>multi</name>
+    <name>javageci-parent</name>
     <modules>
-        <module>engine</module>
-        <module>api</module>
-        <module>tools</module>
-        <module>core</module>
-        <module>annotation</module>
-        <module>examples</module>
+        <module>javageci-engine</module>
+        <module>javageci-api</module>
+        <module>javageci-tools</module>
+        <module>javageci-core</module>
+        <module>javageci-annotation</module>
+        <module>javageci-examples</module>
+        <module>javageci-jamal</module>
     </modules>
     <properties>
         <geci.version>1.0.0-SNAPSHOT</geci.version>
@@ -33,7 +34,7 @@
     <scm>
         <connection>scm:git:git://github.com/verhas/javageci.git</connection>
         <developerConnection>scm:git:ssh://github.com/verhas/javageci.git</developerConnection>
-        <url>http:/github.com/verhas/javageci/tree/master</url>
+        <url>https:/github.com/verhas/javageci/tree/master</url>
     </scm>
 
     <build>
