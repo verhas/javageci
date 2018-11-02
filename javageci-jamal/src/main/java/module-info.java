@@ -4,4 +4,7 @@ module geci.examples {
     requires geci.api;
     requires geci.annotation;
     requires geci.core;
+    requires jamal.engine;
+    requires jamal.api;
+    requires jamal.tools;
 }

@@ -91,6 +91,11 @@
             <artifactId>javageci-tools</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.javax0.jamal</groupId>
+            <artifactId>jamal-engine</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
         </dependency>

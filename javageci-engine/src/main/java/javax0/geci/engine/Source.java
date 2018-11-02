@@ -104,6 +104,19 @@ public class Source implements javax0.geci.api.Source {
         return String.join("\n", lines);
     }
 
+    public List<String> getLines() {
+        if (!inMemory) {
+            try {
+                readToMemory();
+            } catch (IOException e) {
+                inMemory = true;
+                originals.clear();
+                lines.clear();
+            }
+        }
+        return lines;
+    }
+
     @Override
     public Segment open() {
         if (!segments.isEmpty()) {

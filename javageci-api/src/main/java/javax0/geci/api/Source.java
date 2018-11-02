@@ -1,6 +1,7 @@
 package javax0.geci.api;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 public interface Source {
@@ -22,6 +23,15 @@ public interface Source {
      * @return the new segment object.
      */
     Segment open();
+
+    /**
+     * Generators can use this method to read the whole content of a file. The content of the list should not be
+     * modified and should be treated as immutable.
+     *
+     *
+     * @return the list of the strings that contain the lines of the source file.
+     */
+    List<String> getLines();
 
     /**
      * Get the absolute file name of this source.

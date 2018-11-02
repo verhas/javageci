@@ -15,7 +15,7 @@ public class TestModifierBuilder {
 
     @Test
     public void testThatTestCodeIsGenerated() throws Exception {
-        if (new Geci().source(maven().module("examples").testSource()).register(new TestModifierBuilderGenerator()).generate()) {
+        if (new Geci().source(maven().module("javageci-examples").testSource()).register(new TestModifierBuilderGenerator()).generate()) {
             Assertions.fail("testAll() was regenerated. Build and test again.");
         }
     }

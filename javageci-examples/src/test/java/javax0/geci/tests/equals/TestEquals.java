@@ -11,7 +11,7 @@ public class TestEquals {
 
     @Test
     public void testEquals() throws Exception {
-        if (new Geci().source(maven().module("examples").javaSource()).register(new Equals()).generate()) {
+        if (new Geci().source(maven().module("javageci-examples").javaSource()).register(new Equals()).generate()) {
             Assertions.fail(Geci.FAILED);
         }
     }

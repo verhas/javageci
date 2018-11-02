@@ -11,7 +11,7 @@ public class TestDelegator {
 
     @Test
     public void testDelegator() throws Exception {
-        if (new Geci().source(maven().module("examples").javaSource()).register(new Delegator()).generate()) {
+        if (new Geci().source(maven().module("javageci-examples").javaSource()).register(new Delegator()).generate()) {
             Assertions.fail(Geci.FAILED);
         }
     }

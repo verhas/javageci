@@ -59,7 +59,7 @@ public class TestAccessor {
 
     @Test
     public void testAccessor() throws Exception {
-        if (new Geci().source(maven().module("examples").javaSource()).register(new Accessor()).generate()) {
+        if (new Geci().source(maven().module("javageci-examples").javaSource()).register(new Accessor()).generate()) {
             Assertions.fail(Geci.FAILED);
         }
     }

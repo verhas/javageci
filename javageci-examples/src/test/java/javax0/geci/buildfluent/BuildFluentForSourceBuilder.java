@@ -11,7 +11,7 @@ public class BuildFluentForSourceBuilder {
 
     @Test
     public void testSourceBuilderGeneratedApiIsGood() throws Exception {
-        if (new Geci().source("../tools/src/main/java", "./tools/src/main/java").register(new Fluent()).generate()) {
+        if (new Geci().source("../javageci-tools/src/main/java", "./javageci-tools/src/main/java").register(new Fluent()).generate()) {
             Assertions.fail(Geci.FAILED);
         }
     }
