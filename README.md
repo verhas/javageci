@@ -39,7 +39,7 @@ and can generate
 * fluent API classes and interfaces
 * others will be under development
 
-## How to use Java:Geci
+## How to use Java::Geci
 
 If you look at the test code `TestAccessor.java` in the test module you can see that this is a proof of concept
 demonstration sample code:
