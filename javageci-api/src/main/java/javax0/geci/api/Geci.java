@@ -20,6 +20,7 @@ public interface Geci {
      *
      * @param directory list of directories that can be used as alternatives. When looking for files the first is used
      *                  at start, if that fails then the second and so on.
+     * @param set       identifies the source set with a name
      * @return {@code this}
      */
     Geci source(Source.Set set, String... directory);
@@ -47,6 +48,7 @@ public interface Geci {
      * @return {@code false} if the code generation did not produce any output. It means that the code was
      * already up to date. {@code true} when code was generated. When the code generation is executed
      * as a unit test this return value can be asserted and compilation may fail in case code was changed.
+     * @throws Exception in case a generator could not finish its operation and throws exception
      */
     boolean generate() throws Exception;
 

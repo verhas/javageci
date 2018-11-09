@@ -28,7 +28,6 @@ public interface Source {
      * Generators can use this method to read the whole content of a file. The content of the list should not be
      * modified and should be treated as immutable.
      *
-     *
      * @return the list of the strings that contain the lines of the source file.
      */
     List<String> getLines();
@@ -55,6 +54,7 @@ public interface Source {
      * set.
      *
      * @param fileName relative file name to the current source.
+     * @param set      identifies the source set with a name
      * @return the new {@code Source} object.
      */
     Source newSource(Source.Set set, String fileName);

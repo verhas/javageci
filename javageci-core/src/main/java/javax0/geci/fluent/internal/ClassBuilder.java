@@ -79,6 +79,7 @@ public class ClassBuilder {
      * class and returns it as the interface type that can be used to start the fluent API structure.
      *
      * @param code to write the start method into
+     * @throws Exception never, signature inherited from {@code }AutoCloseable}
      */
     private void writeStartMethod(JavaSource.Builder code) throws Exception {
         final var startMethod = fluent.getStartMethod() == null ? "start" : fluent.getStartMethod();

@@ -58,7 +58,7 @@ public interface FluentBuilder {
      * generated automatically unless defined by the method {@link #name(String)}
      *
      * @param type the name of the interface
-     * @return
+     * @return this
      */
     FluentBuilder fluentType(String type);
 
@@ -69,7 +69,7 @@ public interface FluentBuilder {
      * The caller may exclude more than one method from the fluent API with subsequent calls to {@link #exclude(String)}
      *
      * @param method the name of the method.
-     * @return
+     * @return this
      */
     FluentBuilder exclude(String method);
 
