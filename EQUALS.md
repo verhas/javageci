@@ -16,7 +16,7 @@ is used then the `Objects.equals()` static method is used to compare object fiel
 `Objects.hashCode()` static method will be used to calculate the hash code.
 If a field is annotated with `@Geci("equals notNull='true'")` then the code in `equals()` will
 not check if the field is `null` or not. If the field is `null` even though it was annotated
-to be not null then the execution will most probably cause null pointer exception.
+to be not `null` then the execution will most probably cause null pointer exception.
 
 You can also use `@Geci("equals subclass='ok')` on the class annotation to make equals work
 with subclasses, so that `a.equals(b)` can be `true` even if `a` has differnet class than `b`

@@ -13,7 +13,7 @@ public class TestSimpleGrammar {
 
     @Test
     public void createGrammar() throws Exception {
-        if (new Geci().source(maven().module("javageci-examples").javaSource())
+        if (new Geci().source(maven().module("javageci-examples").mainSource())
             .source(Source.Set.set("java"), "./src/test/java", "./javageci-examples/src/test/java")
             .register(new Fluent()).generate()) {
             Assertions.fail(Geci.FAILED);

@@ -172,7 +172,7 @@ public interface Source {
             }
         }
 
-        public String[] javaSource() {
+        public String[] mainSource() {
             return source("main", "java");
         }
 

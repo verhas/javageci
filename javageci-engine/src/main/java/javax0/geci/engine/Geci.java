@@ -34,8 +34,18 @@ public class Geci implements javax0.geci.api.Geci {
         return this;
     }
 
+    private void setDefaultDirectories(){
+        source(set("mainSource"),Source.maven().mainSource());
+        source(set("mainResources"), Source.maven().mainResources());
+        source(set("testSource"), Source.maven().testSource());
+        source(set("testResources"),Source.maven().testResources());
+    }
+
     @Override
     public boolean generate() throws IOException {
+        if (directories.isEmpty()) {
+            setDefaultDirectories();
+        }
         final var collector = new FileCollector(directories);
         collector.collect();
         for (final var source : collector.sources) {

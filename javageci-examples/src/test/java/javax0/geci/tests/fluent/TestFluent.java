@@ -55,7 +55,7 @@ public class TestFluent {
 
     @Test
     public void testFluent() throws Exception {
-        if (new Geci().source(maven().module("javageci-examples").javaSource()).register(new Fluent()).generate()) {
+        if (new Geci().source(maven().module("javageci-examples").mainSource()).register(new Fluent()).generate()) {
             Assertions.fail("Fluent modified source code. Please compile again.");
         }
     }

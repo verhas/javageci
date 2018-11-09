@@ -1,5 +1,7 @@
 package javax0.geci.api;
 
+import static javax0.geci.api.Source.Set.set;
+
 public interface Geci {
 
     /**
@@ -9,7 +11,7 @@ public interface Geci {
      *                  at start, if that fails then the second and so on.
      * @return {@code this}
      */
-    Geci source(String ...directory);
+    Geci source(String... directory);
 
     /**
      * Add a new directory to the list of source directories that Geci should process. The set of source files will
@@ -20,21 +22,31 @@ public interface Geci {
      *                  at start, if that fails then the second and so on.
      * @return {@code this}
      */
-    Geci source(Source.Set set, String ...directory);
+    Geci source(Source.Set set, String... directory);
+
+
+    default Geci source(Source.Maven maven) {
+        source(set("mainSource"), maven.mainSource());
+        source(set("mainResources"), maven.mainResources());
+        source(set("testSource"), maven.testSource());
+        source(set("testResources"), maven.testResources());
+        return this;
+    }
 
     /**
-     * Register a generator instance.
+     * Register one or more generator instances. (Probably instances of different generators.)
      *
      * @param generatorArr the generators to register
      * @return {@code this}
      */
-    Geci register(Generator ...generatorArr);
+    Geci register(Generator... generatorArr);
 
     /**
      * Run the code generation.
+     *
      * @return {@code false} if the code generation did not produce any output. It means that the code was
-     *         already up to date. {@code true} when code was generated. When the code generation is executed
-     *         as a unit test this return value can be asserted and compilation may fail in case code was changed.
+     * already up to date. {@code true} when code was generated. When the code generation is executed
+     * as a unit test this return value can be asserted and compilation may fail in case code was changed.
      */
     boolean generate() throws Exception;
 
