@@ -4,7 +4,7 @@
 ## Introduction
 
 Java::Geci is a code generation framework that makes it very easy to
-write Java code generating tools. If also
+write Java code generating tools. It also
 
 * comes with off the shelf code generators that can replace other
   widely used code generation tools like the one implemented int he
