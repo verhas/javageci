@@ -88,7 +88,7 @@ code is a chained method call that starts with creating a new `Geci`
 object and ends with the call to the method `generate()`. For example
 the call:
 
-#### Example
+* Example:
 
 <!-- USE SNIPPET */TestAccessor -->
 ```java
@@ -116,11 +116,47 @@ creates the new `javax0.geci.engine.Geci` object and calls the
 `source()` and `register()` methods to configure the framework. Finally
 invoking `generate()` starts the code generation.
 
+### Geci configuration calls
+
+#### `source()` defines the alternative directories where the source is
+
+There are several overloaded methods named `source()` in the `Geci`
+interface. They provide means to define different source sets for the
+generators. Not that in this context the word "source" has multiple
+meanings. The generators can read the source files to gather information
+but the same time it can also write generated code to the sources.
+
+The different `source()` methods usually accept a `String` array as
+vararg in the last argument position. This is NOT to specify different
+source sets. This is to specify different possible directories where the
+source set could be.
+
+The need for this is because there is no guaranteed current working
+directory (CWD) when the unit tests are started. Many times it
+is not a problem, but in same cases, for example when you have a multi
+module maven project, you may face different CWDs depending on how you
+start the test. If you start the unit test from the interactive
+environment of the IDE then the CWD will be the root directory of the
+module project. If you start `mvn clean install` in the parent
+project then the CWD is the project root directory of the parent
+project.
+
+The directory or directories for the source set should be the directory
+where Java code starts in case of Java source directory. In other
+words it is the directory where you the `com` directory is that
+corresponds to your `com. ...` package structure. In still another
+words this is the `src/main/java` directory in Maven terms.
+
+You should not try to specify a directory deeper to limit the source
+scanning of the framework, because this will prevent finding the
+class that was created from a certain source file. If there are many
+packages and sources the generators will ignore them anyway if they
+do not have anything to do there.
 
 
 ## Writing Generator
 
-
+//DRAFT PART
 
 
 This eases the use of these tests in different environments. You do not want to write here
