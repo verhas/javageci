@@ -118,4 +118,134 @@ It is recommended that you place this method in the test class. There are differ
 1. This method is not needed during production run time, this is a test support code.
 
 The method has to build a `FluentBuilder` object and to do that it uses the fluent API of the `FluentBuilder`. Thus
-we have a fluent API to defined our own fluent API.   
+we have a fluent API to defined our own fluent API.
+
+To create the fluent API grammar you can use the following (fluent) methods. Whenever an argument is a `String` that
+identifies a method the name of the method can be used. If there are more than one methods in the class with the same
+name then the signature of the method should be used to identify the actual methods. Other methods can still be
+referred only by name. The signature of the method is the name of the method and the argument types between `(` and `)`
+comma separated. If the type is a Java JDK class (package starts with `java.`) then the package can be omitted. For
+example you can write `String` instead of `java.lang.String`. In other cases the fully qualified domain name
+has to be used (dot separated and not `$` even if the type is an inner class). 
+
+### `start(String method)`
+
+Define the name of the start method. The start method is a `public static` method that can be used to
+instantiate the builder. When you fluentize a class `MyClass` and call `start("builder")` then
+you will start a fluent API use with `MyClass.builder()`. The start method does not have any parameter
+in the current implementation.
+
+`method` is the name of the start method.
+
+### `implement(String interfaces)`
+
+Define interfaces that all other interfaces in the fluent interface should implement. This can be typically
+`AutoCloseable` when some API uses the structure of the try-with-resources command to follow the built
+structures in the generating Java code.
+
+The parameter `interfaces` is the names of the interfaces to be implemented comma separated. This string
+will be inserted into the list of the interfaces that stands after the `extends` or `implements`
+keyword.
+
+### `autoCloseable()`
+
+This is a complimentary method that is equivalent to call `implement("AutoCloseable")`.
+
+### `fluentType(String type)`
+
+Define the top level interface name that will start the fluent API. Other names are
+generated automatically unless defined by the method `name(String)`
+
+The parameter `type` is the name of the interface top level interface.
+
+### `exclude(String method)`
+
+Exclude a method from the fluent interface. If a method is excluded it can not be used in the definition of the
+fluent api and it will not be part of the interfaces and the wrapper class.
+The caller may exclude more than one method from the fluent API with subsequent calls to
+`exclude(String)`.
+The parameter `method` is the name or signature of the method to be excluded.
+
+### `cloner(String method)`
+
+Define the method that clones the current instance of the class that is fluentized. Such a method usually
+creates a new instance and copies all the fields to the new instance so that fluent building can go on
+from that instance and all previous instances can be used in case they are needed to build something different.
+
+The parameter `method` is the name of the cloner method. The method should return a new instance of the
+class and should have no parameters.
+
+### `optional(String method)`
+
+The method may be called zero or one time in the fluent API at the defined point.
+
+The parameter `method` is the name of the method. For more information see the note in the documentation
+of the class `FluentBuilder`
+
+### `optional(FluentBuilder sub)`
+
+The sub expression may be called zero or one times in the fluent API at the defined point.
+The parameter `sub` is the fluent api structure used in the expression.
+
+### `oneOrMore(String method)`
+
+The method may be called one or more time in the fluent API at the defined point.
+The parameter `method` is the name of the method. For more information see the note in the documentation
+of the class `FluentBuilder`.
+
+### `oneOrMore(FluentBuilder sub)`
+
+The sub expression may be called one or more times in the fluent API at the defined point.
+The parameter `sub` is the fluent api structure used in the expression.
+
+### `zeroOrMore(String method)`
+
+The method may be called zero or more time in the fluent API at the defined point.
+The parameter `method` is the name of the method. For more information see the note in the documentation
+of the class `FluentBuilder`.
+
+
+### `zeroOrMore(FluentBuilder sub)`
+
+The sub expression may be called zero or more times in the fluent API at the defined point.
+The parameter `sub` is the fluent api structure used in the expression.
+
+
+### `oneOf(String... methods)`
+
+
+The fluent API using code may call one of the methods at this point.
+The parameter `methods` is the names of the methods. For more information see the note in the documentation
+ of the class `FluentBuilder`.
+
+
+
+### `oneOf(FluentBuilder... subs)`
+
+The fluent API using code may call one of the sub structures at this point.
+The parameter `subs` is the sub structures from which one may be selected by the caller.
+
+
+
+### `one(String method)`
+
+The method can be called exactly once at the point.
+The parameter `method` is the name of the method. For more information see the note in the documentation
+of the class `FluentBuilder`.
+
+
+
+### `one(FluentBuilder sub)`
+
+The sub structure can be called exactly once at the point.
+The parameter `sub` is substructure.
+
+
+
+### `name(String interfaceName)`
+
+The structure at the very point has to use the name as the interface name
+The parameter `interfaceName` is the name of the interface to use at this point of the structure. Where the name is not
+       defined the fluent api builder generates interface names automatically.
+
+

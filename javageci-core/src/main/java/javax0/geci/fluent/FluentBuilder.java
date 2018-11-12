@@ -45,7 +45,7 @@ public interface FluentBuilder {
     FluentBuilder implement(String interfaces);
 
     /**
-     * This is a complimentary method that is equivalent to call {@code implement("AutoCloseable"}}.
+     * This is a complimentary method that is equivalent to call {@code implement("AutoCloseable")}.
      *
      * @return this
      */
@@ -162,7 +162,7 @@ public interface FluentBuilder {
     FluentBuilder one(String method);
 
     /**
-     * The sub sutructure can be called exactly once at the point.
+     * The sub structure can be called exactly once at the point.
      *
      * @param sub substructure
      * @return this
