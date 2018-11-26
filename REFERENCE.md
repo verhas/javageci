@@ -133,7 +133,7 @@ source set could be.
 
 The need for this is because there is no guaranteed current working
 directory (CWD) when the unit tests are started. Many times it
-is not a problem, but in same cases, for example when you have a multi
+is not a problem, but in some cases, for example when you have a multi
 module maven project, you may face different CWDs depending on how you
 start the test. If you start the unit test from the interactive
 environment of the IDE then the CWD will be the root directory of the
