@@ -44,36 +44,62 @@ public class Equals extends AbstractGenerator {
             }
             segment.newline();
             segment.write("%s that = (%s)o;", klass.getSimpleName(), klass.getSimpleName());
+            var last = fields.length;
             for (final var field : fields) {
+                last--;
+                var isLast = last == 0;
                 var local = Tools.getParameters(field, mnemonic());
                 var params = new CompoundParams(local, global);
                 var primitive = field.getType().isPrimitive();
                 if (isNeeded(field, params)) {
                     var name = field.getName();
                     if (primitive) {
-                        var type = field.getType();
                         if (field.getType().equals(float.class)) {
-                            segment.write("if (Float.compare(that.%s, %s) != 0) return false;", name, name);
+                            if (isLast) {
+                                segment.write("return Float.compare(that.%s, %s) == 0;", name, name);
+                            } else {
+                                segment.write("if (Float.compare(that.%s, %s) != 0) return false;", name, name);
+                            }
                         } else if (field.getType().equals(double.class)) {
-                            segment.write("if (Double.compare(that.%s, %s) != 0) return false;", name, name);
+                            if (isLast) {
+                                segment.write("return Double.compare(that.%s, %s) == 0;", name, name);
+                            } else {
+                                segment.write("if (Double.compare(that.%s, %s) != 0) return false;", name, name);
+                            }
                         } else {
-                            segment.write("if( %s != that.%s )return false;", name, name);
+                            if (isLast) {
+                                segment.write("return %s == that.%s;", name, name);
+                            } else {
+                                segment.write("if( %s != that.%s )return false;", name, name);
+                            }
                         }
                     } else {
                         if (params.is("useObjects")) {
-                            segment.write("if (!Objects.equals(%s,that.%s)) return false;", name, name);
+                            if (isLast) {
+                                segment.write("return Objects.equals(%s,that.%s);", name, name);
+                            } else {
+                                segment.write("if (!Objects.equals(%s,that.%s)) return false;", name, name);
+                            }
                         } else {
                             if (params.is("notNull")) {
-                                segment.write("if (!%s.equals(that.%s)) return false;", name, name);
+                                if( isLast ) {
+                                    segment.write("return %s.equals(that.%s);", name, name);
+                                }else {
+                                    segment.write("if (!%s.equals(that.%s)) return false;", name, name);
+                                }
                             } else {
-                                segment.write("if (%s != null ? !%s.equals(that.%s) : that.%s != null) return false;",
-                                        name, name, name, name);
+                                if (isLast) {
+                                    segment.write("return %s != null ? %s.equals(that.%s) : that.%s == null;",
+                                            name, name, name, name);
+                                } else {
+                                    segment.write("if (%s != null ? !%s.equals(that.%s) : that.%s != null) return false;",
+                                            name, name, name, name);
+                                }
                             }
                         }
                     }
                 }
             }
-            segment.write("return true;");
             segment.write_l("}");
         }
     }

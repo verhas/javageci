@@ -44,8 +44,7 @@ public class ClassNeedingEquals {
         if( aShort != that.aShort )return false;
         if( anInt != that.anInt )return false;
         if (!Objects.equals(h,that.h)) return false;
-        if (!Objects.equals(x,that.x)) return false;
-        return true;
+        return Objects.equals(x,that.x);
     }
     @javax0.geci.annotations.Generated("equals")
     @Override
