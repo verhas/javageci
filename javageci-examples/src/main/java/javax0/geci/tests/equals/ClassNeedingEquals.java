@@ -31,25 +31,26 @@ public class ClassNeedingEquals {
     @javax0.geci.annotations.Generated("equals")
     @Override
     public final boolean equals(Object o) {
-        if( this == o )return true;
+        if (this == o) return true;
         if (!(o instanceof ClassNeedingEquals)) return false;
 
-        ClassNeedingEquals that = (ClassNeedingEquals)o;
-        if( aBoolean != that.aBoolean )return false;
-        if( aByte != that.aByte )return false;
-        if( aChar != that.aChar )return false;
+        ClassNeedingEquals that = (ClassNeedingEquals) o;
+        if (aBoolean != that.aBoolean) return false;
+        if (aByte != that.aByte) return false;
+        if (aChar != that.aChar) return false;
         if (Double.compare(that.aDouble, aDouble) != 0) return false;
         if (Float.compare(that.aFloat, aFloat) != 0) return false;
-        if( aLong != that.aLong )return false;
-        if( aShort != that.aShort )return false;
-        if( anInt != that.anInt )return false;
-        if (!Objects.equals(h,that.h)) return false;
-        return Objects.equals(x,that.x);
+        if (aLong != that.aLong) return false;
+        if (aShort != that.aShort) return false;
+        if (anInt != that.anInt) return false;
+        if (!Objects.equals(h, that.h)) return false;
+        return Objects.equals(x, that.x);
     }
+
     @javax0.geci.annotations.Generated("equals")
     @Override
     public int hashCode() {
-        return Objects.hash(aBoolean,aByte,aChar,aDouble,aFloat,aLong,aShort,anInt,h,x);
-        }
+        return Objects.hash(aBoolean, aByte, aChar, aDouble, aFloat, aLong, aShort, anInt, h, x);
+    }
     //</editor-fold>
 }

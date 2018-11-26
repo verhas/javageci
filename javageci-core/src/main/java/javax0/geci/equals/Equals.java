@@ -36,18 +36,18 @@ public class Equals extends AbstractGenerator {
             segment.write("@javax0.geci.annotations.Generated(\"equals\")");
             segment.write("@Override");
             segment.write_r("public %sboolean equals(Object o) {", subclassingAllowed ? "final " : "");
-            segment.write("if( this == o )return true;");
+            segment.write("if (this == o) return true;");
             if (subclassingAllowed) {
                 segment.write("if (!(o instanceof %s)) return false;", klass.getSimpleName());
             } else {
                 segment.write("if (o == null || getClass() != o.getClass()) return false;");
             }
             segment.newline();
-            segment.write("%s that = (%s)o;", klass.getSimpleName(), klass.getSimpleName());
-            var last = fields.length;
+            segment.write("%s that = (%s) o;", klass.getSimpleName(), klass.getSimpleName());
+            var index = fields.length;
             for (final var field : fields) {
-                last--;
-                var isLast = last == 0;
+                index--;
+                var isLast = index == 0;
                 var local = Tools.getParameters(field, mnemonic());
                 var params = new CompoundParams(local, global);
                 var primitive = field.getType().isPrimitive();
@@ -55,52 +55,76 @@ public class Equals extends AbstractGenerator {
                     var name = field.getName();
                     if (primitive) {
                         if (field.getType().equals(float.class)) {
-                            if (isLast) {
-                                segment.write("return Float.compare(that.%s, %s) == 0;", name, name);
-                            } else {
-                                segment.write("if (Float.compare(that.%s, %s) != 0) return false;", name, name);
-                            }
+                            segment.write(retZ(isLast, "Float", name));
                         } else if (field.getType().equals(double.class)) {
-                            if (isLast) {
-                                segment.write("return Double.compare(that.%s, %s) == 0;", name, name);
-                            } else {
-                                segment.write("if (Double.compare(that.%s, %s) != 0) return false;", name, name);
-                            }
+                            segment.write(retZ(isLast, "Double", name));
                         } else {
-                            if (isLast) {
-                                segment.write("return %s == that.%s;", name, name);
-                            } else {
-                                segment.write("if( %s != that.%s )return false;", name, name);
-                            }
+                            segment.write(retId(isLast, name));
                         }
                     } else {
                         if (params.is("useObjects")) {
-                            if (isLast) {
-                                segment.write("return Objects.equals(%s,that.%s);", name, name);
-                            } else {
-                                segment.write("if (!Objects.equals(%s,that.%s)) return false;", name, name);
-                            }
+                            segment.write(retObjEq(isLast, name));
                         } else {
                             if (params.is("notNull")) {
-                                if( isLast ) {
-                                    segment.write("return %s.equals(that.%s);", name, name);
-                                }else {
-                                    segment.write("if (!%s.equals(that.%s)) return false;", name, name);
-                                }
+                                segment.write(retEq(isLast, name));
                             } else {
-                                if (isLast) {
-                                    segment.write("return %s != null ? %s.equals(that.%s) : that.%s == null;",
-                                            name, name, name, name);
-                                } else {
-                                    segment.write("if (%s != null ? !%s.equals(that.%s) : that.%s != null) return false;",
-                                            name, name, name, name);
-                                }
+                                segment.write(retNNEq(isLast, name));
                             }
                         }
                     }
                 }
             }
             segment.write_l("}");
+            segment.newline();
+        }
+
+    }
+
+    private String retLast(String condition) {
+        return "return " + condition + ";";
+    }
+
+    private String ret(String condition) {
+        return "if (" + condition + ") return false;";
+    }
+
+    private String retZ(boolean isLast, String type, String name) {
+        if (isLast) {
+            return retLast(type + ".compare(that." + name + ", " + name + ") == 0");
+        } else {
+            return ret(type + ".compare(that." + name + ", " + name + ") != 0");
+        }
+    }
+
+    private String retId(boolean isLast, String name) {
+        if (isLast) {
+            return retLast(name + " == that." + name);
+        } else {
+            return ret(name + " != that." + name);
+        }
+    }
+
+    private String retObjEq(boolean isLast, String name) {
+        if (isLast) {
+            return retLast("Objects.equals(" + name + ", that." + name + ")");
+        } else {
+            return ret("!Objects.equals(" + name + ", that." + name + ")");
+        }
+    }
+
+    private String retEq(boolean isLast, String name) {
+        if (isLast) {
+            return retLast(name + ".equals(that." + name + ");");
+        } else {
+            return ret("!" + name + ".equals(that." + name + ");");
+        }
+    }
+
+    private String retNNEq(boolean isLast, String name) {
+        if (isLast) {
+            return retLast(name + " != null ? " + name + ".equals(that." + name + ") : that." + name + " == null");
+        } else {
+            return ret(name + "!= null ? !" + name + ".equals(that." + name + ") : that." + name + " != null");
         }
     }
 
@@ -138,7 +162,7 @@ public class Equals extends AbstractGenerator {
             segment.write_r("public int hashCode() {");
             if (useObjects) {
                 var fieldNamesCSV = new StringBuilder();
-                var separator = Tools.separator(",");
+                var separator = Tools.separator(", ");
                 for (final var field : fields) {
                     var local = Tools.getParameters(field, mnemonic());
                     var params = new CompoundParams(local, global);
@@ -146,7 +170,7 @@ public class Equals extends AbstractGenerator {
                         fieldNamesCSV.append(separator.get()).append(field.getName());
                     }
                 }
-                segment.write_r("return Objects.hash(%s);", fieldNamesCSV);
+                segment.write("return Objects.hash(%s);", fieldNamesCSV);
             } else {
                 segment.write("int result = 0;");
                 if (Arrays.stream(fields)
