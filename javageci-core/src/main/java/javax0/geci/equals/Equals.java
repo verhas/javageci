@@ -1,7 +1,5 @@
 package javax0.geci.equals;
 
-import javax0.geci.api.GeciException;
-import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractGenerator;
 import javax0.geci.tools.CompoundParams;
@@ -33,12 +31,13 @@ public class Equals extends AbstractGenerator {
         final var gid = global.get("id");
         var segment = source.open(gid);
         var equalsMethod = getEqualsMethod(klass);
+        var subclassingAllowed = global.is("subclass");
         if (equalsMethod == null || Tools.isGenerated(equalsMethod)) {
             segment.write("@javax0.geci.annotations.Generated(\"equals\")");
             segment.write("@Override");
-            segment.write_r("public boolean equals(Object o) {");
+            segment.write_r("public %sboolean equals(Object o) {", subclassingAllowed ? "final " : "");
             segment.write("if( this == o )return true;");
-            if (global.is("subclass")) {
+            if (subclassingAllowed) {
                 segment.write("if (!(o instanceof %s)) return false;", klass.getSimpleName());
             } else {
                 segment.write("if (o == null || getClass() != o.getClass()) return false;");
@@ -64,7 +63,7 @@ public class Equals extends AbstractGenerator {
                         if (params.is("useObjects")) {
                             segment.write("if (!Objects.equals(%s,that.%s)) return false;", name, name);
                         } else {
-                            if (params.is("notNull") ) {
+                            if (params.is("notNull")) {
                                 segment.write("if (!%s.equals(that.%s)) return false;", name, name);
                             } else {
                                 segment.write("if (%s != null ? !%s.equals(that.%s) : that.%s != null) return false;",
@@ -79,6 +78,12 @@ public class Equals extends AbstractGenerator {
         }
     }
 
+    /**
+     * Get the equals() method from the class or return null, if the class does not declare its equals() method.
+     *
+     * @param klass from which we need the equals() method
+     * @return the method or null
+     */
     private Method getEqualsMethod(Class<?> klass) {
         try {
             return klass.getDeclaredMethod("equals", Object.class);

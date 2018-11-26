@@ -30,7 +30,7 @@ public class ClassNeedingEquals {
     //<editor-fold id="equals">
     @javax0.geci.annotations.Generated("equals")
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if( this == o )return true;
         if (!(o instanceof ClassNeedingEquals)) return false;
 
