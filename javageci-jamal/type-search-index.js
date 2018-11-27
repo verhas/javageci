@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"javax0.geci.jamal","l":"JamalGenerator"}]

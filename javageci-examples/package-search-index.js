@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"m":"geci.examples","l":"javax0.geci.tests.delegator"},{"m":"geci.examples","l":"javax0.geci.tests.equals"},{"m":"geci.examples","l":"javax0.geci.tests.fluent"},{"m":"geci.examples","l":"javax0.geci.tutorials.simple"},{"m":"geci.examples","l":"javax0.geci.tutorials.xmlbuilder"}]

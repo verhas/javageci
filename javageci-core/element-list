@@ -1,0 +1,8 @@
+module:geci.core
+javax0.geci.accessor
+javax0.geci.delegator
+javax0.geci.equals
+javax0.geci.fluent
+javax0.geci.fluent.internal
+javax0.geci.fluent.tree
+javax0.geci.log

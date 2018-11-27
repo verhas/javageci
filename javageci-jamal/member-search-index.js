@@ -1,0 +1,1 @@
+memberSearchIndex = [{"p":"javax0.geci.jamal","c":"JamalGenerator","l":"JamalGenerator()","url":"%3Cinit%3E()"},{"p":"javax0.geci.jamal","c":"JamalGenerator","l":"processEx(Source)","url":"processEx(javax0.geci.api.Source)"}]

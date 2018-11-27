@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"javax0.geci.util","l":"FileCollector"},{"p":"javax0.geci.engine","l":"Geci"},{"p":"javax0.geci.engine","l":"Segment"},{"p":"javax0.geci.engine","l":"Source"}]

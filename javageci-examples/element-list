@@ -1,0 +1,6 @@
+module:geci.examples
+javax0.geci.tests.delegator
+javax0.geci.tests.equals
+javax0.geci.tests.fluent
+javax0.geci.tutorials.simple
+javax0.geci.tutorials.xmlbuilder
