@@ -122,39 +122,131 @@ invoking `generate()` starts the code generation.
 
 There are several overloaded methods named `source()` in the `Geci`
 interface. They provide means to define different source sets for the
-generators. Not that in this context the word "source" has multiple
+generators. Note, that in this context the word "source" has multiple
 meanings. The generators can read the source files to gather information
 but the same time it can also write generated code to the sources.
 
 The different `source()` methods usually accept a `String` array as
 vararg in the last argument position. This is NOT to specify different
-source sets. This is to specify different possible directories where the
-source set could be.
+source sets. This is to specify alternative directories where the
+source set can be.
 
-The need for this is because there is no guaranteed current working
-directory (CWD) when the unit tests are started. Many times it
-is not a problem, but in some cases, for example when you have a multi
-module maven project, you may face different CWDs depending on how you
-start the test. If you start the unit test from the interactive
-environment of the IDE then the CWD will be the root directory of the
-module project. If you start `mvn clean install` in the parent
-project then the CWD is the project root directory of the parent
-project.
+> The need for this is because there is no guaranteed current working
+> directory (CWD) when the unit tests are started. Many times it
+> is not a problem, but in some cases, for example when you have a multi
+> module maven project, you may face different CWDs depending on how you
+> start the test. If you start the unit test from the interactive
+> environment of the IDE then the CWD will be the root directory of the
+> module project. If you start `mvn clean install` in the parent
+> project then the CWD is the project root directory of the parent
+> project.
 
 The directory or directories for the source set should be the directory
-where Java code starts in case of Java source directory. In other
-words it is the directory where you the `com` directory is that
-corresponds to your `com. ...` package structure. In still another
+where Java code starts (in case of Java source directory). In other
+words it is the directory where the `com` directory is
+corresponding to your `com. ...` package structure. In still another
 words this is the `src/main/java` directory in Maven terms.
 
-You should not try to specify a directory deeper to limit the source
+You should not specify a directory deeper only to limit the source
 scanning of the framework, because this will prevent finding the
 class that was created from a certain source file. If there are many
-packages and sources the generators will ignore them anyway if they
-do not have anything to do there.
+packages and sources the generators will ignore them if they
+do not have anything to do with.
 
+##### Named Source Sets 
+
+You can also specify a named source set using the `source()` method.
+This is needed when the code generator wants to create a new file
+and there are multiple source sets defined. For example there can be a
+source set in the directory `src/main/resources` containing resource files
+and another `src/main/java` containing Java files. If a generator
+processes a resource file and then wants to generate a Java file then
+the framework has to create the generated file in the  `src/main/java`
+directory in the appropriate subdirectory as define by the package.
+
+Generators that want to create whole new files will specify the source
+set where they want to create the new file. If there is no named source set
+in the configuration with the name the generator is seeking then
+they can not work.
+
+The method `source()` has an overloaded version that accepts a first argument
+of the type `Source.Set`. This type is a simple `String` wrapper to ease
+readability and help overloading. There is a `static` method in the
+class `Source.Set` named `set()` that can be imported statically and
+used to specify a source set name. Thus you can specify a named source
+set in the form `source(set("java"),"src/main/java")`.
+
+##### Maven directories
+
+Since Maven is the number one build tool and also other build tools use
+the directory structure standard that was minted by Maven there is some
+support to specify the source sets in a simple way for Maven projects.
+There is an overloaded version of the method `source()` that accept a
+`Source.Maven` object as argument. Using that you can specify the
+directories in a simple way. You can simply write
+
+```java
+source(maven().module("myModule").mainSource())
+```
+
+to specify the main source directory of the module `myModule`. You can omit the `module(...)`
+part of the call in case you have a simple maven project. You can use
+
+* `mainSource()` to have the main source directory as a source set
+* `testSource()` to have the test source directory as a source set
+* `mainResources()` to have the main resource directory as a source set
+* `testResources()` to have the test resource directory as a source set
+
+If you do define none of them, just use `source(maven())`
+or `source(maven().module("myModule"))`
+then you define all the four source sets in a single call. This call
+also defines the set names:
+
+* `"mainSource"` for the main source
+* `"mainResources"` for the main resources
+* `"testSource"` for the test source
+* `"testResources"` for the test resources
+
+It is recommended to use these source set names when you write a generator.
+
+#### Registering generators
+
+After the source sets are defined code generator objects has to be registered so that the framework can
+call them, one after the other for all the source codes. To do that
+
+* `register(Generator ...)`
+
+has to be called on the call chain. `Generator` is the interface that all generators implement.
+The instantiation of the actual generators is up to the configuration. It is usually just creating
+the instance using the `new MyGenerator()` constructor, but in some cases it may be different
+if the generator can be instantiated in different ways.
+
+One call can be used to register multiple generator objects, but it is also possible
+to use subsequent calls to `register()`.
+
+#### Generate
+
+The last call after the chain of configuration calls has to be `generate()`. This call will initiate the
+code generation and return `true` if there was some new code generated.
 
 ## Writing Generator
+
+A generator is a class that implements the interface `javax0.geci.api.Generator`.
+This interface defines a single method
+
+```java
+ void process(Source source)
+```
+
+The `source` object represents a single source file and the object should be used by the generator
+
+* to read the lines from the actual textual source code,
+* get access to the compiled class that was  generated from the given source (such class 
+  may not exist in case the source code is not a Java source file)
+* to get access to writable segments of the source file and to write text into the source
+* to get access to totally new source files and to write into those generated source code.
+
+
 
 //DRAFT PART
 

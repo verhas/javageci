@@ -61,6 +61,7 @@ public class Source implements javax0.geci.api.Source {
         open(id);
     }
 
+    @Override
     public Source newSource(Source.Set sourceSet, String fileName) {
         if (!collector.directories.containsKey(sourceSet)) {
             throw new GeciException("SourceSet '" + sourceSet + "' does not exist");
@@ -71,6 +72,7 @@ public class Source implements javax0.geci.api.Source {
         return source;
     }
 
+    @Override
     public Source newSource(String fileName) {
         for (final var source : collector.newSources) {
             if (this.absoluteFile.equals(source.absoluteFile)) {
