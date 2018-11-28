@@ -246,22 +246,147 @@ The `source` object represents a single source file and the object should be use
 * to get access to writable segments of the source file and to write text into the source
 * to get access to totally new source files and to write into those generated source code.
 
+### Accessing the source in the generator
 
+There are many things that you can reach in your generator code through the `source` object passed
+as argument to the method `process()` of the generator you write.
 
-//DRAFT PART
+The first that comes in front of us is `getAbsoluteFile()` that will return the absolute file name
+as a string of the source file that the generator is actually working on. This is rarely needed because
+the content of the file is available in other ways. It may, however be needed if the generator
+limits itself to work only on some specific file (e.g.: it ready only files with the extension `.xml`),
+or when the file is binary and cannot be accessed line by line.
 
+If the generator needs to read the text in the file then the method `getLines()` should be invoked.
+The return value of the method is a list of `String` objects that contain the text of the lines.
+If the generator accesses the content of the file then it does not need to deal with the operating system
+line ending. The different generators that run in the same process one after the other can also
+share the content. There is no need to read the content of the file again and again.
 
-This eases the use of these tests in different environments. You do not want to write here
-absolute path names to the source directory, but the current working directory may be different depending on how you
-start the tests. When you start the test in a command line maven build then the current working directory is
-the project root. If you start the test from a multi-module maven build  executing the build of a single module
-then the project root of the single module is the current working directory. In the example above Geci will
-try find the sources first in the directory `src/main/java` and then if it cannot then it will look for them
-in `tests/src/main/java`.
+### Getting segments to write code into
 
-Also note that here you have to specify the root directory of the Java sources because
-later the directory names are used to calculate the class name and the code generator will not find
-`java.com.mydomain.MyClass` class file even if you have only a single `java` directory under `main`.
+The source file needing modification may contain named segments. These are the lines that are between
 
+```
+<editor-fold id="segment name">
+```
 
-    
+and 
+
+```
+</editor-fold>
+```
+
+lines. These lines are edited by the programmer signalling the part of the source code where it expects
+generated code to be inserted. The generator can access these segments opening a segment in the
+source calling the method `open(id)` on the `source` object. The parameter is the string that is
+the specified `id="segment name"` on the starting line of the segment. Segment object should be used
+to write lines of generated code. The framework will write back the changes at the end of the execution
+automatically and also check if the generated code is/was the same as the one that was already in the file.
+
+There is a version of the method `open()` that has no argument. This opens a segment that means the
+whole source file. A generator should invoke this only when it generates a new source file and the source
+object was acquired via calling `newSource()` on the `source` object. Never invoke the argument-less
+`open()` method on the `source` object that was passed to the generator `process()` as argument. It will
+delete the content of the source file that was edited by the programmer.
+
+Opening a segment is a fairly cheap operation and the generator code can open the same segment many times.
+The `open()` method will just return the same segment and the code generation can continue from the place
+where it was left off after the previous call to `open()`. 
+
+### Segment initialization
+
+In some cases code generators happen to generate empty code. In this case code logic may just never call
+`open(id)` on a segment, as there is nothing to write there. However, the framework will interpret this
+that the generator does not want to touch the segment and the old value remains. For example there is a code
+that does something with every field in the class that is `final` and `volatile` (contrived example as it
+can never happen). In the segment there is already some code either edited by the programmer or some
+previous miraculous code generation run that found such fields. When the code generator runs again it
+does not find any `final volatile` field and thus it wants the segment to be empty.
+
+To tell the framework that the segment is to be modified even if no `open(id)` is invoked for the specific
+segment the generator has to call `init(id)` on the source object. This will essentially delete the already
+optionally existing content of the segment. 
+
+### Creating, opening new source object
+
+The generator can call `newSource(fileName)` on a `source` object. This will create a new source object that
+can be used to read the content of the named source file if it exists or
+to write generated code to it and the code will be written into the file named in the argument 
+at the end of the execution unless the code was already there and did not change.
+
+Since new source code most of the time is generated in the same directory where the other source code
+is the `fileName` is relative to the file name of the source the `newSource()` was invoked on.
+
+There is also a version of the method that accepts two arguments: `newSource(Source.Set set, String fileName)`.
+This can be used when the generated code has to be in a different source set than the one containing the information
+the generator reads. Even in this case the directories will be relative to the `source` just in the
+different source set. For example there is the file `com/javax0/javageci/Bean.xml` in the source set starting in
+directory `src/main/resources/`. It contains some description of the bean the generator has to generate.
+There is another source set defined with the name `"mainSource"` in the directory `src/main/java`. Calling
+`source.newSource(set("mainSource"),"Bean.java")` will create the file
+`src/main/java/com/javax0/javageci/Bean.java`.
+
+Code will only be generated only if the global or a named segment was initialized, opened during code generation.
+If the source was only used to read information and no segment was opened then the file will not be touched
+by the framework.
+
+When the new content is written back to the file the directories along with all needed parent directories are
+automatically created.
+
+### Accessing the class of the source
+
+Most of the time the `source` object refers to a Java source file. Since the code runs during unit test execution
+the compiled version of the class is available and can be examined by the generator using reflection. The name 
+of the class and the package can be deducted from the file name. The suggested way to do this to invoke the methods
+provided by the `source` object for the purpose.
+
+* `getKlass()` returns the class that was created by the source during the compilation phase.
+  If there is no such class then the return value is `null`.
+* `getKlassName()` returns name name of the class. This includes the full package names dot separated.
+* `getKlassSimpleName()` returns the simple name of the class file.
+* `getPackageName()` returns the name of the package.
+
+There are support methods in the tool module that help with reflection. Before starting to write your code from scratch
+consult those methods. They contain significant experience.
+
+For example when a generator wants to
+generate code for each field or each method then this is vital that the order of the fields or methods is the
+same on different Java versions. There may be different Java build on the developer machine and on the CI server
+and the reflection method `getDeclaredFields()` may return the fields in different order. This causes code
+generated different on the CI server from the one generated by the developer and thus the CI build fails with
+uint test error. (It really happened.) To avoid that there are methods that collect fields, methods etc in a sorted
+definite order in the tool module. 
+
+### Writing into a segment
+
+After you get access to a `Segment` object you can use that object to write into the source code into the
+segment. Whatever you write into a segment will replace the old content. Opening a segment many times, however, does
+not overwrite the content that the generator was already writing into the segment. For example a generator creates
+a setter and a getter for each field in the class. As the generator iterates through the ordered list of the declared
+fields it opens the segment named "setters" for each field. The generated code will be appended each time and
+finally replacing the content that was in the file before the code generation.
+
+To write into a segment there are four methods:
+
+* `write(...)` write a line into the code.
+* `write_l(...)` write a line into the code and then set the tabstop indented.
+* `write_r(...)` unindent the tab stop and then write a line into the code.
+* `newline(...)` insert an empty line.
+
+The `write...()` methods accept a `String` format and variable number of objects as parameters. The format
+string will be used in the `String.format()` method. Please read the Java documentation how to use the formatting.
+
+When the line itself contains new line characters then the indenting will automatically be kept for each line. There
+is no need to spit up the generated multi-line string into lines and invoke the `write()` method several times.
+You can write multi-line code safely well tabulated using these methods.
+
+The `Segment` also has a `close()` method, that actually does nothing, but `Segment` also implements `AutoCloseable`
+thus it can be used in try-with-resource blocks. It may improve code readability.
+
+Note that the methods provided by the implementation of `Segment` are simple and does not mean to be a full blown
+code generation tool. There is an experimental class `javax0.geci.tools.JavaSource` that provides more possibilities
+to generate code. It was mainly used to create the fluent API code generation and also the class API itself is generated
+by itself demonstrating recursive iterative code generation development. If even the functions provided there are
+not enough you can use any external library together with Java::Geci, like https://github.com/forge/roaster
+

@@ -225,8 +225,7 @@ public class Source implements javax0.geci.api.Source {
     }
 
     /**
-     * Saves the modified lines to the file and return {@code true}. If the lines were not modified then
-     * do not touch the file and return {@code false}
+     * Saves the modified lines to the file.
      */
     void save() throws IOException {
         Path path = Paths.get(absoluteFile);

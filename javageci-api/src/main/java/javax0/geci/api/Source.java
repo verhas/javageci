@@ -41,7 +41,7 @@ public interface Source {
 
     /**
      * Create a new source that may or may not exist. This source is going to be generated and if it already existed
-     * it will be overwritten.
+     * it will be overwritten, unless the already existing file has exactly the same content as the new one.
      *
      * @param fileName relative file name to the current source.
      * @return the new {@code Source} object.
@@ -50,8 +50,8 @@ public interface Source {
 
     /**
      * Create a new source that may or may not exist. This source is going to be generated and if it already existed
-     * it will be overwritten. Create the new source file in the directory that was used to open the specified source
-     * set.
+     * it will be overwritten, unless the already existing file has exactly the same content as the new one.
+     * Create the new source file in the directory that was used to open the specified source set.
      *
      * @param fileName relative file name to the current source.
      * @param set      identifies the source set with a name
@@ -81,10 +81,7 @@ public interface Source {
      * Get the name of the class that corresponds to this source. The class may not exist though.
      * <p>
      * When calculating the class name the directory structure is used and the name of the source file
-     * chopping off the {@code .java} or other extension. This results a class name that either
-     * <ul>
-     * <li></li>
-     * </ul>
+     * chopping off the {@code .java} or other extension.
      *
      * @return the class name that was calculated from the file name
      */
