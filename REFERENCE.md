@@ -388,4 +388,4 @@ Note that the methods provided by the implementation of `Segment` are simple and
 code generation tool. There is an experimental class `javax0.geci.tools.JavaSource` that provides more possibilities
 to generate code. It was mainly used to create the fluent API code generation and also the class API itself is generated
 by itself demonstrating recursive iterative code generation development. If even the functions provided there are
-not enough you can use any external library together with Java::Geci, like https://github.com/forge/roaster
+not enough you can use any external library together with Java::Geci.
