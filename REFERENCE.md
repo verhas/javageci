@@ -10,7 +10,7 @@ write Java code generating tools. It also
   widely used code generation tools like the one implemented int he
   IDEs or Lombok
 
-* provides services and interfaces to write code genrating classes.
+* provides services and interfaces to write code generating classes.
 
 The code generation is executed along with the other unit tests. When
 a Java::Geci code generator is executed it has access to the source
@@ -21,10 +21,10 @@ is designed for and passes the code to the framework.
 
 The framework decides if the generated code is different or not from
 the already existing code and writes it back to the source code in
-case the code changed but lets the code intact in case the generated
-code has not changed.
+the case the code changed but lets the code intact in case the generated
+the code has not changed.
 
-The framework is usually invoked from a three line unit tests that has
+The framework is usually invoked from a three-line unit test that has
 the structure:
 
 ```java
@@ -39,13 +39,13 @@ written back to the source code. This will fail the test, but if we
 run the test again with the already modified sources then the test
 should run fine.
 
-This structure has some constraints that we have to accept as a trade
-deal for the advantages the tool provides:
+This structure has some constraints that we have to accept 
+for the advantages the tool provides:
 
 * Generators should generate exactly the same code if they are executed
   on the same source and classes. This is usually not a strong
   requirement, code generators do not tend to generate random
-  source. Some code generators may want to insert time stamps as
+  source. Some code generators may want to insert timestamps as
   comment in the code: it should not.
 
 * The generated code becomes part of the source and are not compile
@@ -58,18 +58,18 @@ deal for the advantages the tool provides:
   source along with the generated code has to be in a state that
   does not need further code generation. This ensures that the CI
   server in the development can work with the original workflow:
-  fetch - compile - test - commit artifacts to repo. The code generation
+  fetch - compile - test - commit artifacts to the repo. The code generation
   was already done on the developer machine and the code generator
   on the CI only ensures that it was really done (or else the test
   fails).
 
-In the followings we will describe how to configure and invoke
+In the followings, we will describe how to configure and invoke
 Java::Geci via its API (no external configuration whatsoever, only
 the API invoked from the tests) and after that how to write code
 generators.
 
 This documentation is reference documentation. Examples are given in
-the tutorials listed on the documentaiton page
+the tutorials listed on the documentation page
 
 * [Tutorials](TUTORIAL.md)
 
@@ -124,7 +124,7 @@ There are several overloaded methods named `source()` in the `Geci`
 interface. They provide means to define different source sets for the
 generators. Note, that in this context the word "source" has multiple
 meanings. The generators can read the source files to gather information
-but the same time it can also write generated code to the sources.
+but at the same time, it can also write generated code to the sources.
 
 The different `source()` methods usually accept a `String` array as
 vararg in the last argument position. This is NOT to specify different
@@ -133,7 +133,7 @@ source set can be.
 
 > The need for this is because there is no guaranteed current working
 > directory (CWD) when the unit tests are started. Many times it
-> is not a problem, but in some cases, for example when you have a multi
+> is not a problem, but in some cases, for example, when you have a multi
 > module maven project, you may face different CWDs depending on how you
 > start the test. If you start the unit test from the interactive
 > environment of the IDE then the CWD will be the root directory of the
@@ -143,7 +143,7 @@ source set can be.
 
 The directory or directories for the source set should be the directory
 where Java code starts (in case of Java source directory). In other
-words it is the directory where the `com` directory is
+words, it is the directory where the `com` directory is
 corresponding to your `com. ...` package structure. In still another
 words this is the `src/main/java` directory in Maven terms.
 
@@ -157,21 +157,21 @@ do not have anything to do with.
 
 You can also specify a named source set using the `source()` method.
 This is needed when the code generator wants to create a new file
-and there are multiple source sets defined. For example there can be a
+and there are multiple source sets defined. For example, there can be a
 source set in the directory `src/main/resources` containing resource files
 and another `src/main/java` containing Java files. If a generator
 processes a resource file and then wants to generate a Java file then
-the framework has to create the generated file in the  `src/main/java`
-directory in the appropriate subdirectory as define by the package.
+the framework has to create the generated file in the `src/main/java`
+directory in the appropriate subdirectory as defined by the package.
 
 Generators that want to create whole new files will specify the source
 set where they want to create the new file. If there is no named source set
 in the configuration with the name the generator is seeking then
 they can not work.
 
-The method `source()` has an overloaded version that accepts a first argument
+The method `source()` has an overloaded version that accepts the first argument
 of the type `Source.Set`. This type is a simple `String` wrapper to ease
-readability and help overloading. There is a `static` method in the
+readability and help overload. There is a `static` method in the
 class `Source.Set` named `set()` that can be imported statically and
 used to specify a source set name. Thus you can specify a named source
 set in the form `source(set("java"),"src/main/java")`.
@@ -182,7 +182,7 @@ Since Maven is the number one build tool and also other build tools use
 the directory structure standard that was minted by Maven there is some
 support to specify the source sets in a simple way for Maven projects.
 There is an overloaded version of the method `source()` that accept a
-`Source.Maven` object as argument. Using that you can specify the
+`Source.Maven` object as an argument. Using that you can specify the
 directories in a simple way. You can simply write
 
 ```java
@@ -211,14 +211,14 @@ It is recommended to use these source set names when you write a generator.
 
 #### Registering generators
 
-After the source sets are defined code generator objects has to be registered so that the framework can
+After the source sets are defined code generator objects have to be registered so that the framework can
 call them, one after the other for all the source codes. To do that
 
 * `register(Generator ...)`
 
 has to be called on the call chain. `Generator` is the interface that all generators implement.
 The instantiation of the actual generators is up to the configuration. It is usually just creating
-the instance using the `new MyGenerator()` constructor, but in some cases it may be different
+the instance using the `new MyGenerator()` constructor, but in some cases, it may be different
 if the generator can be instantiated in different ways.
 
 One call can be used to register multiple generator objects, but it is also possible
@@ -253,7 +253,7 @@ as argument to the method `process()` of the generator you write.
 
 The first that comes in front of us is `getAbsoluteFile()` that will return the absolute file name
 as a string of the source file that the generator is actually working on. This is rarely needed because
-the content of the file is available in other ways. It may, however be needed if the generator
+the content of the file is available in other ways. It may, however, be needed if the generator
 limits itself to work only on some specific file (e.g.: it ready only files with the extension `.xml`),
 or when the file is binary and cannot be accessed line by line.
 
@@ -277,7 +277,7 @@ and
 </editor-fold>
 ```
 
-lines. These lines are edited by the programmer signalling the part of the source code where it expects
+lines. These lines are edited by the programmer signaling the part of the source code where it expects
 generated code to be inserted. The generator can access these segments opening a segment in the
 source calling the method `open(id)` on the `source` object. The parameter is the string that is
 the specified `id="segment name"` on the starting line of the segment. Segment object should be used
@@ -287,7 +287,7 @@ automatically and also check if the generated code is/was the same as the one th
 There is a version of the method `open()` that has no argument. This opens a segment that means the
 whole source file. A generator should invoke this only when it generates a new source file and the source
 object was acquired via calling `newSource()` on the `source` object. Never invoke the argument-less
-`open()` method on the `source` object that was passed to the generator `process()` as argument. It will
+`open()` method on the `source` object that was passed to the generator `process()` as an argument. It will
 delete the content of the source file that was edited by the programmer.
 
 Opening a segment is a fairly cheap operation and the generator code can open the same segment many times.
@@ -296,11 +296,11 @@ where it was left off after the previous call to `open()`.
 
 ### Segment initialization
 
-In some cases code generators happen to generate empty code. In this case code logic may just never call
+In some cases, code generators happen to generate empty code. In this case code logic may just never call
 `open(id)` on a segment, as there is nothing to write there. However, the framework will interpret this
-that the generator does not want to touch the segment and the old value remains. For example there is a code
+that the generator does not want to touch the segment and the old value remains. For example, there is a code
 that does something with every field in the class that is `final` and `volatile` (contrived example as it
-can never happen). In the segment there is already some code either edited by the programmer or some
+can never happen). In the segment, there is already some code either edited by the programmer or some
 previous miraculous code generation run that found such fields. When the code generator runs again it
 does not find any `final volatile` field and thus it wants the segment to be empty.
 
@@ -315,19 +315,19 @@ can be used to read the content of the named source file if it exists or
 to write generated code to it and the code will be written into the file named in the argument 
 at the end of the execution unless the code was already there and did not change.
 
-Since new source code most of the time is generated in the same directory where the other source code
+Since the new source code, most of the time is generated in the same directory where the other source code
 is the `fileName` is relative to the file name of the source the `newSource()` was invoked on.
 
 There is also a version of the method that accepts two arguments: `newSource(Source.Set set, String fileName)`.
 This can be used when the generated code has to be in a different source set than the one containing the information
-the generator reads. Even in this case the directories will be relative to the `source` just in the
-different source set. For example there is the file `com/javax0/javageci/Bean.xml` in the source set starting in
+the generator reads. Even in this case, the directories will be relative to the `source` just in the
+different source set. For example, there is the file `com/javax0/javageci/Bean.xml` in the source set starting in
 directory `src/main/resources/`. It contains some description of the bean the generator has to generate.
 There is another source set defined with the name `"mainSource"` in the directory `src/main/java`. Calling
 `source.newSource(set("mainSource"),"Bean.java")` will create the file
 `src/main/java/com/javax0/javageci/Bean.java`.
 
-Code will only be generated only if the global or a named segment was initialized, opened during code generation.
+The code will only be generated only if the global or a named segment was initialized, opened during code generation.
 If the source was only used to read information and no segment was opened then the file will not be touched
 by the framework.
 
@@ -337,7 +337,7 @@ automatically created.
 ### Accessing the class of the source
 
 Most of the time the `source` object refers to a Java source file. Since the code runs during unit test execution
-the compiled version of the class is available and can be examined by the generator using reflection. The name 
+the compiled version of the class is available and can be examined by the generator using reflection. The name
 of the class and the package can be deducted from the file name. The suggested way to do this to invoke the methods
 provided by the `source` object for the purpose.
 
@@ -353,16 +353,16 @@ consult those methods. They contain significant experience.
 For example when a generator wants to
 generate code for each field or each method then this is vital that the order of the fields or methods is the
 same on different Java versions. There may be different Java build on the developer machine and on the CI server
-and the reflection method `getDeclaredFields()` may return the fields in different order. This causes code
+and the reflection method `getDeclaredFields()` may return the fields in a different order. This causes code
 generated different on the CI server from the one generated by the developer and thus the CI build fails with
-uint test error. (It really happened.) To avoid that there are methods that collect fields, methods etc in a sorted
+unit test error. (It really happened.) To avoid that there are methods that collect fields, methods etc in a sorted
 definite order in the tool module. 
 
 ### Writing into a segment
 
 After you get access to a `Segment` object you can use that object to write into the source code into the
 segment. Whatever you write into a segment will replace the old content. Opening a segment many times, however, does
-not overwrite the content that the generator was already writing into the segment. For example a generator creates
+not overwrite the content that the generator was already writing into the segment. For example, a generator creates
 a setter and a getter for each field in the class. As the generator iterates through the ordered list of the declared
 fields it opens the segment named "setters" for each field. The generated code will be appended each time and
 finally replacing the content that was in the file before the code generation.
@@ -374,10 +374,10 @@ To write into a segment there are four methods:
 * `write_r(...)` unindent the tab stop and then write a line into the code.
 * `newline(...)` insert an empty line.
 
-The `write...()` methods accept a `String` format and variable number of objects as parameters. The format
-string will be used in the `String.format()` method. Please read the Java documentation how to use the formatting.
+The `write...()` methods accept a `String` format and a variable number of objects as parameters. The format
+string will be used in the `String.format()` method. Please read the Java documentation on how to use the formatting.
 
-When the line itself contains new line characters then the indenting will automatically be kept for each line. There
+When the line itself contains newline characters then the indenting will automatically be kept for each line. There
 is no need to spit up the generated multi-line string into lines and invoke the `write()` method several times.
 You can write multi-line code safely well tabulated using these methods.
 
@@ -389,4 +389,3 @@ code generation tool. There is an experimental class `javax0.geci.tools.JavaSour
 to generate code. It was mainly used to create the fluent API code generation and also the class API itself is generated
 by itself demonstrating recursive iterative code generation development. If even the functions provided there are
 not enough you can use any external library together with Java::Geci, like https://github.com/forge/roaster
-
