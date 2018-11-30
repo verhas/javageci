@@ -4,6 +4,7 @@ import javax0.geci.annotations.Geci;
 import javax0.geci.annotations.Gecis;
 import javax0.geci.annotations.Generated;
 import javax0.geci.api.GeciException;
+import javax0.geci.api.Source;
 import javax0.geci.tools.reflection.ModifiersBuilder;
 
 import java.lang.reflect.*;
@@ -11,6 +12,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -80,23 +82,106 @@ public class Tools {
         return pars;
     }
 
+
+    private static final Pattern ANNOTATTION_PATTERN = Pattern.compile("@Geci\\(\"(.*)\"\\)");
+
+    /**
+     * Get the parameters from the source file directly reading the source. When a generator uses this method the
+     * project may not need {@code com.javax0.geci:javageci-annotation:*} as a {@code compile} time dependency
+     * when the "annotation" is commented out. This configuration tool can also be used when the source is not
+     * Java, as it does not depend on Java annotations.
+     * <p>
+     * The lines of the source are read from the start and the parameters composed from the first line that is
+     * successfully processed are returned.
+     *
+     * @param source            the source object holding the code lines
+     * @param generatorMnemonic the name of the generator that needs the parameters. Only the parameters that are
+     *                          specific for this generator are read.
+     * @param prefix            characters that should prefix the annotation. In case of Java it is {@code //}.
+     *                          The line is first trimmed from leading and trailing space, then the {@code prefix}
+     *                          characters are removed from the start, {@code postfix} characters are removed from
+     *                          the end and then it has to match the annotation syntax. If this parameter is
+     *                          {@code null} then it is treated as empty string, a.k.a. there is no prefix.
+     * @param postfix           the postfix that may follow the parameter definition at the end of the line. If this
+     *                          parameter is {@code null} it is treated as empty string, a.k.a. there is no postfix.
+     * @param nextLine          is a regular expression that should match the line after the successfully matched
+     *                          configuration line. If the next line does not match the pattern then the previous line
+     *                          is ignored. Typically this is something line {@code /final\s*int\s*xx} when the
+     *                          generator wants to get the parameters for the {@code final int xx} variable.
+     *                          If this variable is {@code null} then there is no pattern matching performed, and all
+     *                          parameter holding line that looks like a {@code Geci} annotation is accepted and
+     *                          processed.
+     *                          <p>
+     *                          Note also that if one or more lines looks like {@code Geci} annotations then they are
+     *                          skipped and the {@code nextLine} pattern is matched against the next line that is not
+     *                          a configuration line. This allows the program to have multiple configuration lines
+     *                          for different generators preceding the same source line.
+     * @return the new {@link CompoundParams} object or {@code null} in case there is no configuration found in the
+     * file for the specific generator with the specified conditions.
+     */
+    public static CompoundParams getParameters(Source source,
+                                               String generatorMnemonic,
+                                               String prefix,
+                                               String postfix,
+                                               Pattern nextLine) {
+        CompoundParams paramConditional = null;
+        for (var line : source.getLines()) {
+            if (paramConditional != null) {
+                if (nextLine == null || nextLine.matcher(line).matches()) {
+                    return paramConditional;
+                }
+            }
+
+            final Matcher match = getMatch(prefix, postfix, line);
+            if (match.matches()) {
+                if (paramConditional == null) {
+                    var string = match.group(1);
+                    paramConditional = getParameters(generatorMnemonic, string);
+                }
+            } else {
+                paramConditional = null;
+            }
+        }
+        return null;
+    }
+
+    private static CompoundParams getParameters(String generatorMnemonic, String string) {
+        if (string.startsWith(generatorMnemonic + " ")) {
+            var parametersString = string.substring(generatorMnemonic.length() + 1);
+            return new CompoundParams(generatorMnemonic, Map.copyOf(getParameters(parametersString)));
+        } else if (string.equals(generatorMnemonic)) {
+            return new CompoundParams(generatorMnemonic, Map.of());
+        } else {
+            return null;
+        }
+    }
+
+    private static Matcher getMatch(String prefix, String postfix, String line) {
+        final var trimmedLine = line.trim();
+        final var leftChopped = prefix != null && trimmedLine.startsWith(prefix) ?
+                trimmedLine.substring(prefix.length()) : trimmedLine;
+        final var rightChopped = postfix != null && leftChopped.endsWith(postfix) ?
+                leftChopped.substring(0, leftChopped.length() - postfix.length()) : leftChopped;
+        final var matchLine = rightChopped.trim();
+        return ANNOTATTION_PATTERN.matcher(matchLine);
+    }
+
     /**
      * Get the parameters from the {@code element} from the {@link Geci} annotation that stands for the
      * generator that has the mnemonic {@code generatorMnemonic}.
      *
      * @param element           the method, class etc. that has the }{@link Geci} annotation.
-     * @param generatorMnemonic the parameters parsed into a {@link CompoundParams} object.
+     * @param generatorMnemonic the name of the generator that needs the parameters. Only the parameters that are
+     *                          specific for this generator are read.
      * @return the new {@link CompoundParams} object or {@code null} in case there is no annotation matching the
      * generator mnemonic.
      */
     public static CompoundParams getParameters(AnnotatedElement element, String generatorMnemonic) {
         final var strings = getGecis(element);
         for (var string : strings) {
-            if (string.startsWith(generatorMnemonic + " ")) {
-                var parametersString = string.substring(generatorMnemonic.length() + 1);
-                return new CompoundParams(generatorMnemonic, Map.copyOf(getParameters(parametersString)));
-            } else if (string.equals(generatorMnemonic)) {
-                return new CompoundParams(generatorMnemonic, Map.of());
+            var params = getParameters(generatorMnemonic, string);
+            if (params != null) {
+                return params;
             }
         }
         return null;
@@ -284,17 +369,19 @@ public class Tools {
 
         private String sep;
         private boolean first = true;
-        public String get(){
-            if( first ){
+
+        public String get() {
+            if (first) {
                 first = false;
                 return "";
-            }else{
+            } else {
                 return sep;
             }
         }
+
     }
 
-    public static Separator separator(String sep){
+    public static Separator separator(String sep) {
         return new Separator(sep);
     }
 

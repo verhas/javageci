@@ -389,3 +389,112 @@ code generation tool. There is an experimental class `javax0.geci.tools.JavaSour
 to generate code. It was mainly used to create the fluent API code generation and also the class API itself is generated
 by itself demonstrating recursive iterative code generation development. If even the functions provided there are
 not enough you can use any external library together with Java::Geci.
+
+### Generator Parameters
+
+Generators are free to use any configuration they like, however, there are supported configuration ways.
+Generators can be configured on the application, instance and source level. There is support for the source
+level configuration. For higher level configuration the tools provided by the Java language and infrastructure
+is sufficient.
+
+* Application level configuration can be hard coded into the class as parameter or can be read from
+  `properties` files or from other sources. There is no special support for this in Java::Geci. You
+  should follow the usual Java conventions in your code. These parameters affect the behavior of the
+  application for all the runs in the JVM.
+* Instance level configuration can be done via constructor parameters or via setter or other configuration
+  methods. This is, again, standard Java practice, nothing specific to Java::Geci. These parameters affect
+  the behavior of the application for the instance they were provided.
+* Generators read source level configuration from the source. These parameters play for the specific source.
+  Although generators read the source and could get parameters from many structures, there is support to get the
+  configuration from annotations or from comments. The rest of the section is about the supporting tools that
+  help the generators to read these configuration parameters.
+
+
+
+--- TODO ---
+
+### Special Generators
+
+When you write a generator you do not need to manually implement the interface `javax0.geci.api.Generator`. The
+library contains abstract classes that implement the interface and do some specific task that may be the same for
+a variety of generators.
+
+Currently there are three abstract classes that each extend the next on in the line. Their inheritance structure
+is the following:
+
+```java
+Generator <- AbstractGeneratorEx <- AbstractGenerator <- AbstractDeclaredFieldsGenerator
+```
+
+* `AbstractGeneratorEx` can be extended by generators that may throw exception. Note that the signature of
+  the method `process()` in the interface `Generator` does not throw any exceptions.
+* `AbstractGenerator` is to be extended by generators that work only on Java source files and need the compiled
+  class of the source.
+* `AbstractDeclaredFieldsGenerator` is for generators that want to generate code for each declared field in a
+  class.
+
+#### `AbstractGeneratorEx`
+
+The interface `Generator` defines the method `process()` in a way that it should not throw exception. If there
+is an exception during code generation then it has to wrapped into some run-time exception. This will be
+propagared to the unit test level and thus the test will fail, as it should.
+
+For the wrapping Java::Geci provides the exception class `javax0.geci.api.GeciException`.
+
+`AbstractGeneratorEx` implements the method `process()` invoking the abstract method `processEx()` it defines
+wrapping the call into a try-catch block. If there is any exception thron from `processEx()` then it is wrapped
+into a `GeciException` and thrown.
+
+The abstract method generators must implement in this case is
+
+```java
+public abstract void processEx(Source source) throws Exception;
+```
+
+Note that the method may throw `Exception` and the implemented `process()` catches only `Exception` and not
+any `Throwable`.
+
+#### `AbstractGenerator`
+
+This abstract generator implements the method `processEx()` and calculates the class of the source and
+also collects the parameters defined in a `@Geci` annotation. Extending classes should implement the
+abstract method
+
+```java
+public abstract void process(Source source, Class<?> klass, CompoundParams global)throws Exception;
+``` 
+
+This case the method is named `process()` as it has different arguments than the one in the interface
+and is an overloading of the interface method. The arguments are the
+
+* `source` is the source object
+* `klass` is the class of the source
+* `global` contains the parameters that are defined in the `@Geci` annotation on the class level. 
+
+#### `AbstractDeclaredFieldsGenerator`
+
+This abstract generator does everything as `AbstractGenerator` essentially extending that class and
+iterates through the fields of the class. It defines one abstract method that generators extending
+this class have to implement:
+
+```java
+public abstract void processField(Source source, Class<?> klass, CompoundParams params, Field field) throws Exception;
+```
+
+This method is invoked for every field. The parameter `params` is the composition of the parameters
+defined on the class level and on the field in `@Geci` annotations. If a parameter is defined on the field
+then it prevails, otherwise the one on the class is used.
+
+The class also defines two do-nothing methods that can optionally be overridden by the extending class. These
+are:
+
+```java
+public void preprocess(Source source, Class<?> klass, CompoundParams global) throws Exception {
+    }
+
+public void postprocess(Source source, Class<?> klass, CompoundParams global) throws Exception {
+    }
+```
+
+As the name suggest `preprocess()` is invoked before the fields iteration starts and `postprocess()`
+is invoked after that. 

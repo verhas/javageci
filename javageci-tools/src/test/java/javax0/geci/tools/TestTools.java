@@ -1,12 +1,15 @@
 package javax0.geci.tools;
 
 import javax0.geci.annotations.Geci;
+import javax0.geci.api.Source;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -86,4 +89,28 @@ public class TestTools {
         );
 
     }
+
+    @Test
+    public void getParametersFromSource(){
+        Source testSource = new AbstractTestSource() {
+            @Override
+            public List<String> getLines() {
+                return List.of("    // @Geci(\"aaa a='b' b='c' c='d' a$='dollared' b3='bthree' _='-'\")" ,
+                        "    // @Geci(\"xxx x='x' y='y' z='z'\")" ,
+                        "    private static Object something;" ,
+                        "    private HashMap<Map<String, Integer>, Object> b;");
+            }
+        };
+
+        var map = Tools.getParameters(testSource, "aaa","//",null, Pattern.compile(".*something;.*"));
+        assertNotNull(map);
+        assertEquals(map.get("a"), "b");
+        assertEquals(map.get("b"), "c");
+        assertEquals(map.get("c"), "d");
+        assertEquals(map.get("a$"), "dollared");
+        assertEquals(map.get("b3"), "bthree");
+        assertEquals(map.get("_"), "-");
+
+    }
+
 }
