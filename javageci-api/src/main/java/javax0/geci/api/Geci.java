@@ -68,7 +68,8 @@ public interface Geci {
      * Run the code generation.
      *
      * @return {@code false} if the code generation did not produce any output. It means that the code was
-     * already up to date.<br/> {@code true} when code was generated. When the code generation is executed
+     * already up to date.<br>
+     * {@code true} when code was generated. When the code generation is executed
      * as a unit test this return value can be asserted and compilation may fail in case code was changed.
      * @throws Exception in case a generator could not finish its operation and throws exception. Generators
      * can only throw non-checked {@code RuntimeException} and it is recommended that they be
