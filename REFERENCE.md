@@ -75,6 +75,36 @@ the tutorials listed on the documentation page
 
 ## Geci invocation API
 
+To use Java::Geci you have to have the libraries on the classpath. If you use Maven then the easiest way is
+to define the dependencies in the POM file.
+
+```xml
+<dependency>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-annotation</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-api</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-core</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-engine</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-tools</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
 The structure of the invocation is usually three lines in a unit test:
 
 ```java
