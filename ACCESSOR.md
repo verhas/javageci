@@ -54,8 +54,8 @@ or package private fields. The possible values that can be listed in this parame
 * `transient`    
 * `volatile`
 
-Note that although all these are Java keywords, the keyword `package` is not a modifier, but here we should use this
-string to denote package private fields.
+Note that although all these are Java keywords, they are used in the configuration as
+strings or rather as a part of a string.
 
 The other parameters are read on the field level, and when not specified on the field level they are inherited from
 the class annotation if defined there. The individual fields can also be annotated with
@@ -64,18 +64,22 @@ the class annotation if defined there. The individual fields can also be annotat
 @Geci("accessor ... parameters ...")
 ```
 
-The following parameters can be used:
+The following parameters can be used on the field level:
 
 * `exclude` can signal that the field does not need setter and getter. The value of the parameter can be `1`, `ok`, `yes`
   and `true`. Any other value will not exclude the field from the setter/getter generation process. Using this parameter
   on the class level may be reasonable when most of the fields do not need accessors. In that case you can define this
   parameter to be `true` on the class level and `false` on the fields that do need accessors to be generated. 
 * `access` can define the access modifier of the setter and the getter. The default value is `public`. The value of the
-  parameter will be used in front of the setter/getter without syntax check.
-* `only` can be `setter` or `getter` or it can be omitted. In case it is defined only the setter or only the getter will
+  parameter will be used in front of the setter/getter without syntax check. So, for example you write `access='blabla'`
+  it will put `blabla` as an access modifier in front of the generated accessor method and then the Java compilation
+  will obviously fail.
+* `only` can have the value `setter` or `getter` or it can be omitted. In case it is defined only the setter or 
+  only the getter will
   be generated. You can define this parameter on the class level if all or most of the fields need only setters or
-  only getters. If there are some fields that need both then you can specify on the field level `only=''` which will
-  not limit the generation on that specific field either to getter or setter only.
+  only getters. If there are some fields that need both then you can specify on the field level `only=''`
+  (empty string) which will
+  not limit the generation on that specific field either to getter or to setter only.
 * `id` can be defined to use a different segment for the specific field.
 
 The name of the setter will always be `set` and the name of the field with the first letter upper cased. The name of

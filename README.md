@@ -41,6 +41,30 @@ and can generate
 
 ## How to use Java::Geci
 
+Include the Java::Geci modules that you want to use into your project. To do that using
+maven use the following dependencies:
+
+```xml
+<dependency>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-annotation</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-engine</artifactId>
+    <scope>test</scope>
+</dependency>
+
+```
+
+There are other modules, but you do not need to declare dependency on them as the
+engine module has transitive dependency and thus maven automatically will use them.
+Since Java::Geci works during test execution the dependencies have test scope. The
+exception is the annotation module. This module defines an annotation that is used
+to configure the code generation during test time. Because of that the retention
+of this module is run-time. Although the annotation is not used in production but 
+it remaines in the byte code and thus is has to be the default maven scope. 
+
 If you look at the test code `TestAccessor.java` in the test module you can see that this is a proof of concept
 demonstration sample code:
 
