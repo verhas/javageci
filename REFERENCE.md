@@ -439,10 +439,48 @@ is sufficient.
   configuration from annotations or from comments. The rest of the section is about the supporting tools that
   help the generators to read these configuration parameters.
 
+#### CompoundParams objects
 
+The generators, which work on a specific Java class can access a `CompoundParams` object using the
 
---- TODO ---
+```java
+CompoundParams global = Tools.getParameters(xxx, mnemonic());
+```
 
+calls. In this call the parameter `xxx` can be the class, a method or field that the code generator works with and
+which element is annotated. Usually there is an annotation on the class itself and also on the fields or methods.
+In that case the call can be called on the `Class` object and also on the `Field` or `Mehtod` objects.
+
+When the different configuration parameters are defined on both the class level and also on the field or method level
+then the code generator usually wants to use the lower level configuration if it exists and the `Class` level only
+when the parameter is not defined on the `Field` or `Mehtod`  level. To ease that configuration handling there
+is a constructor of `CompoundParams` that accepts two other `CompoundParams` as parameters. For example the call
+
+```java
+var params = new CompoundParams(local, global);
+```
+ 
+will result a `CompoundParams` object that will return the configuration value for any configuration key from the
+`global` parameters only if the key is not defined in the `local` level.
+
+When you implement a generator extending the class `AbstractGenerator` then you get the `Class` object as well as
+the `global` configuration as a parameter.
+
+It is also possible to get configuration from the source code without using reflection. The generator may call the
+static method
+
+```java
+CompoundParams getParameters(Source source, String generatorMnemonic, String prefix,
+                             String postfix, Pattern nextLine);
+```
+ 
+This call will scan the source code and try to find the configuration string in the source code, typically placed
+in some comments. This configuration can be used in case the generator is working from some source file, which is
+not Java source code and thus there is no corresponding Java class during the test execution. A generator may
+also use this call in case the application does not want the `@Geci` annotation to be part of the production
+code. The drawback of this configuration is that the configuration can only be on the source level and can not be
+on the `Field`, `Method` or other class member level. 
+ 
 ### Special Generators
 
 When you write a generator you do not need to manually implement the interface `javax0.geci.api.Generator`. The

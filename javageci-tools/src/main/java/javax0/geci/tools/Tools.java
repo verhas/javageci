@@ -29,8 +29,8 @@ public class Tools {
      * also when there are many.
      *
      * @param element the class, method or field that is annotated.
-     * @return the array of string that contains the values of the annotations. If the element is not annotated
-     * then the returned array will have zero elements. If there is one }{@link Geci} annotation then the
+     * @return the array of strings that contains the values of the annotations. If the element is not annotated
+     * then the returned array will have zero elements. If there is one {@link Geci} annotation then the
      * returned String array will have one element. If there are many annotations then the array will contains each
      * of the values.
      */
