@@ -28,12 +28,12 @@ cp javageci-jamal/pom.xml release/06jamal
 cd release
 for artifact in *
 do
-    rm $artifact/*.sig
-    rm $artifact/*.asc
-    for file in $artifact/*.jar $artifact/pom.xml
+    rm ${artifact}/*.sig
+    rm ${artifact}/*.asc
+    for file in ${artifact}/*.jar ${artifact}/pom.xml
     do
         gpg -s -b $file
-        mv $file.sig $file.asc
+        mv ${file}.sig ${file}.asc
     done
     cd $artifact
     rm *.zip
