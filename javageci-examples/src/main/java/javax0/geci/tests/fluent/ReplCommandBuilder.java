@@ -18,23 +18,23 @@ public class ReplCommandBuilder {
     private String usage;
     private String help;
 
-    public void kw(String keyword) {
+    private void kw(String keyword) {
         this.keyword = keyword;
     }
 
-    public void executor(Consumer<CommandEnvironment> executor) {
+    private void executor(Consumer<CommandEnvironment> executor) {
         this.executor = executor;
     }
 
-    public void usage(String usage) {
+    private void usage(String usage) {
         this.usage = usage;
     }
 
-    public void help(String help) {
+    private void help(String help) {
         this.help = help;
     }
 
-    public void parameters(Set<String> parameters) {
+    private void parameters(Set<String> parameters) {
         if (this.parameters == null) {
             this.parameters = new HashSet<>(parameters);
         } else {
@@ -42,7 +42,7 @@ public class ReplCommandBuilder {
         }
     }
 
-    public void noParameters() {
+    private void noParameters() {
         if (parameters == null) {
             this.parameters = new HashSet<>(Set.of());
         } else {
@@ -51,7 +51,7 @@ public class ReplCommandBuilder {
         }
     }
 
-    public void parameter(String parameter) {
+    private void parameter(String parameter) {
         if (parameters == null) {
             this.parameters = new HashSet<>(Set.of(parameter));
         } else {
@@ -59,14 +59,14 @@ public class ReplCommandBuilder {
         }
     }
 
-    public void regex(String name, String regex) {
+    private void regex(String name, String regex) {
         if (regexes == null) {
             this.regexes = new HashMap<>();
         }
         regexes.put(name, Pattern.compile(regex));
     }
 
-    public CommandDefinition build() {
+    private CommandDefinition build() {
         return new CommandDefinition();
     }
     

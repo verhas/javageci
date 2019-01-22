@@ -12,46 +12,46 @@ public class TestMethodCollection {
     @Test
     public void testThatAllTypesAndMethodsAreCollectedFromObject() {
         Assertions.assertEquals("{\n" +
-            "  \"equals(Object)\" -> equals\n" +
-            "  \"getClass()\" -> getClass\n" +
-            "  \"hashCode()\" -> hashCode\n" +
-            "  \"notify()\" -> notify\n" +
-            "  \"notifyAll()\" -> notifyAll\n" +
-            "  \"toString()\" -> toString\n" +
-            "  \"wait() throws java.lang.InterruptedException\" -> wait\n" +
-            "  \"wait(long) throws java.lang.InterruptedException\" -> wait\n" +
-            "  \"wait(long,int) throws java.lang.InterruptedException\" -> wait\n" +
-            "}", new MethodCollection(Object.class).toString());
+                "  \"equals(Object)\" -> equals\n" +
+                "  \"getClass()\" -> getClass\n" +
+                "  \"hashCode()\" -> hashCode\n" +
+                "  \"notify()\" -> notify\n" +
+                "  \"notifyAll()\" -> notifyAll\n" +
+                "  \"toString()\" -> toString\n" +
+                "  \"wait() throws java.lang.InterruptedException\" -> wait\n" +
+                "  \"wait(long) throws java.lang.InterruptedException\" -> wait\n" +
+                "  \"wait(long,int) throws java.lang.InterruptedException\" -> wait\n" +
+                "}", new MethodCollection(Object.class).toString());
     }
 
     @Test
     public void testThatAllTypesAndMethodsAreCollectedFromTestClass() {
         Assertions.assertEquals("{\n" +
-            "  \"m1(String,TestMethodCollection)\" -> m1\n" +
-            "  \"m1(javax0.geci.api.Geci,javax0.geci.annotations.Geci)\" -> m1\n" +
-            "}", new MethodCollection(TestClass.class).toString());
+                "  \"m1(String,TestMethodCollection)\" -> m1\n" +
+                "  \"m1(javax0.geci.api.Geci,javax0.geci.annotations.Geci)\" -> m1\n" +
+                "}", new MethodCollection(TestClass.class).toString());
     }
 
     @Test
     public void testAmbiguousThrows() {
         Assertions.assertThrows(GeciException.class,
-            () -> new MethodCollection(TestClass.class).get("m1"));
+                () -> new MethodCollection(TestClass.class).get("m1"));
     }
 
     @Test
     public void testNonAmbiguousCanBeCalled() throws InvocationTargetException, IllegalAccessException {
         Assertions.assertEquals("TEST",
-            new MethodCollection(TestClass.class)
-                .get("m1(String,TestMethodCollection)")
-                .invoke(new TestClass(), "TEST",null));
+                new MethodCollection(TestClass.class)
+                        .get("m1(String,TestMethodCollection)")
+                        .invoke(new TestClass(), "TEST", null));
     }
 
     @Test
     public void testNonAmbiguousCanBeCalledDenormalType() throws InvocationTargetException, IllegalAccessException {
         Assertions.assertEquals("TEST",
-            new MethodCollection(TestClass.class)
-                .get("m1(java.lang.String,TestMethodCollection)")
-                .invoke(new TestClass(),new Object[]{"TEST",null}));
+                new MethodCollection(TestClass.class)
+                        .get("m1(java.lang.String,TestMethodCollection)")
+                        .invoke(new TestClass(), new Object[]{"TEST", null}));
     }
 
     public static class TestClass {

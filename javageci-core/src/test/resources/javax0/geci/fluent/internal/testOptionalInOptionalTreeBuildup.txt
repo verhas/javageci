@@ -19,23 +19,8 @@ public static class Wrapper implements If0,If2,If1,If4,If3,If5{
         next.that.a();
         return next;
     }
-    public Wrapper d(){
-        var next = new Wrapper(that.copy());
-        next.that.d();
-        return next;
-    }
     public void c(){
         that.c();
-    }
-    public Wrapper f(){
-        var next = new Wrapper(that.copy());
-        next.that.f();
-        return next;
-    }
-    public Wrapper e(){
-        var next = new Wrapper(that.copy());
-        next.that.e();
-        return next;
     }
 }
 public interface If0 {

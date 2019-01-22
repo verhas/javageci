@@ -12,6 +12,7 @@ public class MethodTool {
     protected Method method;
     private String type = null;
     private boolean isInterface = false;
+    private boolean isPublic = false;
     private Function<String, String> decorator;
 
     public static MethodTool with(Method method) {
@@ -40,7 +41,12 @@ public class MethodTool {
         return this;
     }
 
-    public static String methodSignature(Method method){
+    public MethodTool asPublic() {
+        this.isPublic = true;
+        return this;
+    }
+
+    public static String methodSignature(Method method) {
         return with(method).signature();
     }
 
@@ -61,7 +67,13 @@ public class MethodTool {
         var exceptionlist = Arrays.stream(method.getGenericExceptionTypes())
                 .map(t -> Tools.getGenericTypeName(t))
                 .collect(Collectors.joining(","));
-        return (isInterface ? "" : (Tools.modifiersString(method))) +
+        final String modifiers;
+        if (isPublic) {
+            modifiers = (isInterface ? "" : "public " + Tools.modifiersStringNoAccess(method));
+        } else {
+            modifiers = (isInterface ? "" : (Tools.modifiersString(method)));
+        }
+        return modifiers +
                 (type == null ? Tools.typeAsString(method) : type) +
                 " " +
                 decoratedName(method) +

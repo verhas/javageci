@@ -132,6 +132,7 @@ public class ClassBuilder {
                 var actualReturnType = notFluent ? null : "Wrapper";
                 var signatureString = FluentMethodTool
                         .from(fluent.getKlass())
+                        .asPublic()
                         .forThe(method)
                         .withType(actualReturnType)
                         .signature();

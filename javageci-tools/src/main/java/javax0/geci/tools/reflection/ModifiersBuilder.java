@@ -17,6 +17,10 @@ public class ModifiersBuilder {
         }
     }
 
+    /**
+     * @return the modifiers as string. Access modifiers are th first (guaranteed) and they start from private
+     * towards public.
+     */
     @Override
     public String toString(){
         s.setLength(0);

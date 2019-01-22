@@ -17,6 +17,7 @@ public class MethodCollection {
     private final Class<?> klass;
     private final Set<Method> methodSet;
     private final Map<String, MethodData> methodMap;
+    private final Set<String> referencedMethods;
     private final Map<String, String> typeMapping = new HashMap<>();
     private final Map<String, Boolean> isMultiple = new HashMap<>();
     private final boolean wrapperIfIsNeeded;
@@ -29,6 +30,7 @@ public class MethodCollection {
         collectDuplicates(types);
         buildTypeMapping(types);
         methodMap = collect();
+        referencedMethods = new HashSet<>();
     }
 
     /**
@@ -65,7 +67,9 @@ public class MethodCollection {
      * @return the set of the normalized method signatures.
      */
     public Set<String> methodSignatures() {
-        return methodMap.keySet();
+        return methodMap.entrySet().stream()
+                .filter(e -> (e.getValue().isFluent && e.getValue().referenced) || e.getKey().equals("close()"))
+                .map(e -> e.getKey()).collect(Collectors.toSet());
     }
 
     /**
@@ -81,6 +85,7 @@ public class MethodCollection {
         if (md == null) {
             return null;
         } else {
+            md.referenced = true;
             return md.method;
         }
     }
@@ -103,16 +108,17 @@ public class MethodCollection {
     }
 
 
-    public void exclude(String method){
+    public void exclude(String method) {
         var md = get0(method);
         if (md == null) {
-            throw new GeciException("Method '"+method+"' does not exist, can not be exlcuded from the fluent interface.");
+            throw new GeciException("Method '" + method + "' does not exist, can not be exlcuded from the fluent interface.");
         } else {
             md.isFluent = false;
         }
 
     }
-    public Boolean isFluentNode(String name){
+
+    public Boolean isFluentNode(String name) {
         var md = get0(name);
         if (md == null) {
             return null;
@@ -208,11 +214,13 @@ public class MethodCollection {
      * @return the set of methods
      */
     private Set<Method> collectMethods() {
-        var set = new HashSet<Method>();
-        for (var method : klass.getMethods()) {
-            if (isNeeded(method)) {
-                set.add(method);
-            }
+        var set = new HashSet<Method>(
+                Arrays.stream(klass.getMethods())
+                        .filter(method -> isNeeded(method)).collect(Collectors.toSet()));
+        if (klass != Object.class) {
+            set.addAll(
+                    Arrays.stream(klass.getDeclaredMethods())
+                            .filter(method -> isNeeded(method)).collect(Collectors.toSet()));
         }
         return set;
     }
@@ -290,5 +298,6 @@ public class MethodCollection {
         Method method;
         boolean isExitNodeMethod = false;
         boolean isFluent = true;
+        boolean referenced = false;
     }
 }

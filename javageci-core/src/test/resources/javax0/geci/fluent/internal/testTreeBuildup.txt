@@ -18,18 +18,6 @@ public static class Wrapper implements If0,If2,If1,If3{
     public void c(){
         that.c();
     }
-    public Wrapper f(){
-        that.f();
-        return this;
-    }
-    public Wrapper copy(){
-        that.copy();
-        return this;
-    }
-    public Wrapper e(){
-        that.e();
-        return this;
-    }
 }
 public interface If0{
     void a();

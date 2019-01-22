@@ -198,6 +198,17 @@ public class Tools {
     }
 
     /**
+     * Get the modifiers as string except access modifier.
+     *
+     * @param method for which the modifiers are needed
+     * @return the string containing the modifiers space separated, except the access modifier
+     */
+    public static String modifiersStringNoAccess(Method method) {
+        return new ModifiersBuilder(method.getModifiers()
+                & ~Modifier.PROTECTED & Modifier.PRIVATE & Modifier.PUBLIC).toString();
+    }
+
+    /**
      * Get the type of the field as string.
      *
      * @param field of which the type is needed
@@ -245,7 +256,7 @@ public class Tools {
             s = s.substring("java.lang.".length());
         }
         s = s.replaceAll("([^\\w\\d.^])java.lang.", "$1");
-        s = s.replaceAll("\\$",".");
+        s = s.replaceAll("\\$", ".");
         return s;
     }
 
