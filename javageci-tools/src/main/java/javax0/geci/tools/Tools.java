@@ -225,13 +225,17 @@ public class Tools {
      * This method removes those prefixes.
      * <p>
      * Note that the prefixes {@code java.util.} and similar others that are usually imported by the class are NOT
-     * removed.
+     * removed, because we cannot know that the class imports those or not.
+     * <p>
+     * Since there is no API in JDK to get the canonical name of a {@link Type} the inner classes before normalization
+     * will contain {@code $} in the names and not dot. As a last resort here we replace all {@code $} character in the
+     * name to {@code .} (dot). This has the consequence that the application that uses fluent API generator must not
+     * use {@code $} in the name of the classes.
      *
      * @param s generic type name to be normalized
      * @return the normalized type name
      */
     public static String normalizeTypeName(String s) {
-        //s = s.replace(" ", "");
         s = s.replaceAll("\\s*<\\s*", "<")
                 .replaceAll("\\s*>\\s*", ">")
                 .replaceAll("\\s*\\.\\s*", ".")
@@ -241,6 +245,7 @@ public class Tools {
             s = s.substring("java.lang.".length());
         }
         s = s.replaceAll("([^\\w\\d.^])java.lang.", "$1");
+        s = s.replaceAll("\\$",".");
         return s;
     }
 

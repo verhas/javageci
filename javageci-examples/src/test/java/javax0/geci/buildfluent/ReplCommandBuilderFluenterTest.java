@@ -1,4 +1,5 @@
 package javax0.geci.buildfluent;
+
 import javax0.geci.engine.Geci;
 import javax0.geci.fluent.Fluent;
 import javax0.geci.fluent.FluentBuilder;
@@ -7,17 +8,16 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static javax0.geci.api.Source.maven;
-
 public class ReplCommandBuilderFluenterTest {
-
 
     @Test
     @DisplayName("Fluent API for the CommandDefinitionBuilder is up-to-date")
     void generateFluendAPI4CommandDefinitionBuilder() throws Exception {
-        if (new Geci().source(maven().mainSource()).register(new Fluent()).generate()) {
-            Assertions.fail(Geci.FAILED);
-        }
+        Assertions.assertFalse(new Geci()
+                        .source("../javageci-examples/src/main/java", "./javageci-examples/src/main/java")
+                        .register(new Fluent())
+                        .generate(),
+                Geci.FAILED);
     }
 
     public static FluentBuilder sourceBuilderGrammar() {
