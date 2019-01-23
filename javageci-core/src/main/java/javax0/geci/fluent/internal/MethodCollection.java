@@ -105,7 +105,7 @@ public class MethodCollection {
     public Set<String> methodSignatures() {
         return methodMap.entrySet().stream()
                 .filter(e -> (e.getValue().isFluent && e.getValue().referenced) || e.getKey().equals("close()"))
-                .map(e -> e.getKey()).collect(Collectors.toSet());
+                .map(Map.Entry::getKey).collect(Collectors.toSet());
     }
 
     /**
@@ -250,9 +250,8 @@ public class MethodCollection {
      * @return the set of methods
      */
     private Set<Method> collectMethods() {
-        var set = new HashSet<>(
-                Arrays.stream(klass.getMethods())
-                        .filter(this::isNeeded).collect(Collectors.toSet()));
+        var set = Arrays.stream(klass.getMethods())
+                .filter(this::isNeeded).collect(Collectors.toCollection(HashSet::new));
         if (klass != Object.class) {
             set.addAll(Arrays.stream(klass.getDeclaredMethods())
                     .filter(this::isNeeded).collect(Collectors.toSet()));
