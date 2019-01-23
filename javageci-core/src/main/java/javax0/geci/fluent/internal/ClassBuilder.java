@@ -51,17 +51,17 @@ public class ClassBuilder {
      * @return the string of the code that was built up.
      */
     public String build() throws Exception {
-        LOG.info("Class building started for the class %s",fluent.getKlass().getSimpleName());
+        LOG.info("Class building started for the class %s", fluent.getKlass().getSimpleName());
         var list = fluent.getNodes();
         if (list.size() == 0) {
             throw new GeciException("There are no actual calls in the fluent structure.");
         }
-        LOG.info("There are %d nodes on the top level",list.size());
+        LOG.info("There are %d nodes on the top level", list.size());
         final var tree = new Tree(Node.ONCE, list);
         final var calculator = new LastNodeTypeCalculator(methods);
         final var exitType = calculator.getLastNodeReturnType(list.get(list.size() - 1));
         final var lastInterface = Tools.normalizeTypeName(exitType);
-        LOG.info("The last type is %s",lastInterface);
+        LOG.info("The last type is %s", lastInterface);
         final var interfaces = build(tree, lastInterface);
         final var code = JavaSource.builder();
         writeStartMethod(code);
@@ -83,7 +83,7 @@ public class ClassBuilder {
      */
     private void writeStartMethod(JavaSource.Builder code) throws Exception {
         final var startMethod = fluent.getStartMethod() == null ? "start" : fluent.getStartMethod();
-        LOG.info("Creating start method %s()",startMethod);
+        LOG.info("Creating start method %s()", startMethod);
         final String lastType;
         if (fluent.getLastType() != null) {
             lastType = fluent.getLastType();
@@ -266,21 +266,8 @@ public class ClassBuilder {
     private String buildZeroOrMore(Tree tree, String nextInterface) {
         List<Node> list = tree.getList();
         var code = new JavaSource();
-        ClassBuilder lastBuilder = null;
         this.interfaceName = ifNameFactory.getNewName(tree);
-        for (var i = list.size() - 1; i >= 0; i--) {
-            final var node = list.get(i);
-            var builder = new ClassBuilder(this);
-            var actualNextInterface = this.interfaceName;
-            if (lastBuilder != null) {
-                actualNextInterface = lastBuilder.interfaceName;
-            }
-            code.write(builder.build(node, actualNextInterface));
-            lastBuilder = builder;
-        }
-        if (lastBuilder == null) {
-            throw new GeciException("Internal error");
-        }
+        ClassBuilder lastBuilder = buildNodeList(this.interfaceName, list, code);
         var ifs = InterfaceList.builderFor(methods).set(nextInterface, lastBuilder.interfaceName, fluent.getInterfaces()).buildList();
         code.write("public interface %s%s {}", this.interfaceName, ifs);
         return code.toString();
@@ -289,21 +276,8 @@ public class ClassBuilder {
     private String buildOptional(Tree tree, String nextInterface) {
         List<Node> list = tree.getList();
         var code = new JavaSource();
-        ClassBuilder lastBuilder = null;
         this.interfaceName = ifNameFactory.getNewName(tree);
-        for (var i = list.size() - 1; i >= 0; i--) {
-            final var node = list.get(i);
-            var builder = new ClassBuilder(this);
-            var actualNextInterface = nextInterface;
-            if (lastBuilder != null) {
-                actualNextInterface = lastBuilder.interfaceName;
-            }
-            code.write(builder.build(node, actualNextInterface));
-            lastBuilder = builder;
-        }
-        if (lastBuilder == null) {
-            throw new GeciException("Internal error");
-        }
+        ClassBuilder lastBuilder = buildNodeList(nextInterface, list, code);
         var ifs = InterfaceList.builderFor(methods).set(nextInterface, lastBuilder.interfaceName, fluent.getInterfaces()).buildList();
         code.write("public interface %s%s {}", this.interfaceName, ifs);
         return code.toString();
@@ -312,23 +286,24 @@ public class ClassBuilder {
     private String buildOnce(Tree tree, String nextInterface) {
         List<Node> list = tree.getList();
         var code = new JavaSource();
+        ClassBuilder lastBuilder = buildNodeList(nextInterface, list, code);
+        this.interfaceName = lastBuilder.interfaceName;
+        return code.toString();
+    }
+
+    private ClassBuilder buildNodeList(String nextInterface, List<Node> list, JavaSource code) {
         ClassBuilder lastBuilder = null;
         for (var i = list.size() - 1; i >= 0; i--) {
             final var node = list.get(i);
             var builder = new ClassBuilder(this);
-            final String actualNextInterface;
-            if (lastBuilder != null) {
-                actualNextInterface = lastBuilder.interfaceName;
-            }else{
-                actualNextInterface  = nextInterface;
-            }
+            final String actualNextInterface =
+                    Optional.ofNullable(lastBuilder).map(z -> z.interfaceName).orElse(nextInterface);
             code.write(builder.build(node, actualNextInterface));
+            if (i == 0) {
+                return builder;
+            }
             lastBuilder = builder;
         }
-        if (lastBuilder == null) {
-            throw new GeciException("Internal error");
-        }
-        this.interfaceName = lastBuilder.interfaceName;
-        return code.toString();
+        throw new GeciException("Internal error");
     }
 }
