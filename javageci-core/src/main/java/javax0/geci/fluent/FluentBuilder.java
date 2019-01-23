@@ -177,4 +177,6 @@ public interface FluentBuilder {
      * @return this
      */
     FluentBuilder name(String interfaceName);
+
+    FluentBuilder syntax(String syntaxDef);
 }

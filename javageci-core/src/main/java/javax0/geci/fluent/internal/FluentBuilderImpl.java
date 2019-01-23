@@ -2,6 +2,8 @@ package javax0.geci.fluent.internal;
 
 import javax0.geci.api.GeciException;
 import javax0.geci.fluent.FluentBuilder;
+import javax0.geci.fluent.syntax.Lexer;
+import javax0.geci.fluent.syntax.Syntax;
 import javax0.geci.fluent.tree.Node;
 import javax0.geci.fluent.tree.Terminal;
 import javax0.geci.fluent.tree.Tree;
@@ -208,11 +210,12 @@ public class FluentBuilderImpl implements FluentBuilder {
         return next;
     }
 
-    private Class<?> classOf(FluentBuilder builder){
-        return ((FluentBuilderImpl)builder).klass;
+    private Class<?> classOf(FluentBuilder builder) {
+        return ((FluentBuilderImpl) builder).klass;
     }
-    private List<Node> nodesOf(FluentBuilder builder){
-        return ((FluentBuilderImpl)builder).nodes;
+
+    private List<Node> nodesOf(FluentBuilder builder) {
+        return ((FluentBuilderImpl) builder).nodes;
     }
 
     public FluentBuilder oneOf(FluentBuilder... subs) {
@@ -220,6 +223,14 @@ public class FluentBuilderImpl implements FluentBuilder {
         var next = copy();
         next.nodes.add(newTree(Node.ONE_OF, Arrays.stream(subs)
                 .map(sub -> newTree(Node.ONCE, nodesOf(sub))).collect(Collectors.toList())));
+        return next;
+    }
+
+    public FluentBuilder syntax(String syntaxDef) {
+        final var lexer = new Lexer(syntaxDef);
+        final var syntaxAnalyzer = new Syntax(lexer, this);
+        var next = copy();
+        next.nodes.add(newTree(Node.ONCE, nodesOf(syntaxAnalyzer.expression())));
         return next;
     }
 
@@ -233,7 +244,7 @@ public class FluentBuilderImpl implements FluentBuilder {
     public FluentBuilder one(FluentBuilder sub) {
         var nodes = nodesOf(sub);
         var next = copy();
-        var tree = newTree(Node.ONCE,nodes);
+        var tree = newTree(Node.ONCE, nodes);
         next.nodes.add(tree);
         return next;
     }
@@ -241,6 +252,9 @@ public class FluentBuilderImpl implements FluentBuilder {
     private String lastName = null;
 
     public FluentBuilder name(String interfaceName) {
+        if( interfaceName == null || interfaceName.length() == 0 ){
+            return this;
+        }
         var next = copy();
         next.lastName = interfaceName;
         return next;
