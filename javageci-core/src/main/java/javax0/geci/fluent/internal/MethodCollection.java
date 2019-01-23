@@ -15,10 +15,40 @@ import java.util.stream.Stream;
  */
 public class MethodCollection {
     private final Class<?> klass;
+    /**
+     * Set of methods that are referable in the fluet interface. The methods are collected in a way that all
+     * inherited and declared methods are there, thus any public or protected inherited or declared and also
+     * all declared private methods are in the set. These are all reachable and referable from the Wrapper class
+     * because that is a static inner class of the one, which is fluentized.
+     */
     private final Set<Method> methodSet;
+
+    /**
+     * Maps the method signatures to the method data. The method data also contains the {@code Method} object.
+     * The signature is the name of the method and the class names of the argument types comma separated without
+     * any space. The class names are simple names in case or fully qualified names based on the following:
+     *
+     * <ul>
+     *     <li>If there is class and it's simple name is unique within all the classes that appear in the
+     *     methods parameters lists, then the simple name is used.</li>
+     *     <li>if there are two different classes used as argument types and the classes share the simple name
+     *     (e.g.: there is a {@code java.lang.String} and also {@code my.package.String}) then the fully qualified
+     *     canonical class name is used.</li>
+     * </ul>
+     */
     private final Map<String, MethodData> methodMap;
-    private final Set<String> referencedMethods;
+    /**
+     * Maps the types as they are present on the fluent API definition to their normalized type. That is all types
+     * that are fully qualified become simple, only the class name, except for those classes that appear in different
+     * packages multiple times.
+     */
     private final Map<String, String> typeMapping = new HashMap<>();
+    /**
+     * This map is filled to register if there are some types that have the same name and are appearing in multiple
+     * packages. It may happen that method argument types refer to types that have the same simple name, though those
+     * names are in different Java packages. If a simple name appears in multiple packages then this map will contain
+     * {@code true} as a value for the simple name as a key.
+     */
     private final Map<String, Boolean> isMultiple = new HashMap<>();
     private final boolean wrapperIfIsNeeded;
 
@@ -30,7 +60,6 @@ public class MethodCollection {
         collectDuplicates(types);
         buildTypeMapping(types);
         methodMap = collect();
-        referencedMethods = new HashSet<>();
     }
 
     /**
@@ -53,6 +82,12 @@ public class MethodCollection {
         return type.replaceAll("^(\\w+\\.)*", "");
     }
 
+    /**
+     * Create a new {@link MethodData} object for the method.
+     *
+     * @param method the method for the new object to hold
+     * @return the new object initialized
+     */
     private static MethodData methodData(Method method) {
         MethodData md = new MethodData();
         md.method = method;
@@ -64,7 +99,8 @@ public class MethodCollection {
     }
 
     /**
-     * @return the set of the normalized method signatures.
+     * @return the set of the normalized method signatures. Only the methods that are references in the fluent
+     * interface and also {@code close()} in case it is there.
      */
     public Set<String> methodSignatures() {
         return methodMap.entrySet().stream()
@@ -214,13 +250,12 @@ public class MethodCollection {
      * @return the set of methods
      */
     private Set<Method> collectMethods() {
-        var set = new HashSet<Method>(
+        var set = new HashSet<>(
                 Arrays.stream(klass.getMethods())
-                        .filter(method -> isNeeded(method)).collect(Collectors.toSet()));
+                        .filter(this::isNeeded).collect(Collectors.toSet()));
         if (klass != Object.class) {
-            set.addAll(
-                    Arrays.stream(klass.getDeclaredMethods())
-                            .filter(method -> isNeeded(method)).collect(Collectors.toSet()));
+            set.addAll(Arrays.stream(klass.getDeclaredMethods())
+                    .filter(this::isNeeded).collect(Collectors.toSet()));
         }
         return set;
     }
@@ -259,6 +294,11 @@ public class MethodCollection {
                 .flatMap(MethodCollection::extractTypes).collect(Collectors.toSet());
     }
 
+    /**
+     * Fills the {@code isMultiple} map from the set.
+     *
+     * @param types the names of the types. The names are presumably the fully qualified names.
+     */
     private void collectDuplicates(Set<String> types) {
         isMultiple.clear();
         types.forEach(type -> {
