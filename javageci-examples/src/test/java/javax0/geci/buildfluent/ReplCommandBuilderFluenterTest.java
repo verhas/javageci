@@ -23,14 +23,14 @@ public class ReplCommandBuilderFluenterTest {
     public static FluentBuilder sourceBuilderGrammar() {
         var klass = FluentBuilder.from(ReplCommandBuilder.class);
         return klass
-                //.syntax("kw (noParameters|parameters|parameter+)? regex* usage help executor/CommandDefinitionBuilderReady build")
-                .one("kw")
-                .optional(klass.oneOf(klass.one("noParameters"), klass.one("parameters"), klass.oneOrMore("parameter")))
-                .zeroOrMore("regex")
-                .one("usage")
-                .one("help")
-                .one("executor").name("CommandDefinitionBuilderReady")
-                .one("build")
+                .syntax("kw (noParameters|parameters|parameter+)? regex* usage help executor #CommandDefinitionBuilderReady build")
+//                .one("kw")
+//                .optional(klass.oneOf(klass.one("noParameters"), klass.one("parameters"), klass.oneOrMore("parameter")))
+//                .zeroOrMore("regex")
+//                .one("usage")
+//                .one("help")
+//                .one("executor").name("CommandDefinitionBuilderReady")
+//                .one("build")
                 ;
     }
 }
