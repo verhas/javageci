@@ -316,9 +316,11 @@ public class ClassBuilder {
         for (var i = list.size() - 1; i >= 0; i--) {
             final var node = list.get(i);
             var builder = new ClassBuilder(this);
-            var actualNextInterface = nextInterface;
+            final String actualNextInterface;
             if (lastBuilder != null) {
                 actualNextInterface = lastBuilder.interfaceName;
+            }else{
+                actualNextInterface  = nextInterface;
             }
             code.write(builder.build(node, actualNextInterface));
             lastBuilder = builder;

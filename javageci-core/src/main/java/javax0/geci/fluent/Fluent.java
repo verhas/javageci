@@ -5,6 +5,8 @@ import javax0.geci.api.Source;
 import javax0.geci.fluent.internal.ClassBuilder;
 import javax0.geci.fluent.internal.FluentBuilderImpl;
 import javax0.geci.fluent.internal.StructureOptimizer;
+import javax0.geci.fluent.tree.Node;
+import javax0.geci.fluent.tree.Tree;
 import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
 import javax0.geci.tools.AbstractGenerator;
@@ -23,13 +25,17 @@ public class Fluent extends AbstractGenerator {
         try {
             var builder = (FluentBuilderImpl) definingMethod.invoke(null);
 
+            LOG.info("Node structure before optimization.");
+            LOG.info("" + new Tree(Node.ONCE, builder.getNodes()));
             new StructureOptimizer(builder).optimize();
+            LOG.info("Node structure after optimization.");
+            LOG.info("" + new Tree(Node.ONCE, builder.getNodes()));
             var generatedCode = new ClassBuilder(builder).build();
             try (var segment = source.open(global.get("id"))) {
                 segment.write(generatedCode);
             }
         } catch (InvocationTargetException ite) {
-            throw (Exception)ite.getCause();
+            throw (Exception) ite.getCause();
         }
     }
 
