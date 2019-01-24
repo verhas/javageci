@@ -7,8 +7,16 @@ public class Lexer {
         return lookAhead.string + input.toString();
     }
 
-    public Lexer(String input) {
-        this.input = new StringBuilder(input);
+    public Lexer(final String input) {
+        var preprocessed = input.replaceAll("\\s+"," ")
+                .replaceAll("\\s\\|\\s","|")
+                .replaceAll("\\(\\s","(")
+                .replaceAll("\\s\\)",")")
+                .replaceAll("\\s\\?","?")
+                .replaceAll("\\s\\*","*")
+                .replaceAll("\\s\\+","+")
+                ;
+        this.input = new StringBuilder(preprocessed);
     }
 
     private static final Lexeme EOF = new Lexeme("", Lexeme.Type.EOF);
@@ -41,12 +49,12 @@ public class Lexer {
         if (Character.isJavaIdentifierStart(input.charAt(0))) {
             final var word = new StringBuilder();
             while (input.length() > 0 &&
-                (Character.isJavaIdentifierPart(input.charAt(0))
-                    || '.' == input.charAt(0)
-                    || '/' == input.charAt(0)
-                    || ',' == input.charAt(0)
-                    || '(' == input.charAt(0)
-                    || ')' == input.charAt(0))
+                    (Character.isJavaIdentifierPart(input.charAt(0))
+                            || '.' == input.charAt(0)
+                            || '/' == input.charAt(0)
+                            || ',' == input.charAt(0)
+                            || '(' == input.charAt(0)
+                            || ')' == input.charAt(0))
             ) {
                 word.append(input.charAt(0));
                 input.delete(0, 1);

@@ -228,9 +228,9 @@ public class FluentBuilderImpl implements FluentBuilder {
 
     public FluentBuilder syntax(String syntaxDef) {
         final var lexer = new Lexer(syntaxDef);
-        final var syntaxAnalyzer = new Syntax(lexer, this);
-        var next = copy();
-        next.nodes.add(newTree(Node.ONCE, nodesOf(syntaxAnalyzer.expression())));
+        FluentBuilder next = copy();
+        final var syntaxAnalyzer = new Syntax(lexer, next);
+        next = syntaxAnalyzer.expression();
         return next;
     }
 

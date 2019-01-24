@@ -52,29 +52,21 @@ public class Syntax {
                 return topBuilder.one(method.string);
             }
         }
-        if (lexeme.string.equals("#")) {
-            lexer.get();
-            var next = lexer.get();
-            if (next.type != WORD) {
-                throw new GeciException("After # you should define an interface name");
-            }
-            return builder.name(next.string);
-        }
         if (lexeme.string.equals("(")) {
             var localBuilder = group();
             if (lexer.peek().type == SYMBOL) {
                 switch (lexer.peek().string) {
                     case "*":
                         lexer.get();
-                        return localBuilder.zeroOrMore(builder);
+                        return topBuilder.zeroOrMore(localBuilder);
                     case "?":
                         lexer.get();
-                        return localBuilder.optional(builder);
+                        return topBuilder.optional(localBuilder);
                     case "+":
                         lexer.get();
-                        return localBuilder.oneOrMore(builder);
+                        return topBuilder.oneOrMore(localBuilder);
                     default:
-                        return localBuilder.one(builder);
+                        return topBuilder.one(localBuilder);
                 }
             }
         }
@@ -83,7 +75,7 @@ public class Syntax {
 
     private FluentBuilder group() {
         lexer.get(); // step over the '('
-        var localBuilder = topBuilder.one(one());
+        var localBuilder = one();
         var next = lexer.peek();
         if (next.string.equals(")")) {
             lexer.get();
@@ -92,7 +84,7 @@ public class Syntax {
         if (next.type == SPACE) {
             while (next.type == SPACE) {
                 lexer.get();// step over the SPACE
-                localBuilder = localBuilder.one(one());
+                localBuilder = one();
                 next = lexer.peek();
             }
             if (next.string.equals(")")) {
@@ -100,28 +92,28 @@ public class Syntax {
                 return localBuilder;
             }
             throw new GeciException("Fluent expression syntax error after ( .... ) missing closing parenthesis at '"
-                + lexer.rest() + "'");
+                    + lexer.rest() + "'");
         }
         if (next.string.equals("|")) {
             List<FluentBuilder> arglist = new ArrayList<>();
             arglist.add(localBuilder);
             while (next.string.equals("|")) {
                 lexer.get();
-                arglist.add(topBuilder.one(one()));
+                arglist.add(one());
                 next = lexer.peek();
             }
             if (next.string.equals(")")) {
                 lexer.get();//step over the ')'
-                return localBuilder.oneOf(arglist.toArray(new FluentBuilder[arglist.size()]));
+                return topBuilder.oneOf(arglist.toArray(new FluentBuilder[arglist.size()]));
             }
             throw new GeciException("Fluent expression syntax error after ( .... ) missing closing parenthesis at '"
-                + lexer.rest() + "'");
+                    + lexer.rest() + "'");
         }
         throw new GeciException("Fluent expression syntax error at '" + lexer.rest() + "'");
     }
 
     public FluentBuilder expression() {
-        builder = builder.one(one());
+        builder = one();
         while (lexer.peek().type == SPACE) {
             lexer.get();
             builder = builder.one(one());
