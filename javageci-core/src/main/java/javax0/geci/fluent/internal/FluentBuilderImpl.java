@@ -226,14 +226,18 @@ public class FluentBuilderImpl implements FluentBuilder {
         return next;
     }
 
+    private FluentBuilder append(FluentBuilder that){
+        var next = copy();
+        next.nodes.addAll(((FluentBuilderImpl)that).nodes);
+        return next;
+    }
+
     public FluentBuilder syntax(String syntaxDef) {
         final var lexer = new Lexer(syntaxDef);
-        FluentBuilderImpl next = copy();
+        var next = copy();
         next.nodes.clear();
         final var syntaxAnalyzer = new Syntax(lexer, next);
-        var ret =  copy();
-        ret.nodes.addAll(((FluentBuilderImpl)syntaxAnalyzer.expression()).nodes);
-        return ret;
+        return append(syntaxAnalyzer.expression());
     }
 
     public FluentBuilder one(String method) {

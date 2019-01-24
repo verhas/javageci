@@ -66,7 +66,7 @@ public interface FluentBuilder {
      * Exclude a method from the fluent interface. If a method is excluded it can not be used in the definition of the
      * fluent api and it will not be part of the interfaces and the wrapper class.
      * <p>
-     * The caller may exclude more than one method from the fluent API with subsequent calls to {@link #exclude(String)}
+     * The caller may exclude more than one method from the fluent API with subsequent calls to {@code exclude(String)}
      *
      * @param method the name of the method.
      * @return this
@@ -178,5 +178,24 @@ public interface FluentBuilder {
      */
     FluentBuilder name(String interfaceName);
 
+    /**
+     * Declare sub structure with a simple syntax. The syntax that can be used is similar to the regular expressions.
+     * <ul>
+     *
+     * <li>A word means a method call.</li>
+     * <li>Methods that should be called one after the other are written one after the other with space.</li>
+     * <li>Methods are defined the same way as in other calls, with the name and with optional signature.</li>
+     * <li>Something enclosed between '(' and ')' characters is a substructure.</li>
+     * <li>Alternatives are enclosed between '(' and ')' and the elements are separated using '|'.</li>
+     * <li>Anything followed by a '?' is optional.</li>
+     * <li>Anything followed by a '+' is one or more times.</li>
+     * <li>Anything followed by a '*' is zero or more times.</li>
+     *
+     * </ul>
+     *
+     * @param syntaxDef the definition of the syntax
+     * @return this
+     */
     FluentBuilder syntax(String syntaxDef);
+
 }

@@ -163,8 +163,10 @@ The parameter `type` is the name of the interface top level interface.
 Exclude a method from the fluent interface. If a method is excluded it can not be used in the definition of the
 fluent api and it will not be part of the interfaces and the wrapper class.
 The caller may exclude more than one method from the fluent API with subsequent calls to
-`exclude(String)`.
-The parameter `method` is the name or signature of the method to be excluded.
+`exclude(String)`. The parameter `method` is the name or signature of the method to be excluded.
+
+Starting with version 1.0.1 there is no need to exclude certain methods. After this version only those methods
+get into the interface and into the Wrapper class that are explicitly referenced in the fluent API definition.
 
 ### `cloner(String method)`
 
@@ -204,7 +206,6 @@ The method may be called zero or more time in the fluent API at the defined poin
 The parameter `method` is the name of the method. For more information see the note in the documentation
 of the class `FluentBuilder`.
 
-
 ### `zeroOrMore(FluentBuilder sub)`
 
 The sub expression may be called zero or more times in the fluent API at the defined point.
@@ -213,19 +214,14 @@ The parameter `sub` is the fluent api structure used in the expression.
 
 ### `oneOf(String... methods)`
 
-
 The fluent API using code may call one of the methods at this point.
 The parameter `methods` is the names of the methods. For more information see the note in the documentation
- of the class `FluentBuilder`.
-
-
+of the class `FluentBuilder`.
 
 ### `oneOf(FluentBuilder... subs)`
 
 The fluent API using code may call one of the sub structures at this point.
 The parameter `subs` is the sub structures from which one may be selected by the caller.
-
-
 
 ### `one(String method)`
 
@@ -233,14 +229,10 @@ The method can be called exactly once at the point.
 The parameter `method` is the name of the method. For more information see the note in the documentation
 of the class `FluentBuilder`.
 
-
-
 ### `one(FluentBuilder sub)`
 
 The sub structure can be called exactly once at the point.
 The parameter `sub` is substructure.
-
-
 
 ### `name(String interfaceName)`
 
@@ -248,4 +240,42 @@ The structure at the very point has to use the name as the interface name
 The parameter `interfaceName` is the name of the interface to use at this point of the structure. Where the name is not
        defined the fluent api builder generates interface names automatically.
 
+### `syntax(String syntaxDef)`
 
+The syntax can be defined using a complex string in addition to fluent API calls. The fluent API calls and the call of
+the method `syntax()` can also be mixed together with some limits.
+
+In the the unit tests there is a syntax test string sample that looks like the following:
+
+```java
+"kw(String) ( noParameters | parameters | parameter+ )? regex* usage help executor build"
+```
+
+This syntax definition says that the fluent API generatedwhen used has to call the method `kw` first, the one of the
+methods `noParameters`, `parameters` or `parameter`. When the last one is used it can be called one or more times,
+however all these alternative calls can also be just skipped. After that the method `regex` can be called zero or more
+times. After that the `usage`, `help`, `executor` and `build` methods have to be invoked and they are mandatory.
+
+The rules are intuitive and simple.
+
+* A word means a method call.
+* Methods that should be called one after the other are written one after the other separated by space.
+* Methods are defined the same way as in other calls, (e.g.: as the argument to method `one()`)
+  with the name and with optional signature.
+* Something enclosed between '(' and ')' characters is a substructure.
+* Alternatives are enclosed between '(' and ')' and the elements are separated using '|'.
+* Anything followed by a '?' is optional.
+* Anything followed by a '+' is one or more times.
+* Anything followed by a '*' is zero or more times.
+
+Call to `syntax()` can be mixed with other calls. For example the syntax does not provide any means to define interface
+name like the call to the method `name()`. If you need that and still want to use the syntax instead of method chain
+you can use the following expression:
+
+```java
+klass.syntax("kw(String) ( noParameters | parameters | parameter+ )? regex* usage help executor")
+     .name("SpecialName")
+     .syntax("build");
+```
+
+In the last call you could just call `one("build")` and it finally would result the same structure.
