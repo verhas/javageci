@@ -10,12 +10,10 @@ import static javax0.geci.fluent.syntax.Lexeme.Type.*;
 
 public class Syntax {
     private final Lexer lexer;
-    private FluentBuilder builder;
-    private FluentBuilder topBuilder;
+    private final FluentBuilder topBuilder;
 
     public Syntax(Lexer lexer, FluentBuilder builder) {
         this.lexer = lexer;
-        this.builder = builder;
         this.topBuilder = builder;
     }
     /*
@@ -104,7 +102,7 @@ public class Syntax {
             }
             if (next.string.equals(")")) {
                 lexer.get();//step over the ')'
-                return topBuilder.oneOf(arglist.toArray(new FluentBuilder[arglist.size()]));
+                return topBuilder.oneOf(arglist.toArray(new FluentBuilder[0]));
             }
             throw new GeciException("Fluent expression syntax error after ( .... ) missing closing parenthesis at '"
                     + lexer.rest() + "'");
@@ -113,7 +111,7 @@ public class Syntax {
     }
 
     public FluentBuilder expression() {
-        builder = one();
+        var builder = topBuilder.one(one());
         while (lexer.peek().type == SPACE) {
             lexer.get();
             builder = builder.one(one());

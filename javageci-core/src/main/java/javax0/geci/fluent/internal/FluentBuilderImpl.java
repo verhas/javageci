@@ -228,10 +228,12 @@ public class FluentBuilderImpl implements FluentBuilder {
 
     public FluentBuilder syntax(String syntaxDef) {
         final var lexer = new Lexer(syntaxDef);
-        FluentBuilder next = copy();
+        FluentBuilderImpl next = copy();
+        next.nodes.clear();
         final var syntaxAnalyzer = new Syntax(lexer, next);
-        next = syntaxAnalyzer.expression();
-        return next;
+        var ret =  copy();
+        ret.nodes.addAll(((FluentBuilderImpl)syntaxAnalyzer.expression()).nodes);
+        return ret;
     }
 
     public FluentBuilder one(String method) {
