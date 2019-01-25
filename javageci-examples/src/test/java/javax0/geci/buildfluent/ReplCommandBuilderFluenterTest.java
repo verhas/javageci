@@ -18,7 +18,7 @@ public class ReplCommandBuilderFluenterTest {
         Assertions.assertFalse(new Geci()
                         .source("../javageci-examples/src/main/java", "./javageci-examples/src/main/java")
                         .register(new Fluent())
-                        .only(Pattern.compile("ReplCommandBuilder.java"))
+                        .only("ReplCommandBuilder.java")
                         .generate(),
                 Geci.FAILED);
     }
