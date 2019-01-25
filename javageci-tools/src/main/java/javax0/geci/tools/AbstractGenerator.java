@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  * out using {@code //} in front of the configuration "annotation" and the next line is the start of the class.
  * Since this is read from the source file the code checks that the next line matches the pattern {@link #CLASS_LINE}.
  * The pattern is created to check that the {@code class} keyword is on the line followed by some space, then the
- * name of the class and that the end of the line is the opening brace {@code {} of the class on the same line.
+ * name of the class and that the end of the line is the opening brace of the class on the same line.
  */
 //
 public abstract class AbstractGenerator extends AbstractGeneratorEx {
