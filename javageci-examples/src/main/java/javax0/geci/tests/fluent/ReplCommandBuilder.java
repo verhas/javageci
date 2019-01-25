@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
-@Geci("fluent definedBy='javax0.geci.buildfluent.ReplCommandBuilderFluenterTest::sourceBuilderGrammar'")
+//@Geci("fluent definedBy='javax0.geci.buildfluent.ReplCommandBuilderFluenterTest::sourceBuilderGrammar'")
 public class ReplCommandBuilder {
     private String keyword;
     private Set<String> parameters;

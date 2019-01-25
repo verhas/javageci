@@ -156,6 +156,16 @@ public class Tools {
         }
     }
 
+    /**
+     * Get a matcher of the line against the {@code @Geci( ... ) } pattern to extract the configuration parameters
+     * from a comment line. Before the regular expression matching the line is tirmmed, prefix and postfix
+     * is chopped off from the start and the end of the line and then the remaining line is trimmed again.
+     *
+     * @param prefix the string that is chopped off from the start of the line if it is there
+     * @param postfix this string that is chopped off from the end of the line it it is there
+     * @param line the line to match
+     * @return the matcher of regular expression matching
+     */
     private static Matcher getMatch(String prefix, String postfix, String line) {
         final var trimmedLine = line.trim();
         final var leftChopped = prefix != null && trimmedLine.startsWith(prefix) ?
