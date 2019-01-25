@@ -3,8 +3,6 @@ package javax0.geci.tools;
 import javax0.geci.api.Source;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Comparator;
 
 public abstract class AbstractDeclaredFieldsGenerator extends AbstractGenerator {
 

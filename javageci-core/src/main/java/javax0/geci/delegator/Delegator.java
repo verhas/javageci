@@ -58,8 +58,8 @@ public class Delegator extends AbstractDeclaredFieldsGenerator {
 
     /**
      * Returns true if the method
-     * @param method
-     * @return
+     * @param method the method
+     * @return the new method holder
      */
     private MethodHolder implemented(Method method){
         return new MethodHolder(method);

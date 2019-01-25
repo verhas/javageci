@@ -46,7 +46,7 @@ public class Fluent extends AbstractGenerator {
         }
         var className = s.substring(0, sepPos);
         var methodName = s.substring(sepPos + 2);
-        final Class klass;
+        final Class<?> klass;
         try {
             klass = Class.forName(className);
         } catch (ClassNotFoundException e) {

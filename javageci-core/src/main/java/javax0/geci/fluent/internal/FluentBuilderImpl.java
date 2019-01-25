@@ -130,7 +130,7 @@ public class FluentBuilderImpl implements FluentBuilder {
     }
 
     private void referenceTheMethodsIn(String interfaces) {
-        var interfaceNames = Arrays.stream(interfaces.split(",")).map(s -> s.trim()).collect(Collectors.toList());
+        var interfaceNames = Arrays.stream(interfaces.split(",")).map(String::trim).collect(Collectors.toList());
         for (final var interfaceName : interfaceNames) {
             var intrface = getInterfaceClass(interfaceName);
             if (!intrface.isInterface()) {

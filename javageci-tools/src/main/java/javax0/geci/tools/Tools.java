@@ -8,10 +8,7 @@ import javax0.geci.tools.reflection.ModifiersBuilder;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -45,19 +42,14 @@ public class Tools {
                         .filter(a -> annotationName(a).equals("Gecis"))
                         .flatMap(g -> Arrays.stream((getValueGecis(g))))
                         .collect(Collectors.toSet());
-        if (annotations == null || annotations.isEmpty()) {
+        if (annotations.isEmpty()) {
             annotations = Arrays.stream(allAnnotations)
                     .filter(a -> annotationName(a).equals("Geci"))
                     .collect(Collectors.toSet());
         }
-        if (annotations == null) {
-            return new String[0];
-        } else {
-            return annotations.stream()
-                    .map(x -> getValue(x))
-                    .filter(x -> x != null)
-                    .collect(Collectors.toList()).toArray(new String[0]);
-        }
+        return annotations.stream()
+                .map(Tools::getValue)
+                .filter(Objects::nonNull).toArray(String[]::new);
     }
 
     private static String annotationName(Annotation a) {
@@ -97,7 +89,7 @@ public class Tools {
                         !method.getName().equals("value") &&
                         !method.getName().equals("toString")) {
                     final var param = (String) method.invoke(annotation);
-                    if (param != null && param.length() > 0 ) {
+                    if (param != null && param.length() > 0) {
                         value.append(" ")
                                 .append(method.getName())
                                 .append("='")
@@ -453,7 +445,7 @@ public class Tools {
             this.sep = sep;
         }
 
-        private String sep;
+        private final String sep;
         private boolean first = true;
 
         public String get() {

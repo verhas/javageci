@@ -51,7 +51,7 @@ public class TestMethodCollection {
         Assertions.assertEquals("TEST",
                 new MethodCollection(TestClass.class)
                         .get("m1(java.lang.String,TestMethodCollection)")
-                        .invoke(new TestClass(), new Object[]{"TEST", null}));
+                        .invoke(new TestClass(), "TEST", null));
     }
 
     public static class TestClass {

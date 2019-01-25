@@ -25,8 +25,7 @@ public class BuildFluentForSourceBuilder {
         var forStatement = source.one("forStatement").zeroOrMore(statement);
         var methodDeclaration = source.one("method").optional("modifiers").optional("returnType").optional("exceptions").oneOf("noArgs", "args");
         var method = source.name("MethodBody").one(methodDeclaration).zeroOrMore(methodStatement);
-        var grammar = source.zeroOrMore(source.oneOf(statement, ifStatement, whileStatement, forStatement, method)).one("toString");
-        return grammar;
+        return source.zeroOrMore(source.oneOf(statement, ifStatement, whileStatement, forStatement, method)).one("toString");
     }
 
 }

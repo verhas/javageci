@@ -3,7 +3,6 @@ package javax0.geci.fluent.internal;
 import javax0.geci.tools.MethodTool;
 import javax0.geci.tools.Tools;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 public class FluentMethodTool extends MethodTool {

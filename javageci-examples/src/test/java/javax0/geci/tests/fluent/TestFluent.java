@@ -27,8 +27,7 @@ public class TestFluent {
     public static FluentBuilder xml() {
         var t = FluentBuilder.from(XmlBuilder.class).cloner("copy").autoCloseable();
         var tag = t.one("tag").zeroOrMore("attribute").optional("text");
-        var xml = t.oneOrMore(tag).one("toString");
-        return xml;
+        return t.oneOrMore(tag).one("toString");
     }
 
     @Test

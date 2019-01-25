@@ -126,7 +126,7 @@ public class TestTools {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    public static @interface Geci {
+    public @interface Geci {
         String value();
 
         String k1() default "";

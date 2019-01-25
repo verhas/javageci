@@ -3,7 +3,6 @@ package javax0.geci.tools;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 
-import java.io.IOException;
 import java.util.List;
 
 public abstract class AbstractTestSource implements Source {

@@ -65,7 +65,7 @@ public class MethodTool {
         }
         var arglist = sb.toString();
         var exceptionlist = Arrays.stream(method.getGenericExceptionTypes())
-                .map(t -> Tools.getGenericTypeName(t))
+                .map(Tools::getGenericTypeName)
                 .collect(Collectors.joining(","));
         final String modifiers;
         if (isPublic) {

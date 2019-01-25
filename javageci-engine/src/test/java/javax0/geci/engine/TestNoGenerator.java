@@ -19,7 +19,7 @@ public class TestNoGenerator {
 
     @Test
     @DisplayName("When a generator does not touch any source it throws GeciException")
-    void testNoGeneratorThrowing() throws Exception {
+    void testNoGeneratorThrowing() {
         Assertions.assertThrows(GeciException.class, () -> new Geci()
                 .source("../javageci-examples/src/main/java", "./javageci-examples/src/main/java")
                 .register(new NoGenerator())

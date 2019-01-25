@@ -32,10 +32,10 @@ do
     rm ${artifact}/*.asc
     for file in ${artifact}/*.jar ${artifact}/pom.xml
     do
-        gpg -s -b $file
+        gpg -s -b ${file}
         mv ${file}.sig ${file}.asc
     done
-    cd $artifact
+    cd ${artifact}
     rm *.zip
     jar -c -M -f ${artifact}_release.zip *.jar pom.xml *asc
     cd ..

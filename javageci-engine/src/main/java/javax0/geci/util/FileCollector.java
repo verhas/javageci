@@ -36,11 +36,8 @@ public class FileCollector {
                 try {
                     Files.find(Paths.get(dir), Integer.MAX_VALUE,
                             (filePath, fileAttr) -> fileAttr.isRegularFile())
-                            .filter(path -> patterns == null || patterns.isEmpty() ? true :
-                                    patterns.stream()
-                                            .filter(pattern -> pattern.matcher(toAbsolute(path)).find())
-                                            .findAny()
-                                            .isPresent())
+                            .filter(path -> (patterns == null || patterns.isEmpty())
+                                    || patterns.stream().anyMatch(pattern -> pattern.matcher(toAbsolute(path)).find()))
                             .forEach(path -> sources.add(
                                     new Source(this,
                                             dir,

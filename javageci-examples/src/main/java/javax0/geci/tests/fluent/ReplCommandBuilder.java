@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 @ReplCommandBuilder.Geci(value = "fluent", definedBy = "javax0.geci.buildfluent.ReplCommandBuilderFluenterTest::sourceBuilderGrammar")
 public class ReplCommandBuilder {
     @Retention(RetentionPolicy.RUNTIME)
-    public static @interface Geci {
+    public @interface Geci {
         String value();
 
         String definedBy();
