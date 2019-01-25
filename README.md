@@ -60,10 +60,16 @@ maven use the following dependencies:
 There are other modules, but you do not need to declare dependency on them as the
 engine module has transitive dependency and thus maven automatically will use them.
 Since Java::Geci works during test execution the dependencies have test scope. The
-exception is the annotation module. This module defines an annotation that is used
+exception is the annotation module. This module defines an annotation that can be used
 to configure the code generation during test time. Because of that the retention
 of this module is run-time. Although the annotation is not used in production but 
-it remaines in the byte code and thus is has to be the default maven scope. 
+it remains in the byte code and thus is has to be the default maven scope.
+
+If for any reason production dependency must not include Java::Geci you can configure
+some of the generators using comments or you can use your own annotation interfaces
+that you can define inside your project. Simply copy the `Geci.java` and `Gecis.java`
+to your project into any of your packages and Java::Geci will recognize that they are
+to configure a generator.
 
 If you look at the test code `TestAccessor.java` in the test module you can see that this is a proof of concept
 demonstration sample code:

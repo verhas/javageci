@@ -1,5 +1,7 @@
 package javax0.geci.tests.fluent;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -9,6 +11,7 @@ import java.util.regex.Pattern;
 
 @ReplCommandBuilder.Geci("fluent definedBy='javax0.geci.buildfluent.ReplCommandBuilderFluenterTest::sourceBuilderGrammar'")
 public class ReplCommandBuilder {
+    @Retention(RetentionPolicy.RUNTIME)
     public static @interface Geci {
         String value();
     }
