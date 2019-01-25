@@ -50,7 +50,7 @@ public interface FluentBuilder {
      * @return this
      */
     default FluentBuilder autoCloseable() {
-        return exclude("close").implement("AutoCloseable");
+        return implement("AutoCloseable");
     }
 
     /**
@@ -72,6 +72,30 @@ public interface FluentBuilder {
      * @return this
      */
     FluentBuilder exclude(String method);
+
+    /**
+     * Include the method into the fluent interface.
+     * <p>
+     * This method is needed only in a very special case. When the class
+     * implements an interface, like {@link AutoCloseable} then the methods that are defined in that interface are
+     * excluded from the fluent API. It means that they will be generated with the original signature as they are
+     * defined in the class and are not wrapped with creating a copy of the wrapper class even though the generated
+     * method will be in the wrapper class.
+     * <p>
+     * If a method like that has to be implemented as part of the fluent interface then it has to be included
+     * AFTER the interface declaration (so after the {@link #implement(String)} was invoked) simply overriding the
+     * exclusion of the method that was performed when the {@link #implement(String)} was invoked.
+     * <p>
+     * Note that in this case the method will be generated to return the type {@code Wrapper} that may not be compatible
+     * with the signature defined in the interface.
+     * <p>
+     * You can also use this method to force a method to be in the wrapper class even though the fluent grammar does
+     * not reference it.
+     *
+     * @param method the method name to be included into the fluent api generated wrapper
+     * @return this
+     */
+    FluentBuilder include(String method);
 
     /**
      * Define the method that clones the current instance of the class that is fluentized. Such a method usually

@@ -29,11 +29,11 @@ public class MethodCollection {
      * any space. The class names are simple names in case or fully qualified names based on the following:
      *
      * <ul>
-     *     <li>If there is class and it's simple name is unique within all the classes that appear in the
-     *     methods parameters lists, then the simple name is used.</li>
-     *     <li>if there are two different classes used as argument types and the classes share the simple name
-     *     (e.g.: there is a {@code java.lang.String} and also {@code my.package.String}) then the fully qualified
-     *     canonical class name is used.</li>
+     * <li>If there is class and it's simple name is unique within all the classes that appear in the
+     * methods parameters lists, then the simple name is used.</li>
+     * <li>if there are two different classes used as argument types and the classes share the simple name
+     * (e.g.: there is a {@code java.lang.String} and also {@code my.package.String}) then the fully qualified
+     * canonical class name is used.</li>
      * </ul>
      */
     private final Map<String, MethodData> methodMap;
@@ -104,7 +104,7 @@ public class MethodCollection {
      */
     public Set<String> methodSignatures() {
         return methodMap.entrySet().stream()
-                .filter(e -> (e.getValue().isFluent && e.getValue().referenced) || e.getKey().equals("close()"))
+                .filter(e -> e.getValue().referenced)
                 .map(Map.Entry::getKey).collect(Collectors.toSet());
     }
 
@@ -144,15 +144,23 @@ public class MethodCollection {
     }
 
 
+    public void include(String method) {
+        clude(method, true);
+    }
+
     public void exclude(String method) {
+        clude(method, false);
+    }
+
+    private void clude(String method, boolean b) {
         var md = get0(method);
         if (md == null) {
             throw new GeciException("Method '" + method + "' does not exist, can not be exlcuded from the fluent interface.");
         } else {
-            md.isFluent = false;
+            md.isFluent = b;
         }
-
     }
+
 
     public Boolean isFluentNode(String name) {
         var md = get0(name);

@@ -125,7 +125,34 @@ public class FluentBuilderImpl implements FluentBuilder {
     public FluentBuilder implement(String interfaces) {
         var next = copy();
         next.interfaces = interfaces;
+        referenceTheMethodsIn(interfaces);
         return next;
+    }
+
+    private void referenceTheMethodsIn(String interfaces) {
+        var interfaceNames = Arrays.stream(interfaces.split(",")).map(s -> s.trim()).collect(Collectors.toList());
+        for (final var interfaceName : interfaceNames) {
+            var intrface = getInterfaceClass(interfaceName);
+            if (!intrface.isInterface()) {
+                throw new GeciException(interfaceName + " is not an interface");
+            }
+            for (var method : intrface.getMethods()) {
+                exclude(method.getName());
+                methods.get(method.getName());
+            }
+        }
+    }
+
+    private Class getInterfaceClass(String interfaceName) {
+        try {
+            return Class.forName(interfaceName);
+        } catch (ClassNotFoundException e) {
+            try {
+                return Class.forName("java.lang." + interfaceName);
+            } catch (ClassNotFoundException e1) {
+                throw new GeciException(interfaceName + " interface can not be found");
+            }
+        }
     }
 
     public FluentBuilder fluentType(String type) {
@@ -136,6 +163,12 @@ public class FluentBuilderImpl implements FluentBuilder {
 
     public FluentBuilder exclude(String method) {
         methods.exclude(method);
+        return this;
+    }
+
+    public FluentBuilder include(String method) {
+        methods.get(method);
+        methods.include(method);
         return this;
     }
 
@@ -226,9 +259,9 @@ public class FluentBuilderImpl implements FluentBuilder {
         return next;
     }
 
-    private FluentBuilder append(FluentBuilder that){
+    private FluentBuilder append(FluentBuilder that) {
         var next = copy();
-        next.nodes.addAll(((FluentBuilderImpl)that).nodes);
+        next.nodes.addAll(((FluentBuilderImpl) that).nodes);
         return next;
     }
 
@@ -258,7 +291,7 @@ public class FluentBuilderImpl implements FluentBuilder {
     private String lastName = null;
 
     public FluentBuilder name(String interfaceName) {
-        if( interfaceName == null || interfaceName.length() == 0 ){
+        if (interfaceName == null || interfaceName.length() == 0) {
             return this;
         }
         var next = copy();

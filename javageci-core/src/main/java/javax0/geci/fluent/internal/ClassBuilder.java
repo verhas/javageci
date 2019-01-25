@@ -49,6 +49,7 @@ public class ClassBuilder {
      * Build the interface and class structure that implements the fluent interface.
      *
      * @return the string of the code that was built up.
+     * @throws Exception when there is an error in the grammar
      */
     public String build() throws Exception {
         LOG.info("Class building started for the class %s", fluent.getKlass().getSimpleName());
