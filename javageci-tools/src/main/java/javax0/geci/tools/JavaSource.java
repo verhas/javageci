@@ -320,7 +320,7 @@ public class JavaSource implements AutoCloseable {
      *
      * @param s          the format string
      * @param parameters optional parameters
-     * @return this
+     * @return {@code this}
      */
     public JavaSource write(String s, Object... parameters) {
         if (s.trim().length() == 0) {
@@ -339,7 +339,7 @@ public class JavaSource implements AutoCloseable {
 
     /**
      * Add a new line to the
-     * @return this
+     * @return {@code this}
      */
     public JavaSource newline() {
         code.append("\n");
@@ -352,7 +352,7 @@ public class JavaSource implements AutoCloseable {
      *
      * @param s          the format string
      * @param parameters optional parameters
-     * @return this
+     * @return {@code this}
      */
     public JavaSource write_r(String s, Object... parameters) {
         write(s, parameters);
@@ -365,7 +365,7 @@ public class JavaSource implements AutoCloseable {
      *
      * @param s          the format string
      * @param parameters optional parameters
-     * @return this
+     * @return {@code this}
      */
     public JavaSource write_l(String s, Object... parameters) {
         tabStop -= TAB;
@@ -382,7 +382,7 @@ public class JavaSource implements AutoCloseable {
      *
      * @param s          the line to be added to the code
      * @param parameters the format parameters
-     * @return this
+     * @return {@code this}
      */
     public JavaSource write_lr(String s, Object... parameters) {
         tabStop -= TAB;
@@ -445,7 +445,7 @@ public class JavaSource implements AutoCloseable {
      * @param s          the line that opens the block without the {@code $&#123;}at the end of the line. That will automatically
      *                   be appended.
      * @param parameters parameters of the line
-     * @return this
+     * @return {@code this}
      */
     public JavaSource open(String s, Object... parameters) {
         s += "{";

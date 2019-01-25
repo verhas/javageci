@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.regex.Pattern;
+
 public class ReplCommandBuilderFluenterTest {
 
     @Test
@@ -16,6 +18,7 @@ public class ReplCommandBuilderFluenterTest {
         Assertions.assertFalse(new Geci()
                         .source("../javageci-examples/src/main/java", "./javageci-examples/src/main/java")
                         .register(new Fluent())
+                        .only(Pattern.compile("ReplCommandBuilder.java"))
                         .generate(),
                 Geci.FAILED);
     }

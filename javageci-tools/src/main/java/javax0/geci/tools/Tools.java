@@ -6,8 +6,12 @@ import javax0.geci.api.GeciException;
 import javax0.geci.api.Source;
 import javax0.geci.tools.reflection.ModifiersBuilder;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -36,30 +40,76 @@ public class Tools {
      */
     public static String[] getGecis(AnnotatedElement element) {
         final var allAnnotations = element.getDeclaredAnnotations();
-        final var annotations = Optional.ofNullable(
+        var annotations =
                 Arrays.stream(allAnnotations)
-                        .filter(a -> a.annotationType().getSimpleName().equals("Gecis"))
-                        .flatMap( g ->  Arrays.stream(((Object[])getValue(g))))
-                        .collect(Collectors.toSet()))
-                .orElseGet(() -> Arrays.stream(allAnnotations)
-                        .filter(a -> a.annotationType().getSimpleName().equals("Geci"))
-                        .collect(Collectors.toSet()));
+                        .filter(a -> annotationName(a).equals("Gecis"))
+                        .flatMap(g -> Arrays.stream((getValueGecis(g))))
+                        .collect(Collectors.toSet());
+        if (annotations == null || annotations.isEmpty()) {
+            annotations = Arrays.stream(allAnnotations)
+                    .filter(a -> annotationName(a).equals("Geci"))
+                    .collect(Collectors.toSet());
+        }
         if (annotations == null) {
             return new String[0];
         } else {
             return annotations.stream()
-                    .map(x -> (String)getValue(x))
+                    .map(x -> getValue(x))
                     .filter(x -> x != null)
                     .collect(Collectors.toList()).toArray(new String[0]);
         }
     }
 
-    private static Object getValue(Object annotation) {
+    private static String annotationName(Annotation a) {
+        return a.annotationType().getSimpleName();
+    }
+
+    /**
+     * Get the annotations that are in the {@code @Gecis} annotation.
+     *
+     * @param annotation the collection annotation
+     * @return the array of the underlying annotations
+     */
+    private static Annotation[] getValueGecis(Object annotation) {
         try {
             Method value = annotation.getClass().getDeclaredMethod("value");
-            return value.invoke(annotation);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            return null;
+            return (Annotation[]) value.invoke(annotation);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassCastException e) {
+            throw new GeciException("Can not use '" + annotation.getClass().getCanonicalName()
+                    + "' as generator annotation.", e);
+        }
+    }
+
+    /**
+     * Get the value string from the annotation and in case there are other parameters that
+     * return a String value and are defined on the annotation then append the "key='value'" after
+     * the value string. That way the annotation parameters become part of the configuration.
+     *
+     * @param annotation the annotation that contains the configuration
+     * @return the configuration string
+     */
+    private static String getValue(Object annotation) {
+        try {
+            Method valueMethod = annotation.getClass().getDeclaredMethod("value");
+            final var value = new StringBuilder((String) valueMethod.invoke(annotation));
+            for (final var method : annotation.getClass().getDeclaredMethods()) {
+                if (method.getReturnType().equals(String.class) &&
+                        !method.getName().equals("value") &&
+                        !method.getName().equals("toString")) {
+                    final var param = (String) method.invoke(annotation);
+                    if (param != null && param.length() > 0 ) {
+                        value.append(" ")
+                                .append(method.getName())
+                                .append("='")
+                                .append(param)
+                                .append("'");
+                    }
+                }
+            }
+            return value.toString();
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassCastException e) {
+            throw new GeciException("Can not use '" + annotation.getClass().getCanonicalName()
+                    + "' as generator annotation.", e);
         }
     }
 

@@ -1,11 +1,14 @@
 package javax0.geci.engine;
 
+import javax0.geci.api.GeciException;
 import javax0.geci.api.Generator;
 import javax0.geci.api.Source;
 import javax0.geci.util.FileCollector;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static javax0.geci.api.Source.Set.set;
 
@@ -34,11 +37,19 @@ public class Geci implements javax0.geci.api.Geci {
         return this;
     }
 
-    private void setDefaultDirectories(){
-        source(set("mainSource"),Source.maven().mainSource());
+    private Set<Pattern> patterns = null;
+
+    @Override
+    public javax0.geci.api.Geci only(String... patterns) {
+        this.patterns = Arrays.stream(patterns).map(Pattern::compile).collect(Collectors.toSet());
+        return this;
+    }
+
+    private void setDefaultDirectories() {
+        source(set("mainSource"), Source.maven().mainSource());
         source(set("mainResources"), Source.maven().mainResources());
         source(set("testSource"), Source.maven().testSource());
-        source(set("testResources"),Source.maven().testResources());
+        source(set("testResources"), Source.maven().testResources());
     }
 
     @Override
@@ -47,18 +58,24 @@ public class Geci implements javax0.geci.api.Geci {
             setDefaultDirectories();
         }
         final var collector = new FileCollector(directories);
-        collector.collect();
+        collector.collect(patterns);
         for (final var source : collector.sources) {
             for (var generator : generators) {
                 generator.process(source);
             }
         }
         var generated = false;
+        var touched = false;
         for (var source : collector.sources) {
             source.consolidate();
+            touched = touched || source.isTouched();
         }
         for (var source : collector.newSources) {
             source.consolidate();
+            touched = touched || source.isTouched();
+        }
+        if (!touched) {
+            throw new GeciException("The generators did not touch any source");
         }
         for (var source : collector.sources) {
             if (source.isModified()) {

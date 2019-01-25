@@ -434,7 +434,8 @@ is sufficient.
 * Instance level configuration can be done via constructor parameters or via setter or other configuration
   methods. This is, again, standard Java practice, nothing specific to Java::Geci. These parameters affect
   the behavior of the application for the instance they were provided.
-* Generators read source level configuration from the source. These parameters play for the specific source.
+* Generators read source level configuration from the source. These parameters influence the behaviour of the generator
+  when it is processing the specific source.
   Although generators read the source and could get parameters from many structures, there is support to get the
   configuration from annotations or from comments. The rest of the section is about the supporting tools that
   help the generators to read these configuration parameters.
@@ -462,6 +463,17 @@ var params = new CompoundParams(local, global);
  
 will result a `CompoundParams` object that will return the configuration value for any configuration key from the
 `global` parameters only if the key is not defined in the `local` level.
+
+The method `Tools.getParameters()` collects the configuration parameters from the annotation `@Geci`, which is
+on the `xxx` element. There is an annotation interface ready to use defined in the library 
+`com.javax0.geci:javageci-annotation` but the actual code can use any annotation that
+
+* is named `Geci`
+* defines at least the `value`
+* the type of `value` is `java.langString`.
+
+Using your own annotation may eliminate the need for the dependency on the library
+`com.javax0.geci:javageci-annotation`.
 
 When you implement a generator extending the class `AbstractGenerator` then you get the `Class` object as well as
 the `global` configuration as a parameter.

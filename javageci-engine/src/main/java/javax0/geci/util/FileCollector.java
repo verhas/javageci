@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class FileCollector {
 
@@ -23,24 +24,29 @@ public class FileCollector {
     }
 
     /**
-     * Collect the names of the files that are in the directories given  in the sources. Also modify the
+     * Collect the names of the files that are in the directories given in the sources. Also modify the
      * global {@code directories} map so that for each {@link Source.Set} key in the map there will be only
      * a one element array containing the name of the directory that was used to collect the files.
      */
-    public void collect() {
+    public void collect(Set<Pattern> patterns) {
         for (var entry : directories.entrySet()) {
             var processed = false;
             for (final var directory : entry.getValue()) {
                 var dir = normalized(directory);
                 try {
                     Files.find(Paths.get(dir), Integer.MAX_VALUE,
-                        (filePath, fileAttr) -> fileAttr.isRegularFile()
-                    ).forEach(path -> sources.add(
-                        new Source(this,
-                            dir,
-                            path)));
+                            (filePath, fileAttr) -> fileAttr.isRegularFile())
+                            .filter(path -> patterns == null || patterns.isEmpty() ? true :
+                                    patterns.stream()
+                                            .filter(pattern -> pattern.matcher(toAbsolute(path)).find())
+                                            .findAny()
+                                            .isPresent())
+                            .forEach(path -> sources.add(
+                                    new Source(this,
+                                            dir,
+                                            path)));
                     processed = true;
-                    entry.setValue( new String[]{ dir });
+                    entry.setValue(new String[]{dir});
                 } catch (IOException ignore) {
                 }
             }
@@ -62,11 +68,12 @@ public class FileCollector {
      */
     public static String normalize(String s) {
         return s.replace("\\", "/")
-            .replace("/./", "/");
+                .replace("/./", "/");
     }
 
     /**
      * Normalize a directory name. The same as normalizing a file, but also adding a trailing / if that is missing.
+     *
      * @param s the not yet normalized directory name
      * @return the normalized directory name
      */
@@ -87,8 +94,8 @@ public class FileCollector {
      */
     public static String calculateClassName(String directory, Path path) {
         return calculateRelativeName(directory, path)
-            .replaceAll("/", ".")
-            .replaceAll("\\.\\w+$", "");
+                .replaceAll("/", ".")
+                .replaceAll("\\.\\w+$", "");
     }
 
     /**
@@ -100,7 +107,7 @@ public class FileCollector {
      */
     public static String calculateRelativeName(String directory, Path path) {
         return normalize(path.toString())
-            .substring(directory.length());
+                .substring(directory.length());
     }
 
     /**

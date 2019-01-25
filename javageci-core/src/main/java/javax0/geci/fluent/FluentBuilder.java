@@ -28,7 +28,7 @@ public interface FluentBuilder {
      * in the current implementation.
      *
      * @param method the name of the start method.
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder start(String method);
 
@@ -40,14 +40,14 @@ public interface FluentBuilder {
      * @param interfaces the names of the interfaces to be implemented comma separated. This string will be inserted
      *                   into the list of the interfaces that stands after the {@code extends} or {@code implements}
      *                   keyword.
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder implement(String interfaces);
 
     /**
      * This is a complimentary method that is equivalent to call {@code implement("AutoCloseable")}.
      *
-     * @return this
+     * @return {@code this}
      */
     default FluentBuilder autoCloseable() {
         return implement("AutoCloseable");
@@ -58,7 +58,7 @@ public interface FluentBuilder {
      * generated automatically unless defined by the method {@link #name(String)}
      *
      * @param type the name of the interface
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder fluentType(String type);
 
@@ -69,7 +69,7 @@ public interface FluentBuilder {
      * The caller may exclude more than one method from the fluent API with subsequent calls to {@code exclude(String)}
      *
      * @param method the name of the method.
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder exclude(String method);
 
@@ -93,7 +93,7 @@ public interface FluentBuilder {
      * not reference it.
      *
      * @param method the method name to be included into the fluent api generated wrapper
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder include(String method);
 
@@ -104,7 +104,7 @@ public interface FluentBuilder {
      *
      * @param method the name of the cloner method. The method should return a new instance of the class and should have
      *               no parameters.
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder cloner(String method);
 
@@ -113,7 +113,7 @@ public interface FluentBuilder {
      *
      * @param method the name of the method. For more information see the note in the documentation
      *               of the class {@link FluentBuilder}
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder optional(String method);
 
@@ -121,7 +121,7 @@ public interface FluentBuilder {
      * The sub expression may be called zero or one times in the fluent API at the defined point.
      *
      * @param sub the fluent api structure used in the expression
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder optional(FluentBuilder sub);
 
@@ -130,7 +130,7 @@ public interface FluentBuilder {
      *
      * @param method the name of the method. For more information see the note in the documentation
      *               of the class {@link FluentBuilder}
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder oneOrMore(String method);
 
@@ -138,7 +138,7 @@ public interface FluentBuilder {
      * The sub expression may be called one or more times in the fluent API at the defined point.
      *
      * @param sub the fluent api structure used in the expression
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder oneOrMore(FluentBuilder sub);
 
@@ -147,7 +147,7 @@ public interface FluentBuilder {
      *
      * @param method the name of the method. For more information see the note in the documentation
      *               of the class {@link FluentBuilder}
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder zeroOrMore(String method);
 
@@ -155,7 +155,7 @@ public interface FluentBuilder {
      * The sub expression may be called zero or more times in the fluent API at the defined point.
      *
      * @param sub the fluent api structure used in the expression
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder zeroOrMore(FluentBuilder sub);
 
@@ -164,7 +164,7 @@ public interface FluentBuilder {
      *
      * @param methods the names of the methods. For more information see the note in the documentation
      *                of the class {@link FluentBuilder}
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder oneOf(String... methods);
 
@@ -172,7 +172,7 @@ public interface FluentBuilder {
      * The fluent API using code may call one of the sub structures at this point.
      *
      * @param subs the sub structures from which one may be selected by the caller
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder oneOf(FluentBuilder... subs);
 
@@ -181,7 +181,7 @@ public interface FluentBuilder {
      *
      * @param method the name of the method. For more information see the note in the documentation
      *               of the class {@link FluentBuilder}
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder one(String method);
 
@@ -189,7 +189,7 @@ public interface FluentBuilder {
      * The sub structure can be called exactly once at the point.
      *
      * @param sub substructure
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder one(FluentBuilder sub);
 
@@ -198,7 +198,7 @@ public interface FluentBuilder {
      *
      * @param interfaceName the name of the interface to use at this point of the structure. Where the name is not
      *                      defined the fluent api builder generates interface names automatically.
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder name(String interfaceName);
 
@@ -218,7 +218,7 @@ public interface FluentBuilder {
      * </ul>
      *
      * @param syntaxDef the definition of the syntax
-     * @return this
+     * @return {@code this}
      */
     FluentBuilder syntax(String syntaxDef);
 

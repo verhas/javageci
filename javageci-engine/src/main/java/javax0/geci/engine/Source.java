@@ -30,6 +30,21 @@ public class Source implements javax0.geci.api.Source {
     private final FileCollector collector;
     boolean inMemory = false;
     private Segment globalSegment = null;
+    private boolean touched = false;
+
+
+    /**
+     * A source is touched if the generator was writing to it. It is even touched if the generator was writing the same
+     * content to it what there was originally. This flag is used to identify the situation when a generator does not
+     * touch any source When a generator is executed and does not touch any source it throws an exception because it
+     * certainly means that there is a configuration error. Either it is supposed to touch something or it should
+     * not be executed, the test should just be disabled.
+     *
+     * @return true when the source was touched
+     */
+    public boolean isTouched(){
+        return touched;
+    }
 
     /**
      * The constructor is not supposed to be used from outside, only through the {@link FileCollector} which indeed
@@ -193,6 +208,7 @@ public class Source implements javax0.geci.api.Source {
         }
         if (globalSegment == null) {
             for (var entry : segments.entrySet()) {
+                touched = true;
                 var id = entry.getKey();
                 var segment = entry.getValue();
                 var segDesc = findSegment(id);
@@ -203,6 +219,7 @@ public class Source implements javax0.geci.api.Source {
                 lines.addAll(segDesc.startLine + 1, segment.lines);
             }
         } else {
+            touched = true;
             lines.clear();
             lines.addAll(globalSegment.lines);
         }
