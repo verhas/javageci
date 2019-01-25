@@ -1,17 +1,13 @@
 package javax0.geci.tools;
 
 import javax0.geci.annotations.Geci;
-import javax0.geci.annotations.Gecis;
 import javax0.geci.annotations.Generated;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Source;
 import javax0.geci.tools.reflection.ModifiersBuilder;
 
 import java.lang.reflect.*;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -27,6 +23,10 @@ public class Tools {
      * <p>
      * The method takes care of the special case when there is only one {@link Geci} annotation on the element and
      * also when there are many.
+     * <p>
+     * Note that the annotation does not need to be the one, which is defined in the javageci annotation library.
+     * It can be any annotation interface so long as long the name is {@code Geci} and the method {@code value()}
+     * returns {@code java.lang.String}.
      *
      * @param element the class, method or field that is annotated.
      * @return the array of strings that contains the values of the annotations. If the element is not annotated
@@ -35,21 +35,31 @@ public class Tools {
      * of the values.
      */
     public static String[] getGecis(AnnotatedElement element) {
-        final var annotations = element.getDeclaredAnnotation(Gecis.class);
+        final var allAnnotations = element.getDeclaredAnnotations();
+        final var annotations = Optional.ofNullable(
+                Arrays.stream(allAnnotations)
+                        .filter(a -> a.annotationType().getSimpleName().equals("Gecis"))
+                        .flatMap( g ->  Arrays.stream(((Object[])getValue(g))))
+                        .collect(Collectors.toSet()))
+                .orElseGet(() -> Arrays.stream(allAnnotations)
+                        .filter(a -> a.annotationType().getSimpleName().equals("Geci"))
+                        .collect(Collectors.toSet()));
         if (annotations == null) {
-            final var annotation = element.getDeclaredAnnotation(Geci.class);
-            if (annotation == null) {
-                return new String[0];
-            } else {
-                return new String[]{annotation.value()};
-            }
+            return new String[0];
         } else {
-            final var gecis = new String[annotations.value().length];
-            var i = 0;
-            for (final var annotation : annotations.value()) {
-                gecis[i++] = annotation.value();
-            }
-            return gecis;
+            return annotations.stream()
+                    .map(x -> (String)getValue(x))
+                    .filter(x -> x != null)
+                    .collect(Collectors.toList()).toArray(new String[0]);
+        }
+    }
+
+    private static Object getValue(Object annotation) {
+        try {
+            Method value = annotation.getClass().getDeclaredMethod("value");
+            return value.invoke(annotation);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            return null;
         }
     }
 
@@ -161,9 +171,9 @@ public class Tools {
      * from a comment line. Before the regular expression matching the line is tirmmed, prefix and postfix
      * is chopped off from the start and the end of the line and then the remaining line is trimmed again.
      *
-     * @param prefix the string that is chopped off from the start of the line if it is there
+     * @param prefix  the string that is chopped off from the start of the line if it is there
      * @param postfix this string that is chopped off from the end of the line it it is there
-     * @param line the line to match
+     * @param line    the line to match
      * @return the matcher of regular expression matching
      */
     private static Matcher getMatch(String prefix, String postfix, String line) {
