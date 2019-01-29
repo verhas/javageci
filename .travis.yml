@@ -6,8 +6,8 @@ before_install:
 
 matrix:
   include:
-    - env: JDK='OpenJDK 10'
-      install: . ./install-jdk.sh -F 10 -L GPL
+    - env: JDK='OpenJDK 11'
+      install: . ./install-jdk.sh -F 11 -L GPL
 
 script:
   - echo PATH = ${PATH}
@@ -16,6 +16,6 @@ script:
 
 install: mvn -X clean install
 jdk:
- - openjdk10
+ - openjdk11
 
 sudo: false # faster builds
