@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
     <name>javageci-parent</name>
     <description>Java GEnerate Code Inline source code generation framework</description>
@@ -18,7 +18,7 @@
         <module>javageci-jamal</module>
     </modules>
     <properties>
-        <geci.version>1.0.0</geci.version>
+        <geci.version>1.1.0</geci.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <licenses>

@@ -1,6 +1,6 @@
 # Release History
 
-1.0.1-SNAPSHOT feature release
+1.1.0 feature release
 
 * Fluent API changes:
   * Fluent API can be defined in a single string using a simply syntax definition calling the fluent API building
