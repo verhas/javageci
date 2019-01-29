@@ -8,12 +8,6 @@
     <name>javageci-parent</name>
     <description>Java GEnerate Code Inline source code generation framework</description>
     <url>https:/github.com/verhas/javageci/tree/master</url>
-    <licenses>
-        <license>
-            <name>The Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-    </licenses>
     <modules>
         <module>javageci-engine</module>
         <module>javageci-api</module>

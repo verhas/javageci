@@ -40,4 +40,9 @@ do
     jar -c -M -f ${artifact}_release.zip *.jar pom.xml *asc
     cd ..
 done
+cp ../pom.xml .
+gpg -s -b pom.xml
+mv pom.xml.sig pom.xml.asc
+rm *.zip
+jar -c -M -f 00parent_release.zip  pom.xml pom.xml.asc
 cd ..
