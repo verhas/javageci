@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +21,7 @@ public class FileCollector {
     public final Set<Source> sources = new HashSet<>();
 
     public FileCollector(Map<Source.Set, String[]> directories) {
-        this.directories = directories;
+        this.directories = new HashMap<>(directories);
     }
 
     /**

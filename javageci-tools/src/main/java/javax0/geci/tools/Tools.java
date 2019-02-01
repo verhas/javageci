@@ -49,7 +49,7 @@ public class Tools {
         }
         return annotations.stream()
                 .map(Tools::getValue)
-                .filter(Objects::nonNull).toArray(String[]::new);
+                .toArray(String[]::new);
     }
 
     private static String annotationName(Annotation a) {

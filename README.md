@@ -49,17 +49,18 @@ maven use the following dependencies:
     <!-- This is optional, you can use own annotations or comment config -->
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-annotation</artifactId>
-    <version>${version}</version>
+    <version>1.1.1-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-engine</artifactId>
     <scope>test</scope>
-    <version>${version}</version>
+    <version>1.1.1-SNAPSHOT</version>
 </dependency>
 ```
 
-For version see the latest non-SNAPSHOT `${version}` in the [release history documentation](RELEASE.md).
+This documentation contains the last development version. For release versions you can use
+see the latest non-SNAPSHOT version in the [release history documentation](RELEASE.md).
 
 There are other modules, but you do not need to declare dependency on them as the
 engine module has transitive dependency and thus maven automatically will use them.

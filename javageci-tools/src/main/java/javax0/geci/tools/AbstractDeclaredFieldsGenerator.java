@@ -19,10 +19,12 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractGenerator 
         postprocess(source, klass, global);
     }
 
-    public void preprocess(Source source, Class<?> klass, CompoundParams global) throws Exception {
+    @SuppressWarnings("unused")
+    public void preprocess(Source source, Class<?> klass, CompoundParams global) {
     }
 
-    public void postprocess(Source source, Class<?> klass, CompoundParams global) throws Exception {
+    @SuppressWarnings("unused")
+    public void postprocess(Source source, Class<?> klass, CompoundParams global) {
     }
 
     public abstract void processField(Source source, Class<?> klass, CompoundParams params, Field field) throws Exception;

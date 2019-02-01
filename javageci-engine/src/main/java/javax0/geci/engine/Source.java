@@ -47,14 +47,15 @@ public class Source implements javax0.geci.api.Source {
     }
 
     /**
-     * The constructor is not supposed to be used from outside, only through the {@link FileCollector} which indeed
+     * The constructor is not supposed to be used from outside, only through the {@link FileCollector} which
      * is invoked only from {@link Geci#generate()}.
      *
      * @param collector the file collector that this source belongs to. Note that the type {@link FileCollector}
-     *                  is not expoted by the module and this prevents the usres of the module to use this constructor.
+     *                  is not exported by the module and this prevents the users of the module to use this constructor.
      * @param dir       the directory of the source
      * @param path      the path of the source
      */
+    @SuppressWarnings("ClassEscapesDefinedScope")
     public Source(FileCollector collector, String dir, Path path) {
         this.collector = collector;
         this.dir = dir;

@@ -422,7 +422,7 @@ public class JavaSource implements AutoCloseable {
     }
 
     public JavaSource args(String... args) {
-        var argList = String.join(",", Arrays.stream(args).collect(Collectors.toList()));
+        var argList = String.join(",", args);
         var sb = new StringBuilder();
         if (lastMethod.modifiers != null && lastMethod.modifiers.length() > 0) {
             sb.append(lastMethod.modifiers).append(" ");
