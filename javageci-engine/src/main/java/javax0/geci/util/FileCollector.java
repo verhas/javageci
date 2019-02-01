@@ -27,6 +27,10 @@ public class FileCollector {
      * Collect the names of the files that are in the directories given in the sources. Also modify the
      * global {@code directories} map so that for each {@link Source.Set} key in the map there will be only
      * a one element array containing the name of the directory that was used to collect the files.
+     *
+     * @param patterns limits the collected files to a subset that matches at least one of the patterns in the set. If
+     *                 the set is empty or the parameter is {@code null} then there is no filtering, all files
+     *                 are collected that are otherwise collected from the directory
      */
     public void collect(Set<Pattern> patterns) {
         for (var entry : directories.entrySet()) {
@@ -35,13 +39,13 @@ public class FileCollector {
                 var dir = normalized(directory);
                 try {
                     Files.find(Paths.get(dir), Integer.MAX_VALUE,
-                            (filePath, fileAttr) -> fileAttr.isRegularFile())
-                            .filter(path -> (patterns == null || patterns.isEmpty())
-                                    || patterns.stream().anyMatch(pattern -> pattern.matcher(toAbsolute(path)).find()))
-                            .forEach(path -> sources.add(
-                                    new Source(this,
-                                            dir,
-                                            path)));
+                        (filePath, fileAttr) -> fileAttr.isRegularFile())
+                        .filter(path -> (patterns == null || patterns.isEmpty())
+                            || patterns.stream().anyMatch(pattern -> pattern.matcher(toAbsolute(path)).find()))
+                        .forEach(path -> sources.add(
+                            new Source(this,
+                                dir,
+                                path)));
                     processed = true;
                     entry.setValue(new String[]{dir});
                 } catch (IOException ignore) {
@@ -65,7 +69,7 @@ public class FileCollector {
      */
     public static String normalize(String s) {
         return s.replace("\\", "/")
-                .replace("/./", "/");
+            .replace("/./", "/");
     }
 
     /**
@@ -91,8 +95,8 @@ public class FileCollector {
      */
     public static String calculateClassName(String directory, Path path) {
         return calculateRelativeName(directory, path)
-                .replaceAll("/", ".")
-                .replaceAll("\\.\\w+$", "");
+            .replaceAll("/", ".")
+            .replaceAll("\\.\\w+$", "");
     }
 
     /**
@@ -104,7 +108,7 @@ public class FileCollector {
      */
     public static String calculateRelativeName(String directory, Path path) {
         return normalize(path.toString())
-                .substring(directory.length());
+            .substring(directory.length());
     }
 
     /**
