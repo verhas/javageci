@@ -14,24 +14,21 @@ public class ReplCommandBuilderFluenterTest {
     @DisplayName("Fluent API for the CommandDefinitionBuilder is up-to-date")
     void generateFluendAPI4CommandDefinitionBuilder() throws Exception {
         Assertions.assertFalse(new Geci()
-                        .source("../javageci-examples/src/main/java", "./javageci-examples/src/main/java")
-                        .register(new Fluent())
-                        .only("ReplCommandBuilder.java")
-                        .generate(),
-                Geci.FAILED);
+                .source("../javageci-examples/src/main/java", "./javageci-examples/src/main/java")
+                .register(new Fluent())
+                .only("ReplCommandBuilder.java")
+                .generate(),
+            Geci.FAILED);
     }
 
     public static FluentBuilder sourceBuilderGrammar() {
         var klass = FluentBuilder.from(ReplCommandBuilder.class);
         return klass
-                .syntax("kw(String) ( noParameters | parameters | parameter+ )?").zeroOrMore("regex").syntax("usage help executor").name("CommandDefinitionBuilderReady").syntax("build")
-//                .one("kw")
-//                .optional(klass.oneOf(klass.one("noParameters"), klass.one("parameters"), klass.oneOrMore("parameter")))
-//                .zeroOrMore("regex")
-//                .one("usage")
-//                .one("help")
-//                .one("executor").name("CommandDefinitionBuilderReady")
-//                .one("build")
-                ;
+            .syntax("kw(String) ( noParameters | parameters | parameter+ )?")
+            .zeroOrMore("regex")
+            .syntax("usage help executor")
+            .name("CommandDefinitionBuilderReady")
+            .syntax("build")
+            ;
     }
 }
