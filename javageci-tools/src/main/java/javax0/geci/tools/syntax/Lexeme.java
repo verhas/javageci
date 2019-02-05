@@ -1,4 +1,4 @@
-package javax0.geci.fluent.syntax;
+package javax0.geci.tools.syntax;
 
 public class Lexeme {
     public Lexeme(String string, Type type) {
@@ -7,7 +7,7 @@ public class Lexeme {
     }
 
     public enum Type{
-        WORD, SYMBOL, SPACE, EOF
+        WORD, SYMBOL, SPACE, REGEX, EOF
     }
 
     public final String string;

@@ -2,11 +2,12 @@ package javax0.geci.fluent.syntax;
 
 import javax0.geci.api.GeciException;
 import javax0.geci.fluent.FluentBuilder;
+import javax0.geci.tools.syntax.Lexer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static javax0.geci.fluent.syntax.Lexeme.Type.*;
+import static javax0.geci.tools.syntax.Lexeme.Type.*;
 
 public class Syntax {
     private final Lexer lexer;

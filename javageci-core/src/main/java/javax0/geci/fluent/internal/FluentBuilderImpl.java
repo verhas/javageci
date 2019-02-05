@@ -2,7 +2,7 @@ package javax0.geci.fluent.internal;
 
 import javax0.geci.api.GeciException;
 import javax0.geci.fluent.FluentBuilder;
-import javax0.geci.fluent.syntax.Lexer;
+import javax0.geci.tools.syntax.Lexer;
 import javax0.geci.fluent.syntax.Syntax;
 import javax0.geci.fluent.tree.Node;
 import javax0.geci.fluent.tree.Terminal;
