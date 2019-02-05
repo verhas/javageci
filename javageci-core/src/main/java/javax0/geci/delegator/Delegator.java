@@ -25,7 +25,7 @@ public class Delegator extends AbstractDeclaredFieldsGenerator {
             for (var method : methods) {
                 var modifiers = method.getModifiers();
                 if (Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers) && !implemented(method).inClass(klass)) {
-                    segment.write("@javax0.geci.annotations.Generated(\""+mnemonic()+"\")");
+                    segment.write("@javax0.geci.annotations.Generated(\"" + mnemonic() + "\")");
                     segment.write_r(MethodTool.with(method).signature() + " {");
                     if ("void".equals(method.getReturnType().getName())) {
                         segment.write(name + "." + MethodTool.with(method).call() + ";");
@@ -46,9 +46,9 @@ public class Delegator extends AbstractDeclaredFieldsGenerator {
             this.method = method;
         }
 
-        public boolean inClass(Class<?> klass){
+        public boolean inClass(Class<?> klass) {
             try {
-                var localMethod = klass.getDeclaredMethod(method.getName(),method.getParameterTypes());
+                var localMethod = klass.getDeclaredMethod(method.getName(), method.getParameterTypes());
                 return !Tools.isGenerated(localMethod);
             } catch (NoSuchMethodException e) {
                 return false;
@@ -57,11 +57,14 @@ public class Delegator extends AbstractDeclaredFieldsGenerator {
     }
 
     /**
-     * Returns true if the method
+     * Returns a new instance of a method holder, but the proper use is to chain it via
+     * {@link MethodHolder#inClass(Class)} which at the end returns true if the method is implemented in
+     * the class and there is no need to implement.
+     *
      * @param method the method
      * @return the new method holder
      */
-    private MethodHolder implemented(Method method){
+    private MethodHolder implemented(Method method) {
         return new MethodHolder(method);
     }
 }

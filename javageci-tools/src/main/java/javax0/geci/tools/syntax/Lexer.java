@@ -19,13 +19,13 @@ public class Lexer {
             preprocessed = input.replaceAll("\\s+", " ");
         } else {
             preprocessed = input.replaceAll("\\s+", " ")
-                    .replaceAll("\\s\\|\\s", "|")
-                    .replaceAll("\\s,\\s", ",")
-                    .replaceAll("\\(\\s", "(")
-                    .replaceAll("\\s\\)", ")")
-                    .replaceAll("\\s\\?", "?")
-                    .replaceAll("\\s\\*", "*")
-                    .replaceAll("\\s\\+", "+");
+                .replaceAll("\\s\\|\\s", "|")
+                .replaceAll("\\s,\\s", ",")
+                .replaceAll("\\(\\s", "(")
+                .replaceAll("\\s\\)", ")")
+                .replaceAll("\\s\\?", "?")
+                .replaceAll("\\s\\*", "*")
+                .replaceAll("\\s\\+", "+");
         }
         this.input = new StringBuilder(preprocessed);
         this.skipSpace = skipSpace;
@@ -70,14 +70,22 @@ public class Lexer {
 
         if (Character.isJavaIdentifierStart(input.charAt(0))) {
             final var word = new StringBuilder();
+            boolean inArgs = false;
             while (input.length() > 0 &&
-                    (Character.isJavaIdentifierPart(input.charAt(0))
-                            || '.' == input.charAt(0)
-                            || ',' == input.charAt(0)
-                            || '(' == input.charAt(0)
-                            || ')' == input.charAt(0))) {
+                (Character.isJavaIdentifierPart(input.charAt(0))
+                    || '.' == input.charAt(0)
+                    || (',' == input.charAt(0) && inArgs)
+                    || ('(' == input.charAt(0) && !inArgs)
+                    || (')' == input.charAt(0) && inArgs))) {
+                char c = input.charAt(0);
                 word.append(input.charAt(0));
                 input.delete(0, 1);
+                if ('(' == c) {
+                    inArgs = true;
+                }
+                if (')' == c) {
+                    break;
+                }
             }
             return new Lexeme(word.toString(), Lexeme.Type.WORD);
         }

@@ -45,7 +45,7 @@ import java.util.function.Function;
  * The syntax of a selection expression formally:
  *
  * <ul>
- * <li>EXPRESSION :== TERMINAL | '!' EXPRESSION | '(' EXPRESSION ')' | EXPRESSION '&' EXPRESSION ... |
+ * <li>EXPRESSION :== TERMINAL | '!' EXPRESSION | '(' EXPRESSION ')' | EXPRESSION '&amp;' EXPRESSION ... |
  * EXPRESSION '|' EXPRESSION ... </li>
  * <li>TERMINAL ::= MODIFIER | PSEUDO_MODIFIER | name '~' REGEX | signature '~' REGEX | CALLER_DEFINED_SELECTOR</li>
  * <li>MODIFIER ::= private | protected | package | public | final | transient | volatile | static |
@@ -60,7 +60,7 @@ public class MemberSelector {
     private SelectorNode top = null;
     private int modifiers;
 
-    private MemberSelector() {
+    public MemberSelector() {
         function("private", m -> Modifier.isPrivate(m.getModifiers()));
         function("protected", m -> Modifier.isProtected(m.getModifiers()));
         function("package", m ->

@@ -10,7 +10,7 @@ import java.util.function.Function;
 /**
  * <ul>
  * <li>EXPRESSION ::= EXPRESSION1 ['|' EXPRESSION1 ]+ </li>
- * <li>EXPRESSION1 ::= EXPRESSION2 ['&' EXPRESSION2] +</li>
+ * <li>EXPRESSION1 ::= EXPRESSION2 ['&mp;' EXPRESSION2] +</li>
  * <li>EXPRESSION2 :== TERMINAL | '!' EXPRESSION | '(' EXPRESSION ')' </li>
  * <li>TERMINAL ::= MODIFIER | PSEUDO_MODIFIER | name '~' REGEX | signature '~' REGEX | CALLER_DEFINED_SELECTOR</li>
  * <li>MODIFIER ::= private | protected | package | public | final | transient | volatile | static |
@@ -84,7 +84,17 @@ class SelectorCompiler {
 
     private SelectorNode expression2() {
         if (isSymbol("!")) {
+            lexer.get();
             return new SelectorNode.Not(expression());
+        }
+        if (isSymbol("(")) {
+            lexer.get();
+            final var sub = expression();
+            if (!isSymbol(")")) {
+                throw new IllegalArgumentException("Closing ')' is missing" + atRest());
+            }
+            lexer.get();
+            return sub;
         }
         if (isWord("name") || isWord("signature")) {
             final var name = lexer.get().string;
@@ -106,6 +116,7 @@ class SelectorCompiler {
             lexer.get();
             return new SelectorNode.Terminal(selectors.get(name));
         }
+
         throw new IllegalArgumentException("Invalid syntax" + atRest());
     }
 }
