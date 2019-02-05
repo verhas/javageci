@@ -70,7 +70,7 @@ class SelectorCompiler {
     private SelectorNode expression1() {
         final var topNode = expression2();
         if (isSymbol("&")) {
-            final var orNode = new SelectorNode.Or();
+            final var orNode = new SelectorNode.And();
             while (isSymbol("&")) {
                 lexer.get();
                 orNode.subNodes.add(expression2());
