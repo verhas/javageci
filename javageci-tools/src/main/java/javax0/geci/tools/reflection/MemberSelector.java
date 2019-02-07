@@ -84,6 +84,8 @@ public class MemberSelector {
         function("inherited", m -> methodOnly(m) && notImplemented());
         function("overrides", m -> methodOnly(m) && notImplemented());
         function("vararg", m -> methodOnly(m) && ((Method) m).isVarArgs());
+        function("true", m -> true);
+        function("false", m -> false);
     }
 
     private static boolean notImplemented() {
@@ -176,8 +178,8 @@ public class MemberSelector {
             return ((SelectorNode.Regex) node).regex.matcher(
                     MethodTool.methodSignature((Method) m)).find();
         }
-        if( node instanceof SelectorNode.Terminal){
-            return ((SelectorNode.Terminal)node).terminal.apply(m);
+        if (node instanceof SelectorNode.Terminal) {
+            return ((SelectorNode.Terminal) node).terminal.apply(m);
         }
         throw new IllegalArgumentException("Invalid node type in the compiled structure");
     }

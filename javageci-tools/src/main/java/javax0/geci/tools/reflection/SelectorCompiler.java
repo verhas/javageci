@@ -11,11 +11,11 @@ import java.util.function.Function;
  * <ul>
  * <li>EXPRESSION ::= EXPRESSION1 ['|' EXPRESSION1 ]+ </li>
  * <li>EXPRESSION1 ::= EXPRESSION2 ['&mp;' EXPRESSION2] +</li>
- * <li>EXPRESSION2 :== TERMINAL | '!' EXPRESSION | '(' EXPRESSION ')' </li>
+ * <li>EXPRESSION2 :== TERMINAL | '!' EXPRESSION2 | '(' EXPRESSION ')' </li>
  * <li>TERMINAL ::= MODIFIER | PSEUDO_MODIFIER | name '~' REGEX | signature '~' REGEX | CALLER_DEFINED_SELECTOR</li>
  * <li>MODIFIER ::= private | protected | package | public | final | transient | volatile | static |
  * synthetic | synchronized | native | abstract | strict </li>
- * <li>PSEUDO_MODIFIER ::= default | implements | inherited | overrides | vararg</li>
+ * <li>PSEUDO_MODIFIER ::= default | implements | inherited | overrides | vararg | true | false </li>
  * </ul>
  */
 class SelectorCompiler {
@@ -57,6 +57,7 @@ class SelectorCompiler {
         final var topNode = expression1();
         if (isSymbol("|")) {
             final var orNode = new SelectorNode.Or();
+            orNode.subNodes.add(topNode);
             while (isSymbol("|")) {
                 lexer.get();
                 orNode.subNodes.add(expression1());
@@ -70,12 +71,13 @@ class SelectorCompiler {
     private SelectorNode expression1() {
         final var topNode = expression2();
         if (isSymbol("&")) {
-            final var orNode = new SelectorNode.Or();
+            final var andNode = new SelectorNode.And();
+            andNode.subNodes.add(topNode);
             while (isSymbol("&")) {
                 lexer.get();
-                orNode.subNodes.add(expression2());
+                andNode.subNodes.add(expression2());
             }
-            return orNode;
+            return andNode;
         } else {
             return topNode;
         }
@@ -85,7 +87,7 @@ class SelectorCompiler {
     private SelectorNode expression2() {
         if (isSymbol("!")) {
             lexer.get();
-            return new SelectorNode.Not(expression());
+            return new SelectorNode.Not(expression2());
         }
         if (isSymbol("(")) {
             lexer.get();

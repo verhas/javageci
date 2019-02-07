@@ -11,6 +11,25 @@ public class MemberSelectorTest {
     private int j = 0;
 
     @Test
+    void testTrue(){
+        Assertions.assertTrue(new MemberSelector().compile("true").match(null));
+        Assertions.assertTrue(new MemberSelector().compile("!false").match(null));
+    }
+
+    @Test
+    void testFalse(){
+        Assertions.assertFalse(new MemberSelector().compile("false").match(null));
+        Assertions.assertFalse(new MemberSelector().compile("!true").match(null));
+    }
+
+
+    @Test
+    void testPrecedence(){
+        Assertions.assertTrue(new MemberSelector().compile("true | false & false").match(null));
+        Assertions.assertFalse(new MemberSelector().compile("(true | false) & false").match(null));
+    }
+
+    @Test
     void testFinal() throws NoSuchFieldException {
         Field f = this.getClass().getDeclaredField("i");
         Assertions.assertTrue(new MemberSelector().compile("final").match(f));
