@@ -2,13 +2,16 @@ package javax0.geci.tools.reflection;
 
 import javax0.geci.tools.MethodTool;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 /**
  * An {@code MemberSelector} can select or deselect a member based on the selection expression.
@@ -34,9 +37,12 @@ import java.util.function.Function;
  * <li>{@code vararg} will select a member if it is a variable argument method</li>
  * <li>{@code name ~ /^has/} will select a member if the name of the member starts with {@code has}</li>
  * <li>{@code signature ~ /^has.*\(String,.*\)/} will select a member if the name starts with {@code has} and the
- * signature of the method contains a {@code }String} as the first argument.<li>
- * <li> "selector" will select a member if the configured {@code Function<Member,Boolean>} assigned to the name
- * "selector" returns {@code true}</li>
+ * signature of the method contains a {@code }String} as the first argument.</li>
+ * <li>{@code returns ~ /String/} will select a method if the return value is {@code String}</li>
+ * <li>{@code annotation ~ /Generated/} will select a member if it is annotation with an annotation that
+ * starts with {@code Generated}</li>
+ * <li> any other identifier "selector" will select a member if the configured {@code Function<Member,Boolean>} assigned to the name
+ * "selector" returns {@code true}. Selector functions can be added calling the method {@link #function(String, Function)}.</li>
  * </ul>
  * <p>
  * Some of the conditions can only be applied to methods or only to fields. In that case using the expression for
@@ -47,18 +53,21 @@ import java.util.function.Function;
  * <ul>
  * <li>EXPRESSION :== TERMINAL | '!' EXPRESSION | '(' EXPRESSION ')' | EXPRESSION '&amp;' EXPRESSION ... |
  * EXPRESSION '|' EXPRESSION ... </li>
- * <li>TERMINAL ::= MODIFIER | PSEUDO_MODIFIER | name '~' REGEX | signature '~' REGEX | CALLER_DEFINED_SELECTOR</li>
+ * <li>TERMINAL ::= MODIFIER | PSEUDO_MODIFIER | name '~' REGEX | signature '~' REGEX | annotation ~ REGEX |
+ * CALLER_DEFINED_SELECTOR</li>
  * <li>MODIFIER ::= private | protected | package | public | final | transient | volatile | static |
  * synthetic | synchronized | native | abstract | strict </li>
- * <li>PSEUDO_MODIFIER ::= default | implements | inherited | overrides | vararg</li>
+ * <li>PSEUDO_MODIFIER ::= default | implements | inherited | overrides | vararg | true | false</li>
  * </ul>
+ * <p>
+ * 'and' operation has higher priority than 'or' ust like in Java. Expressions are evaluated short circuit, although
+ * it has no vital importance since the sub expressions cannot have side effects.
  */
 public class MemberSelector {
 
     private static final int SYNTHETIC = 0x00001000;
     private final Map<String, Function<Member, Boolean>> functions = new HashMap<>();
     private SelectorNode top = null;
-    private int modifiers;
 
     public MemberSelector() {
         function("private", m -> Modifier.isPrivate(m.getModifiers()));
@@ -84,12 +93,15 @@ public class MemberSelector {
         function("inherited", m -> methodOnly(m) && notImplemented());
         function("overrides", m -> methodOnly(m) && notImplemented());
         function("vararg", m -> methodOnly(m) && ((Method) m).isVarArgs());
+        function("true", m -> true);
+        function("false", m -> false);
     }
 
     private static boolean notImplemented() {
         throw new IllegalArgumentException("Not implemented");
     }
 
+    @SuppressWarnings("SameReturnValue")
     private static boolean methodOnly(Member m) {
         if (!(m instanceof Method)) {
             throw new IllegalArgumentException("A method only selector was applied to a field.");
@@ -97,6 +109,7 @@ public class MemberSelector {
         return true;
     }
 
+    @SuppressWarnings("SameReturnValue")
     private static boolean fieldOnly(Member m) {
         if (!(m instanceof Field)) {
             throw new IllegalArgumentException("A field only selector was applied to a method.");
@@ -112,6 +125,7 @@ public class MemberSelector {
      *                 the string provided in the argument {@code name}
      * @return {@code this} object to allow method chaining
      */
+    @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
     public MemberSelector function(String name, Function<Member, Boolean> function) {
         functions.put(name, function);
         return this;
@@ -135,6 +149,7 @@ public class MemberSelector {
      * @param member the member to check
      * @return {@code true} if the selection matches the
      */
+    @SuppressWarnings("WeakerAccess")
     public boolean match(Member member) {
         return match(member, top);
     }
@@ -171,14 +186,44 @@ public class MemberSelector {
         if (node instanceof SelectorNode.Name) {
             return ((SelectorNode.Regex) node).regex.matcher(m.getName()).find();
         }
+        if (node instanceof SelectorNode.Annotation) {
+            return matchAnnotations(m, ((SelectorNode.Regex) node).regex);
+        }
+        if (node instanceof SelectorNode.Returns) {
+            methodOnly(m);
+            return ((SelectorNode.Regex) node).regex.matcher(
+                    ((Method) m).getReturnType().getCanonicalName()).find();
+        }
         if (node instanceof SelectorNode.Signature) {
             methodOnly(m);
             return ((SelectorNode.Regex) node).regex.matcher(
                     MethodTool.methodSignature((Method) m)).find();
         }
-        if( node instanceof SelectorNode.Terminal){
-            return ((SelectorNode.Terminal)node).terminal.apply(m);
+        if (node instanceof SelectorNode.Terminal) {
+            return ((SelectorNode.Terminal) node).terminal.apply(m);
         }
         throw new IllegalArgumentException("Invalid node type in the compiled structure");
+    }
+
+    /**
+     * Check that the member has annotation that matches the regex
+     *
+     * @param m       the member that has or does not have the annotation
+     * @param pattern the annotation has to match
+     * @return {@code true} if the member has at least one annotation so that the canonical name of the annotation
+     * matches the regular expression pattern
+     */
+    private boolean matchAnnotations(Member m, Pattern pattern) {
+        final Annotation[] annotations;
+        if (m instanceof Method) {
+            annotations = ((Method) m).getAnnotations();
+        } else if (m instanceof Field) {
+            annotations = ((Field) m).getAnnotations();
+        } else {
+            throw new IllegalArgumentException("It should not happen " + m.getName() + "/" +
+                    m.getClass().getCanonicalName() + " is neither a method nor a field.");
+        }
+        return Arrays.stream(annotations).anyMatch(a ->
+                pattern.matcher(a.annotationType().getCanonicalName()).find());
     }
 }
