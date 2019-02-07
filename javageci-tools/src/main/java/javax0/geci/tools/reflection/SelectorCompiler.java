@@ -4,6 +4,7 @@ import javax0.geci.tools.syntax.Lexeme;
 import javax0.geci.tools.syntax.Lexer;
 
 import java.lang.reflect.Member;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -12,7 +13,8 @@ import java.util.function.Function;
  * <li>EXPRESSION ::= EXPRESSION1 ['|' EXPRESSION1 ]+ </li>
  * <li>EXPRESSION1 ::= EXPRESSION2 ['&mp;' EXPRESSION2] +</li>
  * <li>EXPRESSION2 :== TERMINAL | '!' EXPRESSION2 | '(' EXPRESSION ')' </li>
- * <li>TERMINAL ::= MODIFIER | PSEUDO_MODIFIER | name '~' REGEX | signature '~' REGEX | CALLER_DEFINED_SELECTOR</li>
+ * <li>TERMINAL ::= MODIFIER | PSEUDO_MODIFIER | name '~' REGEX | signature '~' REGEX |
+ * annotation ~ REGEX | returns ~ REGEX | CALLER_DEFINED_SELECTOR</li>
  * <li>MODIFIER ::= private | protected | package | public | final | transient | volatile | static |
  * synthetic | synchronized | native | abstract | strict </li>
  * <li>PSEUDO_MODIFIER ::= default | implements | inherited | overrides | vararg | true | false </li>
@@ -49,8 +51,8 @@ class SelectorCompiler {
         return lexer.peek().type == Lexeme.Type.SYMBOL && lexer.peek().string.equals(s);
     }
 
-    private boolean isWord(String s) {
-        return lexer.peek().type == Lexeme.Type.WORD && lexer.peek().string.equals(s);
+    private boolean isWord(String ... s) {
+        return lexer.peek().type == Lexeme.Type.WORD && Arrays.stream(s).anyMatch( k -> lexer.peek().string.equals(k));
     }
 
     private SelectorNode expression() {
@@ -98,7 +100,7 @@ class SelectorCompiler {
             lexer.get();
             return sub;
         }
-        if (isWord("name") || isWord("signature")) {
+        if (isWord("name","signature","annotation","returns")) {
             final var name = lexer.get().string;
             if (!isSymbol("~")) {
                 throw new IllegalArgumentException("'name' or 'signature' has to be followed by ~" + atRest());
@@ -108,7 +110,18 @@ class SelectorCompiler {
                 throw new IllegalArgumentException("Regex is missing after 'name ~' or 'signature ~'" + atRest());
             }
             final var regex = lexer.get();
-            return name.equals("name") ? new SelectorNode.Name(regex.string) : new SelectorNode.Signature(regex.string);
+            switch (name) {
+                case "name":
+                    return new SelectorNode.Name(regex.string);
+                case "signature":
+                    return new SelectorNode.Signature(regex.string);
+                case "annotation":
+                    return new SelectorNode.Annotation(regex.string);
+                case "returns":
+                    return new SelectorNode.Returns(regex.string);
+                default:
+                    throw new IllegalArgumentException("Internal error");
+            }
         }
         if (lexer.peek().type == Lexeme.Type.WORD) {
             final var name = lexer.peek().string;

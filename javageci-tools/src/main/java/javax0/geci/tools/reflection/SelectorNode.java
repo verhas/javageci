@@ -52,5 +52,17 @@ class SelectorNode {
         }
     }
 
+    static class Annotation extends Regex {
+        Annotation(String regex) {
+            super(regex);
+        }
+    }
+
+    static class Returns extends Regex {
+        Returns(String regex) {
+            super(regex);
+        }
+    }
+
 
 }
