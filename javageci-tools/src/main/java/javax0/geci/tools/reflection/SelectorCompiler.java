@@ -100,7 +100,7 @@ class SelectorCompiler {
             lexer.get();
             return sub;
         }
-        if (isWord("name","signature","annotation","returns")) {
+        if (isWord("name","signature","annotation","returns", "throws")) {
             final var name = lexer.get().string;
             if (!isSymbol("~")) {
                 throw new IllegalArgumentException("'name' or 'signature' has to be followed by ~" + atRest());
@@ -119,6 +119,8 @@ class SelectorCompiler {
                     return new SelectorNode.Annotation(regex.string);
                 case "returns":
                     return new SelectorNode.Returns(regex.string);
+                case "throws":
+                    return new SelectorNode.Throws(regex.string);
                 default:
                     throw new IllegalArgumentException("Internal error");
             }

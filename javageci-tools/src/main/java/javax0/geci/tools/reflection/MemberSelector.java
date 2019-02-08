@@ -195,6 +195,11 @@ public class MemberSelector {
             return ((SelectorNode.Regex) node).regex.matcher(
                     ((Method) m).getReturnType().getCanonicalName()).find();
         }
+        if (node instanceof SelectorNode.Throws) {
+            methodOnly(m);
+            return Arrays.stream(((Method) m).getGenericExceptionTypes()).anyMatch(
+                    exception -> ((SelectorNode.Regex) node).regex.matcher(exception.getTypeName()).find());
+        }
         if (node instanceof SelectorNode.Signature) {
             methodOnly(m);
             return ((SelectorNode.Regex) node).regex.matcher(

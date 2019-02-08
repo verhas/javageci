@@ -64,5 +64,11 @@ class SelectorNode {
         }
     }
 
+    static class Throws extends Regex {
+        Throws(String regex) {
+            super(regex);
+        }
+    }
+
 
 }

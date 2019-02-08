@@ -9,24 +9,22 @@ import java.util.Properties;
 
 class MemberSelectorTest {
 
+    static int var_static;
+    final int var_final = 1;
     private final int i = 0;
-    @Generated
-    private int j = 0;
-
-    private int var_private;
+    public int var_public;
     protected int var_protected;
     int var_package;
-    public int var_public;
-    final int var_final = 1;
     transient int var_transient;
     volatile int var_volatile;
-    static int var_static;
+    @Generated
+    private int j = 0;
+    private int var_private;
 
-    synchronized void method_synchronized() {
+    static void method_static() {
     }
 
-    static abstract class X {
-        abstract int method_abstract();
+    synchronized void method_synchronized() {
     }
 
     strictfp void method_strict() {
@@ -240,5 +238,124 @@ class MemberSelectorTest {
         Assertions.assertTrue(new MemberSelector().compile("native").match(f));
     }
 
+    private void method_private() {
+    }
+
+    @Test
+    void testPrivateMethod() throws NoSuchMethodException {
+        final var f = this.getClass().getDeclaredMethod("method_private");
+        Assertions.assertTrue(new MemberSelector().compile("private").match(f));
+    }
+
+    protected void method_protected() {
+    }
+
+    @Test
+    void testProtectedMethod() throws NoSuchMethodException {
+        final var f = this.getClass().getDeclaredMethod("method_protected");
+        Assertions.assertTrue(new MemberSelector().compile("protected").match(f));
+    }
+
+    @Test
+    void testPackageMethod() throws NoSuchMethodException {
+        final var f = this.getClass().getDeclaredMethod("method_static");
+        Assertions.assertTrue(new MemberSelector().compile("package").match(f));
+    }
+
+    public void method_public() {
+    }
+
+    @Test
+    void testPublicMethod() throws NoSuchMethodException {
+        final var f = this.getClass().getDeclaredMethod("method_public");
+        Assertions.assertTrue(new MemberSelector().compile("public").match(f));
+    }
+
+    final void method_final() {
+    }
+
+    @Test
+    void testFinalMethod() throws NoSuchMethodException {
+        final var f = this.getClass().getDeclaredMethod("method_final");
+        Assertions.assertTrue(new MemberSelector().compile("final").match(f));
+    }
+
+    @Test
+    void testTransientMethod() throws NoSuchMethodException {
+        final var f = this.getClass().getDeclaredMethod("method_static");
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new MemberSelector().compile("transient").match(f));
+    }
+
+    @Test
+    void testVolatileMethod() throws NoSuchMethodException {
+        final var f = this.getClass().getDeclaredMethod("method_static");
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new MemberSelector().compile("volatile").match(f));
+    }
+
+    @Test
+    void testStaticMethod() throws NoSuchMethodException {
+        final var f = this.getClass().getDeclaredMethod("method_static");
+        Assertions.assertTrue(new MemberSelector().compile("static").match(f));
+    }
+
+    @Test
+    void testSynchronizedField() throws NoSuchFieldException {
+        final var f = this.getClass().getDeclaredField("i");
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new MemberSelector().compile("synchronized").match(f));
+    }
+
+    @Test
+    void testAbstractField() throws NoSuchFieldException {
+        final var f = this.getClass().getDeclaredField("i");
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new MemberSelector().compile("abstract").match(f));
+    }
+
+    @Test
+    void testStrictField() throws NoSuchFieldException {
+        final var f = this.getClass().getDeclaredField("i");
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new MemberSelector().compile("strict").match(f));
+    }
+
+    @Test
+    void testVarargField() throws NoSuchFieldException {
+        final var f = this.getClass().getDeclaredField("i");
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new MemberSelector().compile("vararg").match(f));
+    }
+
+    @Test
+    void testNativeField() throws NoSuchFieldException {
+        final var f = this.getClass().getDeclaredField("i");
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new MemberSelector().compile("native").match(f));
+    }
+    @Test
+    void testThrowingField() throws NoSuchFieldException {
+        final var f = this.getClass().getDeclaredField("i");
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new MemberSelector().compile("throws ~ /IllegalArgumentException/").match(f));
+    }
+
+    private void method_throws() throws IllegalArgumentException{}
+    private void method_notThrows() {}
+
+    @Test
+    void testThrowingMethod() throws NoSuchMethodException {
+        final var method_throws = this.getClass().getDeclaredMethod("method_throws");
+        Assertions.assertTrue(new MemberSelector().compile("throws ~ /IllegalArgumentException/").match(method_throws));
+        final var method_notThrows = this.getClass().getDeclaredMethod("method_notThrows");
+        Assertions.assertFalse(new MemberSelector().compile("throws ~ /IllegalArgumentException/").match(method_notThrows));
+        Assertions.assertFalse(new MemberSelector().compile("throws ~ /NullPointerException/").match(method_throws));
+    }
+
+
+    static abstract class X {
+        abstract int method_abstract();
+    }
 }
 
