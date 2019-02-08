@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
+@SuppressWarnings("ALL")
 class MemberSelectorTest {
 
     static int var_static;

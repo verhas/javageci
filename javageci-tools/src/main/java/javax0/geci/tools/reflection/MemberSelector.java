@@ -121,7 +121,7 @@ public class MemberSelector {
     /**
      * Define a {@link Function} assigned to the name that can be referenced in the expression.
      *
-     * @param name     the name to be used in the expression referencing the functin
+     * @param name     the name to be used in the expression referencing the function
      * @param function the function that will be executed when evaluating {@code #name}, where {@code name} is actually
      *                 the string provided in the argument {@code name}
      * @return {@code this} object to allow method chaining
