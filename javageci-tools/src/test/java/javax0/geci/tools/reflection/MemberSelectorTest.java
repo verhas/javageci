@@ -78,7 +78,7 @@ class MemberSelectorTest {
     @DisplayName("non final field is recognized")
     void testNotFinal() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("j");
-        Assertions.assertFalse(new MemberSelector().compile("final").match(f));
+        Assertions.assertTrue(new MemberSelector().compile("final").match(f));
     }
 
     @Test
@@ -90,7 +90,7 @@ class MemberSelectorTest {
     @Test
     void testNegNotFinal() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("j");
-        Assertions.assertTrue(new MemberSelector().compile("!final").match(f));
+        Assertions.assertFalse(new MemberSelector().compile("!final").match(f));
     }
 
     @Test
