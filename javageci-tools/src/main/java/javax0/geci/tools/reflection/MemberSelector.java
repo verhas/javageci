@@ -138,6 +138,7 @@ public class MemberSelector {
      * @param expression a logical expression described as a string
      * @return {@code this} object to allow method chaining
      */
+    @SuppressWarnings("WeakerAccess")
     public MemberSelector compile(String expression) {
         final var compiler = new SelectorCompiler(functions);
         top = compiler.compile(expression);
