@@ -70,6 +70,7 @@ public class MemberSelector {
     private SelectorNode top = null;
 
     public MemberSelector() {
+        function("abstract", m -> Modifier.isAbstract(m.getModifiers()));
         function("private", m -> Modifier.isPrivate(m.getModifiers()));
         function("protected", m -> Modifier.isProtected(m.getModifiers()));
         function("package", m ->

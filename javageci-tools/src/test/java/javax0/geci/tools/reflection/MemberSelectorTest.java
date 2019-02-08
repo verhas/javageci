@@ -5,11 +5,46 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Properties;
+
 class MemberSelectorTest {
 
     private final int i = 0;
     @Generated
-    private final int j = 0;
+    private int j = 0;
+
+    private int var_private;
+    protected int var_protected;
+    int var_package;
+    public int var_public;
+    final int var_final = 1;
+    transient int var_transient;
+    volatile int var_volatile;
+    static int var_static;
+
+    synchronized void method_synchronized() {
+    }
+
+    static abstract class X {
+        abstract int method_abstract();
+    }
+
+    strictfp void method_strict() {
+    }
+
+    void method_vararg(Object... x) {
+    }
+
+    void method_notVararg(Object[] x) {
+    }
+
+
+    @Test
+    @DisplayName("throws IllegalArgumentException when we test something for 'blabla'")
+    void testInvalidTest() {
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new MemberSelector().compile("blabla").match(null));
+    }
 
     @Test
     @DisplayName("true and !false return true")
@@ -56,6 +91,7 @@ class MemberSelectorTest {
     }
 
     @Test
+    @DisplayName("return type can be checked for int and void")
     void testReturns() throws NoSuchMethodException {
         final var f1 = this.getClass().getDeclaredMethod("z");
         Assertions.assertTrue(new MemberSelector().compile("returns ~ /int/").match(f1));
@@ -78,19 +114,21 @@ class MemberSelectorTest {
     @DisplayName("non final field is recognized")
     void testNotFinal() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("j");
-        Assertions.assertTrue(new MemberSelector().compile("final").match(f));
+        Assertions.assertFalse(new MemberSelector().compile("final").match(f));
     }
 
     @Test
+    @DisplayName("Testing a final field for !final is false")
     void testNegFinal() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertFalse(new MemberSelector().compile("!final").match(f));
     }
 
     @Test
+    @DisplayName("Non final field tested with !final is true")
     void testNegNotFinal() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("j");
-        Assertions.assertFalse(new MemberSelector().compile("!final").match(f));
+        Assertions.assertTrue(new MemberSelector().compile("!final").match(f));
     }
 
     @Test
@@ -117,4 +155,90 @@ class MemberSelectorTest {
         final var f = this.getClass().getDeclaredField("j");
         Assertions.assertTrue(new MemberSelector().compile("final | private").match(f));
     }
+
+    @Test
+    void testPrivateField() throws NoSuchFieldException {
+        final var f = this.getClass().getDeclaredField("var_private");
+        Assertions.assertTrue(new MemberSelector().compile("private").match(f));
+    }
+
+    @Test
+    void testProtectedField() throws NoSuchFieldException {
+        final var f = this.getClass().getDeclaredField("var_protected");
+        Assertions.assertTrue(new MemberSelector().compile("protected").match(f));
+    }
+
+    @Test
+    void testPackageField() throws NoSuchFieldException {
+        final var f = this.getClass().getDeclaredField("var_package");
+        Assertions.assertTrue(new MemberSelector().compile("package").match(f));
+    }
+
+    @Test
+    void testPublicField() throws NoSuchFieldException {
+        final var f = this.getClass().getDeclaredField("var_public");
+        Assertions.assertTrue(new MemberSelector().compile("public").match(f));
+    }
+
+    @Test
+    void testFinalField() throws NoSuchFieldException {
+        final var f = this.getClass().getDeclaredField("var_final");
+        Assertions.assertTrue(new MemberSelector().compile("final").match(f));
+    }
+
+    @Test
+    void testTransientField() throws NoSuchFieldException {
+        final var f = this.getClass().getDeclaredField("var_transient");
+        Assertions.assertTrue(new MemberSelector().compile("transient").match(f));
+    }
+
+    @Test
+    void testVolatileField() throws NoSuchFieldException {
+        final var f = this.getClass().getDeclaredField("var_volatile");
+        Assertions.assertTrue(new MemberSelector().compile("volatile").match(f));
+    }
+
+    @Test
+    void testStaticField() throws NoSuchFieldException {
+        final var f = this.getClass().getDeclaredField("var_static");
+        Assertions.assertTrue(new MemberSelector().compile("static").match(f));
+    }
+
+    @Test
+    void testSynchronizedMethod() throws NoSuchMethodException {
+        final var f = this.getClass().getDeclaredMethod("method_synchronized");
+        Assertions.assertTrue(new MemberSelector().compile("synchronized").match(f));
+    }
+
+    @Test
+    void testAbstractMethod() throws NoSuchMethodException {
+        final var f = X.class.getDeclaredMethod("method_abstract");
+        Assertions.assertTrue(new MemberSelector().compile("abstract").match(f));
+    }
+
+    @Test
+    void testStrictMethod() throws NoSuchMethodException {
+        final var f = this.getClass().getDeclaredMethod("method_strict");
+        Assertions.assertTrue(new MemberSelector().compile("strict").match(f));
+    }
+
+    @Test
+    void testVarargMethod() throws NoSuchMethodException {
+        final var f = this.getClass().getDeclaredMethod("method_vararg", Object[].class);
+        Assertions.assertTrue(new MemberSelector().compile("vararg").match(f));
+    }
+
+    @Test
+    void testNotVarargMethod() throws NoSuchMethodException {
+        final var f = this.getClass().getDeclaredMethod("method_notVararg", Object[].class);
+        Assertions.assertFalse(new MemberSelector().compile("vararg").match(f));
+    }
+
+    @Test
+    void testNativeMethod() throws NoSuchMethodException {
+        final var f = System.class.getDeclaredMethod("initProperties", Properties.class);
+        Assertions.assertTrue(new MemberSelector().compile("native").match(f));
+    }
+
 }
+
