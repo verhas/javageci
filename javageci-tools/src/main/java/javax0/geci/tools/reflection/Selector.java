@@ -10,11 +10,12 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
- * An {@code MemberSelector} can select or deselect a member based on the selection expression.
+ * An {@code Selector} can select or deselect a member based on the selection expression.
  * <p>
  * A selection expression can be as simple as {@code final} which will match a member if the member if final.
  * Expressions can refer to the modifiers, the name of the member using regular expression and can contain {@code |}
@@ -42,7 +43,7 @@ import java.util.regex.Pattern;
  * <li>{@code annotation ~ /Generated/} will select a member if it is annotation with an annotation that
  * starts with {@code Generated}</li>
  * <li> any other identifier "selector" will select a member if the configured {@code Function<Member,Boolean>} assigned to the name
- * "selector" returns {@code true}. Selector functions can be added calling the method {@link #function(String, Function)}.</li>
+ * "selector" returns {@code true}. Selector functions can be added calling the method {@link #memberSelector(String, Function)}.</li>
  * </ul>
  * <p>
  * Some of the conditions can only be applied to methods or only to fields. In that case using the expression for
@@ -63,55 +64,63 @@ import java.util.regex.Pattern;
  * 'and' operation has higher priority than 'or' ust like in Java. Expressions are evaluated short circuit, although
  * it has no vital importance since the sub expressions cannot have side effects.
  */
-public class MemberSelector {
+public class Selector {
 
     private static final int SYNTHETIC = 0x00001000;
-    private final Map<String, Function<Member, Boolean>> functions = new HashMap<>();
+    private final Map<String, Function<Member, Boolean>> memberSelectors = new HashMap<>();
+    private final Map<String, BiFunction<Member, Pattern, Boolean>> regexMemberSelectors = new HashMap<>();
     private SelectorNode top = null;
 
-    public MemberSelector() {
-        function("abstract", m -> Modifier.isAbstract(m.getModifiers()));
-        function("private", m -> Modifier.isPrivate(m.getModifiers()));
-        function("protected", m -> Modifier.isProtected(m.getModifiers()));
-        function("package", m ->
-                !Modifier.isPublic(m.getModifiers())
-                        && !Modifier.isProtected(m.getModifiers())
-                        && !Modifier.isPrivate(m.getModifiers()));
-        function("public", m -> Modifier.isPublic(m.getModifiers()));
-        function("final", m -> Modifier.isFinal(m.getModifiers()));
-        function("transient", m -> fieldOnly(m) && Modifier.isTransient(m.getModifiers()));
-        function("volatile", m -> fieldOnly(m) && Modifier.isVolatile(m.getModifiers()));
-        function("static", m -> Modifier.isStatic(m.getModifiers()));
-        function("synthetic", m -> methodOnly(m) && (m.getModifiers() & SYNTHETIC) != 0);
-        function("synchronized", m -> methodOnly(m) && Modifier.isSynchronized(m.getModifiers()));
-        function("native", m -> methodOnly(m) && Modifier.isNative(m.getModifiers()));
-        function("abstract", m -> methodOnly(m) && Modifier.isAbstract(m.getModifiers()));
-        function("strict", m -> methodOnly(m) && Modifier.isStrict(m.getModifiers()));
-
-        function("default", m -> methodOnly(m) &&
-                m.getDeclaringClass().isInterface() && !Modifier.isAbstract(m.getModifiers()));
-        function("implements", m -> methodOnly(m) && notImplemented());
-        function("inherited", m -> methodOnly(m) && notImplemented());
-        function("overrides", m -> methodOnly(m) && notImplemented());
-        function("vararg", m -> methodOnly(m) && ((Method) m).isVarArgs());
-        function("true", m -> true);
-        function("false", m -> false);
+    public Selector() {
+        memberSelector("abstract", m -> Modifier.isAbstract(m.getModifiers()));
+        memberSelector("private", m -> Modifier.isPrivate(m.getModifiers()));
+        memberSelector("protected", m -> Modifier.isProtected(m.getModifiers()));
+        memberSelector("package", m -> !Modifier.isPublic(m.getModifiers())
+            && !Modifier.isProtected(m.getModifiers())
+            && !Modifier.isPrivate(m.getModifiers()));
+        memberSelector("public", m -> Modifier.isPublic(m.getModifiers()));
+        memberSelector("final", m -> Modifier.isFinal(m.getModifiers()));
+        memberSelector("transient", m -> fieldOnly(m) && Modifier.isTransient(m.getModifiers()));
+        memberSelector("volatile", m -> fieldOnly(m) && Modifier.isVolatile(m.getModifiers()));
+        memberSelector("static", m -> Modifier.isStatic(m.getModifiers()));
+        memberSelector("synthetic", m -> methodOnly(m) && (m.getModifiers() & SYNTHETIC) != 0);
+        memberSelector("synchronized", m -> methodOnly(m) && Modifier.isSynchronized(m.getModifiers()));
+        memberSelector("native", m -> methodOnly(m) && Modifier.isNative(m.getModifiers()));
+        memberSelector("abstract", m -> methodOnly(m) && Modifier.isAbstract(m.getModifiers()));
+        memberSelector("strict", m -> methodOnly(m) && Modifier.isStrict(m.getModifiers()));
+        memberSelector("default", m -> methodOnly(m) &&
+            m.getDeclaringClass().isInterface() && !Modifier.isAbstract(m.getModifiers()));
+        memberSelector("implements", m -> methodOnly(m) && notImplemented());
+        memberSelector("inherited", m -> methodOnly(m) && notImplemented());
+        memberSelector("overrides", m -> methodOnly(m) && notImplemented());
+        memberSelector("vararg", m -> methodOnly(m) && ((Method) m).isVarArgs());
+        memberSelector("true", m -> true);
+        memberSelector("false", m -> false);
+        regexMemberSelector("name", (m, regex) -> regex.matcher(m.getName()).find());
+        regexMemberSelector("annotation", this::matchAnnotations);
+        regexMemberSelector("returns", (m, regex) -> methodOnly(m) && regex.matcher(
+            ((Method) m).getReturnType().getCanonicalName()).find());
+        regexMemberSelector("throws", (m, regex) -> methodOnly(m) &&
+            Arrays.stream(((Method) m).getGenericExceptionTypes())
+                .anyMatch(exception -> regex.matcher(exception.getTypeName()).find()));
+        regexMemberSelector("signature", (m, regex) ->
+            methodOnly(m) && regex.matcher(MethodTool.methodSignature((Method) m)).find());
     }
 
     private static boolean notImplemented() {
         throw new IllegalArgumentException("Not implemented");
     }
 
-    @SuppressWarnings("SameReturnValue")
-    private static boolean methodOnly(Member m) {
+    @SuppressWarnings({"WeakerAccess", "SameReturnValue"})
+    public static boolean methodOnly(Member m) {
         if (!(m instanceof Method)) {
             throw new IllegalArgumentException("A method only selector was applied to a field.");
         }
         return true;
     }
 
-    @SuppressWarnings("SameReturnValue")
-    private static boolean fieldOnly(Member m) {
+    @SuppressWarnings({"WeakerAccess", "SameReturnValue"})
+    public static boolean fieldOnly(Member m) {
         if (!(m instanceof Field)) {
             throw new IllegalArgumentException("A field only selector was applied to a method.");
         }
@@ -127,8 +136,22 @@ public class MemberSelector {
      * @return {@code this} object to allow method chaining
      */
     @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
-    public MemberSelector function(String name, Function<Member, Boolean> function) {
-        functions.put(name, function);
+    public Selector memberSelector(String name, Function<Member, Boolean> function) {
+        memberSelectors.put(name, function);
+        return this;
+    }
+
+    /**
+     * Define a {@link Function} assigned to the name that can be referenced in the expression.
+     *
+     * @param name     the name to be used in the expression referencing the function
+     * @param function the function that will be executed when evaluating {@code #name}, where {@code name} is actually
+     *                 the string provided in the argument {@code name}
+     * @return {@code this} object to allow method chaining
+     */
+    @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
+    public Selector regexMemberSelector(String name, BiFunction<Member, Pattern, Boolean> function) {
+        regexMemberSelectors.put(name, function);
         return this;
     }
 
@@ -138,11 +161,11 @@ public class MemberSelector {
      * @param expression a logical expression described as a string
      * @return {@code this} object to allow method chaining
      */
-    @SuppressWarnings("WeakerAccess")
-    public MemberSelector compile(String expression) {
-        final var compiler = new SelectorCompiler(functions);
-        top = compiler.compile(expression);
-        return this;
+    public static Selector compile(String expression) {
+        final var it = new Selector();
+        final var compiler = new SelectorCompiler(it.memberSelectors);
+        it.top = compiler.compile(expression);
+        return it;
     }
 
     /**
@@ -185,29 +208,19 @@ public class MemberSelector {
         if (node instanceof SelectorNode.Not) {
             return !match(m, ((SelectorNode.Not) node).subNode);
         }
-        if (node instanceof SelectorNode.Name) {
-            return ((SelectorNode.Regex) node).regex.matcher(m.getName()).find();
-        }
-        if (node instanceof SelectorNode.Annotation) {
-            return matchAnnotations(m, ((SelectorNode.Regex) node).regex);
-        }
-        if (node instanceof SelectorNode.Returns) {
-            methodOnly(m);
-            return ((SelectorNode.Regex) node).regex.matcher(
-                    ((Method) m).getReturnType().getCanonicalName()).find();
-        }
-        if (node instanceof SelectorNode.Throws) {
-            methodOnly(m);
-            return Arrays.stream(((Method) m).getGenericExceptionTypes()).anyMatch(
-                    exception -> ((SelectorNode.Regex) node).regex.matcher(exception.getTypeName()).find());
-        }
-        if (node instanceof SelectorNode.Signature) {
-            methodOnly(m);
-            return ((SelectorNode.Regex) node).regex.matcher(
-                    MethodTool.methodSignature((Method) m)).find();
+        if (node instanceof SelectorNode.Regex) {
+            final var regexNode = (SelectorNode.Regex) node;
+            if (!regexMemberSelectors.containsKey(regexNode.name)) {
+                throw new IllegalArgumentException("There is no regex matcher functionality for '" + regexNode.name + "'");
+            }
+            return regexMemberSelectors.get(regexNode.name).apply(m, regexNode.regex);
         }
         if (node instanceof SelectorNode.Terminal) {
-            return ((SelectorNode.Terminal) node).terminal.apply(m);
+            final var terminalNode = (SelectorNode.Terminal) node;
+            if (!memberSelectors.containsKey(terminalNode.terminal)) {
+                throw new IllegalArgumentException("The selector '" + terminalNode.terminal + "' is not known.");
+            }
+            return memberSelectors.get(terminalNode.terminal).apply(m);
         }
         throw new IllegalArgumentException("Invalid node type in the compiled structure");
     }
@@ -228,9 +241,9 @@ public class MemberSelector {
             annotations = ((Field) m).getAnnotations();
         } else {
             throw new IllegalArgumentException("It should not happen " + m.getName() + "/" +
-                    m.getClass().getCanonicalName() + " is neither a method nor a field.");
+                m.getClass().getCanonicalName() + " is neither a method nor a field.");
         }
         return Arrays.stream(annotations).anyMatch(a ->
-                pattern.matcher(a.annotationType().getCanonicalName()).find());
+            pattern.matcher(a.annotationType().getCanonicalName()).find());
     }
 }

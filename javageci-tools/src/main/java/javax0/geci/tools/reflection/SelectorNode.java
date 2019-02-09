@@ -1,9 +1,7 @@
 package javax0.geci.tools.reflection;
 
-import java.lang.reflect.Member;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 
 class SelectorNode {
@@ -25,50 +23,20 @@ class SelectorNode {
     }
 
     static class Terminal extends SelectorNode {
-        final Function<Member, Boolean> terminal;
+        final String terminal;
 
-        Terminal(Function<Member, Boolean> terminal) {
+        Terminal(String terminal) {
             this.terminal = terminal;
         }
     }
 
-    static abstract class Regex extends SelectorNode {
+    static class Regex extends SelectorNode {
         final Pattern regex;
+        final String name;
 
-        Regex(String regex) {
+        Regex(String regex, String name) {
             this.regex = Pattern.compile(regex);
+            this.name = name;
         }
     }
-
-    static class Name extends Regex {
-        Name(String regex) {
-            super(regex);
-        }
-    }
-
-    static class Signature extends Regex {
-        Signature(String regex) {
-            super(regex);
-        }
-    }
-
-    static class Annotation extends Regex {
-        Annotation(String regex) {
-            super(regex);
-        }
-    }
-
-    static class Returns extends Regex {
-        Returns(String regex) {
-            super(regex);
-        }
-    }
-
-    static class Throws extends Regex {
-        Throws(String regex) {
-            super(regex);
-        }
-    }
-
-
 }

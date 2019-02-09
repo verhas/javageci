@@ -51,8 +51,8 @@ class SelectorCompiler {
         return lexer.peek().type == Lexeme.Type.SYMBOL && lexer.peek().string.equals(s);
     }
 
-    private boolean isWord(String ... s) {
-        return lexer.peek().type == Lexeme.Type.WORD && Arrays.stream(s).anyMatch( k -> lexer.peek().string.equals(k));
+    private boolean isWord(String... s) {
+        return lexer.peek().type == Lexeme.Type.WORD && Arrays.stream(s).anyMatch(k -> lexer.peek().string.equals(k));
     }
 
     private SelectorNode expression() {
@@ -94,46 +94,26 @@ class SelectorCompiler {
         if (isSymbol("(")) {
             lexer.get();
             final var sub = expression();
-            if (!isSymbol(")")) {
+            if (isSymbol(")")) {
+                lexer.get();
+                return sub;
+            } else {
                 throw new IllegalArgumentException("Closing ')' is missing" + atRest());
-            }
-            lexer.get();
-            return sub;
-        }
-        if (isWord("name","signature","annotation","returns", "throws")) {
-            final var name = lexer.get().string;
-            if (!isSymbol("~")) {
-                throw new IllegalArgumentException("'name' or 'signature' has to be followed by ~" + atRest());
-            }
-            lexer.get();
-            if (lexer.peek().type != Lexeme.Type.REGEX) {
-                throw new IllegalArgumentException("Regex is missing after 'name ~' or 'signature ~'" + atRest());
-            }
-            final var regex = lexer.get();
-            switch (name) {
-                case "name":
-                    return new SelectorNode.Name(regex.string);
-                case "signature":
-                    return new SelectorNode.Signature(regex.string);
-                case "annotation":
-                    return new SelectorNode.Annotation(regex.string);
-                case "returns":
-                    return new SelectorNode.Returns(regex.string);
-                case "throws":
-                    return new SelectorNode.Throws(regex.string);
-                default:
-                    throw new IllegalArgumentException("Internal error");
             }
         }
         if (lexer.peek().type == Lexeme.Type.WORD) {
-            final var name = lexer.peek().string;
-            if (!selectors.containsKey(name)) {
-                throw new IllegalArgumentException("The selector '" + name + "' is not known" + atRest());
+            final var name = lexer.get().string;
+            if (isSymbol("~")) {
+                lexer.get();
+                if (lexer.peek().type != Lexeme.Type.REGEX) {
+                    throw new IllegalArgumentException("Regex is missing after '~'" + atRest());
+                }
+                final var regex = lexer.get();
+                return new SelectorNode.Regex(regex.string, name);
+            } else {
+                return new SelectorNode.Terminal(name);
             }
-            lexer.get();
-            return new SelectorNode.Terminal(selectors.get(name));
         }
-
         throw new IllegalArgumentException("Invalid syntax" + atRest());
     }
 }
