@@ -95,6 +95,10 @@
             <artifactId>javageci-annotation</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.javax0.geci</groupId>
+            <artifactId>javageci-annotation</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

@@ -22,19 +22,15 @@ import java.util.function.Function;
  */
 class SelectorCompiler {
 
-    private final Map<String, Function<Member, Boolean>> selectors;
-
     private Lexer lexer;
 
-    SelectorCompiler(Map<String, Function<Member, Boolean>> selectors) {
-        this.selectors = selectors;
-    }
-
-    SelectorNode compile(String expression) {
-        lexer = new Lexer(expression, true);
-        final var topNode = expression();
-        if (lexer.rest().length() > 0) {
-            throw new IllegalArgumentException("There are extra characters at the end of the selector expresison" + atRest());
+    static SelectorNode compile(String expression) {
+        final var it = new SelectorCompiler();
+        it.lexer = new Lexer(expression, true);
+        final var topNode = it.expression();
+        if (it.lexer.rest().length() > 0) {
+            throw new IllegalArgumentException("There are extra characters " +
+                "at the end of the selector expresison" + it.atRest());
         }
         return topNode;
     }

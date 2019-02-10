@@ -4,8 +4,11 @@ import javax0.geci.annotations.Generated;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
+import java.lang.reflect.Member;
 import java.util.Properties;
+import java.util.function.Function;
 
 @SuppressWarnings("ALL")
 class SelectorTest {
@@ -37,34 +40,36 @@ class SelectorTest {
     void method_notVararg(Object[] x) {
     }
 
+    private static final Member IGNORED_MEMBER = null;
+    private static final Class[] NO_ARGS = null;
 
     @Test
     @DisplayName("throws IllegalArgumentException when we test something for 'blabla'")
     void testInvalidTest() {
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("blabla").match(null));
+            () -> Selector.compile("blabla").match(IGNORED_MEMBER));
     }
 
     @Test
     @DisplayName("true and !false return true")
     void testTrue() {
-        Assertions.assertTrue(Selector.compile("true").match(null));
-        Assertions.assertTrue(Selector.compile("!false").match(null));
+        Assertions.assertTrue(Selector.compile("true").match(IGNORED_MEMBER));
+        Assertions.assertTrue(Selector.compile("!false").match(IGNORED_MEMBER));
     }
 
     @Test
     @DisplayName("false and !true return false")
     void testFalse() {
-        Assertions.assertFalse(Selector.compile("false").match(null));
-        Assertions.assertFalse(Selector.compile("!true").match(null));
+        Assertions.assertFalse(Selector.compile("false").match(IGNORED_MEMBER));
+        Assertions.assertFalse(Selector.compile("!true").match(IGNORED_MEMBER));
     }
 
 
     @Test
     @DisplayName("& has higher precedence than | and there can be parentheses")
     void testPrecedence() {
-        Assertions.assertTrue(Selector.compile("true | false & false").match(null));
-        Assertions.assertFalse(Selector.compile("(true | false) & false").match(null));
+        Assertions.assertTrue(Selector.compile("true | false & false").match(IGNORED_MEMBER));
+        Assertions.assertFalse(Selector.compile("(true | false) & false").match(IGNORED_MEMBER));
     }
 
     @Test
@@ -72,6 +77,58 @@ class SelectorTest {
     void testFinal() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertTrue(Selector.compile("final").match(f));
+    }
+
+    public boolean equals(Object other) {
+        return true;
+    }
+
+    @Test
+    @DisplayName("Method that overrides method from superclass is recognized")
+    void testOverrides1() throws NoSuchMethodException {
+        final var f = this.getClass().getDeclaredMethod("equals", Object.class);
+        Assertions.assertTrue(Selector.compile("overrides").match(f));
+    }
+
+    @Test
+    @DisplayName("Method that does not override any method recognized")
+    void testOverrides2(TestInfo info) throws NoSuchMethodException {
+        final var f2 = info.getTestMethod().get();
+        Assertions.assertFalse(Selector.compile("overrides").match(f2));
+    }
+
+    @Test
+    @DisplayName("Method that overrides method from the superclass of the superclass is recognized")
+    void testOverrides3() throws NoSuchMethodException {
+        final var f3 = X.class.getDeclaredMethod("hashCode", NO_ARGS);
+        Assertions.assertTrue(Selector.compile("overrides").match(f3));
+    }
+
+    @Test
+    @DisplayName("Class simple name is matched")
+    void testClassSimpleName() throws NoSuchFieldException {
+        final var f = this.getClass();
+        Assertions.assertTrue(Selector.compile("simpleName ~ /Test/").match(f));
+    }
+
+    @Test
+    @DisplayName("Class canonical name is matched")
+    void testClassCanonicalName() throws NoSuchFieldException {
+        final var f = this.getClass();
+        Assertions.assertTrue(Selector.compile("canonicalName ~ /reflection.*?Test/").match(f));
+    }
+
+    @Test
+    @DisplayName("Class that does not extend anything extends Object")
+    void testClassExtendsObject() throws NoSuchFieldException {
+        final var f = this.getClass();
+        Assertions.assertTrue(Selector.compile("extends ~ /java\\.lang\\.Object/").match(f));
+    }
+
+    @Test
+    @DisplayName("Integer class extends Number")
+    void testClassExtends() throws NoSuchFieldException {
+        Assertions.assertTrue(Selector.compile("extends ~ /Number/").match(Integer.class));
     }
 
     @Test
@@ -222,6 +279,12 @@ class SelectorTest {
     }
 
     @Test
+    void testSignatureMethod() throws NoSuchMethodException {
+        final var f = this.getClass().getDeclaredMethod("equals", Object.class);
+        Assertions.assertTrue(Selector.compile("signature ~ /equals\\(Object\\s+arg1\\)").match(f));
+    }
+
+    @Test
     void testVarargMethod() throws NoSuchMethodException {
         final var f = this.getClass().getDeclaredMethod("method_vararg", Object[].class);
         Assertions.assertTrue(Selector.compile("vararg").match(f));
@@ -285,14 +348,14 @@ class SelectorTest {
     void testTransientMethod() throws NoSuchMethodException {
         final var f = this.getClass().getDeclaredMethod("method_static");
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("transient").match(f));
+            () -> Selector.compile("transient").match(f));
     }
 
     @Test
     void testVolatileMethod() throws NoSuchMethodException {
         final var f = this.getClass().getDeclaredMethod("method_static");
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("volatile").match(f));
+            () -> Selector.compile("volatile").match(f));
     }
 
     @Test
@@ -305,45 +368,69 @@ class SelectorTest {
     void testSynchronizedField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("synchronized").match(f));
+            () -> Selector.compile("synchronized").match(f));
     }
 
     @Test
     void testAbstractField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("abstract").match(f));
+            () -> Selector.compile("abstract").match(f));
     }
 
     @Test
     void testStrictField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("strict").match(f));
+            () -> Selector.compile("strict").match(f));
     }
 
     @Test
     void testVarargField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("vararg").match(f));
+            () -> Selector.compile("vararg").match(f));
     }
 
     @Test
     void testNativeField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("native").match(f));
+            () -> Selector.compile("native").match(f));
     }
+
     @Test
     void testThrowingField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("throws ~ /IllegalArgumentException/").match(f));
+            () -> Selector.compile("throws ~ /IllegalArgumentException/").match(f));
     }
 
-    private void method_throws() throws IllegalArgumentException{}
-    private void method_notThrows() {}
+    @Test
+    @DisplayName("A method that implements directly from interface is recognized")
+    void testMethodImplementsInterfaceMethod() throws NoSuchMethodException {
+        final var f = X.class.getDeclaredMethod("apply", Object.class);
+        Assertions.assertTrue(Selector.compile("implements").match(f));
+    }
+
+    @Test
+    @DisplayName("A method that implements transitively from some super interface is recognized")
+    void testMethodImplementsTransitiveInterfaceMethod() throws NoSuchMethodException {
+        final var f = Y.class.getDeclaredMethod("q", NO_ARGS);
+        Assertions.assertTrue(Selector.compile("implements").match(f));
+    }
+
+    @Test
+    @DisplayName("A method that does not implement is recognized")
+    void testMethodDoeNotImplementsInterfaceMethod(TestInfo info) throws NoSuchMethodException {
+        Assertions.assertFalse(Selector.compile("implements").match(info.getTestMethod().get()));
+    }
+
+    private void method_throws() throws IllegalArgumentException {
+    }
+
+    private void method_notThrows() {
+    }
 
     @Test
     void testThrowingMethod() throws NoSuchMethodException {
@@ -355,8 +442,31 @@ class SelectorTest {
     }
 
 
-    static abstract class X {
+    interface A {
+        void q();
+    }
+
+    interface B extends A {
+    }
+
+    interface C extends A, B {
+    }
+
+    static class Y implements C {
+        public void q() {
+        }
+    }
+
+    static abstract class X extends SelectorTest implements Function {
         abstract int method_abstract();
+
+        public Object apply(Object t) {
+            return null;
+        }
+
+        public int hashCode() {
+            return 0;
+        }
     }
 }
 

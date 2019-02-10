@@ -5,6 +5,7 @@ import javax0.geci.annotations.Generated;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Source;
 import javax0.geci.tools.reflection.ModifiersBuilder;
+import javax0.geci.tools.reflection.Selector;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
@@ -533,7 +534,7 @@ public class Tools {
      * @return {@code true} if the element was generated (has the annotation {@link Generated}).
      */
     public static boolean isGenerated(AnnotatedElement element) {
-        return element.getDeclaredAnnotation(Generated.class) != null;
+        return Selector.compile("annotation ~ /Generated/").match(element);
     }
 
 }
