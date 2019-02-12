@@ -1,0 +1,44 @@
+# Mapper generating toMap and fromMap
+
+This generator generates two maps into a class:
+
+* `toMap()` that converts the actual object to a `Map<String,Object>`, and
+* `fromMap(Map<String,Object> map)` that creates an object from the map.
+
+The map will contain the names of the fields as keys and the values of the fields as values. If the value is an
+instance of a class that has a `toMap()` method then the generated code will invoke it converting the object to a
+map before using it as a value. Similarly if the map has a `fromMap(Map)` method then the generated `fromMap()` code
+will invoke that on a field to convert the map stored as a value in the map.
+
+Note that this way code generation may need to be executed twice: once to generate the code and all `toMap()` and
+`fromMap()` methods and a second time to recognize that the fields represent classes that have (because of the
+first round of code generation) `toMap()` and `fromMap()` methods.
+
+Also note that the generated code is extremely simple and cannot recognize recursive data structure and it gets into
+infinite loop exhausting the memory.
+
+The `fromMap()` method returns a new object. To create the new object it uses `new XXXX()` default constructor. If
+this is not appropriate then the class should be configured in the `@Geci` annotation with a factory string. This
+will be used in the generated code. For example the sample `Person` class:
+
+```Java
+@Geci("mapper factory='newPerson()'")
+public class Person extends AbstractPerson {
+    ...
+}
+```
+
+declares that instead of calling `new Person()` the generated code should invoke the static `newPerson()` method.
+
+The methods will use all the fields that the class can use. This is all the fields that are declared inside the method
+and also all the inherited fields that the code inside the class can access. It means all inherited non-static public,
+non-static protected and in case the class is in the same package as the super class then the non-static package private
+fields.
+
+The `@Geci` annotation can also be configured with a `filter` parameter that controls with a selection expression
+which field to include into the code generation. The default expression is `!transient & !static`. This filter can
+be defined on each field separately overriding the definition on the class level. Since this overriding controls only
+the selection of the single fields the filter is defined on there is no reason to make it too complex. Simply
+`filter='true'` will include the field into the code generation even if the global filter selection would rule it out
+and `filter='false'` will exclude the field even if the global filter selection would include the field into the
+code generation.

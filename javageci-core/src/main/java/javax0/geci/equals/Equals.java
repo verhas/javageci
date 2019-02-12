@@ -5,13 +5,23 @@ import javax0.geci.tools.AbstractGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.Tools;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 public class Equals extends AbstractGenerator {
-    private static final int NOT_PACKAGE = Modifier.PROTECTED | Modifier.PRIVATE | Modifier.PUBLIC;
+
+    private final Class<? extends Annotation> generatedAnnotation;
+
+    public Equals() {
+        generatedAnnotation = javax0.geci.annotations.Generated.class;
+    }
+
+    public Equals(Class<? extends Annotation> generatedAnnotation) {
+        this.generatedAnnotation = generatedAnnotation;
+    }
 
     @Override
     public String mnemonic() {
@@ -33,7 +43,7 @@ public class Equals extends AbstractGenerator {
         var equalsMethod = getEqualsMethod(klass);
         var subclassingAllowed = global.is("subclass");
         if (equalsMethod == null || Tools.isGenerated(equalsMethod)) {
-            segment.write("@javax0.geci.annotations.Generated(\"equals\")");
+            segment.write("@" + generatedAnnotation.getCanonicalName() + "(\"" + mnemonic() + "\")");
             segment.write("@Override");
             segment.write_r("public %sboolean equals(Object o) {", subclassingAllowed ? "final " : "");
             segment.write("if (this == o) return true;");

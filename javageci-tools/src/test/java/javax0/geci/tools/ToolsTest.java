@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class TestTools {
+public class ToolsTest {
     @javax0.geci.annotations.Geci("aaa a='b' b='c' c='d' a$='dollared' b3='bthree' _='-'")
     @javax0.geci.annotations.Geci("xxx x='x' y='y' z='z'")
     private static Object something;
@@ -134,7 +134,7 @@ public class TestTools {
 
     @Test
     @DisplayName("Get the gecis from own annotations")
-    @TestTools.Geci("barbarumba k1='v1' k2='v2'")
+    @ToolsTest.Geci("barbarumba k1='v1' k2='v2'")
     void getGecisFromOwnAnnotation() throws NoSuchMethodException {
         final var gecis = Tools.getGecis(this.getClass().getDeclaredMethod("getGecisFromOwnAnnotation"));
         Assertions.assertEquals(1, gecis.length);
@@ -143,7 +143,7 @@ public class TestTools {
 
     @Test
     @DisplayName("Get the gecis from own annotations with annotation parameter")
-    @TestTools.Geci(value = "barbarumba k2='v2'", k1 = "v1")
+    @ToolsTest.Geci(value = "barbarumba k2='v2'", k1 = "v1")
     void getGecisFromOwnAnnotationParams() throws NoSuchMethodException {
         final var gecis = Tools.getGecis(this.getClass().getDeclaredMethod("getGecisFromOwnAnnotationParams"));
         Assertions.assertEquals(1, gecis.length);

@@ -18,6 +18,9 @@ public class Tools {
 
     public static final int PACKAGE = 0x00010000;
     private static final Pattern pattern = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*'(.*?)'");
+    private static final Pattern ANNOTATTION_PATTERN = Pattern.compile("@Geci\\(\"(.*)\"\\)");
+    private static final Selector inheritedField = Selector.compile("!static & !private");
+    private static final Selector inheritedFieldDifferentPackage = Selector.compile("!static & !private & !package");
 
     /**
      * Get the strings of the values of the {@link Geci} annotations that are on the element parameter.
@@ -134,9 +137,6 @@ public class Tools {
         }
         return pars;
     }
-
-
-    private static final Pattern ANNOTATTION_PATTERN = Pattern.compile("@Geci\\(\"(.*)\"\\)");
 
     /**
      * Get the parameters from the source file directly reading the source. When a generator uses this method the
@@ -272,23 +272,16 @@ public class Tools {
     }
 
     /**
-     * Get the type of the field as string.
+     * Get the type of a field or a method as string.
      *
-     * @param field of which the type is needed
+     * @param member of which the type is needed
      * @return string containing the type as string with all the generics.
      */
-    public static String typeAsString(Field field) {
-        return getGenericTypeName(field.getGenericType());
-    }
-
-    /**
-     * Get the return type of the method as string.
-     *
-     * @param method of which the type is needed
-     * @return string containing the type as string with all the generics.
-     */
-    public static String typeAsString(Method method) {
-        return getGenericTypeName(method.getGenericReturnType());
+    public static String typeAsString(Member member) {
+        return getGenericTypeName(member instanceof Field ?
+                ((Field) member).getGenericType()
+                :
+                ((Method) member).getGenericReturnType());
     }
 
     /**
@@ -424,6 +417,45 @@ public class Tools {
     }
 
     /**
+     * Get all the fields, declared and inherited fields sorted. About the sorting see the JavaDoc
+     * of {@link #getDeclaredFieldsSorted(Class)}.
+     *
+     * @param klass of which the fields are collected
+     * @return the sorted array of fields
+     */
+    public static Field[] getAllFieldsSorted(Class<?> klass) {
+        Set<Field> fields = new HashSet<>();
+        fields.addAll(Arrays.asList(klass.getDeclaredFields()));
+        var superClass = klass.getSuperclass();
+        while( superClass != null ){
+            collectFields(klass,superClass,fields);
+            superClass = superClass.getSuperclass();
+        }
+        final var allFields = fields.toArray(new Field[0]);
+        Arrays.sort(allFields, Comparator.comparing(Field::getName));
+        return allFields;
+    }
+
+    /**
+     * Collect all the fields from the actual class that are inherited by the base class assuming that the
+     * base class extends directly or through other classes transitively the actual class.
+     *
+     * @param baseClass   the base class that we need the fields collected for
+     * @param actualClass the class in which we look for the fields
+     * @param fields      the collection of the fields where to put the fields
+     */
+    private static void collectFields(Class<?> baseClass, Class<?> actualClass, Set<Field> fields) {
+        final var declaredFields = actualClass.getDeclaredFields();
+        final var selector = baseClass.getPackage() == actualClass.getPackage()
+                ? inheritedField : inheritedFieldDifferentPackage;
+        for (final var field : declaredFields) {
+            if (selector.match(field)) {
+                fields.add(field);
+            }
+        }
+    }
+
+    /**
      * Get the declared methods of the class sorted.
      * <p>
      * See the notes at the javadoc of the method {@link #getDeclaredFieldsSorted(Class)}
@@ -438,26 +470,6 @@ public class Tools {
         final var methods = klass.getDeclaredMethods();
         Arrays.sort(methods, Comparator.comparing(MethodTool::methodSignature));
         return methods;
-    }
-
-
-    public static class Separator {
-        private Separator(String sep) {
-            this.sep = sep;
-        }
-
-        private final String sep;
-        private boolean first = true;
-
-        public String get() {
-            if (first) {
-                first = false;
-                return "";
-            } else {
-                return sep;
-            }
-        }
-
     }
 
     public static Separator separator(String sep) {
@@ -535,6 +547,25 @@ public class Tools {
      */
     public static boolean isGenerated(AnnotatedElement element) {
         return Selector.compile("annotation ~ /Generated/").match(element);
+    }
+
+    public static class Separator {
+        private final String sep;
+        private boolean first = true;
+
+        private Separator(String sep) {
+            this.sep = sep;
+        }
+
+        public String get() {
+            if (first) {
+                first = false;
+                return "";
+            } else {
+                return sep;
+            }
+        }
+
     }
 
 }

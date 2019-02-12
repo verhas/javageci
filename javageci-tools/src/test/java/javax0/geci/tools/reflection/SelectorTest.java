@@ -13,6 +13,8 @@ import java.util.function.Function;
 @SuppressWarnings("ALL")
 class SelectorTest {
 
+    private static final Member IGNORED_MEMBER = null;
+    private static final Class[] NO_ARGS = null;
     static int var_static;
     final int var_final = 1;
     private final int i = 0;
@@ -40,14 +42,25 @@ class SelectorTest {
     void method_notVararg(Object[] x) {
     }
 
-    private static final Member IGNORED_MEMBER = null;
-    private static final Class[] NO_ARGS = null;
+    @Test
+    @DisplayName("compiles empty string")
+    void testEmptyString() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Selector.compile("").match(IGNORED_MEMBER));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Selector.compile("  ").match(IGNORED_MEMBER));
+    }
+
+    @Test
+    @DisplayName("compiles expression with daingling space")
+    void testDainglingSpace() {
+        Assertions.assertTrue(Selector.compile("true ").match(IGNORED_MEMBER));
+        Assertions.assertTrue(Selector.compile("!false ").match(IGNORED_MEMBER));
+    }
 
     @Test
     @DisplayName("throws IllegalArgumentException when we test something for 'blabla'")
     void testInvalidTest() {
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> Selector.compile("blabla").match(IGNORED_MEMBER));
+                () -> Selector.compile("blabla").match(IGNORED_MEMBER));
     }
 
     @Test
@@ -348,14 +361,14 @@ class SelectorTest {
     void testTransientMethod() throws NoSuchMethodException {
         final var f = this.getClass().getDeclaredMethod("method_static");
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> Selector.compile("transient").match(f));
+                () -> Selector.compile("transient").match(f));
     }
 
     @Test
     void testVolatileMethod() throws NoSuchMethodException {
         final var f = this.getClass().getDeclaredMethod("method_static");
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> Selector.compile("volatile").match(f));
+                () -> Selector.compile("volatile").match(f));
     }
 
     @Test
@@ -368,42 +381,42 @@ class SelectorTest {
     void testSynchronizedField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> Selector.compile("synchronized").match(f));
+                () -> Selector.compile("synchronized").match(f));
     }
 
     @Test
     void testAbstractField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> Selector.compile("abstract").match(f));
+                () -> Selector.compile("abstract").match(f));
     }
 
     @Test
     void testStrictField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> Selector.compile("strict").match(f));
+                () -> Selector.compile("strict").match(f));
     }
 
     @Test
     void testVarargField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> Selector.compile("vararg").match(f));
+                () -> Selector.compile("vararg").match(f));
     }
 
     @Test
     void testNativeField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> Selector.compile("native").match(f));
+                () -> Selector.compile("native").match(f));
     }
 
     @Test
     void testThrowingField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> Selector.compile("throws ~ /IllegalArgumentException/").match(f));
+                () -> Selector.compile("throws ~ /IllegalArgumentException/").match(f));
     }
 
     @Test

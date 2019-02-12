@@ -1,12 +1,10 @@
 package javax0.geci.tools.syntax;
 
 public class Lexer {
+    private static final Lexeme EOF = new Lexeme("", Lexeme.Type.EOF);
     private final StringBuilder input;
     private final boolean skipSpace;
-
-    public String rest() {
-        return lookAhead.string + input.toString();
-    }
+    private Lexeme lookAhead = null;
 
     public Lexer(final String input) {
         this(input, false);
@@ -19,21 +17,21 @@ public class Lexer {
             preprocessed = input.replaceAll("\\s+", " ");
         } else {
             preprocessed = input.replaceAll("\\s+", " ")
-                .replaceAll("\\s\\|\\s", "|")
-                .replaceAll("\\s,\\s", ",")
-                .replaceAll("\\(\\s", "(")
-                .replaceAll("\\s\\)", ")")
-                .replaceAll("\\s\\?", "?")
-                .replaceAll("\\s\\*", "*")
-                .replaceAll("\\s\\+", "+");
+                    .replaceAll("\\s\\|\\s", "|")
+                    .replaceAll("\\s,\\s", ",")
+                    .replaceAll("\\(\\s", "(")
+                    .replaceAll("\\s\\)", ")")
+                    .replaceAll("\\s\\?", "?")
+                    .replaceAll("\\s\\*", "*")
+                    .replaceAll("\\s\\+", "+");
         }
         this.input = new StringBuilder(preprocessed);
         this.skipSpace = skipSpace;
     }
 
-    private static final Lexeme EOF = new Lexeme("", Lexeme.Type.EOF);
-
-    private Lexeme lookAhead = null;
+    public String rest() {
+        return lookAhead.string + input.toString();
+    }
 
     public Lexeme get() {
         if (lookAhead != null) {
@@ -55,11 +53,8 @@ public class Lexer {
     }
 
     private Lexeme next() {
-        if (input.length() == 0) {
-            return EOF;
-        }
 
-        if (Character.isWhitespace(input.charAt(0))) {
+        if (input.length() > 0 && Character.isWhitespace(input.charAt(0))) {
             while (input.length() > 0 && Character.isWhitespace(input.charAt(0))) {
                 input.delete(0, 1);
             }
@@ -68,15 +63,19 @@ public class Lexer {
             }
         }
 
+        if (input.length() == 0) {
+            return EOF;
+        }
+
         if (Character.isJavaIdentifierStart(input.charAt(0))) {
             final var word = new StringBuilder();
             boolean inArgs = false;
             while (input.length() > 0 &&
-                (Character.isJavaIdentifierPart(input.charAt(0))
-                    || '.' == input.charAt(0)
-                    || (',' == input.charAt(0) && inArgs)
-                    || ('(' == input.charAt(0) && !inArgs)
-                    || (')' == input.charAt(0) && inArgs))) {
+                    (Character.isJavaIdentifierPart(input.charAt(0))
+                            || '.' == input.charAt(0)
+                            || (',' == input.charAt(0) && inArgs)
+                            || ('(' == input.charAt(0) && !inArgs)
+                            || (')' == input.charAt(0) && inArgs))) {
                 char c = input.charAt(0);
                 word.append(input.charAt(0));
                 input.delete(0, 1);
