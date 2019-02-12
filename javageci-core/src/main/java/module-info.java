@@ -6,4 +6,5 @@ module geci.core {
     exports javax0.geci.accessor;
     exports javax0.geci.equals;
     exports javax0.geci.fluent;
+    exports javax0.geci.mapper;
 }

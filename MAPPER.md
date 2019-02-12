@@ -35,6 +35,9 @@ and also all the inherited fields that the code inside the class can access. It 
 non-static protected and in case the class is in the same package as the super class then the non-static package private
 fields.
 
+A sample use of this feature is that having a `fromMap()` method in a class makes it very easy to initialize a new
+object setting all the fields. This is handy many times to initialize unit tests.
+
 The `@Geci` annotation can also be configured with a `filter` parameter that controls with a selection expression
 which field to include into the code generation. The default expression is `!transient & !static`. This filter can
 be defined on each field separately overriding the definition on the class level. Since this overriding controls only
