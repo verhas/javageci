@@ -37,7 +37,7 @@ public class JamalGenerator extends AbstractGeneratorEx {
                     if (START.matcher(line).matches()) {
                         state = PROCESSING.INSOURCE;
                         macro.delete(0, macro.length());
-                        positionLineNr = lineNr;
+                        positionLineNr = lineNr+1;
                     }
                     break;
                 case INSOURCE:
