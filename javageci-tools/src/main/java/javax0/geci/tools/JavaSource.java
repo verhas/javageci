@@ -3,7 +3,6 @@ package javax0.geci.tools;
 import javax0.geci.annotations.Geci;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 /**
  * A simple tool to write code into a string.

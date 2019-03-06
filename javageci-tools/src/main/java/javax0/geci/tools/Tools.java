@@ -424,8 +424,7 @@ public class Tools {
      * @return the sorted array of fields
      */
     public static Field[] getAllFieldsSorted(Class<?> klass) {
-        Set<Field> fields = new HashSet<>();
-        fields.addAll(Arrays.asList(klass.getDeclaredFields()));
+        Set<Field> fields = new HashSet<>(Arrays.asList(klass.getDeclaredFields()));
         var superClass = klass.getSuperclass();
         while( superClass != null ){
             collectFields(klass,superClass,fields);

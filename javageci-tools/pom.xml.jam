@@ -1,0 +1,16 @@
+{@import ../pom.jim}
+{project |jar|
+    {GAV ::javageci-tools:{VERSION}}
+    {parent :javageci-parent}
+    {name|javageci tools}
+    {description|Javageci tools}
+
+    {@include ../plugins.jim}
+
+    {dependencies#
+        {@for MODULE in (api,annotation)=
+            {dependency :com.javax0.geci:javageci-MODULE:}}
+        {@for MODULE in (api,engine)=
+            {dependency :org.junit.jupiter:junit-jupiter-MODULE:}}
+    }
+}

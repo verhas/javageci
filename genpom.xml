@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.javax0.jamal</groupId>
+    <artifactId>pom.xml_files</artifactId>
+    <version>out_of_pom.xml.jam_files</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.javax0.jamal</groupId>
+                <artifactId>jamal-maven-plugin</artifactId>
+                <version>1.0.2</version>
+                <executions>
+                    <execution>
+                        <id>execution</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>jamal</goal>
+                        </goals>
+                        <configuration>
+                            <transformFrom>\.jam$</transformFrom>
+                            <transformTo></transformTo>
+                            <filePattern>.*pom\.xml\.jam$</filePattern>
+                            <exclude>target|\.iml$|\.java$|\.xml$</exclude>
+                            <sourceDirectory>.</sourceDirectory>
+                            <targetDirectory>.</targetDirectory>
+                            <macroOpen>{</macroOpen>
+                            <macroClose>}</macroClose>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

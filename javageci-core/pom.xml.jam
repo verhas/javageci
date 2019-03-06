@@ -1,0 +1,16 @@
+{@import ../pom.jim}
+{project |jar|
+    {GAV ::javageci-core:{VERSION}}
+    {parent :javageci-parent}
+    {name|javageci core}
+    {description|Javageci macro library core code generators}
+
+    {@include ../plugins.jim}
+
+    {dependencies#
+        {@for MODULE in (api,tools,annotation)=
+            {dependency :com.javax0.geci:javageci-MODULE:}}
+        {@for MODULE in (api,engine)=
+            {dependency :org.junit.jupiter:junit-jupiter-MODULE:}}
+    }
+}

@@ -3,10 +3,7 @@ package javax0.geci.tools.reflection;
 import javax0.geci.tools.syntax.Lexeme;
 import javax0.geci.tools.syntax.Lexer;
 
-import java.lang.reflect.Member;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * <ul>

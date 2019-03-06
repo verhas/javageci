@@ -1,99 +1,73 @@
-<?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-    <modelVersion>4.0.0</modelVersion>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.10</source>
-                    <target>1.10</target>
-                    <release>10</release>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+                            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+<packaging>jar</packaging>
+    
+    
+    <artifactId>javageci-engine</artifactId>
+    <version>1.1.1-SNAPSHOT</version>
 
     <parent>
-        <groupId>com.javax0.geci</groupId>
-        <artifactId>javageci-parent</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
-    </parent>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-parent</artifactId>
+    <version>1.1.1-SNAPSHOT</version>
 
-    <artifactId>javageci-engine</artifactId>
-    <name>geci engine</name>
-    <packaging>jar</packaging>
-    <url>https:/github.com/verhas/javageci/tree/master</url>
-    <licenses>
-        <license>
-            <name>The Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-    </licenses>
-    <developers>
-        <developer>
-            <name>Peter Verhas</name>
-            <email>peter@verhas.com</email>
-        </developer>
-    </developers>
-    <scm>
-        <connection>scm:git:git://github.com/verhas/javageci.git</connection>
-        <developerConnection>scm:git:ssh://github.com/verhas/javageci.git</developerConnection>
-        <url>https:/github.com/verhas/javageci/tree/master</url>
-    </scm>
+</parent>
+    <name>javageci engine</name>
+    <description>Javageci macro library execution engine</description>
+
+    <build><plugins>
+        <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    
+</plugin>
+        <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-source-plugin</artifactId>
+    
+</plugin>
+        <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-javadoc-plugin</artifactId>
+    
+</plugin>
+</plugins></build>
+
     <dependencies>
-        <dependency>
-            <groupId>com.javax0.geci</groupId>
-            <artifactId>javageci-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.javax0.geci</groupId>
-            <artifactId>javageci-tools</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.javax0.geci</groupId>
-            <artifactId>javageci-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-        </dependency>
+        
+            
+<dependency>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-api</artifactId>
+    
+</dependency>
+            
+<dependency>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-tools</artifactId>
+    
+</dependency>
+            
+<dependency>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-core</artifactId>
+    
+</dependency>
+        
+            
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-api</artifactId>
+    
+</dependency>
+            
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-engine</artifactId>
+    
+</dependency>
     </dependencies>
-
 </project>
+

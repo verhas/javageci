@@ -1,0 +1,57 @@
+{@import pom.jim}
+{project |pom|
+    {GAV :{GROUPID}:javageci-parent:{VERSION}}
+    {name/javageci-parent}
+    {description/Java GEnerate Code Inline source code generation framework}
+    {modules|javageci-engine,javageci-api,javageci-tools,javageci-core,javageci-annotation,javageci-examples,javageci-jamal}
+    {license|The Apache License, Version 2.0|http://www.apache.org/licenses/LICENSE-2.0.txt}
+    {developer|Peter Verhas|peter@verhas.com}
+    {github|verhas|javageci}
+    {properties|
+        {property :project.build.sourceEncoding:UTF-8}
+    }
+    {build|{pluginManagement|{plugins|
+                {plugin|
+                    {GAV :org.apache.maven.plugins:maven-surefire-plugin:2.19.1}
+                    {dependencies|
+                        {dependency :org.junit.platform:junit-platform-surefire-provider:1.0.3}
+                        {dependency :org.junit.jupiter:junit-jupiter-engine:5.2.0}
+                    }
+                }
+                {plugin|
+                    {GAV :org.apache.maven.plugins:maven-source-plugin:3.0.1}
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                }
+                {plugin|
+                    {GAV :org.apache.maven.plugins:maven-javadoc-plugin:3.0.1}
+                    {dependencies|{dependency :org.ow2.asm:asm:7.0}}
+                    {executions|{execution|
+                            {id|attach-javadocs}
+                            {goals|{goal|jar}}}}
+                }
+                {plugin|
+                    {GAV :org.apache.maven.plugins:maven-compiler-plugin:3.8.0}
+                    <configuration>
+                        <source>{JAVA_VERSION}</source>
+                        <target>{JAVA_VERSION}</target>
+                        <release>{JAVA_RELEASE}</release>
+                        <jdkToolchain>
+                            <version>{JAVA_RELEASE}</version>
+                        </jdkToolchain>
+                    </configuration>
+                }
+            }
+        }
+    }
+    {dependencyManagement|{dependencies|
+        {@for MODULE in (api,core,tools,engine,annotation)={dependency :com.javax0.geci:javageci-MODULE:{VERSION}}}
+        {@for MODULE in (api,engine)={testDependency :org.junit.jupiter:junit-jupiter-MODULE:5.2.0}}
+        }}
+}

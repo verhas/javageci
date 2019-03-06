@@ -1,0 +1,9 @@
+{@import ../pom.jim}
+{project |jar|
+    {GAV ::javageci-annotation:{VERSION}}
+    {parent :javageci-parent}
+    {name|javageci annotation}
+    {description|Javageci annotations}
+
+    {@include ../plugins.jim}
+}

@@ -1,0 +1,17 @@
+{@import ../pom.jim}
+{project |jar|
+    {GAV ::javageci-jamal:{VERSION}}
+    {parent :javageci-parent}
+    {name|javageci jamal}
+    {description|Javageci jamal macro library}
+
+    {@include ../plugins.jim}
+
+    {dependencies#
+        {@for MODULE in (api,core,engine,tools,annotation)=
+            {dependency :com.javax0.geci:javageci-MODULE:}}
+        {@for MODULE in (api,engine)=
+            {dependency :org.junit.jupiter:junit-jupiter-MODULE:}}
+        {dependency :com.javax0.jamal:jamal-engine:1.0.2}
+    }
+}

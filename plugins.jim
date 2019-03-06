@@ -1,0 +1,5 @@
+{build|{plugins|
+        {plugin|{GAV :org.apache.maven.plugins:maven-surefire-plugin:}}
+        {plugin|{GAV :org.apache.maven.plugins:maven-source-plugin:}}
+        {plugin|{GAV :org.apache.maven.plugins:maven-javadoc-plugin: }}
+}}

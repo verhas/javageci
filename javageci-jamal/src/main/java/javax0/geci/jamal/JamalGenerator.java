@@ -4,6 +4,7 @@ import javax0.geci.api.GeciException;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractGeneratorEx;
 import javax0.jamal.api.BadSyntax;
+import javax0.jamal.api.Position;
 import javax0.jamal.engine.Processor;
 import javax0.jamal.tools.Input;
 
@@ -23,8 +24,8 @@ public class JamalGenerator extends AbstractGeneratorEx {
         final Processor processor;
         try {
             processor = new Processor("{{", "}}");
-        } catch (BadSyntax badSyntax) {
-            throw new GeciException("Jamal processor opening threw exception", badSyntax);
+        } catch (IllegalArgumentException ex) {
+            throw new GeciException("Jamal processor opening threw exception", ex);
         }
         var lines = source.getLines();
         var output = source.open();
@@ -45,7 +46,7 @@ public class JamalGenerator extends AbstractGeneratorEx {
                         state = PROCESSING.OUTPUT;
                         final String result;
                         try {
-                            result = processor.process(new Input(macro, source.getAbsoluteFile()));
+                            result = processor.process(new Input(macro.toString(), new Position(source.getAbsoluteFile())));
                         } catch (BadSyntax badSyntax) {
                             throw new GeciException("Macro processing in file '"
                                     + source.getAbsoluteFile() + "' threw exception", badSyntax);

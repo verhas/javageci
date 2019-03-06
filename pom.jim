@@ -1,0 +1,75 @@
+{@import version.jim}
+{@define project(_packaging,_projectContent)=<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+                            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+<packaging>_packaging</packaging>_projectContent</project>
+
+}
+
+{@define tag(_x)={@define _x(_y)=<_x>_y</_x>}}
+{#eval {@for _tag in (name,groupId,artifactId,version,scope,packaging,description,url,properties,build,pluginManagement,plugins,plugin,dependencyManagement,dependencies,scm,connection,developerConnection,executions,execution,id,goals,goal)=
+{tag/_tag}}}
+
+{@define GAV(_groupId,_artifactId,_version)=
+    {#if|_groupId|{groupId :_groupId}}
+    {#if|_artifactId|{artifactId :_artifactId}}
+    {#if|_version|{version :_version}}
+}
+
+{@define parent(_id)=<parent>{GAV :{GROUPID}:_id:{VERSION}}
+</parent>}
+
+{@define dependency(_groupId,_artifactId,_version)=
+<dependency>
+    {#if|_groupId|{groupId :_groupId}}
+    {#if|_artifactId|{artifactId :_artifactId}}
+    {#if|_version|{version :_version}}
+</dependency>}
+
+{@define dependencyGA(_groupId,_artifactId)=<dependency>
+{groupId/_groupId}
+{artifactId/_artifactId}
+</dependency>}
+
+{@define testDependency(_groupId,_artifactId,_version)=
+<dependency>
+{groupId/_groupId}
+{artifactId/_artifactId}
+{#if|_version|{version/_version}}
+<scope>test</scope>
+</dependency>}
+
+{@define providedDependency(_groupId,_artifactId,_version)=
+<dependency>
+{groupId/_groupId}
+{artifactId/_artifactId}
+{version/_version}
+<scope>provided</scope>
+</dependency>}
+
+{@define modules(Z)=<modules>
+{@for MODULE in (Z)=<module>MODULE</module>
+}</modules>}
+
+{@define license(_name,_url)=<licenses>
+<license>
+    <name>_name</name>
+    <url>_url</url>
+</license>
+</licenses>}
+
+{@define property(_name,_value)=<_name>_value</_name>}
+
+{@define developer(_name,_email)=   <developers>
+                                         <developer>
+                                             <name>_name</name>
+                                             <email>_email</email>
+                                         </developer>
+                                     </developers>}
+
+{@define github(_developer,_project)=    {scm|
+                                             {connection |scm:git:git://github.com/_developer/_project.git}
+                                             {developerConnection|scm:git:ssh://github.com/_developer/_project.git}
+                                             {url|https:/github.com/_developer/_project/tree/master}
+                                         }
+                                         {url|https:/github.com/_developer/_project/tree/master}}
