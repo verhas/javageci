@@ -11,10 +11,6 @@ import javax0.jamal.tools.Input;
 import java.util.regex.Pattern;
 
 public class JamalGenerator extends AbstractGeneratorEx {
-    private enum PROCESSING {
-        COPY, INSOURCE, OUTPUT
-    }
-
     private static final Pattern START = Pattern.compile("^\\s*/\\*!jamal\\s*$");
     private static final Pattern COMMENT_END = Pattern.compile("^\\s*\\*/\\s*$");
     private static final Pattern SEGMENT_END = Pattern.compile("^\\s*//__END__\\s*$");
@@ -31,13 +27,17 @@ public class JamalGenerator extends AbstractGeneratorEx {
         var output = source.open();
         var state = PROCESSING.COPY;
         var macro = new StringBuilder();
+        var lineNr = 0;
+        int positionLineNr = 0;
         for (final var line : lines) {
+            lineNr++;
             switch (state) {
                 case COPY:
                     output.write(line);
                     if (START.matcher(line).matches()) {
                         state = PROCESSING.INSOURCE;
                         macro.delete(0, macro.length());
+                        positionLineNr = lineNr;
                     }
                     break;
                 case INSOURCE:
@@ -46,7 +46,8 @@ public class JamalGenerator extends AbstractGeneratorEx {
                         state = PROCESSING.OUTPUT;
                         final String result;
                         try {
-                            result = processor.process(new Input(macro.toString(), new Position(source.getAbsoluteFile())));
+                            result = processor.process(new Input(macro.toString(),
+                                    new Position(source.getAbsoluteFile(), positionLineNr)));
                         } catch (BadSyntax badSyntax) {
                             throw new GeciException("Macro processing in file '"
                                     + source.getAbsoluteFile() + "' threw exception", badSyntax);
@@ -64,5 +65,9 @@ public class JamalGenerator extends AbstractGeneratorEx {
                     break;
             }
         }
+    }
+
+    private enum PROCESSING {
+        COPY, INSOURCE, OUTPUT
     }
 }
