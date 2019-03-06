@@ -9,7 +9,7 @@
 
     {dependencies#
         {@for MODULE in (api,core,engine,tools,annotation)=
-            {dependency :com.javax0.geci:javageci-MODULE:}}
+            {dependency :{GROUPID}:javageci-MODULE:}}
         {@for MODULE in (api,engine)=
             {dependency :org.junit.jupiter:junit-jupiter-MODULE:}}
     }
