@@ -50,6 +50,16 @@ public class MethodTool {
         return with(method).signature();
     }
 
+    public static String methodFingerprint(Method method){
+        return with(method).fingerprint();
+    }
+
+    public String fingerprint() {
+        final var className = Tools.getGenericTypeName(method.getDeclaringClass());
+        final var argList = Arrays.stream(method.getGenericParameterTypes()).map(Tools::getGenericTypeName).collect(Collectors.joining("|"));
+        return className + "."+method.getName()+"("+argList+")";
+    }
+
     public String signature() {
         final var types = method.getGenericParameterTypes();
         final var sb = new StringBuilder();

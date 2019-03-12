@@ -1,21 +1,57 @@
 package javax0.geci.jamal;
 
+import java.util.Map;
+
 public class PreprocessedFile {
+    public int a;
+    private Map myMap;
+
+    public String mimosa(Integer a, Map myMap) {
+        return null;
+    }
+
+
+    /*!jamal
+    {{@define z=13}}int i = {{z}};
+
+//        {{#for listedMethod in ({{#methods javax0.geci.jamal.PreprocessedFile|public}})=
+//         listedMethod
+//        }}
+    {{#eval {{#for listedFields in ({{#fields javax0.geci.jamal.PreprocessedFile|true}})=
+       {{@ident {{#modifiers listedFields}} void set{{#name listedFields}}({{#type listedFields}} {{#name listedFields}}){
+            this.{{#name listedFields}} = {{#name listedFields}};
+       } }}
+
+    }}}}
+
+     */
+    int i = 13;
+
+//        
+//         javax0.geci.jamal.PreprocessedFile.mimosa(Integer|java.util.Map)
+//        
+//         javax0.geci.jamal.PreprocessedFile.dummy()
+//        
+//         javax0.geci.jamal.PreprocessedFile.seta(int)
+//        
+    public  void seta(int a){
+            this.a = a;
+       } 
+
+
+        void seti(int i){
+            this.i = i;
+       } 
+
+
+       private  void setmyMap(java.util.Map myMap){
+            this.myMap = myMap;
+       } 
+
+
+    //__END__
     public void dummy() {
 
-        /*!jamal
-        //<editor-fold desc="the generated code">
-        {{@define z=13}}var i = {{z}};
-        //{{#methods PreprocessedFileMacros|javax0.geci.jamal.PreprocessedFile|public}}
-        //{{#PreprocessedFileMacros 0 signature}}
-        //</editor-fold>
-         */
-        //<editor-fold desc="the generated code">
-        var i = 13;
-        //0
-        //public void dummy()
-        //</editor-fold>
-        //__END__
 
         /*!jamal
         //<editor-fold desc="the generated code">

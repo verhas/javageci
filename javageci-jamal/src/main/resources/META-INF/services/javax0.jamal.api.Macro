@@ -1,1 +1,5 @@
 javax0.geci.jamal.Reflection$Methods
+javax0.geci.jamal.Reflection$Fields
+javax0.geci.jamal.Reflection$Modifiers
+javax0.geci.jamal.Reflection$Name
+javax0.geci.jamal.Reflection$Type
