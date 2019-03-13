@@ -2,11 +2,12 @@ package javax0.geci.fluent.internal;
 
 import javax0.geci.api.GeciException;
 import javax0.geci.fluent.FluentBuilder;
-import javax0.geci.tools.syntax.Lexer;
 import javax0.geci.fluent.syntax.Syntax;
 import javax0.geci.fluent.tree.Node;
 import javax0.geci.fluent.tree.Terminal;
 import javax0.geci.fluent.tree.Tree;
+import javax0.geci.tools.Tools;
+import javax0.geci.tools.syntax.Lexer;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class FluentBuilderImpl implements FluentBuilder {
     private String startMethod = null;
     private String interfaces = null;
     private String lastType = null;
+    private String lastName = null;
 
     public FluentBuilderImpl(Class<?> klass) {
         methods = new MethodCollection(klass);
@@ -102,7 +104,6 @@ public class FluentBuilderImpl implements FluentBuilder {
         return new FluentBuilderImpl(this);
     }
 
-
     private void assertClass(FluentBuilder... subs) {
         for (var sub : subs) {
             if (!(sub instanceof FluentBuilderImpl)) {
@@ -145,13 +146,9 @@ public class FluentBuilderImpl implements FluentBuilder {
 
     private Class getInterfaceClass(String interfaceName) {
         try {
-            return Class.forName(interfaceName);
-        } catch (ClassNotFoundException e) {
-            try {
-                return Class.forName("java.lang." + interfaceName);
-            } catch (ClassNotFoundException e1) {
-                throw new GeciException(interfaceName + " interface can not be found");
-            }
+            return Tools.classForName(interfaceName);
+        } catch (ClassNotFoundException e1) {
+            throw new GeciException(interfaceName + " interface can not be found");
         }
     }
 
@@ -287,8 +284,6 @@ public class FluentBuilderImpl implements FluentBuilder {
         next.nodes.add(tree);
         return next;
     }
-
-    private String lastName = null;
 
     public FluentBuilder name(String interfaceName) {
         if (interfaceName == null || interfaceName.length() == 0) {

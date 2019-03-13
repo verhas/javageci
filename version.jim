@@ -2,6 +2,5 @@
 version in a maven property because that cannot be used to reference the parent.
 }
 {@define VERSION=1.1.1-SNAPSHOT}
-{@define JAVA_VERSION=1.11}
 {@define JAVA_RELEASE=11}
 {@define GROUPID=com.javax0.geci}

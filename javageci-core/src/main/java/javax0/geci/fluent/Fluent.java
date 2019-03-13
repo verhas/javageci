@@ -11,6 +11,7 @@ import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
 import javax0.geci.tools.AbstractGenerator;
 import javax0.geci.tools.CompoundParams;
+import javax0.geci.tools.Tools;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -48,7 +49,7 @@ public class Fluent extends AbstractGenerator {
         var methodName = s.substring(sepPos + 2);
         final Class<?> klass;
         try {
-            klass = Class.forName(className);
+            klass = Tools.classForName(className);
         } catch (ClassNotFoundException e) {
             throw new GeciException("definedBy class '" + className + "' can not be found");
         }

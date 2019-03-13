@@ -21,6 +21,15 @@ public class Tools {
     private static final Pattern ANNOTATTION_PATTERN = Pattern.compile("@Geci\\(\"(.*)\"\\)");
     private static final Selector inheritedField = Selector.compile("!static & !private");
     private static final Selector inheritedFieldDifferentPackage = Selector.compile("!static & !private & !package");
+    private static final Map<String, Class<?>> PRIMITIVES = Map.of(
+            "byte", byte.class,
+            "char", char.class,
+            "short", short.class,
+            "int", int.class,
+            "long", long.class,
+            "float", float.class,
+            "double", double.class,
+            "boolean", boolean.class);
 
     /**
      * Get the strings of the values of the {@link Geci} annotations that are on the element parameter.
@@ -426,8 +435,8 @@ public class Tools {
     public static Field[] getAllFieldsSorted(Class<?> klass) {
         Set<Field> fields = new HashSet<>(Arrays.asList(klass.getDeclaredFields()));
         var superClass = klass.getSuperclass();
-        while( superClass != null ){
-            collectFields(klass,superClass,fields);
+        while (superClass != null) {
+            collectFields(klass, superClass, fields);
             superClass = superClass.getSuperclass();
         }
         final var allFields = fields.toArray(new Field[0]);
@@ -469,6 +478,86 @@ public class Tools {
         final var methods = klass.getDeclaredMethods();
         Arrays.sort(methods, Comparator.comparing(MethodTool::methodSignature));
         return methods;
+    }
+
+    /**
+     * The same as {@link #getDeclaredMethodsSorted(Class)} except it returns the methods and not the declared methods.
+     * It means that only the methods that are available from outside but including the inherited methods are returned.
+     *
+     * @param klass
+     * @return
+     */
+    public static Method[] getMethodsSorted(Class<?> klass) {
+        final var methods = klass.getMethods();
+        Arrays.sort(methods, Comparator.comparing(MethodTool::methodSignature));
+        return methods;
+    }
+
+    /**
+     * Get all the methods sorted: declared and inherited.
+     *
+     * @param klass
+     * @return
+     */
+    public static Method[] getAllMethodsSorted(Class<?> klass) {
+        final var methods = Arrays.stream(klass.getMethods()).collect(Collectors.toSet());
+        final var declaredMethods = Arrays.stream(klass.getDeclaredMethods()).collect(Collectors.toSet());
+        final var allMethods = new HashSet<>();
+        allMethods.addAll(methods);
+        allMethods.addAll(declaredMethods);
+        final var methodArray = allMethods.stream().toArray(Method[]::new);
+        Arrays.sort(methodArray, Comparator.comparing(MethodTool::methodSignature));
+        return methodArray;
+    }
+
+    public static Method getMethod(Class<?> klass, String methodName, Class<?>... classes) throws NoSuchMethodException {
+        try {
+            return klass.getDeclaredMethod(methodName, classes);
+        } catch (NoSuchMethodException ignored) {
+            return klass.getMethod(methodName, classes);
+        }
+    }
+
+    private static Class<?> classForNoArray(String className) throws ClassNotFoundException {
+        if (PRIMITIVES.containsKey(className)) {
+            return PRIMITIVES.get(className);
+        }
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException ignored) {
+            return Class.forName("java.lang." + className);
+        }
+    }
+
+    /**
+     * Get the class that is represented by the name {@code className}. This functionality extends the basic
+     * functionality provided by the static method {@link Class#forName(String)} so that it also works for
+     * for input strings {@code int}, {@code byte} and so on for all the eight primitive types and also
+     * it works for types that end with {@code []}, so when they are essentially arrays. This also works for primitives.
+     * <p>
+     * If the class cannot be found in the first round then this method tries it again prepending the {@code java.lang.}
+     * in front of the name given as argument, so Java language types can be referenced as, for example {@code Integer}
+     * and they do not need the fully qualified name.
+     * <p>
+     * Note that there are many everyday used types, like {@code Map}, which are NOT in the {@code java.lang} package.
+     * They have to be specified with the fully qualified name.
+     *
+     * @param className the name of the class or a primitive type optionally one or more {@code []} pairs at the end.
+     *                  The JVM limitation is that there can be at most 255 {@code []} pairs.
+     * @return the class
+     * @throws ClassNotFoundException if the class cannot be found
+     */
+    public static Class<?> classForName(String className) throws ClassNotFoundException {
+        var arrayCounter = 0;
+        while (className.endsWith("[]")) {
+            className = className.substring(0, className.length() - 2);
+            arrayCounter++;
+        }
+        var klass = classForNoArray(className);
+        while (arrayCounter-- > 0) {
+            klass = Array.newInstance(klass, 0).getClass();
+        }
+        return klass;
     }
 
     public static Separator separator(String sep) {

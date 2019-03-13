@@ -28,11 +28,29 @@ public class PreprocessedFile {
     int i = 13;
 
 //        
-//         javax0.geci.jamal.PreprocessedFile.mimosa(Integer|java.util.Map)
+//         javax0.geci.jamal.PreprocessedFile|mimosa|java.lang.Integer|java.util.Map
 //        
-//         javax0.geci.jamal.PreprocessedFile.dummy()
+//         java.lang.Object|toString
 //        
-//         javax0.geci.jamal.PreprocessedFile.seta(int)
+//         java.lang.Object|equals|java.lang.Object
+//        
+//         java.lang.Object|getClass
+//        
+//         java.lang.Object|notify
+//        
+//         java.lang.Object|notifyAll
+//        
+//         java.lang.Object|wait
+//        
+//         java.lang.Object|wait|long
+//        
+//         java.lang.Object|wait|long|int
+//        
+//         java.lang.Object|hashCode
+//        
+//         javax0.geci.jamal.PreprocessedFile|dummy
+//        
+//         javax0.geci.jamal.PreprocessedFile|seta|int
 //        
     public  void seta(int a){
             this.a = a;
