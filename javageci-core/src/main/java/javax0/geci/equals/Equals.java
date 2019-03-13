@@ -3,7 +3,8 @@ package javax0.geci.equals;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractGenerator;
 import javax0.geci.tools.CompoundParams;
-import javax0.geci.tools.Tools;
+import javax0.geci.tools.GeciReflectionTools;
+import javax0.geci.tools.syntax.GeciAnnotationTools;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -37,12 +38,12 @@ public class Equals extends AbstractGenerator {
     }
 
     private void generateEquals(Source source, Class<?> klass, CompoundParams global) throws Exception {
-        final var fields = Tools.getDeclaredFieldsSorted(klass);
+        final var fields = GeciReflectionTools.getDeclaredFieldsSorted(klass);
         final var gid = global.get("id");
         var segment = source.open(gid);
         var equalsMethod = getEqualsMethod(klass);
         var subclassingAllowed = global.is("subclass");
-        if (equalsMethod == null || Tools.isGenerated(equalsMethod)) {
+        if (equalsMethod == null || GeciAnnotationTools.isGenerated(equalsMethod)) {
             segment.write("@" + generatedAnnotation.getCanonicalName() + "(\"" + mnemonic() + "\")");
             segment.write("@Override");
             segment.write_r("public %sboolean equals(Object o) {", subclassingAllowed ? "final " : "");
@@ -58,7 +59,7 @@ public class Equals extends AbstractGenerator {
             for (final var field : fields) {
                 index--;
                 var isLast = index == 0;
-                var local = Tools.getParameters(field, mnemonic());
+                var local = GeciReflectionTools.getParameters(field, mnemonic());
                 var params = new CompoundParams(local, global);
                 var primitive = field.getType().isPrimitive();
                 if (isNeeded(field, params)) {
@@ -161,20 +162,20 @@ public class Equals extends AbstractGenerator {
     }
 
     private void generateHashCode(Source source, Class<?> klass, CompoundParams global) throws Exception {
-        final var fields = Tools.getDeclaredFieldsSorted(klass);
+        final var fields = GeciReflectionTools.getDeclaredFieldsSorted(klass);
         final var gid = global.get("id");
         var segment = source.open(gid);
         var hashCodeMethod = getHashCodeMethod(klass);
         var useObjects = global.is("useObjects");
-        if (hashCodeMethod == null || Tools.isGenerated(hashCodeMethod)) {
+        if (hashCodeMethod == null || GeciAnnotationTools.isGenerated(hashCodeMethod)) {
             segment.write("@javax0.geci.annotations.Generated(\"equals\")");
             segment.write("@Override");
             segment.write_r("public int hashCode() {");
             if (useObjects) {
                 var fieldNamesCSV = new StringBuilder();
-                var separator = Tools.separator(", ");
+                var separator = GeciReflectionTools.separator(", ");
                 for (final var field : fields) {
-                    var local = Tools.getParameters(field, mnemonic());
+                    var local = GeciReflectionTools.getParameters(field, mnemonic());
                     var params = new CompoundParams(local, global);
                     if (isNeeded(field, params)) {
                         fieldNamesCSV.append(separator.get()).append(field.getName());
@@ -191,7 +192,7 @@ public class Equals extends AbstractGenerator {
                 }
                 segment.newline();
                 for (final var field : fields) {
-                    var local = Tools.getParameters(field, mnemonic());
+                    var local = GeciReflectionTools.getParameters(field, mnemonic());
                     var params = new CompoundParams(local, global);
                     var primitive = field.getType().isPrimitive();
                     if (isNeeded(field, params)) {

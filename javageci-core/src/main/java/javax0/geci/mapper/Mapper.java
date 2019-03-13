@@ -3,7 +3,7 @@ package javax0.geci.mapper;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractGenerator;
 import javax0.geci.tools.CompoundParams;
-import javax0.geci.tools.Tools;
+import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.reflection.Selector;
 
 import java.io.IOException;
@@ -37,14 +37,14 @@ public class Mapper extends AbstractGenerator {
     }
 
     private void generateToMap(Source source, Class<?> klass, CompoundParams global) throws Exception {
-        final var fields = Tools.getAllFieldsSorted(klass);
+        final var fields = GeciReflectionTools.getAllFieldsSorted(klass);
         final var gid = global.get("id");
         var segment = source.open(gid);
         segment.write("@" + generatedAnnotation.getCanonicalName() + "(\"" + mnemonic() + "\")");
         segment.write_r("public java.util.Map<String,Object> toMap() {");
         segment.write("final java.util.Map<String,Object> map = new HashMap<>();");
         for (final var field : fields) {
-            final var local = Tools.getParameters(field, mnemonic());
+            final var local = GeciReflectionTools.getParameters(field, mnemonic());
             final var params = new CompoundParams(local, global);
             final var filter = params.get("filter", DEFAULTS);
             if (Selector.compile(filter).match(field)) {
@@ -81,7 +81,7 @@ public class Mapper extends AbstractGenerator {
     }
 
     private void generateFromMap(Source source, Class<?> klass, CompoundParams global) throws IOException {
-        final var fields = Tools.getAllFieldsSorted(klass);
+        final var fields = GeciReflectionTools.getAllFieldsSorted(klass);
         final var gid = global.get("id");
         var segment = source.open(gid);
         segment.write("@" + generatedAnnotation.getCanonicalName() + "(\"" + mnemonic() + "\")");
@@ -89,7 +89,7 @@ public class Mapper extends AbstractGenerator {
         final var factory = global.get("factory", "new " + klass.getSimpleName() + "()");
         segment.write("final %s it = %s;", klass.getSimpleName(), factory);
         for (final var field : fields) {
-            final var local = Tools.getParameters(field, mnemonic());
+            final var local = GeciReflectionTools.getParameters(field, mnemonic());
             final var params = new CompoundParams(local, global);
             final var filter = params.get("filter", DEFAULTS);
             if (Selector.compile(filter).match(field)) {

@@ -8,7 +8,7 @@ import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
 import javax0.geci.tools.JavaSource;
 import javax0.geci.tools.MethodTool;
-import javax0.geci.tools.Tools;
+import javax0.geci.tools.GeciReflectionTools;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -61,7 +61,7 @@ public class ClassBuilder {
         final var tree = new Tree(Node.ONCE, list);
         final var calculator = new LastNodeTypeCalculator(methods);
         final var exitType = calculator.getLastNodeReturnType(list.get(list.size() - 1));
-        final var lastInterface = Tools.normalizeTypeName(exitType);
+        final var lastInterface = GeciReflectionTools.normalizeTypeName(exitType);
         LOG.info("The last type is %s", lastInterface);
         final var interfaces = build(tree, lastInterface);
         final var code = JavaSource.builder();

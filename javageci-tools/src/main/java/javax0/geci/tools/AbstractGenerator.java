@@ -1,6 +1,7 @@
 package javax0.geci.tools;
 
 import javax0.geci.api.Source;
+import javax0.geci.tools.syntax.GeciAnnotationTools;
 
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -26,8 +27,8 @@ public abstract class AbstractGenerator extends AbstractGeneratorEx {
     public void processEx(Source source) throws Exception {
         final var klass = source.getKlass();
         if (klass != null) {
-            var global = Optional.ofNullable(Tools.getParameters(klass, mnemonic())).orElseGet(() ->
-                    Tools.getParameters(source, mnemonic(), "//", "", CLASS_LINE));
+            var global = Optional.ofNullable(GeciReflectionTools.getParameters(klass, mnemonic())).orElseGet(() ->
+                    GeciAnnotationTools.getParameters(source, mnemonic(), "//", "", CLASS_LINE));
             if (global != null) {
                 process(source, klass, global);
             }

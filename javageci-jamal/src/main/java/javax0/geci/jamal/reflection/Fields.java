@@ -1,7 +1,7 @@
 package javax0.geci.jamal.reflection;
 
 import javax0.geci.jamal.Reflection;
-import javax0.geci.tools.Tools;
+import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.reflection.Selector;
 import javax0.jamal.api.Input;
 import javax0.jamal.api.Macro;
@@ -25,13 +25,13 @@ public class Fields implements Macro {
             try {
                 final String className = matcher.group(1).trim();
                 Selector selector = Selector.compile(matcher.group(2));
-                Class<?> klass = Tools.classForName(className);
-                var declaredFields = Tools.getDeclaredFieldsSorted(klass);
+                Class<?> klass = GeciReflectionTools.classForName(className);
+                var declaredFields = GeciReflectionTools.getDeclaredFieldsSorted(klass);
                 var ret = new StringBuilder();
                 var list = Arrays.stream(declaredFields).filter(selector::match).collect(Collectors.toList());
                 var sep = "";
                 for (final var field : list) {
-                    final var fingerPrint = Tools.getGenericTypeName(klass) + "." + field.getName();
+                    final var fingerPrint = GeciReflectionTools.getGenericTypeName(klass) + "." + field.getName();
                     fieldMap.put(fingerPrint, field);
                     Reflection.globalFieldsMap.put(fingerPrint, field);
                     ret.append(sep).append(fingerPrint);

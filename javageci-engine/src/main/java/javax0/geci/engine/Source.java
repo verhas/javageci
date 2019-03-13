@@ -2,7 +2,7 @@ package javax0.geci.engine;
 
 
 import javax0.geci.api.GeciException;
-import javax0.geci.tools.Tools;
+import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.util.FileCollector;
 
 import java.io.IOException;
@@ -189,7 +189,7 @@ public class Source implements javax0.geci.api.Source {
     @Override
     public Class<?> getKlass() {
         try {
-            return Tools.classForName(className);
+            return GeciReflectionTools.classForName(className);
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
             return null;
         }

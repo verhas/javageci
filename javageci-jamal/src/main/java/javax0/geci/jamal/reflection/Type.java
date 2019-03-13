@@ -1,7 +1,7 @@
 package javax0.geci.jamal.reflection;
 
 import javax0.geci.jamal.Reflection;
-import javax0.geci.tools.Tools;
+import javax0.geci.tools.GeciReflectionTools;
 import javax0.jamal.api.Input;
 import javax0.jamal.api.Macro;
 import javax0.jamal.api.Processor;
@@ -24,6 +24,6 @@ public class Type implements Macro {
         } else {
             throw new IllegalArgumentException("Entity identified with " + entityName + " was not found.");
         }
-        return Tools.getGenericTypeName(type);
+        return GeciReflectionTools.getGenericTypeName(type);
     }
 }

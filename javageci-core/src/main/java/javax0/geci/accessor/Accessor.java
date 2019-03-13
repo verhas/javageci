@@ -5,7 +5,7 @@ import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractGenerator;
 import javax0.geci.tools.CompoundParams;
-import javax0.geci.tools.Tools;
+import javax0.geci.tools.GeciReflectionTools;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -20,18 +20,18 @@ public class Accessor extends AbstractGenerator {
 
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
-        final var accessMask = Tools.mask(global.get("include"), Modifier.PRIVATE);
+        final var accessMask = GeciReflectionTools.mask(global.get("include"), Modifier.PRIVATE);
         final var gid = global.get("id");
         source.init(gid);
-        final var fields = Tools.getDeclaredFieldsSorted(klass);
+        final var fields = GeciReflectionTools.getDeclaredFieldsSorted(klass);
         for (final var field : fields) {
-            var local = Tools.getParameters(field, mnemonic());
+            var local = GeciReflectionTools.getParameters(field, mnemonic());
             var isFinal = Modifier.isFinal(field.getModifiers());
             var params = new CompoundParams(local, global);
             if (params.isNot("exclude")) {
                 var name = nameAsString(field);
                 var capName = cap(name);
-                var fieldType = Tools.typeAsString(field);
+                var fieldType = GeciReflectionTools.typeAsString(field);
                 var access = params.get("access", "public");
                 var only = params.get("only");
                 if (matchMask(field, accessMask)) {
@@ -67,7 +67,7 @@ public class Accessor extends AbstractGenerator {
 
     private static boolean matchMask(Field field, int mask) {
         int modifiers = field.getModifiers();
-        if ((mask & Tools.PACKAGE) != 0 && (modifiers & NOT_PACKAGE) == 0) {
+        if ((mask & GeciReflectionTools.PACKAGE) != 0 && (modifiers & NOT_PACKAGE) == 0) {
             return true;
         }
         return (modifiers & mask) != 0;

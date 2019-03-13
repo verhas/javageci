@@ -1,6 +1,6 @@
 package javax0.geci.jamal.util;
 
-import javax0.geci.tools.Tools;
+import javax0.geci.tools.GeciReflectionTools;
 import javax0.jamal.api.BadSyntax;
 
 import java.lang.reflect.Method;
@@ -36,7 +36,7 @@ public class EntityStringer {
 
     private static Class<?> forName(String klassName){
         try {
-            return Tools.classForName(klassName);
+            return GeciReflectionTools.classForName(klassName);
         } catch (ClassNotFoundException e) {
             return null;
         }
@@ -49,13 +49,13 @@ public class EntityStringer {
                     "' is badly formatted, does not have 'class|name' parts.");
         }
         try {
-            final var klass = Tools.classForName(parts[0]);
+            final var klass = GeciReflectionTools.classForName(parts[0]);
             final var name = parts[1];
             if (parts.length > 2) {
                 final var argClasses = Arrays.stream(parts).skip(2).map(EntityStringer::forName).toArray( Class[]::new);
-                return Tools.getMethod(klass,name,argClasses);
+                return GeciReflectionTools.getMethod(klass,name,argClasses);
             } else {
-                return Tools.getMethod(klass,name);
+                return GeciReflectionTools.getMethod(klass,name);
             }
         } catch (ClassNotFoundException e) {
             throw new BadSyntax("Class in fingerprint '" + fingerprint + "' cannot be found.", e);

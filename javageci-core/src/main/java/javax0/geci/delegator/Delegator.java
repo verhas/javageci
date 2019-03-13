@@ -4,7 +4,7 @@ import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractDeclaredFieldsGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.MethodTool;
-import javax0.geci.tools.Tools;
+import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.reflection.Selector;
 
 import java.lang.annotation.Annotation;
@@ -32,7 +32,7 @@ public class Delegator extends AbstractDeclaredFieldsGenerator {
         final var id = params.get("id");
         final var filter = params.get("filter","public & !static");
         final var delClass = field.getType();
-        final var methods = Tools.getDeclaredMethodsSorted(delClass);
+        final var methods = GeciReflectionTools.getDeclaredMethodsSorted(delClass);
         final var name = field.getName();
         try (final var segment = source.open(id)) {
             for (final var method : methods) {

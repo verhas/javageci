@@ -3,7 +3,7 @@ package javax0.geci.test.tools.reflection;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Generator;
 import javax0.geci.api.Source;
-import javax0.geci.tools.Tools;
+import javax0.geci.tools.GeciReflectionTools;
 
 public class TestModifierBuilderGenerator implements Generator {
     private static final String[] a = new String[]{
@@ -35,7 +35,7 @@ public class TestModifierBuilderGenerator implements Generator {
     private void process0(Source source) throws Exception {
         final var klass = source.getKlass();
         if (klass != null) {
-            var global = Tools.getParameters(klass, "TestModifierBuilderGenerator");
+            var global = GeciReflectionTools.getParameters(klass, "TestModifierBuilderGenerator");
             if (global != null) {
                 try (var segment = source.open("allTests")) {
                     segment.write("assertEquals(new ModifiersBuilder(0).toString(), \"\");");

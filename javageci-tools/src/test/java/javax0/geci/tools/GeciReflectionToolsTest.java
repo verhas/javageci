@@ -1,6 +1,7 @@
 package javax0.geci.tools;
 
 import javax0.geci.api.Source;
+import javax0.geci.tools.syntax.GeciAnnotationTools;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class ToolsTest {
+public class GeciReflectionToolsTest {
     @javax0.geci.annotations.Geci("aaa a='b' b='c' c='d' a$='dollared' b3='bthree' _='-'")
     @javax0.geci.annotations.Geci("xxx x='x' y='y' z='z'")
     private static Object something;
@@ -24,7 +25,7 @@ public class ToolsTest {
 
     @Test
     void testParameterParser() {
-        var map = Tools.getParameters("a='b' b='c' c='d'");
+        var map = GeciAnnotationTools.getParameters("a='b' b='c' c='d'");
         assertEquals(map.size(), 3);
         assertEquals(map.get("a"), "b");
         assertEquals(map.get("b"), "c");
@@ -34,7 +35,7 @@ public class ToolsTest {
     @Test
     void testParameterFetcher() throws NoSuchFieldException {
         Field f = this.getClass().getDeclaredField("something");
-        var map = Tools.getParameters(f, "aaa");
+        var map = GeciReflectionTools.getParameters(f, "aaa");
         assertNotNull(map);
         assertEquals(map.get("a"), "b");
         assertEquals(map.get("b"), "c");
@@ -49,27 +50,27 @@ public class ToolsTest {
     void testTypeGetting() throws NoSuchMethodException, NoSuchFieldException {
         assertEquals(
                 "void",
-                Tools.typeAsString(this.getClass().getDeclaredMethod("testTypeGetting")));
+                GeciReflectionTools.typeAsString(this.getClass().getDeclaredMethod("testTypeGetting")));
         assertEquals(
                 "java.util.HashMap<java.util.Map<String,Integer>,Object>",
-                Tools.typeAsString(this.getClass().getDeclaredField("b")));
+                GeciReflectionTools.typeAsString(this.getClass().getDeclaredField("b")));
     }
 
     @Test
     void normalizesGenericNames() {
         Assertions.assertAll(
-                () -> assertEquals("String", Tools.normalizeTypeName("java.lang.String")),
-                () -> assertEquals("java.util.Map", Tools.normalizeTypeName("java.util.Map")),
+                () -> assertEquals("String", GeciReflectionTools.normalizeTypeName("java.lang.String")),
+                () -> assertEquals("java.util.Map", GeciReflectionTools.normalizeTypeName("java.util.Map")),
                 () -> assertEquals("java.util.Map<Integer,String>",
-                        Tools.normalizeTypeName("java.util.Map<java.lang.Integer,java.lang.String>")),
+                        GeciReflectionTools.normalizeTypeName("java.util.Map<java.lang.Integer,java.lang.String>")),
                 () -> assertEquals("java.util.Map<java.util.Set<Integer>,String>",
-                        Tools.normalizeTypeName("java.util.Map<java.util.Set<java.lang.Integer>,java.lang.String>")),
+                        GeciReflectionTools.normalizeTypeName("java.util.Map<java.util.Set<java.lang.Integer>,java.lang.String>")),
                 () -> assertEquals("java.util.Map<java.util.Set<Integer>,String>",
-                        Tools.normalizeTypeName("java.util.Map<java.util.Set< java.lang.Integer>,java.lang.String>")),
+                        GeciReflectionTools.normalizeTypeName("java.util.Map<java.util.Set< java.lang.Integer>,java.lang.String>")),
                 () -> assertEquals("java.util.Map<java.util.Set<com.java.lang.Integer>,String>",
-                        Tools.normalizeTypeName("java.util.Map<java.util.Set< com. java.lang.Integer>,java.lang.String>")),
+                        GeciReflectionTools.normalizeTypeName("java.util.Map<java.util.Set< com. java.lang.Integer>,java.lang.String>")),
                 () -> assertEquals("java.util.Map<java.util.Set<? extends com.java.lang.Integer>,String>",
-                        Tools.normalizeTypeName("java.util.Map<java.util.Set<? extends    com. java.lang.Integer> , java.lang.String>"))
+                        GeciReflectionTools.normalizeTypeName("java.util.Map<java.util.Set<? extends    com. java.lang.Integer> , java.lang.String>"))
         );
     }
 
@@ -84,10 +85,10 @@ public class ToolsTest {
     @Test
     void normalizeType() {
         Assertions.assertAll(
-                () -> assertEquals("java.util.Set<java.util.Map.Entry<K,V>>", Tools.getGenericTypeName(Map.class.getDeclaredMethod("entrySet").getGenericReturnType())),
-                () -> assertEquals("java.util.Map.Entry", Tools.getGenericTypeName(java.util.Map.Entry.class)),
-                () -> assertEquals("java.util.Map.Entry<String,Integer>[]", Tools.getGenericTypeName(this.getClass().getDeclaredMethod("m1").getGenericReturnType())),
-                () -> assertEquals("java.util.Map.Entry<? extends String,? super Integer>[]", Tools.getGenericTypeName(this.getClass().getDeclaredMethod("m2").getGenericReturnType()))
+                () -> assertEquals("java.util.Set<java.util.Map.Entry<K,V>>", GeciReflectionTools.getGenericTypeName(Map.class.getDeclaredMethod("entrySet").getGenericReturnType())),
+                () -> assertEquals("java.util.Map.Entry", GeciReflectionTools.getGenericTypeName(java.util.Map.Entry.class)),
+                () -> assertEquals("java.util.Map.Entry<String,Integer>[]", GeciReflectionTools.getGenericTypeName(this.getClass().getDeclaredMethod("m1").getGenericReturnType())),
+                () -> assertEquals("java.util.Map.Entry<? extends String,? super Integer>[]", GeciReflectionTools.getGenericTypeName(this.getClass().getDeclaredMethod("m2").getGenericReturnType()))
         );
 
     }
@@ -104,7 +105,7 @@ public class ToolsTest {
             }
         };
 
-        var map = Tools.getParameters(testSource, "aaa", "//", null, Pattern.compile(".*something;.*"));
+        var map = GeciAnnotationTools.getParameters(testSource, "aaa", "//", null, Pattern.compile(".*something;.*"));
         assertNotNull(map);
         assertEquals(map.get("a"), "b");
         assertEquals(map.get("b"), "c");
@@ -120,7 +121,7 @@ public class ToolsTest {
     @DisplayName("Get the gecis from the standard annotations")
     @javax0.geci.annotations.Geci("barbarumba k1='v1' k2='v2'")
     void getGecisFromAnnotation() throws NoSuchMethodException {
-        final var gecis = Tools.getGecis(this.getClass().getDeclaredMethod("getGecisFromAnnotation"));
+        final var gecis = GeciAnnotationTools.getGecis(this.getClass().getDeclaredMethod("getGecisFromAnnotation"));
         Assertions.assertEquals(1, gecis.length);
         Assertions.assertEquals("barbarumba k1='v1' k2='v2'", gecis[0]);
     }
@@ -134,18 +135,18 @@ public class ToolsTest {
 
     @Test
     @DisplayName("Get the gecis from own annotations")
-    @ToolsTest.Geci("barbarumba k1='v1' k2='v2'")
+    @GeciReflectionToolsTest.Geci("barbarumba k1='v1' k2='v2'")
     void getGecisFromOwnAnnotation() throws NoSuchMethodException {
-        final var gecis = Tools.getGecis(this.getClass().getDeclaredMethod("getGecisFromOwnAnnotation"));
+        final var gecis = GeciAnnotationTools.getGecis(this.getClass().getDeclaredMethod("getGecisFromOwnAnnotation"));
         Assertions.assertEquals(1, gecis.length);
         Assertions.assertEquals("barbarumba k1='v1' k2='v2'", gecis[0]);
     }
 
     @Test
     @DisplayName("Get the gecis from own annotations with annotation parameter")
-    @ToolsTest.Geci(value = "barbarumba k2='v2'", k1 = "v1")
+    @GeciReflectionToolsTest.Geci(value = "barbarumba k2='v2'", k1 = "v1")
     void getGecisFromOwnAnnotationParams() throws NoSuchMethodException {
-        final var gecis = Tools.getGecis(this.getClass().getDeclaredMethod("getGecisFromOwnAnnotationParams"));
+        final var gecis = GeciAnnotationTools.getGecis(this.getClass().getDeclaredMethod("getGecisFromOwnAnnotationParams"));
         Assertions.assertEquals(1, gecis.length);
         Assertions.assertEquals("barbarumba k2='v2' k1='v1'", gecis[0]);
     }

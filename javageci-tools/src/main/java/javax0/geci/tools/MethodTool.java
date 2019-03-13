@@ -65,16 +65,16 @@ public class MethodTool {
         }
         var arglist = sb.toString();
         var exceptionlist = Arrays.stream(method.getGenericExceptionTypes())
-                .map(Tools::getGenericTypeName)
+                .map(GeciReflectionTools::getGenericTypeName)
                 .collect(Collectors.joining(","));
         final String modifiers;
         if (isPublic) {
-            modifiers = (isInterface ? "" : "public " + Tools.modifiersStringNoAccess(method));
+            modifiers = (isInterface ? "" : "public " + GeciReflectionTools.modifiersStringNoAccess(method));
         } else {
-            modifiers = (isInterface ? "" : (Tools.modifiersString(method)));
+            modifiers = (isInterface ? "" : (GeciReflectionTools.modifiersString(method)));
         }
         return modifiers +
-                (type == null ? Tools.typeAsString(method) : type) +
+                (type == null ? GeciReflectionTools.typeAsString(method) : type) +
                 " " +
                 decoratedName(method) +
                 "(" + arglist + ")" +
@@ -90,18 +90,18 @@ public class MethodTool {
     }
 
     public String getArgCall(Type t) {
-        final var normType = Tools.getGenericTypeName(t);
+        final var normType = GeciReflectionTools.getGenericTypeName(t);
         return "arg" + argCounter.addAndGet(1);
     }
 
     public String getVarArg(Type t) {
-        final var normType = Tools.getGenericTypeName(t);
+        final var normType = GeciReflectionTools.getGenericTypeName(t);
         final String actualType = normType.substring(0, normType.length() - 2) + "... ";
         return actualType + " arg" + argCounter.addAndGet(1);
     }
 
     public String getArg(Type t) {
-        final var normType = Tools.getGenericTypeName(t);
+        final var normType = GeciReflectionTools.getGenericTypeName(t);
         return normType + " arg" + argCounter.addAndGet(1);
     }
 

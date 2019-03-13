@@ -1,23 +1,13 @@
 package javax0.geci.jamal;
 
-import javax0.geci.tools.Tools;
 import javax0.geci.tools.reflection.ModifiersBuilder;
-import javax0.geci.tools.reflection.Selector;
 import javax0.jamal.api.Input;
 import javax0.jamal.api.Macro;
 import javax0.jamal.api.Processor;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import static javax0.geci.tools.MethodTool.with;
 
 public class Reflection {
 

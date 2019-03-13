@@ -6,7 +6,7 @@ import javax0.geci.fluent.syntax.Syntax;
 import javax0.geci.fluent.tree.Node;
 import javax0.geci.fluent.tree.Terminal;
 import javax0.geci.fluent.tree.Tree;
-import javax0.geci.tools.Tools;
+import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.syntax.Lexer;
 
 import java.lang.reflect.Method;
@@ -146,7 +146,7 @@ public class FluentBuilderImpl implements FluentBuilder {
 
     private Class getInterfaceClass(String interfaceName) {
         try {
-            return Tools.classForName(interfaceName);
+            return GeciReflectionTools.classForName(interfaceName);
         } catch (ClassNotFoundException e1) {
             throw new GeciException(interfaceName + " interface can not be found");
         }

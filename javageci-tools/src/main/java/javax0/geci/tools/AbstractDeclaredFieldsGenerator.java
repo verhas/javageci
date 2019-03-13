@@ -9,9 +9,9 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractGenerator 
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
         preprocess(source, klass, global);
-        final var fields = Tools.getDeclaredFieldsSorted(klass);
+        final var fields = GeciReflectionTools.getDeclaredFieldsSorted(klass);
         for (final var field : fields) {
-            var params = Tools.getParameters(field, mnemonic());
+            var params = GeciReflectionTools.getParameters(field, mnemonic());
             if (params != null) {
                 processField(source, klass, new CompoundParams(params, global), field);
             }

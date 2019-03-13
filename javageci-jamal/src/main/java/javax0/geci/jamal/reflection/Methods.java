@@ -1,17 +1,13 @@
 package javax0.geci.jamal.reflection;
 
-import javax0.geci.jamal.Reflection;
 import javax0.geci.jamal.util.EntityStringer;
-import javax0.geci.tools.Tools;
+import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.reflection.Selector;
 import javax0.jamal.api.Input;
 import javax0.jamal.api.Macro;
 import javax0.jamal.api.Processor;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -30,8 +26,8 @@ public class Methods implements Macro {
             try {
                 final String className = matcher.group(1).trim();
                 Selector selector = Selector.compile(matcher.group(2));
-                Class<?> klass = Tools.classForName(className);
-                var declaredMethods = Tools.getAllMethodsSorted(klass);
+                Class<?> klass = GeciReflectionTools.classForName(className);
+                var declaredMethods = GeciReflectionTools.getAllMethodsSorted(klass);
                 var ret = new StringBuilder();
                 var list = Arrays.stream(declaredMethods).filter(selector::match).collect(Collectors.toList());
                 var sep = "";
