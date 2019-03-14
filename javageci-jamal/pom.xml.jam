@@ -12,6 +12,9 @@
             {dependency :{GROUPID}:javageci-MODULE:}}
         {@for MODULE in (api,engine)=
             {dependency :org.junit.jupiter:junit-jupiter-MODULE:}}
-        {dependency :com.javax0.jamal:jamal-engine:1.0.2}
+        {@define JAMAL=com.javax0.jamal}
+        {@define JAMAL_VERSION=1.0.2}
+        {dependency :{JAMAL}:jamal-engine:{JAMAL_VERSION}}
+        {testDependency :{JAMAL}:jamal-testsupport:{JAMAL_VERSION}}
     }
 }

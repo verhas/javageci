@@ -8,6 +8,8 @@ import javax0.geci.tools.syntax.GeciAnnotationTools;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class GeciReflectionTools {
@@ -306,6 +308,14 @@ public class GeciReflectionTools {
         }
     }
 
+    public static Field getField(Class<?> klass, String fieldName) throws NoSuchFieldException {
+        try {
+            return klass.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException ignored) {
+            return klass.getField(fieldName);
+        }
+    }
+
     private static Class<?> classForNoArray(String className) throws ClassNotFoundException {
         if (PRIMITIVES.containsKey(className)) {
             return PRIMITIVES.get(className);
@@ -348,8 +358,30 @@ public class GeciReflectionTools {
         return klass;
     }
 
-    public static Separator separator(String sep) {
-        return new Separator(sep);
+    /**
+     * Convert an int containing modifiers bits to string containing the Java names of the modifiers space separated.
+     *
+     * @param modifiers to be converted to string
+     * @return the space separated modifiers or empty string in case there is no modifier bit set in {@code modifiers}
+     */
+    public static String unmask(int modifiers) {
+        final StringBuilder s = new StringBuilder();
+        final BiConsumer<Predicate<Integer>, String> check = (Predicate<Integer> predicate, String text) -> {
+            if (predicate.test(modifiers)) {
+                s.append(text);
+            }
+        };
+        check.accept(Modifier::isPrivate, "private ");
+        check.accept(Modifier::isProtected, "protected ");
+        check.accept(Modifier::isPublic, "public ");
+        check.accept(Modifier::isFinal, "final ");
+        check.accept(Modifier::isStatic, "static ");
+        check.accept(Modifier::isSynchronized, "synchronized ");
+        check.accept(Modifier::isVolatile, "volatile ");
+        check.accept(Modifier::isStrict, "strictfp ");
+        check.accept(Modifier::isAbstract, "abstract ");
+        check.accept(Modifier::isTransient, "transient ");
+        return s.toString().trim();
     }
 
     /**
@@ -364,68 +396,53 @@ public class GeciReflectionTools {
     public static int mask(String masks, int dfault) {
         int modMask = 0;
         if (masks == null) {
-            modMask = dfault;
+            return dfault;
         } else {
-            for (var maskString : masks.split(",")) {
+            for (var maskString : masks.split(",", -1)) {
                 var maskTrimmed = maskString.trim();
-                if (maskTrimmed.equals("private")) {
-                    modMask |= Modifier.PRIVATE;
-                }
-                if (maskTrimmed.equals("public")) {
-                    modMask |= Modifier.PUBLIC;
-                }
-                if (maskTrimmed.equals("protected")) {
-                    modMask |= Modifier.PROTECTED;
-                }
-                if (maskTrimmed.equals("static")) {
-                    modMask |= Modifier.STATIC;
-                }
-                if (maskTrimmed.equals("package")) {
-                    modMask |= GeciReflectionTools.PACKAGE;//reuse the bit
-                }
-                if (maskTrimmed.equals("abstract")) {
-                    modMask |= Modifier.ABSTRACT;
-                }
-                if (maskTrimmed.equals("final")) {
-                    modMask |= Modifier.FINAL;
-                }
-                if (maskTrimmed.equals("interface")) {
-                    modMask |= Modifier.INTERFACE;
-                }
-                if (maskTrimmed.equals("synchronized")) {
-                    modMask |= Modifier.SYNCHRONIZED;
-                }
-                if (maskTrimmed.equals("native")) {
-                    modMask |= Modifier.NATIVE;
-                }
-                if (maskTrimmed.equals("transient")) {
-                    modMask |= Modifier.TRANSIENT;
-                }
-                if (maskTrimmed.equals("volatile")) {
-                    modMask |= Modifier.VOLATILE;
+                switch (maskTrimmed) {
+
+                    case "private":
+                        modMask |= Modifier.PRIVATE;
+                        break;
+                    case "public":
+                        modMask |= Modifier.PUBLIC;
+                        break;
+                    case "protected":
+                        modMask |= Modifier.PROTECTED;
+                        break;
+                    case "static":
+                        modMask |= Modifier.STATIC;
+                        break;
+                    case "package":
+                        modMask |= GeciReflectionTools.PACKAGE;//reuse the bit
+                        break;
+                    case "abstract":
+                        modMask |= Modifier.ABSTRACT;
+                        break;
+                    case "final":
+                        modMask |= Modifier.FINAL;
+                        break;
+                    case "interface":
+                        modMask |= Modifier.INTERFACE;
+                        break;
+                    case "synchronized":
+                        modMask |= Modifier.SYNCHRONIZED;
+                        break;
+                    case "native":
+                        modMask |= Modifier.NATIVE;
+                        break;
+                    case "transient":
+                        modMask |= Modifier.TRANSIENT;
+                        break;
+                    case "volatile":
+                        modMask |= Modifier.VOLATILE;
+                        break;
+                    default:
+                        throw new IllegalArgumentException(maskTrimmed + " can not be used as a modifier string");
                 }
             }
+            return modMask;
         }
-        return modMask;
     }
-
-    public static class Separator {
-        private final String sep;
-        private boolean first = true;
-
-        private Separator(String sep) {
-            this.sep = sep;
-        }
-
-        public String get() {
-            if (first) {
-                first = false;
-                return "";
-            } else {
-                return sep;
-            }
-        }
-
-    }
-
 }

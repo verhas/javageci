@@ -14,10 +14,10 @@ public class PreprocessedFile {
     /*!jamal
     {{@define z=13}}int i = {{z}};
 
-//        {{#for listedMethod in ({{#methods javax0.geci.jamal.PreprocessedFile|public}})=
-//         listedMethod
-//        }}
-    {{#eval {{#for listedFields in ({{#fields javax0.geci.jamal.PreprocessedFile|true}})=
+//        {{#for listedMethod in ({{#methods javax0.geci.jamal.PreprocessedFile/public}})=
+//         listedMethod {{@comment
+//}}        }}
+    {{#eval {{#for listedFields in ({{#fields javax0.geci.jamal.PreprocessedFile/true}})=
        {{@ident {{#modifiers listedFields}} void set{{#name listedFields}}({{#type listedFields}} {{#name listedFields}}){
             this.{{#name listedFields}} = {{#name listedFields}};
        } }}
@@ -28,31 +28,19 @@ public class PreprocessedFile {
     int i = 13;
 
 //        
-//         javax0.geci.jamal.PreprocessedFile|mimosa|java.lang.Integer|java.util.Map
-//        
-//         java.lang.Object|toString
-//        
-//         java.lang.Object|equals|java.lang.Object
-//        
-//         java.lang.Object|getClass
-//        
-//         java.lang.Object|notify
-//        
-//         java.lang.Object|notifyAll
-//        
-//         java.lang.Object|wait
-//        
-//         java.lang.Object|wait|long
-//        
-//         java.lang.Object|wait|long|int
-//        
-//         java.lang.Object|hashCode
-//        
-//         javax0.geci.jamal.PreprocessedFile|dummy
-//        
-//         javax0.geci.jamal.PreprocessedFile|seta|int
-//        
-    public  void seta(int a){
+//         javax0.geci.jamal.PreprocessedFile|mimosa|java.lang.Integer|java.util.Map         
+//         java.lang.Object|toString|         
+//         java.lang.Object|equals|java.lang.Object         
+//         java.lang.Object|getClass|         
+//         java.lang.Object|notify|         
+//         java.lang.Object|notifyAll|         
+//         java.lang.Object|wait|         
+//         java.lang.Object|wait|long         
+//         java.lang.Object|wait|long|int         
+//         java.lang.Object|hashCode|         
+//         javax0.geci.jamal.PreprocessedFile|dummy|         
+//         javax0.geci.jamal.PreprocessedFile|seta|int         
+    public void seta(int a){
             this.a = a;
        } 
 
@@ -62,7 +50,7 @@ public class PreprocessedFile {
        } 
 
 
-       private  void setmyMap(java.util.Map myMap){
+       private void setmyMap(java.util.Map myMap){
             this.myMap = myMap;
        } 
 

@@ -18,7 +18,7 @@ public class EntityStringerTest {
     @Test
     @DisplayName("creates the expected fingerprint for the methods")
     void testMethod2Fingerprint() throws NoSuchMethodException {
-        Assertions.assertEquals("javax0.geci.jamal.util.EntityStringerTest|argless", EntityStringer.method2Fingerprint(EntityStringerTest.class.getDeclaredMethod("argless")));
+        Assertions.assertEquals("javax0.geci.jamal.util.EntityStringerTest|argless|", EntityStringer.method2Fingerprint(EntityStringerTest.class.getDeclaredMethod("argless")));
         Assertions.assertEquals("javax0.geci.jamal.util.EntityStringerTest|arg1pri|int[][]", EntityStringer.method2Fingerprint(EntityStringerTest.class.getDeclaredMethod("arg1pri", int[][].class)));
         Assertions.assertEquals("javax0.geci.jamal.util.EntityStringerTest|arg1obj|java.lang.Integer", EntityStringer.method2Fingerprint(EntityStringerTest.class.getDeclaredMethod("arg1obj",Integer.class)));
         Assertions.assertEquals("javax0.geci.jamal.util.EntityStringerTest|arg1objarr|java.util.Map|java.util.Set[]", EntityStringer.method2Fingerprint(EntityStringerTest.class.getDeclaredMethod("arg1objarr",Map.class,Set[].class)));

@@ -1,6 +1,5 @@
 package javax0.geci.jamal.reflection;
 
-import javax0.geci.jamal.Reflection;
 import javax0.jamal.api.Input;
 import javax0.jamal.api.Macro;
 import javax0.jamal.api.Processor;
@@ -12,17 +11,11 @@ import javax0.jamal.api.Processor;
 public class Name implements Macro {
     @Override
     public String evaluate(Input in, Processor processor) {
-        final var entityName = in.toString().trim();
-        final String name;
-        if (Reflection.globalFieldsMap.containsKey(entityName)) {
-            var field = Reflection.globalFieldsMap.get(entityName);
-            name = field.getName();
-        } else if (Reflection.globalMethodMap.containsKey(entityName)) {
-            var method = Reflection.globalMethodMap.get(entityName);
-            name = method.getName();
-        } else {
-            throw new IllegalArgumentException("Entity identified with " + entityName + " was not found.");
+        final var fingerPrint = in.toString().trim();
+        final var parts = fingerPrint.split("\\|", -1);
+        if (parts.length < 2) {
+            throw new IllegalArgumentException("Entity identified with " + fingerPrint + " does not have name.");
         }
-        return name;
+        return parts[1];
     }
 }

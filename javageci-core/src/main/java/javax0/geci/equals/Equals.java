@@ -173,12 +173,13 @@ public class Equals extends AbstractGenerator {
             segment.write_r("public int hashCode() {");
             if (useObjects) {
                 var fieldNamesCSV = new StringBuilder();
-                var separator = GeciReflectionTools.separator(", ");
+                var separator = "";
                 for (final var field : fields) {
                     var local = GeciReflectionTools.getParameters(field, mnemonic());
                     var params = new CompoundParams(local, global);
                     if (isNeeded(field, params)) {
-                        fieldNamesCSV.append(separator.get()).append(field.getName());
+                        fieldNamesCSV.append(separator).append(field.getName());
+                        separator = ", ";
                     }
                 }
                 segment.write("return Objects.hash(%s);", fieldNamesCSV);
