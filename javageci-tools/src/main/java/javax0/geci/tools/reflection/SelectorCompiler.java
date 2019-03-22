@@ -8,7 +8,7 @@ import java.util.Arrays;
 /**
  * <ul>
  * <li>EXPRESSION ::= EXPRESSION1 ['|' EXPRESSION1 ]+ </li>
- * <li>EXPRESSION1 ::= EXPRESSION2 ['&mp;' EXPRESSION2] +</li>
+ * <li>EXPRESSION1 ::= EXPRESSION2 ['&amp;' EXPRESSION2] +</li>
  * <li>EXPRESSION2 :== TERMINAL | '!' EXPRESSION2 | '(' EXPRESSION ')' </li>
  * <li>TERMINAL ::= MODIFIER | PSEUDO_MODIFIER | name '~' REGEX | signature '~' REGEX |
  * annotation ~ REGEX | returns ~ REGEX | CALLER_DEFINED_SELECTOR</li>

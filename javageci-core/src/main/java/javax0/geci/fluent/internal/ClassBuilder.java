@@ -181,7 +181,7 @@ public class ClassBuilder {
     private String build(Terminal terminal, String nextInterface) {
         interfaceName = ifNameFactory.getNewName(terminal);
         var code = new JavaSource();
-        var list = InterfaceList.builderFor(methods)
+        var list = InterfaceSet.builderFor(methods)
                 .when((terminal.getModifier() & (Node.OPTIONAL | Node.ZERO_OR_MORE)) != 0).then(nextInterface, fluent.getInterfaces())
                 .buildList();
         try (var ifcB = code.open("public interface %s%s ", interfaceName, list)) {
@@ -248,7 +248,7 @@ public class ClassBuilder {
             alternativeInterfaces.add(builder.interfaceName);
         }
         this.interfaceName = ifNameFactory.getNewName(tree);
-        var ifs = InterfaceList.builderFor(methods).set(fluent.getInterfaces()).set(alternativeInterfaces).buildList();
+        var ifs = InterfaceSet.builderFor(methods).set(fluent.getInterfaces()).set(alternativeInterfaces).buildList();
         try (var ifcB = code.open("public interface %s%s", this.interfaceName, ifs)) {
         }
         return code.toString();
@@ -269,7 +269,7 @@ public class ClassBuilder {
         var code = new JavaSource();
         this.interfaceName = ifNameFactory.getNewName(tree);
         ClassBuilder lastBuilder = buildNodeList(this.interfaceName, list, code);
-        var ifs = InterfaceList.builderFor(methods).set(nextInterface, lastBuilder.interfaceName, fluent.getInterfaces()).buildList();
+        var ifs = InterfaceSet.builderFor(methods).set(nextInterface, lastBuilder.interfaceName, fluent.getInterfaces()).buildList();
         code.write("public interface %s%s {}", this.interfaceName, ifs);
         return code.toString();
     }
@@ -279,7 +279,7 @@ public class ClassBuilder {
         var code = new JavaSource();
         this.interfaceName = ifNameFactory.getNewName(tree);
         ClassBuilder lastBuilder = buildNodeList(nextInterface, list, code);
-        var ifs = InterfaceList.builderFor(methods).set(nextInterface, lastBuilder.interfaceName, fluent.getInterfaces()).buildList();
+        var ifs = InterfaceSet.builderFor(methods).set(nextInterface, lastBuilder.interfaceName, fluent.getInterfaces()).buildList();
         code.write("public interface %s%s {}", this.interfaceName, ifs);
         return code.toString();
     }

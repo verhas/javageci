@@ -88,7 +88,11 @@ public class CompoundParams {
      * order they were specified in the constructor. If the key is not found then {@code ""} is returned.
      * <p>
      * The key "id" is handled in a special way. In case there is no "id" defined in the parameters then the
-     * identifier of the parameter set is returned.
+     * identifier of the parameter set is returned. In the nomal use case that is the mnemonic of the actual
+     * generator calling this method. That way generators can get the "id" of the segment they are supposed to
+     * write that has the same name as the generator and the using code does not need to specify it in the "id"
+     * parameter. This is a simple convention over configuration simplification that is implemented by all the
+     * generators, which use this method to get the "id" to identify the segment where to write the generated code.
      *
      * @param key the name of the parameter.
      * @return the parameter or {@code ""} if the parameter is not defined. In case the key is {@code "id"} and is

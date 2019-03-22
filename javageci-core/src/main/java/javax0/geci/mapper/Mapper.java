@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class Mapper extends AbstractGenerator {
 
-    public static final String DEFAULTS = "!transient & !static";
+    private static final String DEFAULTS = "!transient & !static";
     private final Class<? extends Annotation> generatedAnnotation;
 
     public Mapper() {
@@ -42,7 +42,15 @@ public class Mapper extends AbstractGenerator {
         var segment = source.open(gid);
         segment.write("@" + generatedAnnotation.getCanonicalName() + "(\"" + mnemonic() + "\")");
         segment.write_r("public java.util.Map<String,Object> toMap() {");
-        segment.write("final java.util.Map<String,Object> map = new HashMap<>();");
+        segment.write("return toMap0( new java.util.IdentityHashMap<>());");
+        segment.write_l("}");
+        segment.write("@" + generatedAnnotation.getCanonicalName() + "(\"" + mnemonic() + "\")");
+        segment.write_r("public java.util.Map<String,Object> toMap0(java.util.Map<Object, java.util.Map> cache) {");
+        segment.write_r("if( cache.containsKey(this) ){");
+        segment.write("return cache.get(this);");
+        segment.write_l("}");
+        segment.write("final java.util.Map<String,Object> map = new java.util.HashMap<>();");
+        segment.write("cache.put(this,map);");
         for (final var field : fields) {
             final var local = GeciReflectionTools.getParameters(field, mnemonic());
             final var params = new CompoundParams(local, global);
@@ -50,7 +58,7 @@ public class Mapper extends AbstractGenerator {
             if (Selector.compile(filter).match(field)) {
                 final var name = field.getName();
                 if (hasToMap(field.getType())) {
-                    segment.write("map.put(\"%s\",%s.toMap());", name, name);
+                    segment.write("map.put(\"%s\", %s == null ? null : %s.toMap0(cache));", name, name, name);
                 } else {
                     segment.write("map.put(\"%s\",%s);", name, name);
                 }
@@ -64,6 +72,7 @@ public class Mapper extends AbstractGenerator {
     private boolean hasToMap(Class<?> type) {
         try {
             type.getDeclaredMethod("toMap");
+            type.getDeclaredMethod("toMap0",Map.class);
             return true;
         } catch (NoSuchMethodException ignored) {
             return false;
@@ -73,6 +82,7 @@ public class Mapper extends AbstractGenerator {
     private boolean hasFromMap(Class<?> type) {
         try {
             type.getDeclaredMethod("fromMap", Map.class);
+            type.getDeclaredMethod("fromMap0", Map.class, Map.class);
             return true;
         } catch (NoSuchMethodException ignored) {
             return false;
@@ -86,8 +96,15 @@ public class Mapper extends AbstractGenerator {
         var segment = source.open(gid);
         segment.write("@" + generatedAnnotation.getCanonicalName() + "(\"" + mnemonic() + "\")");
         segment.write_r("public static %s fromMap(java.util.Map map) {", klass.getSimpleName());
+        segment.write("return fromMap0(map,new java.util.IdentityHashMap<>());");
+        segment.write_l("}");
+        segment.write_r("public static %s fromMap0(java.util.Map map,java.util.Map<java.util.Map,Object> cache) {", klass.getSimpleName());
+        segment.write_r("if( cache.containsKey(map)){");
+        segment.write("return (%s)cache.get(map);",klass.getSimpleName());
+        segment.write_l("}");
         final var factory = global.get("factory", "new " + klass.getSimpleName() + "()");
         segment.write("final %s it = %s;", klass.getSimpleName(), factory);
+        segment.write("cache.put(map,it);");
         for (final var field : fields) {
             final var local = GeciReflectionTools.getParameters(field, mnemonic());
             final var params = new CompoundParams(local, global);
@@ -95,7 +112,7 @@ public class Mapper extends AbstractGenerator {
             if (Selector.compile(filter).match(field)) {
                 final var name = field.getName();
                 if (hasFromMap(field.getType())) {
-                    segment.write("it.%s = %s.fromMap((java.util.Map<String,Object>)map.get(\"%s\"));",
+                    segment.write("it.%s = %s.fromMap0((java.util.Map<String,Object>)map.get(\"%s\"),cache);",
                             name,
                             field.getType().getCanonicalName(),
                             name);
