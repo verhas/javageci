@@ -9,18 +9,31 @@ import javax0.geci.tools.reflection.Selector;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Map;
+import java.util.function.Function;
 
 public class Mapper extends AbstractGenerator {
 
     private static final String DEFAULTS = "!transient & !static";
     private final Class<? extends Annotation> generatedAnnotation;
+    private final Function<String,String> field2MapKeyMapper;
 
     public Mapper() {
         generatedAnnotation = javax0.geci.annotations.Generated.class;
+        field2MapKeyMapper = s -> s;
     }
 
     public Mapper(Class<? extends Annotation> generatedAnnotation) {
         this.generatedAnnotation = generatedAnnotation;
+        field2MapKeyMapper = s->s;
+    }
+
+    public Mapper(Class<? extends Annotation> generatedAnnotation, Function<String, String> field2MapKeyMapper) {
+        this.generatedAnnotation = generatedAnnotation;
+        this.field2MapKeyMapper = field2MapKeyMapper;
+    }
+    public Mapper(Function<String, String> field2MapKeyMapper) {
+        this.generatedAnnotation = javax0.geci.annotations.Generated.class;
+        this.field2MapKeyMapper = field2MapKeyMapper;
     }
 
     @Override
@@ -58,15 +71,19 @@ public class Mapper extends AbstractGenerator {
             if (Selector.compile(filter).match(field)) {
                 final var name = field.getName();
                 if (hasToMap(field.getType())) {
-                    segment.write("map.put(\"%s\", %s == null ? null : %s.toMap0(cache));", name, name, name);
+                    segment.write("map.put(\"%s\", %s == null ? null : %s.toMap0(cache));", field2MapKey(name), name, name);
                 } else {
-                    segment.write("map.put(\"%s\",%s);", name, name);
+                    segment.write("map.put(\"%s\",%s);", field2MapKey(name), name);
                 }
             }
         }
         segment.write("return map;");
         segment.write_l("}");
         segment.newline();
+    }
+
+    private String field2MapKey(String name){
+        return field2MapKeyMapper.apply(name);
     }
 
     private boolean hasToMap(Class<?> type) {
@@ -115,12 +132,12 @@ public class Mapper extends AbstractGenerator {
                     segment.write("it.%s = %s.fromMap0((java.util.Map<String,Object>)map.get(\"%s\"),cache);",
                             name,
                             field.getType().getCanonicalName(),
-                            name);
+                            field2MapKey(name));
                 } else {
                     segment.write("it.%s = (%s)map.get(\"%s\");",
                             name,
                             field.getType().getCanonicalName(),
-                            name);
+                            field2MapKey(name));
                 }
             }
         }
