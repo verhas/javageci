@@ -29,6 +29,15 @@ public class Lexer {
         this.skipSpace = skipSpace;
     }
 
+    @Override
+    public String toString() {
+        if (lookAhead == null) {
+            return input.toString();
+        } else {
+            return lookAhead + input.toString();
+        }
+    }
+
     public String rest() {
         return lookAhead.string + input.toString();
     }
