@@ -20,11 +20,13 @@ public class Syntax {
     /*
     expression ::= one ( SPACE one )* ;
     one ::= WORD |
-            '(' one ( '|' one)* ')' |
-            '(' one ( SPACE one)* ')' |
-            one '*' |
-            one '+' |
-            one '?'
+            group |
+            WORD '*' |
+            group '*' |
+            WORD '+' |
+            group '+' |
+            WORD '?' |
+            group '?' |
             ;
      */
 
@@ -65,9 +67,10 @@ public class Syntax {
                         lexer.get();
                         return topBuilder.oneOrMore(localBuilder);
                     default:
-                        return topBuilder.one(localBuilder);
+                        return localBuilder;
                 }
             }
+            return localBuilder;
         }
         return null;
     }
@@ -82,13 +85,14 @@ public class Syntax {
         }
         if (next.type == SPACE) {
             while (next.type == SPACE) {
+                topBuilder.one(localBuilder);
                 lexer.get();// step over the SPACE
                 localBuilder = one();
                 next = lexer.peek();
             }
             if (next.string.equals(")")) {
                 lexer.get();//step over the ')'
-                return localBuilder;
+                return topBuilder.one(localBuilder);
             }
             throw new GeciException("Fluent expression syntax error after ( .... ) missing closing parenthesis at '"
                     + lexer.rest() + "'");
