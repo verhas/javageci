@@ -12,8 +12,9 @@ import javax0.jamal.api.Processor;
 import static javax0.geci.jamal.util.EntityStringer.isFingerPrintAField;
 
 /**
- * Gets the name of a method or field, which was discovered formerly using by the macro methods or fields and
- * returns the return / type (class) of the field or method.
+ * Macro that evaluates to the type of a method or a field, which is defined using the fingerprint in the macro
+ * argument.
+
  */
 public class Type implements Macro {
     public String evaluate(Input in, Processor processor) throws BadSyntax {

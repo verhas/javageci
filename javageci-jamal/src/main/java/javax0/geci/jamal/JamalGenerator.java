@@ -10,6 +10,26 @@ import javax0.jamal.tools.Input;
 
 import java.util.regex.Pattern;
 
+/**
+ * A code generator class that reads the source files and works up all segments that look like
+ *
+ * <pre>
+ *     {@code
+ *     /*!jamal
+ *      ...
+ *      ... template part
+ *      ...
+ *      * /     <- this is without space, end of Java multiline comment
+ *      ...
+ *      ... code part
+ *      ...
+ *      //__END__
+ *     }
+ * </pre>
+ * <p>
+ * reading an using the 'template part' as Jamal macro source and processing it and replacing with the
+ * result the 'code part'.
+ */
 public class JamalGenerator extends AbstractGeneratorEx {
     private static final Pattern START = Pattern.compile("^\\s*/\\*!jamal\\s*$");
     private static final Pattern COMMENT_END = Pattern.compile("^\\s*\\*/\\s*$");
@@ -26,7 +46,7 @@ public class JamalGenerator extends AbstractGeneratorEx {
         var lines = source.getLines();
         var output = source.open();
         var state = PROCESSING.COPY;
-        var macro = new StringBuilder();
+        final var macro = new StringBuilder();
         var lineNr = 0;
         int positionLineNr = 0;
         for (final var line : lines) {
@@ -37,7 +57,7 @@ public class JamalGenerator extends AbstractGeneratorEx {
                     if (START.matcher(line).matches()) {
                         state = PROCESSING.INSOURCE;
                         macro.delete(0, macro.length());
-                        positionLineNr = lineNr+1;
+                        positionLineNr = lineNr + 1;
                     }
                     break;
                 case INSOURCE:
@@ -48,6 +68,7 @@ public class JamalGenerator extends AbstractGeneratorEx {
                         try {
                             result = processor.process(new Input(macro.toString(),
                                     new Position(source.getAbsoluteFile(), positionLineNr)));
+                            macro.delete(0, macro.length());
                         } catch (BadSyntax badSyntax) {
                             throw new GeciException("Macro processing in file '"
                                     + source.getAbsoluteFile() + "' threw exception", badSyntax);

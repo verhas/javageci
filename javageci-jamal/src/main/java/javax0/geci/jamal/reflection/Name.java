@@ -5,8 +5,8 @@ import javax0.jamal.api.Macro;
 import javax0.jamal.api.Processor;
 
 /**
- * Gets the name of a method or field, which was discovered formerly using by the macro methods or fields and
- * returns the name the field or method.
+ * Macro that evaluates to the name of a method or a field, which is defined using the fingerprint in the macro
+ * argument.
  */
 public class Name implements Macro {
     @Override
