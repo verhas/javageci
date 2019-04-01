@@ -10,30 +10,62 @@ import javax0.jamal.api.BadSyntax;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * Code generator class that generates toMap and fromMap methods that will convert the object and possibly contained
+ * other objects recursively (and also circular object references) into Map and back.
+ * <p>
+ * The {@code fromMap()} method creates a new object. To do that it uses the factory that can be configured
+ * in the Geci annotation of the class, or else it just tries to use the default constructor of the class.
+ *
+ */
 public class Mapper extends AbstractGenerator {
 
     private static final String DEFAULTS = "!transient & !static";
     private final Class<? extends Annotation> generatedAnnotation;
     private final Function<String, String> field2MapKeyMapper;
 
+    /**
+     * Default constructor that creates a mapper that uses the default 'generated' annotation and the field names
+     * are used as they are as keys in the map.
+     */
     public Mapper() {
         generatedAnnotation = javax0.geci.annotations.Generated.class;
         field2MapKeyMapper = s -> s;
     }
 
+    /**
+     * Constructor with which you can specify the annotation used to decorate generated methods. The field names
+     * are used as they are as keys in the map.
+     *
+     * @param generatedAnnotation the annotation to be used to decorate the generated methods.
+     */
     public Mapper(Class<? extends Annotation> generatedAnnotation) {
         this.generatedAnnotation = generatedAnnotation;
         field2MapKeyMapper = s -> s;
     }
 
+    /**
+     * Create a new mapper object specifying the annotation to decorate the generated methods and also a field name
+     * mapper.
+     *
+     * @param generatedAnnotation the annotation to be used to decorate the generated methods.
+     * @param field2MapKeyMapper  the function used to calculate the name of the key in the Map for each field name
+     */
     public Mapper(Class<? extends Annotation> generatedAnnotation, Function<String, String> field2MapKeyMapper) {
         this.generatedAnnotation = generatedAnnotation;
         this.field2MapKeyMapper = field2MapKeyMapper;
     }
 
+    /**
+     * Create a new mapper object specifying the field name to map key mapper. The annotation used to decorate the
+     * generated methods is the default.
+     *
+     * @param field2MapKeyMapper the function used to calculate the name of the key in the Map for each field name
+     */
     public Mapper(Function<String, String> field2MapKeyMapper) {
         this.generatedAnnotation = javax0.geci.annotations.Generated.class;
         this.field2MapKeyMapper = field2MapKeyMapper;
@@ -72,18 +104,7 @@ public class Mapper extends AbstractGenerator {
         final var fields = GeciReflectionTools.getAllFieldsSorted(klass);
         final var gid = global.get("id");
         var segment = source.open(gid);
-        segment.write_r(
-                "@{{generatedBy}}(\"{{mnemonic}}\")\n" +
-                        "public {{Map}}<String,Object> toMap() {\n" +
-                        "    return toMap0( new java.util.IdentityHashMap<>());\n" +
-                        "}\n" +
-                        "@{{generatedBy}}(\"{{mnemonic}}\")\n" +
-                        "public {{Map}}<String,Object> toMap0({{Map}}<Object, {{Map}}> cache) {\n" +
-                        "    if( cache.containsKey(this) ){\n" +
-                        "        return cache.get(this);\n" +
-                        "    }\n" +
-                        "    final {{Map}}<String,Object> map = new {{HashMap}}<>();\n" +
-                        "    cache.put(this,map);");
+        segment.write_r(getResourceString("tomap.jam"));
         for (final var field : fields) {
             final var local = GeciReflectionTools.getParameters(field, mnemonic());
             final var params = new CompoundParams(local, global);
@@ -99,6 +120,11 @@ public class Mapper extends AbstractGenerator {
         }
         segment.write("return map;")
                 ._l("}\n\n");
+    }
+
+    private String getResourceString(String resource) throws IOException {
+        return new String(getClass().getResourceAsStream(resource).readAllBytes(), StandardCharsets.UTF_8)
+                .replaceAll("\r", "");
     }
 
     private String field2MapKey(String name) {
@@ -131,17 +157,7 @@ public class Mapper extends AbstractGenerator {
         final var gid = global.get("id");
         var segment = source.open(gid);
 
-        segment.write_r(
-                "@{{generatedBy}}(\"{{mnemonic}}\")\n" +
-                        "public static {{class}} fromMap({{Map}} map) {\n" +
-                        "    return fromMap0(map,new java.util.IdentityHashMap<>());\n" +
-                        "}\n" +
-                        "public static {{class}} fromMap0({{Map}} map,{{Map}}<{{Map}},Object> cache) {\n" +
-                        "    if( cache.containsKey(map)){\n" +
-                        "        return ({{class}})cache.get(map);\n" +
-                        "    }\n" +
-                        "    final {{class}} it = {{factory}};\n" +
-                        "    cache.put(map,it);");
+        segment.write_r(getResourceString("frommap.jam"));
         for (final var field : fields) {
             final var local = GeciReflectionTools.getParameters(field, mnemonic());
             final var params = new CompoundParams(local, global);
