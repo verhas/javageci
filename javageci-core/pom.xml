@@ -68,6 +68,15 @@
     <artifactId>junit-jupiter-engine</artifactId>
     
 </dependency>
+        
+        
+        
+<dependency>
+    <groupId>com.javax0.jamal</groupId>
+    <artifactId>jamal-engine</artifactId>
+    <version>1.0.3-SNAPSHOT</version>
+</dependency>
+
     </dependencies>
 </project>
 

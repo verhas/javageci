@@ -5,6 +5,8 @@ import javax0.geci.tools.AbstractGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.reflection.Selector;
+import javax0.jamal.Format;
+import javax0.jamal.api.BadSyntax;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -15,7 +17,7 @@ public class Mapper extends AbstractGenerator {
 
     private static final String DEFAULTS = "!transient & !static";
     private final Class<? extends Annotation> generatedAnnotation;
-    private final Function<String,String> field2MapKeyMapper;
+    private final Function<String, String> field2MapKeyMapper;
 
     public Mapper() {
         generatedAnnotation = javax0.geci.annotations.Generated.class;
@@ -24,13 +26,14 @@ public class Mapper extends AbstractGenerator {
 
     public Mapper(Class<? extends Annotation> generatedAnnotation) {
         this.generatedAnnotation = generatedAnnotation;
-        field2MapKeyMapper = s->s;
+        field2MapKeyMapper = s -> s;
     }
 
     public Mapper(Class<? extends Annotation> generatedAnnotation, Function<String, String> field2MapKeyMapper) {
         this.generatedAnnotation = generatedAnnotation;
         this.field2MapKeyMapper = field2MapKeyMapper;
     }
+
     public Mapper(Function<String, String> field2MapKeyMapper) {
         this.generatedAnnotation = javax0.geci.annotations.Generated.class;
         this.field2MapKeyMapper = field2MapKeyMapper;
@@ -44,26 +47,43 @@ public class Mapper extends AbstractGenerator {
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
         final var gid = global.get("id");
-        source.init(gid);
+        var segment = source.open(gid);
         generateToMap(source, klass, global);
         generateFromMap(source, klass, global);
+
+        final var factory = global.get("factory", "new {{class}}()");
+        final var placeHolders = Map.of(
+                "mnemonic", mnemonic(),
+                "generatedBy", generatedAnnotation.getCanonicalName(),
+                "class", klass.getSimpleName(),
+                "factory", factory,
+                "Map", "java.util.Map",
+                "HashMap", "java.util.HashMap"
+        );
+        final var rawContent = segment.getContent();
+        try {
+            segment.setContent(Format.format(rawContent, placeHolders));
+        } catch (BadSyntax badSyntax) {
+            throw new IOException(badSyntax);
+        }
     }
 
     private void generateToMap(Source source, Class<?> klass, CompoundParams global) throws Exception {
         final var fields = GeciReflectionTools.getAllFieldsSorted(klass);
         final var gid = global.get("id");
         var segment = source.open(gid);
-        segment.write("@" + generatedAnnotation.getCanonicalName() + "(\"" + mnemonic() + "\")");
-        segment.write_r("public java.util.Map<String,Object> toMap() {");
-        segment.write("return toMap0( new java.util.IdentityHashMap<>());");
-        segment.write_l("}");
-        segment.write("@" + generatedAnnotation.getCanonicalName() + "(\"" + mnemonic() + "\")");
-        segment.write_r("public java.util.Map<String,Object> toMap0(java.util.Map<Object, java.util.Map> cache) {");
-        segment.write_r("if( cache.containsKey(this) ){");
-        segment.write("return cache.get(this);");
-        segment.write_l("}");
-        segment.write("final java.util.Map<String,Object> map = new java.util.HashMap<>();");
-        segment.write("cache.put(this,map);");
+        segment.write_r(
+                "@{{generatedBy}}(\"{{mnemonic}}\")\n" +
+                        "public {{Map}}<String,Object> toMap() {\n" +
+                        "    return toMap0( new java.util.IdentityHashMap<>());\n" +
+                        "}\n" +
+                        "@{{generatedBy}}(\"{{mnemonic}}\")\n" +
+                        "public {{Map}}<String,Object> toMap0({{Map}}<Object, {{Map}}> cache) {\n" +
+                        "    if( cache.containsKey(this) ){\n" +
+                        "        return cache.get(this);\n" +
+                        "    }\n" +
+                        "    final {{Map}}<String,Object> map = new {{HashMap}}<>();\n" +
+                        "    cache.put(this,map);");
         for (final var field : fields) {
             final var local = GeciReflectionTools.getParameters(field, mnemonic());
             final var params = new CompoundParams(local, global);
@@ -77,19 +97,18 @@ public class Mapper extends AbstractGenerator {
                 }
             }
         }
-        segment.write("return map;");
-        segment.write_l("}");
-        segment.newline();
+        segment.write("return map;")
+                ._l("}\n\n");
     }
 
-    private String field2MapKey(String name){
+    private String field2MapKey(String name) {
         return field2MapKeyMapper.apply(name);
     }
 
     private boolean hasToMap(Class<?> type) {
         try {
             type.getDeclaredMethod("toMap");
-            type.getDeclaredMethod("toMap0",Map.class);
+            type.getDeclaredMethod("toMap0", Map.class);
             return true;
         } catch (NoSuchMethodException ignored) {
             return false;
@@ -111,17 +130,18 @@ public class Mapper extends AbstractGenerator {
         final var fields = GeciReflectionTools.getAllFieldsSorted(klass);
         final var gid = global.get("id");
         var segment = source.open(gid);
-        segment.write("@" + generatedAnnotation.getCanonicalName() + "(\"" + mnemonic() + "\")");
-        segment.write_r("public static %s fromMap(java.util.Map map) {", klass.getSimpleName());
-        segment.write("return fromMap0(map,new java.util.IdentityHashMap<>());");
-        segment.write_l("}");
-        segment.write_r("public static %s fromMap0(java.util.Map map,java.util.Map<java.util.Map,Object> cache) {", klass.getSimpleName());
-        segment.write_r("if( cache.containsKey(map)){");
-        segment.write("return (%s)cache.get(map);",klass.getSimpleName());
-        segment.write_l("}");
-        final var factory = global.get("factory", "new " + klass.getSimpleName() + "()");
-        segment.write("final %s it = %s;", klass.getSimpleName(), factory);
-        segment.write("cache.put(map,it);");
+
+        segment.write_r(
+                "@{{generatedBy}}(\"{{mnemonic}}\")\n" +
+                        "public static {{class}} fromMap({{Map}} map) {\n" +
+                        "    return fromMap0(map,new java.util.IdentityHashMap<>());\n" +
+                        "}\n" +
+                        "public static {{class}} fromMap0({{Map}} map,{{Map}}<{{Map}},Object> cache) {\n" +
+                        "    if( cache.containsKey(map)){\n" +
+                        "        return ({{class}})cache.get(map);\n" +
+                        "    }\n" +
+                        "    final {{class}} it = {{factory}};\n" +
+                        "    cache.put(map,it);");
         for (final var field : fields) {
             final var local = GeciReflectionTools.getParameters(field, mnemonic());
             final var params = new CompoundParams(local, global);
@@ -129,7 +149,7 @@ public class Mapper extends AbstractGenerator {
             if (Selector.compile(filter).match(field)) {
                 final var name = field.getName();
                 if (hasFromMap(field.getType())) {
-                    segment.write("it.%s = %s.fromMap0((java.util.Map<String,Object>)map.get(\"%s\"),cache);",
+                    segment.write("it.%s = %s.fromMap0(({{Map}}<String,Object>)map.get(\"%s\"),cache);",
                             name,
                             field.getType().getCanonicalName(),
                             field2MapKey(name));
@@ -141,8 +161,6 @@ public class Mapper extends AbstractGenerator {
                 }
             }
         }
-        segment.write("return it;");
-        segment.write_l("}");
-        segment.newline();
+        segment.write("return it;\n")._l("}\n\n");
     }
 }

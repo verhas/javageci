@@ -65,7 +65,6 @@ public class Person extends AbstractPerson {
         map.put("willMapPublicInherited",willMapPublicInherited);
         return map;
     }
-
     @javax0.geci.annotations.Generated("mapper")
     public static Person fromMap(java.util.Map map) {
         return fromMap0(map,new java.util.IdentityHashMap<>());
@@ -83,6 +82,5 @@ public class Person extends AbstractPerson {
         it.willMapPublicInherited = (boolean)map.get("willMapPublicInherited");
         return it;
     }
-
     //</editor-fold>
 }

@@ -86,13 +86,13 @@
 <dependency>
     <groupId>com.javax0.jamal</groupId>
     <artifactId>jamal-engine</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
 </dependency>
         
 <dependency>
 <groupId>com.javax0.jamal</groupId>
 <artifactId>jamal-testsupport</artifactId>
-<version>1.0.2</version>
+<version>1.0.3-SNAPSHOT</version>
 <scope>test</scope>
 </dependency>
     </dependencies>

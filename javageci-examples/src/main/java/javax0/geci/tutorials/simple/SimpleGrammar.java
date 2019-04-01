@@ -63,12 +63,14 @@ public class SimpleGrammar {
         If0 optionalWord();
     }
     public interface If4 {
-        If0 wordChoiceA();
+        If3 word1();
     }
-    public interface If5 {
+    public interface If5{
+        If0 wordChoiceA();
         If0 wordChoiceB();
     }
-    public interface If6 extends If4,If5{
+    public interface If6 {
+        If5 word2();
     }
     public interface If7 extends If0 {
         If7 word3();
@@ -76,7 +78,7 @@ public class SimpleGrammar {
     public interface If8 {
         If7 word3();
     }
-    public interface If9 extends If2,If1,If3,If6,If8{
+    public interface If9 extends If2,If1,If4,If6,If8{
     }
     //</editor-fold>
 
