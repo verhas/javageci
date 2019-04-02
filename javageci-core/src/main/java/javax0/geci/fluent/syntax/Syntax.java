@@ -11,6 +11,23 @@ import static javax0.geci.tools.syntax.Lexeme.Type.*;
 
 /**
  * This class implements the syntax analyzer that can process fluent api grammar definition.
+ * <p>
+ * The definition of the syntax of an expression is the following in lazy BNF:
+ * <pre>
+ *     expression ::= alternate ... alternate
+ *     alternate ::= simple '|' ... '|' simple
+ *     simple ::= terminal | terminal '*' | terminal '+' | terminal '?'
+ *     terminal := method | '(' expression ')
+ * </pre>
+ *
+ * An {@code expression} is one or more '{@code alternate}'s separated by spaces.
+ * An {@code alternate} is one or more {@code simple} separated by the character {@code |}. These are alternatives,
+ * and alternatives have higher precendence so {@code a b|c} means either {@code a().b()} or {@code a().c()} in the
+ * final fluent API and NOT {@code a().b()} or {@code c()}.
+ * A {@code simple} is a {@code terminal} followed by one of the modifier characters {@code *+?} denoting zero or more,
+ * one or more and optional occurence of the {@code terminal}. A {@code terminal} can be a method name or signature
+ * or an expression enclosed in parentheses.
+ *
  */
 public class Syntax {
     private final Lexer lexer;
