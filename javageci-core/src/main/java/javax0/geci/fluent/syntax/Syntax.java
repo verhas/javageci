@@ -9,6 +9,9 @@ import java.util.List;
 
 import static javax0.geci.tools.syntax.Lexeme.Type.*;
 
+/**
+ * This class implements the syntax analyzer that can process fluent api grammar definition.
+ */
 public class Syntax {
     private final Lexer lexer;
     private final FluentBuilder topBuilder;

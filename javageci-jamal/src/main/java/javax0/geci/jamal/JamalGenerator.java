@@ -13,18 +13,16 @@ import java.util.regex.Pattern;
 /**
  * A code generator class that reads the source files and works up all segments that look like
  *
- * <pre>
- *     {@code
+ * <pre>{@code
  *     /*!jamal
  *      ...
- *      ... template part
+ *      ... template part inside Java comment
  *      ...
- *      * /     <- this is without space, end of Java multiline comment
+ *      *}/{@code
  *      ...
  *      ... code part
  *      ...
- *      //__END__
- *     }
+ *      //__END__}
  * </pre>
  * <p>
  * reading an using the 'template part' as Jamal macro source and processing it and replacing with the
