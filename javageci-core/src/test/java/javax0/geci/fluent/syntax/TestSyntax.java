@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Set;
 
 public class TestSyntax {
-    private static final String EXPECTED = "(kw(String)),((((noParameters),(parameters),(parameter,parameter*)){OR})?),(regex*),(usage),(help),(executor),(build)";
+    private static final String EXPECTED = "kw(String) (noParameters|parameters|(parameter parameter*))? regex* usage help executor build";
 
     @Test
     @DisplayName("The whole syntax is defined in a single expression")
@@ -46,6 +46,9 @@ public class TestSyntax {
                 klass.syntax("kw(String) ( noParameters | parameters | ").oneOrMore("parameter").syntax(")? regex* usage help executor build"));
     }
 
+    /**
+     * We need this class here, because the fluent builder actually checks that the methods really exist.
+     */
     static class MyClass {
         private void kw(String s) {
         }

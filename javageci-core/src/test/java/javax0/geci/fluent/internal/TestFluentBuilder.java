@@ -9,7 +9,7 @@ public class TestFluentBuilder {
 
     @Test
     public void testTerminalBuildup() {
-        Assertions.assertEquals("once,optional?,(a,b,c,d){OR}",
+        Assertions.assertEquals("once optional? (a|b|c|d)",
             FluentBuilder.from(TestClass.class)
                 .one("once")
                 .optional("optional")
@@ -22,7 +22,7 @@ public class TestFluentBuilder {
     public void testComplexBuildup() {
         var t = FluentBuilder.from(TestClass.class);
         var s = t.oneOf("y", "x", "w", "z");
-        Assertions.assertEquals("once,optional?,((y,x,w,z){OR})?,(a,b,c,d){OR},h*,m,m*,((y,x,w,z){OR})*,((y,x,w,z){OR})?",
+        Assertions.assertEquals("once optional? (y|x|w|z)? (a|b|c|d) h* m m* (y|x|w|z)* (y|x|w|z)?",
             t.cloner("a()").one("once")
                 .optional("optional")
                 .optional(s)

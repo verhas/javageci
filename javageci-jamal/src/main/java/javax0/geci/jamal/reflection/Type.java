@@ -3,7 +3,6 @@ package javax0.geci.jamal.reflection;
 import javax0.geci.jamal.Reflection;
 import javax0.geci.jamal.util.EntityStringer;
 import javax0.geci.tools.GeciReflectionTools;
-import javax0.geci.tools.reflection.ModifiersBuilder;
 import javax0.jamal.api.BadSyntax;
 import javax0.jamal.api.Input;
 import javax0.jamal.api.Macro;

@@ -68,7 +68,7 @@ public interface FluentBuilder {
      * <p>
      * The caller may exclude more than one method from the fluent API with subsequent calls to {@code exclude(String)}
      *
-     * @param method the name of the method.
+     * @param method the name or the prototype/signature of the method.
      * @return {@code this}
      */
     FluentBuilder exclude(String method);
@@ -111,7 +111,7 @@ public interface FluentBuilder {
     /**
      * The method may be called zero or one time in the fluent API at the defined point.
      *
-     * @param method the name of the method. For more information see the note in the documentation
+     * @param method the name or the prototype/signature of the method. For more information see the note in the documentation
      *               of the class {@link FluentBuilder}
      * @return {@code this}
      */
@@ -128,7 +128,7 @@ public interface FluentBuilder {
     /**
      * The method may be called one or more time in the fluent API at the defined point.
      *
-     * @param method the name of the method. For more information see the note in the documentation
+     * @param method the name or the prototype/signature of the method. For more information see the note in the documentation
      *               of the class {@link FluentBuilder}
      * @return {@code this}
      */
@@ -145,7 +145,7 @@ public interface FluentBuilder {
     /**
      * The method may be called zero or more time in the fluent API at the defined point.
      *
-     * @param method the name of the method. For more information see the note in the documentation
+     * @param method the name or the prototype/signature of the method. For more information see the note in the documentation
      *               of the class {@link FluentBuilder}
      * @return {@code this}
      */
@@ -179,7 +179,7 @@ public interface FluentBuilder {
     /**
      * The method can be called exactly once at the point.
      *
-     * @param method the name of the method. For more information see the note in the documentation
+     * @param method the name or the prototype/signature of the method. For more information see the note in the documentation
      *               of the class {@link FluentBuilder}
      * @return {@code this}
      */

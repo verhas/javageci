@@ -4,7 +4,6 @@ package javax0.geci.tests.mapper;
 import javax0.geci.annotations.Geci;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 /**
  * Sample

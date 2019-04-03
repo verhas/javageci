@@ -274,8 +274,8 @@ public class GeciReflectionTools {
      * The same as {@link #getDeclaredMethodsSorted(Class)} except it returns the methods and not the declared methods.
      * It means that only the methods that are available from outside but including the inherited methods are returned.
      *
-     * @param klass
-     * @return
+     * @param klass the class of which we need the methods
+     * @return the array of the methods of the class
      */
     public static Method[] getMethodsSorted(Class<?> klass) {
         final var methods = klass.getMethods();
@@ -286,8 +286,8 @@ public class GeciReflectionTools {
     /**
      * Get all the methods sorted: declared and inherited.
      *
-     * @param klass
-     * @return
+     * @param klass the class of which we need the methods
+     * @return the array of the methods of the class
      */
     public static Method[] getAllMethodsSorted(Class<?> klass) {
         final var methods = Arrays.stream(klass.getMethods()).collect(Collectors.toSet());
@@ -295,7 +295,7 @@ public class GeciReflectionTools {
         final var allMethods = new HashSet<>();
         allMethods.addAll(methods);
         allMethods.addAll(declaredMethods);
-        final var methodArray = allMethods.stream().toArray(Method[]::new);
+        final var methodArray = allMethods.toArray(new Method[0]);
         Arrays.sort(methodArray, Comparator.comparing(MethodTool::methodSignature));
         return methodArray;
     }

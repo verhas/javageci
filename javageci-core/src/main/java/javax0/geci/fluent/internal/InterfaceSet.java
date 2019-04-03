@@ -61,7 +61,7 @@ public class InterfaceSet {
      *     ...when(condition).then(if1,if2,...)
      * </pre>
      * <p>
-     * {@link #then(String...)} adds the interface names only when the last {@link #when(boolean)} argument was true.
+     * {@link #then(String...)} adds the interface names only when the last {@code #when(boolean)} argument was true.
      *
      * @param flag the flag to control the execution of the next {@link #then(String...)}.
      * @return this
@@ -74,8 +74,8 @@ public class InterfaceSet {
     /**
      * Adds the names of the interfaces to the set if the last flag passed to {@link #when(boolean)} was true.
      *
-     * @param interfaces
-     * @return
+     * @param interfaces the names of the interfaces to be added
+     * @return this
      */
     public InterfaceSet then(String... interfaces) {
         if (lastWhen) {

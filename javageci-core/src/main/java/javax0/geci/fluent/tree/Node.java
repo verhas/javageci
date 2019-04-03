@@ -2,6 +2,16 @@ package javax0.geci.fluent.tree;
 
 import java.util.Map;
 
+/**
+ * A node that describes one element in the syntax tree that describes a fluent API. A node has a modifier, like
+ * {@code ONCE}, {@code OPTIONAL} that denotes that the node represents a structure that has to be called in the
+ * final fluent interface exactly once or optionally. There are five different modifiers all together.
+ * <p>
+ * A node also has a name that can be set, reset and queried that it was set or not.
+ * <p>
+ * {@code Node} is abstract because the implementations can be either {@link Tree} or {@link Terminal} representing
+ * a sub-tree in the syntax tree or a terminal leaf in the syntax tree.
+ */
 public abstract class Node {
     public static final int ONCE = 0x00000001;
     public static final int OPTIONAL = 0x00000002;
@@ -15,6 +25,8 @@ public abstract class Node {
                     ONE_OF, "{OR}",
                     ONE_TERMINAL_OF, "{OR}");
     private final int modifier;
+
+    public abstract Node clone(int modifier);
 
     public boolean hasName() {
         return name != null;

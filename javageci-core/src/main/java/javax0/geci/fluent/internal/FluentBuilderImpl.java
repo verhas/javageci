@@ -2,6 +2,7 @@ package javax0.geci.fluent.internal;
 
 import javax0.geci.api.GeciException;
 import javax0.geci.fluent.FluentBuilder;
+import javax0.geci.fluent.tree.FluentNodeCreator;
 import javax0.geci.fluent.syntax.Syntax;
 import javax0.geci.fluent.tree.Node;
 import javax0.geci.fluent.tree.Terminal;
@@ -13,6 +14,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
  * expressions. This fluent builder is the basic builder for the fluent API facade for the fluent API regular
  * expressions.
  */
-public class FluentBuilderImpl implements FluentBuilder {
+public class FluentBuilderImpl implements FluentBuilder, FluentNodeCreator {
 
     private final Class<?> klass;
     private final List<Node> nodes = new ArrayList<>();
@@ -46,6 +48,14 @@ public class FluentBuilderImpl implements FluentBuilder {
         this.startMethod = that.startMethod;
         this.interfaces = that.interfaces;
         this.lastType = that.lastType;
+    }
+
+    private static Class<?> classOf(FluentBuilder builder) {
+        return ((FluentBuilderImpl) builder).klass;
+    }
+
+    private static List<Node> nodesOf(FluentBuilder builder) {
+        return ((FluentBuilderImpl) builder).nodes;
     }
 
     public String getInterfaces() {
@@ -76,14 +86,16 @@ public class FluentBuilderImpl implements FluentBuilder {
         return nodes;
     }
 
+    @Override
     public FluentBuilder start(String method) {
-        var next = copy();
+        final var next = copy();
         next.startMethod = method;
         return next;
     }
 
+    @Override
     public FluentBuilder cloner(String method) {
-        assertMethod(method);
+        assertThatMethodExistsInTheClass(method);
         Method clonerMethod = methods.get(method);
         if (clonerMethod.getGenericExceptionTypes().length > 0) {
             throw new GeciException("The cloner method should not have parameters");
@@ -91,7 +103,7 @@ public class FluentBuilderImpl implements FluentBuilder {
         if (clonerMethod.getReturnType() != klass) {
             throw new GeciException("The cloner method should return the type of the class it is in.");
         }
-        var next = copy();
+        final var next = copy();
         next.cloner = clonerMethod;
         return next;
     }
@@ -115,7 +127,7 @@ public class FluentBuilderImpl implements FluentBuilder {
         }
     }
 
-    private void assertMethod(String... methodArr) {
+    private void assertThatMethodExistsInTheClass(String... methodArr) {
         for (var method : methodArr) {
             if (methods.get(method) == null) {
                 throw new GeciException("Method '" + method + "' is not found in class " + klass);
@@ -123,8 +135,9 @@ public class FluentBuilderImpl implements FluentBuilder {
         }
     }
 
+    @Override
     public FluentBuilder implement(String interfaces) {
-        var next = copy();
+        final var next = copy();
         next.interfaces = interfaces;
         referenceTheMethodsIn(interfaces);
         return next;
@@ -152,17 +165,20 @@ public class FluentBuilderImpl implements FluentBuilder {
         }
     }
 
+    @Override
     public FluentBuilder fluentType(String type) {
-        var next = copy();
+        final var next = copy();
         next.lastType = type;
         return next;
     }
 
+    @Override
     public FluentBuilder exclude(String method) {
         methods.exclude(method);
         return this;
     }
 
+    @Override
     public FluentBuilder include(String method) {
         methods.get(method);
         methods.include(method);
@@ -178,25 +194,39 @@ public class FluentBuilderImpl implements FluentBuilder {
         return terminal;
     }
 
-    public FluentBuilder optional(String method) {
-        assertMethod(method);
-        var next = copy();
-        next.nodes.add(newTerminal(Node.OPTIONAL, method));
+    @Override
+    public Node optionalNode(String method) {
+        assertThatMethodExistsInTheClass(method);
+        return newTerminal(Node.OPTIONAL, method);
+    }
+
+    private <T> FluentBuilder buildWith(Function<T, Node> buildNode, T method) {
+        final var next = copy();
+        next.nodes.add(buildNode.apply(method));
         return next;
     }
 
+    @Override
+    public FluentBuilder optional(String method) {
+        return buildWith(this::optionalNode, method);
+    }
+
+    private Node optionalNode(FluentBuilder sub) {
+        return newTree(Node.OPTIONAL, nodesOf(sub));
+    }
+
+    @Override
     public FluentBuilder optional(FluentBuilder sub) {
         assertClass(sub);
-        var next = copy();
-        next.nodes.add(newTree(Node.OPTIONAL, nodesOf(sub)));
-        return next;
+        return buildWith(this::optionalNode, sub);
     }
 
+    @Override
     public FluentBuilder oneOrMore(String method) {
-        assertMethod(method);
-        var next = copy();
-        next.nodes.add(newTerminal(Node.ONCE, method));
-        next.nodes.add(newTerminal(Node.ZERO_OR_MORE, method));
+        assertThatMethodExistsInTheClass(method);
+        final var next = copy();
+        next.nodes.add(oneNode(method));
+        next.nodes.add(zeroOrMoreNode(method));
         return next;
     }
 
@@ -209,93 +239,113 @@ public class FluentBuilderImpl implements FluentBuilder {
         return tree;
     }
 
+    @Override
     public FluentBuilder oneOrMore(FluentBuilder sub) {
         assertClass(sub);
-        var next = copy();
-        next.nodes.add(newTree(Node.ONCE, nodesOf(sub)));
-        next.nodes.add(newTree(Node.ZERO_OR_MORE, nodesOf(sub)));
+        final var next = copy();
+        next.nodes.add(oneNode(sub));
+        next.nodes.add(zeroOrMoreNode(sub));
         return next;
     }
 
+    @Override
+    public Node zeroOrMoreNode(String method) {
+        assertThatMethodExistsInTheClass(method);
+        return newTerminal(Node.ZERO_OR_MORE, method);
+    }
+
+    @Override
     public FluentBuilder zeroOrMore(String method) {
-        assertMethod(method);
-        var next = copy();
-        next.nodes.add(newTerminal(Node.ZERO_OR_MORE, method));
-        return next;
+        return buildWith(this::zeroOrMoreNode, method);
     }
 
+    private Node zeroOrMoreNode(FluentBuilder sub) {
+        return newTree(Node.ZERO_OR_MORE, nodesOf(sub));
+    }
+
+    @Override
     public FluentBuilder zeroOrMore(FluentBuilder sub) {
         assertClass(sub);
-        var next = copy();
-        next.nodes.add(newTree(Node.ZERO_OR_MORE, nodesOf(sub)));
-        return next;
+        return buildWith(this::zeroOrMoreNode, sub);
     }
 
+    @Override
+    public Node oneOfNode(String... methods) {
+        assertThatMethodExistsInTheClass(methods);
+        return newTree(Node.ONE_TERMINAL_OF, Arrays.stream(methods)
+                .map(method -> newTerminal(Node.ONCE, method)).collect(Collectors.toList()));
+    }
+
+    @Override
     public FluentBuilder oneOf(String... methods) {
-        assertMethod(methods);
-        var next = copy();
-
-        next.nodes.add(newTree(Node.ONE_TERMINAL_OF, Arrays.stream(methods)
-                .map(method -> newTerminal(Node.ONCE, method)).collect(Collectors.toList())));
-        return next;
+        return buildWith(this::oneOfNode, methods);
     }
 
-    private Class<?> classOf(FluentBuilder builder) {
-        return ((FluentBuilderImpl) builder).klass;
+    @Override
+    public Node oneOfNode(List<Node> subs) {
+        return newTree(Node.ONE_OF, subs);
     }
 
-    private List<Node> nodesOf(FluentBuilder builder) {
-        return ((FluentBuilderImpl) builder).nodes;
+    private Node oneOfNode(FluentBuilder... subs) {
+        return newTree(Node.ONE_OF, Arrays.stream(subs)
+                .map(sub -> newTree(Node.ONCE, nodesOf(sub))).collect(Collectors.toList()));
     }
 
+    @Override
     public FluentBuilder oneOf(FluentBuilder... subs) {
         assertClass(subs);
-        var next = copy();
-        next.nodes.add(newTree(Node.ONE_OF, Arrays.stream(subs)
-                .map(sub -> newTree(Node.ONCE, nodesOf(sub))).collect(Collectors.toList())));
-        return next;
+        return buildWith(this::oneOfNode, subs);
     }
 
-    private FluentBuilder append(FluentBuilder that) {
-        var next = copy();
-        next.nodes.addAll(((FluentBuilderImpl) that).nodes);
-        return next;
-    }
-
+    @Override
     public FluentBuilder syntax(String syntaxDef) {
-        final var lexer = new Lexer(syntaxDef);
-        var next = copy();
-        next.nodes.clear();
-        final var syntaxAnalyzer = new Syntax(lexer, next);
-        return append(syntaxAnalyzer.expression());
+        final var syntaxAnalyzer = new Syntax(new Lexer(syntaxDef), this);
+        final var next = copy();
+        next.nodes.addAll(syntaxAnalyzer.expression());
+        return next;
     }
 
+    @Override
+    public Node oneNode(String method) {
+        assertThatMethodExistsInTheClass(method);
+        return newTerminal(Node.ONCE, method);
+    }
+
+    @Override
     public FluentBuilder one(String method) {
-        assertMethod(method);
-        var next = copy();
-        next.nodes.add(newTerminal(Node.ONCE, method));
-        return next;
+        return buildWith(this::oneNode, method);
     }
 
+    @Override
+    public Node oneNode(List<Node> sub) {
+        return new Tree(Node.ONCE, sub);
+    }
+
+    private Node oneNode(FluentBuilder sub) {
+        final var nodes = nodesOf(sub);
+        if (nodes.size() == 1) {
+            return nodes.get(0);
+        }
+        return newTree(Node.ONCE, nodesOf(sub));
+    }
+
+    @Override
     public FluentBuilder one(FluentBuilder sub) {
-        var nodes = nodesOf(sub);
-        var next = copy();
-        var tree = newTree(Node.ONCE, nodes);
-        next.nodes.add(tree);
-        return next;
+        return buildWith(this::oneNode, sub);
     }
 
+    @Override
     public FluentBuilder name(String interfaceName) {
         if (interfaceName == null || interfaceName.length() == 0) {
             return this;
         }
-        var next = copy();
+        final var next = copy();
         next.lastName = interfaceName;
         return next;
     }
 
     @Override
     public String toString() {
-        return nodes.stream().map(Node::toString).collect(Collectors.joining(","));
+        return nodes.stream().map(Node::toString).collect(Collectors.joining(" "));
     }
 }

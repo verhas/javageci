@@ -117,7 +117,7 @@ public class Lexer {
 
     /**
      * Get the next lexeme from the input but as opposed to {@link #get()} this method does not consume the lexeme.
-     * A consecutive call to {@link  #peek()} or to {@link #get()} will return the same lexeme.
+     * A consecutive call to {@code  #peek()} or to {@link #get()} will return the same lexeme.
      *
      * @return the next lexeme
      */

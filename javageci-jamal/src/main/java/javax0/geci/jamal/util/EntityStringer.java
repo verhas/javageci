@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
  * <p>
  * The string format was designed so that this is also human readable, easy to parse, unique for each field and method
  * and do not interfere with the comma separated macro list handling.
- *
  */
 public class EntityStringer {
 
@@ -133,9 +132,10 @@ public class EntityStringer {
      * Search for the field, which is represented by the fingerprint that was presumably created by the method
      * {@link #field2Fingerprint(Field)} . If the field can be found using reflection then return the method.
      *
-     * @param fingerprint
-     * @return
-     * @throws BadSyntax
+     * @param fingerprint is the string representation of the field that was created
+     *                    by {@link #field2Fingerprint(Field)}.
+     * @return the field
+     * @throws BadSyntax if the argument has no | in it or uses a class or field that is not available
      */
     public static Field fingerprint2Field(String fingerprint) throws BadSyntax {
         final var parts = fingerprint.split("\\|", -1);
