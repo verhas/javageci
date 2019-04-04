@@ -58,8 +58,19 @@ public class JavaSource implements AutoCloseable {
 
 As you can see the mnemonic of the generator is `fluent` and the parameter `definedBy` specifies the method in the
 syntax of a method reference. This is not really a method reference as it is inside a string, but the syntax follows
-that of the method references. Also note that in this specification you have to specify the class with a fully
-qualified name.
+that of the method references. (You can also use `#` or a simple dot `.` to separate the name of the class and the
+name of the method.) 
+Also note that in this specification you have to specify the class with a fully qualified name.
+
+An alternative possibility to use the `syntax` parameter and provide the syntax of the fluent API directly and
+not through a builder method. Note that certain features cannot be described using the syntax parameter. An example
+is to make the API `AutoClosable`. 
+
+```java
+@Geci("fluent syntax='a|b|c d'")
+public class JavaSource {
+```
+
 
 The editor fold 
 

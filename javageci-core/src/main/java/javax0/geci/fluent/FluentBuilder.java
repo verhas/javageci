@@ -222,4 +222,9 @@ public interface FluentBuilder {
      */
     FluentBuilder syntax(String syntaxDef);
 
+    /**
+     * Perform various optimizations on the final syntax structure.
+     */
+    void optimize();
+
 }

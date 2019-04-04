@@ -3,6 +3,7 @@ package javax0.geci.tutorials.simple;
 import javax0.geci.annotations.Geci;
 
 @Geci("fluent definedBy='javax0.geci.tutorials.simple.TestSimpleGrammar::defineSimpleGrammar'")
+//@Geci("fluent syntax='(singleWord | parameterisedWord | (word1 optionalWord?) | (word2 (wordChoiceA | wordChoiceB)) | word3+) end'")
 public class SimpleGrammar {
 
     //<editor-fold id="fluent" desc="Java::Geci generated code">

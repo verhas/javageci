@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
 import java.util.Set;
 
 public class TestSyntax {
@@ -25,25 +26,111 @@ public class TestSyntax {
     void splitAndInterfaceName() {
         var klass = FluentBuilder.from(MyClass.class);
         var sut = klass
-                .syntax("kw(String) ( noParameters | parameters | parameter+ )? regex* usage help executor").name("SpecialName").syntax("build");
+                .syntax("kw(String) ( noParameters | parameters | parameter+ )? regex* usage help executor")
+                .name("SpecialName")
+                .syntax("build");
         Assertions.assertEquals(EXPECTED, sut.toString());
     }
 
     @Test
-    @DisplayName("The syntax is defined in two parts with interface name and fluent api def in the middle")
+    @DisplayName("The syntax is defined in two 'syntax' parts with interface name and fluent api def in the middle")
     void splitAndMixedName() {
         var klass = FluentBuilder.from(MyClass.class);
         var sut = klass
-                .syntax("kw(String) ( noParameters | parameters | parameter+ )?").one(klass.zeroOrMore("regex")).syntax("usage help executor").name("").syntax("build");
+                .syntax("kw(String) ( noParameters | parameters | parameter+ )?")
+                .one(klass.zeroOrMore("regex"))
+                .syntax("usage help executor")
+                .name("").syntax("build");
         Assertions.assertEquals(EXPECTED, sut.toString());
     }
 
     @Test
-    @DisplayName("The syntax is split in an invalid way")
+    @DisplayName("Throws exception when syntax is split in an invalid way")
     void wrongSplitting() {
         var klass = FluentBuilder.from(MyClass.class);
         Assertions.assertThrows(GeciException.class, () ->
-                klass.syntax("kw(String) ( noParameters | parameters | ").oneOrMore("parameter").syntax(")? regex* usage help executor build"));
+                klass.syntax("kw(String) ( noParameters | parameters | ")
+                        .oneOrMore("parameter")
+                        .syntax(")? regex* usage help executor build"));
+    }
+
+    @Test
+    @DisplayName("or-ed alternatives do not need parentheses, | has higher precedence than listing")
+    void syntaxExample1() {
+        var klass = FluentBuilder.from(MyClass.class);
+        final var sut = klass.syntax("kw (parameter | (usage help))");
+        Assertions.assertEquals("kw (parameter|(usage help))", sut.toString());
+        final var sutWithoutParentheses = klass.syntax("kw parameter | (usage help)");
+        Assertions.assertEquals("kw (parameter|(usage help))", sutWithoutParentheses.toString());
+    }
+
+    @Test
+    @DisplayName("superfluous parentheses are ignored")
+    void syntaxExample2() {
+        var klass = FluentBuilder.from(MyClass.class);
+        final var sut = klass.syntax("kw (((parameter | ((usage (help))))))");
+        Assertions.assertEquals("kw (parameter|(usage help))", sut.toString());
+    }
+
+    @Test
+    @DisplayName("chained modifiers are okay")
+    void syntaxChainedModifier_tpq() {
+        var klass = FluentBuilder.from(MyClass.class);
+        final var sut = klass.syntax("(parameter+)?");
+        Assertions.assertEquals("parameter*", sut.toString());
+    }
+
+    /**
+     * This test checks the syntax analysis and structure optimization of the built syntax tree in case the
+     * specification contains
+     * <pre>{@code ( terminal_symbol X ) Y} </pre>
+     * or
+     * <pre>{@code ( comlex X ) Y} </pre>
+     * structure where {@code X} and {@code Y} are one of the {@code *}, {@code +} and {@code ?} modifiers. These
+     * specifications are redundant and express a simpler case. The Map in the code {@code modifierPairs} describe
+     * all the possible pairing and their effective results.
+     */
+    @Test
+    @DisplayName("chained modifiers are okay and are optimized")
+    void syntaxChainedModifier() {
+        final var modifierPairs = Map.of(
+                "**", "*",
+                "*?", "*",
+                "*+", "*",
+                "+*", "*",
+                "+?", "*",
+                "++", "+",
+                "?*", "*",
+                "??", "?",
+                "?+", "*"
+        );
+        for (final var entry : modifierPairs.entrySet()) {
+            final var key = entry.getKey();
+            final var value = entry.getValue();
+            terminal:
+            {
+                var klass = FluentBuilder.from(MyClass.class);
+                final var sut = klass.syntax(String.format("(parameter%s)%s", key.substring(0, 1), key.substring(1)));
+                sut.optimize();
+                if (value.equals("+")) {
+                    Assertions.assertEquals("parameter parameter*", sut.toString(), " for " + key);
+                } else {
+                    Assertions.assertEquals(String.format("parameter%s", value), sut.toString(), " for " + key);
+                }
+            }
+            complex:
+            {
+                var klass = FluentBuilder.from(MyClass.class);
+                final var sut = klass.syntax(String.format("((parameter kw)%s)%s", key.substring(0, 1), key.substring(1)));
+                sut.optimize();
+                if (value.equals("+")) {
+                    Assertions.assertEquals("parameter kw (parameter kw)*", sut.toString(), " for " + key);
+                } else {
+                    Assertions.assertEquals(String.format("(parameter kw)%s", value), sut.toString(), " for " + key);
+                }
+            }
+        }
+
     }
 
     /**

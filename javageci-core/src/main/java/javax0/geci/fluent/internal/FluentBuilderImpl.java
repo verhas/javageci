@@ -2,8 +2,8 @@ package javax0.geci.fluent.internal;
 
 import javax0.geci.api.GeciException;
 import javax0.geci.fluent.FluentBuilder;
-import javax0.geci.fluent.tree.FluentNodeCreator;
 import javax0.geci.fluent.syntax.Syntax;
+import javax0.geci.fluent.tree.FluentNodeCreator;
 import javax0.geci.fluent.tree.Node;
 import javax0.geci.fluent.tree.Terminal;
 import javax0.geci.fluent.tree.Tree;
@@ -342,6 +342,40 @@ public class FluentBuilderImpl implements FluentBuilder, FluentNodeCreator {
         final var next = copy();
         next.lastName = interfaceName;
         return next;
+    }
+
+    @Override
+    public void optimize() {
+        final var flat = flatten(nodes, Node.ONCE);
+        nodes.clear();
+        nodes.addAll(flat);
+    }
+
+    private static List<Node> flatten(List<Node> nodes, int modifier) {
+        final var result = new ArrayList<Node>();
+        if (modifier == Node.ONCE) {
+            for (final var node : nodes) {
+                if (node instanceof Terminal) {
+                    result.add(node);
+                } else if (node.getModifier() == Node.ONCE) {
+                    final var tree = (Tree) node;
+                    result.addAll(flatten(tree.getList(), Node.ONCE));
+                } else {
+                    final var tree = (Tree) node;
+                    result.add(new Tree(tree.getModifier(), flatten(tree.getList(), tree.getModifier())));
+                }
+            }
+        }else{
+            for (final var node : nodes) {
+                if (node instanceof Terminal) {
+                    result.add(node);
+                } else {
+                    final var tree = (Tree) node;
+                    result.add(new Tree(tree.getModifier(), flatten(tree.getList(), tree.getModifier())));
+                }
+            }
+        }
+        return result;
     }
 
     @Override

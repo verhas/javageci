@@ -3,6 +3,8 @@ package javax0.geci.fluent.syntax;
 import javax0.geci.api.GeciException;
 import javax0.geci.fluent.tree.FluentNodeCreator;
 import javax0.geci.fluent.tree.Node;
+import javax0.geci.fluent.tree.Terminal;
+import javax0.geci.fluent.tree.Tree;
 import javax0.geci.tools.syntax.Lexer;
 
 import java.util.ArrayList;
@@ -36,6 +38,28 @@ public class Syntax {
     public Syntax(Lexer lexer, FluentNodeCreator nodeCreator) {
         this.lexer = lexer;
         this.nodeCreator = nodeCreator;
+    }
+
+    private static boolean isOneOrMore(List<Node> nodes) {
+        if (nodes.size() != 2) {
+            return false;
+        }
+        if (nodes.get(0).getModifier() != Node.ONCE ||
+                nodes.get(1).getModifier() != Node.ZERO_OR_MORE) {
+            return false;
+        }
+        if (nodes.get(0).getClass() != nodes.get(1).getClass()) {
+            return false;
+        }
+        if (nodes.get(0) instanceof Terminal) {
+            final var t0 = (Terminal) nodes.get(0);
+            final var t1 = (Terminal) nodes.get(1);
+            return t0.getMethod().equals(t1.getMethod());
+        } else {
+            final var t0 = (Tree) nodes.get(0);
+            final var t1 = (Tree) nodes.get(1);
+            return t0.getList() == t1.getList();
+        }
     }
 
     /**
@@ -132,13 +156,28 @@ public class Syntax {
             switch (modifierCharacter) {
                 case "*":
                     lexer.get();
-                    return List.of(box(node,Node.ZERO_OR_MORE));
+                    if (isOneOrMore(nodes)) {
+                        return List.of(box(nodes.get(0), Node.ZERO_OR_MORE));
+                    }
+                    return List.of(box(node, Node.ZERO_OR_MORE));
                 case "?":
                     lexer.get();
-                    return List.of(box(node,Node.OPTIONAL));
+                    if (isOneOrMore(nodes)) {
+                        return List.of(box(nodes.get(0), Node.ZERO_OR_MORE));
+                    }
+                    return List.of(box(node, Node.OPTIONAL));
                 case "+":
                     lexer.get();
-                    return List.of(node, box(node,Node.ZERO_OR_MORE));
+                    if (isOneOrMore(nodes)) {
+                        return nodes;
+                    }
+                    if (node.getModifier() == Node.OPTIONAL) {
+                        return List.of(node.clone(Node.ZERO_OR_MORE));
+                    }
+                    if (node.getModifier() == Node.ZERO_OR_MORE) {
+                        return nodes;
+                    }
+                    return List.of(node, box(node, Node.ZERO_OR_MORE));
             }
         }
         return nodes;
@@ -191,17 +230,23 @@ public class Syntax {
     }
 
     /**
-     * box a node into another node which has the {@code modifier}. When the node is a ONE_OF type then a new node is
+     * Box a node into another node which has the {@code modifier}. When the node is a ONE_OF type then a new node is
      * created with the required modifier and the ONE_OF node is a sibling under it. In other cases the original node
-     * is cloned with the new modifier. This method is used to process the '?', '*' and '+' postfix modifiers.
+     * is cloned with the new modifier. This method is used to process the '?', '*' postfix modifiers.
+     * <p>
+     * When the node is already '*' ({@link Node#ZERO_OR_MORE} then the node itself is returned, even if
+     * {@link Node#OPTIONAL} modifier is requested. That is because {@code (xxx*)?} is the same as {@code xxx*}.
      *
-     * @param node the node to box with the
-     * @param modifier that can be OPTIONAL, ONE_OR_MORE, ZERO_OR_MORE
+     * @param node     the node to box with the
+     * @param modifier that can be {@link Node#OPTIONAL} or {@link Node#ZERO_OR_MORE}. Other modifiers are not allowed.
      * @return the new node with the modifier
      */
     private Node box(Node node, int modifier) {
-        if( node.getModifier() == Node.ONE_OF || node.getModifier() == Node.ONE_TERMINAL_OF){
+        if (node.getModifier() == Node.ONE_OF || node.getModifier() == Node.ONE_TERMINAL_OF) {
             return nodeCreator.oneNode(List.of(node)).clone(modifier);
+        }
+        if (node.getModifier() == Node.ZERO_OR_MORE) {
+            return node;
         }
         return node.clone(modifier);
     }
