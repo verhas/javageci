@@ -12,12 +12,16 @@ import java.util.stream.Collectors;
  * <p>
  */
 public class InterfaceSet {
+    /**
+     * Name of the wrapper interface.
+     */
+    static final String WRAPPER_INTERFACE_NAME = "WrapperInterface";
     private final Set<String> interfaceSet = new HashSet<>();
-    private boolean lastWhen;
+    private boolean lastWhen; // see {@link #when(boolean)}
 
     private InterfaceSet(boolean needsWrapperInterface) {
         if (needsWrapperInterface) {
-            interfaceSet.add("WrapperInterface");
+            interfaceSet.add(WRAPPER_INTERFACE_NAME);
         }
     }
 
