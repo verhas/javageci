@@ -5,11 +5,13 @@ import javax0.geci.fluent.Fluent;
 import javax0.geci.fluent.FluentBuilder;
 import javax0.geci.tools.JavaSource;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class BuildFluentForSourceBuilder {
 
     @Test
+    @DisplayName("Generate the fluent API for the JavaSource writer code generating API")
     public void testSourceBuilderGeneratedApiIsGood() throws Exception {
         if (new Geci().source("../javageci-tools/src/main/java", "./javageci-tools/src/main/java").register(new Fluent()).generate()) {
             Assertions.fail(Geci.FAILED);

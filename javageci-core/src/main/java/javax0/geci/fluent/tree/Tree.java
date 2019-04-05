@@ -27,7 +27,15 @@ public final class Tree extends Node {
 
     @Override
     public Node clone(int modifier) {
-        return new Tree(modifier, list);
+        final var tree = new Tree(modifier, list);
+        tree.setName(getName());
+        return tree;
+    }
+
+    public Node clone(int modifier,final List<Node> newList) {
+        final var tree = new Tree(modifier, newList);
+        tree.setName(getName());
+        return tree;
     }
 
     @Override

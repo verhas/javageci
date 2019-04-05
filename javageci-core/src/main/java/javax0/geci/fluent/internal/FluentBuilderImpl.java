@@ -207,7 +207,7 @@ public class FluentBuilderImpl implements FluentBuilder, FluentNodeCreator {
                     result.addAll(flatten(tree.getList(), Node.ONCE));
                 } else {
                     final var tree = (Tree) node;
-                    result.add(new Tree(tree.getModifier(), flatten(tree.getList(), tree.getModifier())));
+                    result.add(tree.clone(node.getModifier(), flatten(tree.getList(), tree.getModifier())));
                 }
             }
         } else {
@@ -216,7 +216,7 @@ public class FluentBuilderImpl implements FluentBuilder, FluentNodeCreator {
                     result.add(node);
                 } else {
                     final var tree = (Tree) node;
-                    result.add(new Tree(tree.getModifier(), flatten(tree.getList(), tree.getModifier())));
+                    result.add(tree.clone(tree.getModifier(), flatten(tree.getList(), tree.getModifier())));
                 }
             }
         }
