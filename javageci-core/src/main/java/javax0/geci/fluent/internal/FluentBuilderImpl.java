@@ -14,6 +14,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -56,6 +58,169 @@ public class FluentBuilderImpl implements FluentBuilder, FluentNodeCreator {
 
     private static List<Node> nodesOf(FluentBuilder builder) {
         return ((FluentBuilderImpl) builder).nodes;
+    }
+
+
+    /**
+     * Flatten the alternatives in a tree. If the alternatives are listed in several substructures that are alternatives
+     * then they are alternatives on the same level of each other. In other words
+     * <pre>
+     *     ( a | b | c ) | ( d | (e | f) )
+     * </pre>
+     * <p>
+     * is the same as
+     * <pre>
+     *     ( a | b | c | d | e | f )
+     * </pre>
+     *
+     * @param tree to flatten the alternatives
+     * @return the flattened tree
+     */
+    private static Tree flatten(Tree tree) {
+        if (tree.getModifier() == Node.ONE_OF) {
+            final var flat = new ArrayList<Node>();
+            for (final var node : tree.getList()) {
+                if (node instanceof Tree) {
+                    flat.add(flatten((Tree) node));
+                } else {
+                    flat.add(node);
+                }
+            }
+            final var terminalsOnly = new AtomicBoolean(true);
+            tree.getList().clear();
+            flat.forEach(t -> {
+                if (t.getModifier() == Node.ONE_TERMINAL_OF) {
+                    tree.getList().addAll(((Tree) t).getList());
+                } else {
+                    tree.getList().add(t);
+                    if( t instanceof Tree ){
+                        terminalsOnly.set(false);
+                    }
+                }
+            });
+            if( terminalsOnly.get() && tree.getModifier() != Node.ONE_TERMINAL_OF){
+                return (Tree)tree.clone(Node.ONE_TERMINAL_OF);
+            }
+            return tree;
+        }
+        return tree;
+    }
+
+
+    /**
+     * Removes the duplicates from tree nodes of alternatives. For example
+     * <pre>
+     *     b | a | c | b
+     * </pre>
+     * is the same as
+     * <pre>
+     *     a | b | c
+     * </pre>
+     * This method recursively removes duplicates from alternateive nodes (ONE_OF and ONE_TERMINAL_OF)
+     *
+     * @param tree the tree to deduplicate
+     */
+    private static void deduplicate(Tree tree) {
+        for (final var node : tree.getList()) {
+            if (node instanceof Tree) {
+                deduplicate((Tree) node);
+            }
+        }
+        if (tree.getModifier() == Node.ONE_TERMINAL_OF || tree.getModifier() == Node.ONE_OF) {
+            final var set = new TreeSet<>(tree.getList());
+            tree.getList().clear();
+            tree.getList().addAll(set);
+        }
+    }
+
+    /**
+     * When there are nodes that contain one single node under it and the node itself is a ONCE type then the node
+     * in the structure is deleted and the node under it will replace the place.
+     * <pre>
+     *     one terminal ---> ONCE ---> alternates ---> ...
+     *                         |         | | | |
+     *                       nodeX
+     * </pre>
+     * <p>
+     * will be replaced by
+     *
+     * <pre>
+     *     one terminal ---> nodeX ---> alternates ---> ...
+     *                                   | | | |
+     * </pre>
+     * <p>
+     * This method will flatten the argument node and recursively all nodes under it.
+     *
+     * @param node to flatten
+     * @return the flattened node structure
+     */
+    private static Node pull(Node node) {
+        if (node.getModifier() == Node.ONCE && node instanceof Tree && ((Tree) node).getList().size() == 1) {
+            return pull(((Tree) node).getList().get(0));
+        }
+        if (node instanceof Tree) {
+            final var tree = (Tree) node;
+            final var pulled = new ArrayList<Node>();
+            for (final var n : tree.getList()) {
+                pulled.add(pull(n));
+            }
+            tree.getList().clear();
+            tree.getList().addAll(pulled);
+            return tree;
+        }
+
+        return node;
+    }
+
+    /**
+     * Flatten the node structures. In case there are nodes that form a list (methods or substructures in the fluent
+     * API that has to be called one after the other) then these nodes can be formed to be one node with all the
+     * possible methods and substructures on the same level.
+     *
+     * @param nodes    the nodes list to flatten
+     * @param modifier the modifier the node has that this list of nodes belong to
+     * @return the flattened list
+     */
+    private static List<Node> flatten(List<Node> nodes, int modifier) {
+
+        final var pulled = new ArrayList<Node>();
+        nodes.forEach(node -> pulled.add(pull(node)));
+
+        final var flat = new ArrayList<Node>();
+        pulled.forEach(
+                node -> {
+                    if (node instanceof Tree) {
+                        flat.add(flatten((Tree) node));
+                    } else {
+                        flat.add(node);
+                    }
+                }
+        );
+
+        final var result = new ArrayList<Node>();
+        if (modifier == Node.ONCE) {
+            for (final var node : flat) {
+                if (node instanceof Terminal) {
+                    result.add(node);
+                } else if (node.getModifier() == Node.ONCE) {
+                    final var tree = (Tree) node;
+                    result.addAll(flatten(tree.getList(), Node.ONCE));
+                } else {
+                    final var tree = (Tree) node;
+                    result.add(new Tree(tree.getModifier(), flatten(tree.getList(), tree.getModifier())));
+                }
+            }
+        } else {
+            for (final var node : flat) {
+                if (node instanceof Terminal) {
+                    result.add(node);
+                } else {
+                    final var tree = (Tree) node;
+                    result.add(new Tree(tree.getModifier(), flatten(tree.getList(), tree.getModifier())));
+                }
+            }
+        }
+        return result;
     }
 
     public String getInterfaces() {
@@ -349,33 +514,12 @@ public class FluentBuilderImpl implements FluentBuilder, FluentNodeCreator {
         final var flat = flatten(nodes, Node.ONCE);
         nodes.clear();
         nodes.addAll(flat);
-    }
-
-    private static List<Node> flatten(List<Node> nodes, int modifier) {
-        final var result = new ArrayList<Node>();
-        if (modifier == Node.ONCE) {
-            for (final var node : nodes) {
-                if (node instanceof Terminal) {
-                    result.add(node);
-                } else if (node.getModifier() == Node.ONCE) {
-                    final var tree = (Tree) node;
-                    result.addAll(flatten(tree.getList(), Node.ONCE));
-                } else {
-                    final var tree = (Tree) node;
-                    result.add(new Tree(tree.getModifier(), flatten(tree.getList(), tree.getModifier())));
-                }
-            }
-        }else{
-            for (final var node : nodes) {
-                if (node instanceof Terminal) {
-                    result.add(node);
-                } else {
-                    final var tree = (Tree) node;
-                    result.add(new Tree(tree.getModifier(), flatten(tree.getList(), tree.getModifier())));
-                }
+        for (final var node : nodes) {
+            if (node instanceof Tree) {
+                deduplicate((Tree) node);
             }
         }
-        return result;
+
     }
 
     @Override

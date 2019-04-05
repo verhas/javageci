@@ -12,7 +12,7 @@ import java.util.Map;
  * {@code Node} is abstract because the implementations can be either {@link Tree} or {@link Terminal} representing
  * a sub-tree in the syntax tree or a terminal leaf in the syntax tree.
  */
-public abstract class Node {
+public abstract class Node implements Comparable<Node> {
     public static final int ONCE = 0x00000001;
     public static final int OPTIONAL = 0x00000002;
     public static final int ZERO_OR_MORE = 0x00000004;
@@ -25,6 +25,11 @@ public abstract class Node {
                     ONE_OF, "{OR}",
                     ONE_TERMINAL_OF, "{OR}");
     private final int modifier;
+    private String name = null;
+
+    Node(int modifier) {
+        this.modifier = modifier;
+    }
 
     public abstract Node clone(int modifier);
 
@@ -38,12 +43,6 @@ public abstract class Node {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    private String name = null;
-
-    Node(int modifier) {
-        this.modifier = modifier;
     }
 
     public int getModifier() {

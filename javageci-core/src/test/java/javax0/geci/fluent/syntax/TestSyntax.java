@@ -18,6 +18,7 @@ public class TestSyntax {
         var klass = FluentBuilder.from(MyClass.class);
         var sut = klass
                 .syntax("kw(String) ( noParameters | parameters | parameter+ )? regex* usage help executor build");
+        sut.optimize();
         Assertions.assertEquals(EXPECTED, sut.toString());
     }
 
@@ -29,6 +30,7 @@ public class TestSyntax {
                 .syntax("kw(String) ( noParameters | parameters | parameter+ )? regex* usage help executor")
                 .name("SpecialName")
                 .syntax("build");
+        sut.optimize();
         Assertions.assertEquals(EXPECTED, sut.toString());
     }
 
@@ -41,7 +43,27 @@ public class TestSyntax {
                 .one(klass.zeroOrMore("regex"))
                 .syntax("usage help executor")
                 .name("").syntax("build");
+        sut.optimize();
         Assertions.assertEquals(EXPECTED, sut.toString());
+    }
+
+    @Test
+    @DisplayName("The syntax tree is flattened when there are multiple level of list of the same type")
+    void flattenExpressions() {
+        var klass = FluentBuilder.from(MyClass.class);
+        var sut = klass
+                .oneOf(klass.oneOf("regex", "help", "executor"), klass.oneOf("usage", "kw")).one("build");
+        sut.optimize();
+        Assertions.assertEquals("(executor|help|kw|regex|usage) build", sut.toString());
+    }
+
+    @Test
+    @DisplayName("The syntax tree is flattened when there are multiple deel level of list of the same type")
+    void flattenDeepExpressions() {
+        var sut = FluentBuilder.from(MyClass.class)
+                .syntax(" executor | help | ( executor|regex) | regex |   (usage (executor |kw |( kw| kw)))");
+        sut.optimize();
+        Assertions.assertEquals("(executor|help|regex|(usage (executor|kw)))", sut.toString());
     }
 
     @Test
@@ -61,6 +83,7 @@ public class TestSyntax {
         final var sut = klass.syntax("kw (parameter | (usage help))");
         Assertions.assertEquals("kw (parameter|(usage help))", sut.toString());
         final var sutWithoutParentheses = klass.syntax("kw parameter | (usage help)");
+        sut.optimize();
         Assertions.assertEquals("kw (parameter|(usage help))", sutWithoutParentheses.toString());
     }
 
@@ -69,6 +92,7 @@ public class TestSyntax {
     void syntaxExample2() {
         var klass = FluentBuilder.from(MyClass.class);
         final var sut = klass.syntax("kw (((parameter | ((usage (help))))))");
+        sut.optimize();
         Assertions.assertEquals("kw (parameter|(usage help))", sut.toString());
     }
 
@@ -77,6 +101,7 @@ public class TestSyntax {
     void syntaxChainedModifier_tpq() {
         var klass = FluentBuilder.from(MyClass.class);
         final var sut = klass.syntax("(parameter+)?");
+        sut.optimize();
         Assertions.assertEquals("parameter*", sut.toString());
     }
 

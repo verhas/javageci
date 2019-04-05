@@ -44,12 +44,10 @@ public class TestSimpleGrammar {
         var sut = defineSimpleGrammar();
         sut.optimize();
         Assertions.assertEquals(
-                "(singleWord|" +
-                        "parameterisedWord|" +
-                        "(word1 optionalWord?)|" +
+                "(parameterisedWord|singleWord|(word1 optionalWord?)|" +
                         "(word2 (wordChoiceA|wordChoiceB))|" +
-                        "(word3 word3*))" +
-                        " end",
+                        "(word3 word3*)) " +
+                        "end",
                 sut.toString());
     }
 
@@ -59,8 +57,8 @@ public class TestSimpleGrammar {
         var sut = defineSimpleGrammar_syntax();
         sut.optimize();
         Assertions.assertEquals(
-                "(singleWord|" +
-                        "parameterisedWord|" +
+                "(parameterisedWord|" +
+                        "singleWord|" +
                         "(word1 optionalWord?)|" +
                         "(word2 (wordChoiceA|wordChoiceB))|" +
                         "(word3 word3*))" +

@@ -95,21 +95,21 @@ public class Regex {
         java.util.regex.Pattern get();
     }
     public interface If2{
-        If1 terminal(String arg1);
-        If1 set(String arg1);
-        If1 optional(WrapperInterface arg1);
-        If1 zeroOrMore(WrapperInterface arg1);
-        If1 oneOrMore(WrapperInterface arg1);
         If1 more(WrapperInterface arg1, int arg2, int arg3);
+        If1 oneOrMore(WrapperInterface arg1);
+        If1 optional(WrapperInterface arg1);
+        If1 set(String arg1);
+        If1 terminal(String arg1);
+        If1 zeroOrMore(WrapperInterface arg1);
     }
     public interface If1 extends If0,WrapperInterface,If2 {}
     public interface If3{
-        If1 terminal(String arg1);
-        If1 set(String arg1);
-        If1 optional(WrapperInterface arg1);
-        If1 zeroOrMore(WrapperInterface arg1);
-        If1 oneOrMore(WrapperInterface arg1);
         If1 more(WrapperInterface arg1, int arg2, int arg3);
+        If1 oneOrMore(WrapperInterface arg1);
+        If1 optional(WrapperInterface arg1);
+        If1 set(String arg1);
+        If1 terminal(String arg1);
+        If1 zeroOrMore(WrapperInterface arg1);
     }
     //</editor-fold>
 

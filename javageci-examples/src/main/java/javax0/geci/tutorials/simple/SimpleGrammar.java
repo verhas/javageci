@@ -55,10 +55,10 @@ public class SimpleGrammar {
         void end();
     }
     public interface If1 {
-        If0 singleWord();
+        If0 parameterisedWord(String arg1);
     }
     public interface If2 {
-        If0 parameterisedWord(String arg1);
+        If0 singleWord();
     }
     public interface If3 extends If0 {
         If0 optionalWord();

@@ -56,16 +56,16 @@ public class Lexer {
         final String preprocessed;
 
         if (selectorExpression) {
-            preprocessed = input.replaceAll("\\s+", " ");
+            preprocessed = input.trim().replaceAll("\\s+", " ");
         } else {
-            preprocessed = input.replaceAll("\\s+", " ")
-                    .replaceAll("\\s\\|\\s", "|")
-                    .replaceAll("\\s,\\s", ",")
-                    .replaceAll("\\(\\s", "(")
-                    .replaceAll("\\s\\)", ")")
-                    .replaceAll("\\s\\?", "?")
-                    .replaceAll("\\s\\*", "*")
-                    .replaceAll("\\s\\+", "+");
+            preprocessed = input.trim().replaceAll("\\s+", " ")
+                    .replaceAll("\\s*\\|\\s*", "|")
+                    .replaceAll("\\s*,\\s*", ",")
+                    .replaceAll("\\(\\s*", "(")
+                    .replaceAll("\\s*\\)", ")")
+                    .replaceAll("\\s*\\?", "?")
+                    .replaceAll("\\s*\\*", "*")
+                    .replaceAll("\\s*\\+", "+");
         }
         this.input = new StringBuilder(preprocessed);
         this.selectorExpression = selectorExpression;

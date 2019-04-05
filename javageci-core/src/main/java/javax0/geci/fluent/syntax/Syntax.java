@@ -28,7 +28,7 @@ import static javax0.geci.tools.syntax.Lexeme.Type.*;
  * and alternatives have higher precendence so {@code a b|c} means either {@code a().b()} or {@code a().c()} in the
  * final fluent API and NOT {@code a().b()} or {@code c()}.
  * A {@code simple} is a {@code terminal} followed by one of the modifier characters {@code *+?} denoting zero or more,
- * one or more and optional occurence of the {@code terminal}. A {@code terminal} can be a method name or signature
+ * one or more and optional occurrence of the {@code terminal}. A {@code terminal} can be a method name or signature
  * or an expression enclosed in parentheses.
  */
 public class Syntax {
@@ -60,6 +60,18 @@ public class Syntax {
             final var t1 = (Tree) nodes.get(1);
             return t0.getList() == t1.getList();
         }
+    }
+
+    /**
+     * Creates a mutable list of the arguments. This is needed to fill in the list of the nodes in a Tree node.
+     * Optimization later changes the list.
+     *
+     * @param ts  the array of nodes to make list of
+     * @param <T> the type of the elements
+     * @return the modifiable list of nodes
+     */
+    private static <T> List<T> listOf(T... ts) {
+        return new ArrayList<>(List.of(ts));
     }
 
     /**
@@ -126,7 +138,7 @@ public class Syntax {
         if (nodes.size() == 1) {
             return nodes;
         } else {
-            return List.of(nodeCreator.oneOfNode(nodes));
+            return listOf(nodeCreator.oneOfNode(nodes));
         }
     }
 
@@ -157,27 +169,27 @@ public class Syntax {
                 case "*":
                     lexer.get();
                     if (isOneOrMore(nodes)) {
-                        return List.of(box(nodes.get(0), Node.ZERO_OR_MORE));
+                        return listOf(box(nodes.get(0), Node.ZERO_OR_MORE));
                     }
-                    return List.of(box(node, Node.ZERO_OR_MORE));
+                    return listOf(box(node, Node.ZERO_OR_MORE));
                 case "?":
                     lexer.get();
                     if (isOneOrMore(nodes)) {
-                        return List.of(box(nodes.get(0), Node.ZERO_OR_MORE));
+                        return listOf(box(nodes.get(0), Node.ZERO_OR_MORE));
                     }
-                    return List.of(box(node, Node.OPTIONAL));
+                    return listOf(box(node, Node.OPTIONAL));
                 case "+":
                     lexer.get();
                     if (isOneOrMore(nodes)) {
                         return nodes;
                     }
                     if (node.getModifier() == Node.OPTIONAL) {
-                        return List.of(node.clone(Node.ZERO_OR_MORE));
+                        return listOf(node.clone(Node.ZERO_OR_MORE));
                     }
                     if (node.getModifier() == Node.ZERO_OR_MORE) {
                         return nodes;
                     }
-                    return List.of(node, box(node, Node.ZERO_OR_MORE));
+                    return listOf(node, box(node, Node.ZERO_OR_MORE));
             }
         }
         return nodes;
@@ -196,7 +208,7 @@ public class Syntax {
      */
     public List<Node> terminal() {
         if (lexer.peek().type == WORD) {
-            return List.of(nodeCreator.oneNode(lexer.get().string));
+            return listOf(nodeCreator.oneNode(lexer.get().string));
         }
         if (lexer.peek().type == SYMBOL && lexer.peek().string.equals("(")) {
             lexer.get();
@@ -243,7 +255,7 @@ public class Syntax {
      */
     private Node box(Node node, int modifier) {
         if (node.getModifier() == Node.ONE_OF || node.getModifier() == Node.ONE_TERMINAL_OF) {
-            return nodeCreator.oneNode(List.of(node)).clone(modifier);
+            return nodeCreator.oneNode(listOf(node)).clone(modifier);
         }
         if (node.getModifier() == Node.ZERO_OR_MORE) {
             return node;
