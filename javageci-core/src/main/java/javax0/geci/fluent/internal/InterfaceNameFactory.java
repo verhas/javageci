@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class InterfaceNameFactory {
     private final Set<String> allInterfaces = new HashSet<>();
-    private int counter = 0;
+    private int counter = 1000;
     private String lastInterface = null;
 
     /**
@@ -32,7 +32,19 @@ public class InterfaceNameFactory {
         if (node.hasName()) {
             lastInterface = node.getName();
         } else {
-            lastInterface = "If" + counter++;
+            final var sb = new StringBuilder();
+            int z = counter;
+            counter += 119;
+            while( z > 0 ){
+                sb.append("aeou".substring(z&3,(z&3)+1));
+                z = z >> 2;
+                if( z > 0 ){
+                    sb.append("bcdfghjklmnpqrst".substring(z&7,(z&7)+1));
+                    z = z >> 4;
+                }
+            }
+            sb.setCharAt(0,Character.toUpperCase(sb.charAt(0)));
+            lastInterface = sb.toString();
         }
         allInterfaces.add(lastInterface);
         return lastInterface;

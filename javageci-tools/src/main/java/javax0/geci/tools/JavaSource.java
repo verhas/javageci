@@ -15,11 +15,11 @@ public class JavaSource implements AutoCloseable {
     private int tabStop = 0;
 
     //<editor-fold id="fluent" desc="fluent API interfaces and classes">
-    public interface Builder extends If28 {}
+    public interface Builder extends Afube {}
     public static Builder builder(){
         return new Wrapper();
     }
-    public static class Wrapper implements If16,If17,If14,If15,If18,If19,Builder,If0,If2,If1,If4,If3,If6,If5,If20,If8,If7,If23,If9,If24,If21,If22,If27,If28,If25,If26,AutoCloseable,MethodBody,If12,If13,If10,If11{
+    public static class Wrapper implements Ecac,Ejoj,Abok,Efeh,Builder,Edak,Acuh,Aduf,Afube,Udoh,Ucok,AutoCloseable,Uguc,Ufuf,Ebud,Ohug,Ofob,Agak,Ukeg,MethodBody,Oded,Ahah,Oceg,Ajef,Ujaj,Ogoj,Akec,Okuk,Ehebe,Obaj,Uhab,Ekog{
         private final javax0.geci.tools.JavaSource that;
         public Wrapper(){
             this.that = new javax0.geci.tools.JavaSource();
@@ -107,31 +107,31 @@ public class JavaSource implements AutoCloseable {
             return this;
         }
     }
-    public interface If0 {
+    public interface Aduf {
         String toString();
     }
-    public interface If2 {
-        If1 comment(String arg1, Object...  arg2);
+    public interface Ohug {
+        Ukeg comment(String arg1, Object...  arg2);
     }
-    public interface If3 {
-        If1 newline();
+    public interface Efeh {
+        Ukeg newline();
     }
-    public interface If4 {
-        If1 open(String arg1, Object...  arg2);
+    public interface Acuh {
+        Ukeg open(String arg1, Object...  arg2);
     }
-    public interface If5 {
-        If1 statement(String arg1, Object...  arg2);
+    public interface Ujaj {
+        Ukeg statement(String arg1, Object...  arg2);
     }
-    public interface If6 {
-        If1 write(String arg1, Object...  arg2);
+    public interface Ogoj {
+        Ukeg write(String arg1, Object...  arg2);
     }
-    public interface If7 {
-        If1 write_l(String arg1, Object...  arg2);
+    public interface Edak {
+        Ukeg write_l(String arg1, Object...  arg2);
     }
-    public interface If8 {
-        If1 write_r(String arg1, Object...  arg2);
+    public interface Abok {
+        Ukeg write_r(String arg1, Object...  arg2);
     }
-    public interface If9{
+    public interface Uhab{
         MethodBody comment(String arg1, Object...  arg2);
         MethodBody newline();
         MethodBody open(String arg1, Object...  arg2);
@@ -142,79 +142,79 @@ public class JavaSource implements AutoCloseable {
         MethodBody write_l(String arg1, Object...  arg2);
         MethodBody write_r(String arg1, Object...  arg2);
     }
-    public interface MethodBody extends If1,AutoCloseable,If9 {}
-    public interface If10{
+    public interface MethodBody extends Ukeg,AutoCloseable,Uhab {}
+    public interface Ofob{
         MethodBody args(String...  arg1);
         MethodBody noArgs();
     }
-    public interface If11 extends AutoCloseable,If10 {
-        If10 exceptions(String arg1);
+    public interface Ecac extends AutoCloseable,Ofob {
+        Ofob exceptions(String arg1);
     }
-    public interface If12 extends AutoCloseable,If11 {
-        If11 returnType(String arg1);
+    public interface Akec extends Ecac,AutoCloseable {
+        Ecac returnType(String arg1);
     }
-    public interface If13 extends AutoCloseable,If12 {
-        If12 modifiers(String arg1);
+    public interface Uguc extends Akec,AutoCloseable {
+        Akec modifiers(String arg1);
     }
-    public interface If14 {
-        If13 method(String arg1);
+    public interface Oded {
+        Uguc method(String arg1);
     }
-    public interface If17{
-        If16 comment(String arg1, Object...  arg2);
-        If16 newline();
-        If16 open(String arg1, Object...  arg2);
-        If16 statement(String arg1, Object...  arg2);
-        If16 write(String arg1, Object...  arg2);
-        If16 write_l(String arg1, Object...  arg2);
-        If16 write_r(String arg1, Object...  arg2);
+    public interface Ufuf{
+        Ajef comment(String arg1, Object...  arg2);
+        Ajef newline();
+        Ajef open(String arg1, Object...  arg2);
+        Ajef statement(String arg1, Object...  arg2);
+        Ajef write(String arg1, Object...  arg2);
+        Ajef write_l(String arg1, Object...  arg2);
+        Ajef write_r(String arg1, Object...  arg2);
     }
-    public interface If16 extends If17,If1,AutoCloseable {}
-    public interface If18 {
-        If16 elseStatement();
+    public interface Ajef extends Ukeg,AutoCloseable,Ufuf {}
+    public interface Oceg {
+        Ajef elseStatement();
     }
-    public interface If15 extends If1,If18,AutoCloseable {}
-    public interface If20{
-        If19 comment(String arg1, Object...  arg2);
-        If19 newline();
-        If19 open(String arg1, Object...  arg2);
-        If19 statement(String arg1, Object...  arg2);
-        If19 write(String arg1, Object...  arg2);
-        If19 write_l(String arg1, Object...  arg2);
-        If19 write_r(String arg1, Object...  arg2);
+    public interface Ebud extends Ukeg,Oceg,AutoCloseable {}
+    public interface Ahah{
+        Ekog comment(String arg1, Object...  arg2);
+        Ekog newline();
+        Ekog open(String arg1, Object...  arg2);
+        Ekog statement(String arg1, Object...  arg2);
+        Ekog write(String arg1, Object...  arg2);
+        Ekog write_l(String arg1, Object...  arg2);
+        Ekog write_r(String arg1, Object...  arg2);
     }
-    public interface If19 extends If15,AutoCloseable,If20 {}
-    public interface If21 {
-        If19 ifStatement(String arg1, Object...  arg2);
+    public interface Ekog extends Ahah,AutoCloseable,Ebud {}
+    public interface Udoh {
+        Ekog ifStatement(String arg1, Object...  arg2);
     }
-    public interface If23{
-        If22 comment(String arg1, Object...  arg2);
-        If22 newline();
-        If22 open(String arg1, Object...  arg2);
-        If22 statement(String arg1, Object...  arg2);
-        If22 write(String arg1, Object...  arg2);
-        If22 write_l(String arg1, Object...  arg2);
-        If22 write_r(String arg1, Object...  arg2);
+    public interface Ejoj{
+        Obaj comment(String arg1, Object...  arg2);
+        Obaj newline();
+        Obaj open(String arg1, Object...  arg2);
+        Obaj statement(String arg1, Object...  arg2);
+        Obaj write(String arg1, Object...  arg2);
+        Obaj write_l(String arg1, Object...  arg2);
+        Obaj write_r(String arg1, Object...  arg2);
     }
-    public interface If22 extends If1,AutoCloseable,If23 {}
-    public interface If24 {
-        If22 forStatement(String arg1, Object...  arg2);
+    public interface Obaj extends Ukeg,Ejoj,AutoCloseable {}
+    public interface Agak {
+        Obaj forStatement(String arg1, Object...  arg2);
     }
-    public interface If26{
-        If25 comment(String arg1, Object...  arg2);
-        If25 newline();
-        If25 open(String arg1, Object...  arg2);
-        If25 statement(String arg1, Object...  arg2);
-        If25 write(String arg1, Object...  arg2);
-        If25 write_l(String arg1, Object...  arg2);
-        If25 write_r(String arg1, Object...  arg2);
+    public interface Okuk{
+        Ucok comment(String arg1, Object...  arg2);
+        Ucok newline();
+        Ucok open(String arg1, Object...  arg2);
+        Ucok statement(String arg1, Object...  arg2);
+        Ucok write(String arg1, Object...  arg2);
+        Ucok write_l(String arg1, Object...  arg2);
+        Ucok write_r(String arg1, Object...  arg2);
     }
-    public interface If25 extends If26,If1,AutoCloseable {}
-    public interface If27 {
-        If25 whileStatement(String arg1, Object...  arg2);
+    public interface Ucok extends Ukeg,Okuk,AutoCloseable {}
+    public interface Ehebe {
+        Ucok whileStatement(String arg1, Object...  arg2);
     }
-    public interface If28 extends If27,If14,If2,If4,AutoCloseable,If3,If6,If5,If8,If7,If24,If21{
+    public interface Afube extends Udoh,Oded,Abok,Efeh,Ujaj,Ogoj,AutoCloseable,Ehebe,Edak,Acuh,Ohug,Agak{
     }
-    public interface If1 extends If28,If0,AutoCloseable {}
+    public interface Ukeg extends Afube,AutoCloseable,Aduf {}
     //</editor-fold>
 
     /**
