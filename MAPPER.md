@@ -64,7 +64,7 @@ The mapper can be invoked from a test using the following code
     }
 ```
 
-The `Mapper` class has four constructor. With the different arguments you can specify the annotation type that you want
+The `Mapper` class has four constructors. With the different arguments you can specify the annotation type that you want
 to use on the generated methods signalling that they are generated and you can also specify a `Function<String,String>`
 available at test execution time that can convert the field names to Map key values in case you want to use somewhat
 modified key values and not those that are identical to the field names in the Java code.

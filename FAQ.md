@@ -11,7 +11,7 @@ Roaster and Java:Geci are two different things and have different purposes, alth
 that they share. Roaster is a library, Java::Geci is more a framework that you can insert into your test cycle.
 Let's have a look at what one does and the other does not and also the functions that they share.
 
-* Both Roaster and Java::Geci supports code generation. They both have an API that helps you generate Java code using a
+* Both Roaster and Java::Geci support code generation. They both have an API that helps you generate Java code using a
   fluent API interface. This is one of the main features of Roaster and it provides a more extensive and more robust
   API for the purpose than Java::Geci.
   
