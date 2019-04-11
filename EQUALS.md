@@ -37,3 +37,6 @@ but `b` is subclass of `a`. Note that this is a practice that is needed by some 
 return proxy objects and still use the `equals()` for comparison. At the same time this construct
 violates the definition how `equals()` should work. If subclassing is enabled then the `equals()`
 method will be declared to be `final`.
+
+NOTE: later version will support `filter` expression to specify which fields to include into the method and
+configuration key `exclude` will be deprecated.

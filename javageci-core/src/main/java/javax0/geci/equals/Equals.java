@@ -12,6 +12,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
+//TODO: support field filter expression
+//TODO: refactor to extend field generator
 public class Equals extends AbstractGenerator {
 
     private final Class<? extends Annotation> generatedAnnotation;
