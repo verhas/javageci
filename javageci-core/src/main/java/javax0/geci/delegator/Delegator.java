@@ -28,7 +28,7 @@ public class Delegator extends AbstractDeclaredFieldsGenerator {
         return "delegator";
     }
 
-    public void processField(Source source, Class<?> klass, CompoundParams params, Field field) throws Exception {
+    public void process(Source source, Class<?> klass, CompoundParams params, Field field) throws Exception {
         final var id = params.get("id");
         final var filter = params.get("filter","public & !static");
         final var delClass = field.getType();

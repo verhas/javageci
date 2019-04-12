@@ -44,12 +44,12 @@ public class Regex {
     }
 
     //<editor-fold id="fluent" desc="generated fluent code">
-    public static If3 pattern(){
+    public static Efeh pattern(){
         return new Wrapper();
     }
     public interface WrapperInterface{
     }
-    public static class Wrapper implements If0,If2,If1,If3{
+    public static class Wrapper implements Ukeg,Efeh,Aduf,Ohug{
         private final javax0.geci.tests.fluent.Regex that;
         public Wrapper(javax0.geci.tests.fluent.Regex that){
             this.that = that;
@@ -91,25 +91,25 @@ public class Regex {
             return that.get();
         }
     }
-    public interface If0{
+    public interface Aduf{
         java.util.regex.Pattern get();
     }
-    public interface If2{
-        If1 more(WrapperInterface arg1, int arg2, int arg3);
-        If1 oneOrMore(WrapperInterface arg1);
-        If1 optional(WrapperInterface arg1);
-        If1 set(String arg1);
-        If1 terminal(String arg1);
-        If1 zeroOrMore(WrapperInterface arg1);
+    public interface Ohug{
+        Ukeg more(WrapperInterface arg1, int arg2, int arg3);
+        Ukeg oneOrMore(WrapperInterface arg1);
+        Ukeg optional(WrapperInterface arg1);
+        Ukeg set(String arg1);
+        Ukeg terminal(String arg1);
+        Ukeg zeroOrMore(WrapperInterface arg1);
     }
-    public interface If1 extends If0,WrapperInterface,If2 {}
-    public interface If3{
-        If1 more(WrapperInterface arg1, int arg2, int arg3);
-        If1 oneOrMore(WrapperInterface arg1);
-        If1 optional(WrapperInterface arg1);
-        If1 set(String arg1);
-        If1 terminal(String arg1);
-        If1 zeroOrMore(WrapperInterface arg1);
+    public interface Ukeg extends WrapperInterface,Aduf,Ohug {}
+    public interface Efeh{
+        Ukeg more(WrapperInterface arg1, int arg2, int arg3);
+        Ukeg oneOrMore(WrapperInterface arg1);
+        Ukeg optional(WrapperInterface arg1);
+        Ukeg set(String arg1);
+        Ukeg terminal(String arg1);
+        Ukeg zeroOrMore(WrapperInterface arg1);
     }
     //</editor-fold>
 

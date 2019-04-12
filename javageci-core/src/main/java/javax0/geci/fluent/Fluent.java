@@ -8,7 +8,7 @@ import javax0.geci.fluent.tree.Node;
 import javax0.geci.fluent.tree.Tree;
 import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
-import javax0.geci.tools.AbstractGenerator;
+import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
 
@@ -16,7 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-public class Fluent extends AbstractGenerator {
+public class Fluent extends AbstractJavaGenerator {
     private static final Logger LOG = LoggerFactory.getLogger();
 
     @Override

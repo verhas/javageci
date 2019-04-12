@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 /**
  * A set of interface names. This class is used to maintain the names of the interfaces that we generate during
  * fluent API generation.
- * <p>
  */
 public class InterfaceSet {
     /**

@@ -7,10 +7,10 @@ import javax0.geci.annotations.Geci;
 public class SimpleGrammar {
 
     //<editor-fold id="fluent" desc="Java::Geci generated code">
-    public static If9 start(){
+    public static Uhab start(){
         return new Wrapper();
     }
-    public static class Wrapper implements If0,If2,If1,If4,If3,If6,If5,If8,If7,If9{
+    public static class Wrapper implements Ukeg,Abok,Efeh,Ujaj,Ogoj,Edak,Acuh,Aduf,Uhab,Ohug{
         private final javax0.geci.tutorials.simple.SimpleGrammar that;
         public Wrapper(){
             this.that = new javax0.geci.tutorials.simple.SimpleGrammar();
@@ -51,35 +51,35 @@ public class SimpleGrammar {
             return this;
         }
     }
-    public interface If0 {
+    public interface Aduf {
         void end();
     }
-    public interface If1 {
-        If0 parameterisedWord(String arg1);
+    public interface Ukeg {
+        Aduf parameterisedWord(String arg1);
     }
-    public interface If2 {
-        If0 singleWord();
+    public interface Ohug {
+        Aduf singleWord();
     }
-    public interface If3 extends If0 {
-        If0 optionalWord();
+    public interface Efeh extends Aduf {
+        Aduf optionalWord();
     }
-    public interface If4 {
-        If3 word1();
+    public interface Acuh {
+        Efeh word1();
     }
-    public interface If5{
-        If0 wordChoiceA();
-        If0 wordChoiceB();
+    public interface Ujaj{
+        Aduf wordChoiceA();
+        Aduf wordChoiceB();
     }
-    public interface If6 {
-        If5 word2();
+    public interface Ogoj {
+        Ujaj word2();
     }
-    public interface If7 extends If0 {
-        If7 word3();
+    public interface Edak extends Aduf {
+        Edak word3();
     }
-    public interface If8 {
-        If7 word3();
+    public interface Abok {
+        Edak word3();
     }
-    public interface If9 extends If2,If1,If4,If6,If8{
+    public interface Uhab extends Ukeg,Abok,Ogoj,Acuh,Ohug{
     }
     //</editor-fold>
 

@@ -74,10 +74,10 @@ public class XmlBuilder {
     }
 
     //<editor-fold id="fluent">
-    public static If7 start(){
+    public static Edak start(){
         return new Wrapper();
     }
-    public static class Wrapper implements If0,If2,If1,If4,If3,AutoCloseable,If6,If5,If7{
+    public static class Wrapper implements Ukeg,Efeh,Ujaj,Ogoj,AutoCloseable,Edak,Acuh,Aduf,Ohug{
         private final javax0.geci.tutorials.xmlbuilder.XmlBuilder that;
         public Wrapper(javax0.geci.tutorials.xmlbuilder.XmlBuilder that){
             this.that = that;
@@ -107,27 +107,27 @@ public class XmlBuilder {
             that.close();
         }
     }
-    public interface If0 {
+    public interface Aduf {
         String toString();
     }
-    public interface If2 extends If1,AutoCloseable {
-        If1 text(String arg1);
+    public interface Ohug extends Ukeg,AutoCloseable {
+        Ukeg text(String arg1);
     }
-    public interface If3 extends If2,AutoCloseable {
-        If3 attribute(String arg1, String arg2);
+    public interface Efeh extends AutoCloseable,Ohug {
+        Efeh attribute(String arg1, String arg2);
     }
-    public interface If4 {
-        If3 tag(String arg1);
+    public interface Acuh {
+        Efeh tag(String arg1);
     }
-    public interface If1 extends If0,If4,AutoCloseable {}
-    public interface If5 extends If1,AutoCloseable {
-        If1 text(String arg1);
+    public interface Ukeg extends AutoCloseable,Acuh,Aduf {}
+    public interface Ujaj extends Ukeg,AutoCloseable {
+        Ukeg text(String arg1);
     }
-    public interface If6 extends AutoCloseable,If5 {
-        If6 attribute(String arg1, String arg2);
+    public interface Ogoj extends Ujaj,AutoCloseable {
+        Ogoj attribute(String arg1, String arg2);
     }
-    public interface If7 {
-        If6 tag(String arg1);
+    public interface Edak {
+        Ogoj tag(String arg1);
     }
     //</editor-fold>
 }

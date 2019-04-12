@@ -35,7 +35,7 @@ module.
 package javax0.geci.tutorials.simplest;
 
 import javax0.geci.api.Source;
-import javax0.geci.tools.AbstractGenerator;
+import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 
 public class HelloWorldTestGenerator extends AbstractGenerator {

@@ -84,10 +84,10 @@ public class ReplCommandBuilder {
     }
 
     //<editor-fold id="fluent" desc="fluent API interfaces and classes">
-    public static If10 start(){
+    public static Ofob start(){
         return new Wrapper();
     }
-    public static class Wrapper implements CommandDefinitionBuilderReady,If0,If2,If1,If4,If3,If6,If5,If8,If7,If9,If10{
+    public static class Wrapper implements Abok,Efeh,Edak,CommandDefinitionBuilderReady,Acuh,Aduf,Ohug,Ofob,Ukeg,Ujaj,Ogoj,Uhab{
         private final javax0.geci.tests.fluent.ReplCommandBuilder that;
         public Wrapper(){
             this.that = new javax0.geci.tests.fluent.ReplCommandBuilder();
@@ -131,35 +131,35 @@ public class ReplCommandBuilder {
     public interface CommandDefinitionBuilderReady {
         javax0.geci.tests.fluent.ReplCommandBuilder.CommandDefinition build();
     }
-    public interface If0 {
+    public interface Aduf {
         CommandDefinitionBuilderReady executor(java.util.function.Consumer<javax0.geci.tests.fluent.ReplCommandBuilder.CommandEnvironment> arg1);
     }
-    public interface If1 {
-        If0 help(String arg1);
+    public interface Ukeg {
+        Aduf help(String arg1);
     }
-    public interface If2 {
-        If1 usage(String arg1);
+    public interface Ohug {
+        Ukeg usage(String arg1);
     }
-    public interface If3 extends If2 {
-        If3 regex(String arg1, String arg2);
+    public interface Efeh extends Ohug {
+        Efeh regex(String arg1, String arg2);
     }
-    public interface If5 {
-        If3 noParameters();
+    public interface Ujaj {
+        Efeh noParameters();
     }
-    public interface If6 {
-        If3 parameters(java.util.Set<String> arg1);
+    public interface Ogoj {
+        Efeh parameters(java.util.Set<String> arg1);
     }
-    public interface If7 extends If3 {
-        If7 parameter(String arg1);
+    public interface Edak extends Efeh {
+        Edak parameter(String arg1);
     }
-    public interface If8 {
-        If7 parameter(String arg1);
+    public interface Abok {
+        Edak parameter(String arg1);
     }
-    public interface If9 extends If6,If5,If8{
+    public interface Uhab extends Abok,Ujaj,Ogoj{
     }
-    public interface If4 extends If3,If9 {}
-    public interface If10 {
-        If4 kw(String arg1);
+    public interface Acuh extends Efeh,Uhab {}
+    public interface Ofob {
+        Acuh kw(String arg1);
     }
     //</editor-fold>
 

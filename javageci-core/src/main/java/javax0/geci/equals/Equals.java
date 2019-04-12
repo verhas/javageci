@@ -1,7 +1,7 @@
 package javax0.geci.equals;
 
 import javax0.geci.api.Source;
-import javax0.geci.tools.AbstractGenerator;
+import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.syntax.GeciAnnotationTools;
@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 //TODO: support field filter expression
 //TODO: refactor to extend field generator
-public class Equals extends AbstractGenerator {
+public class Equals extends AbstractJavaGenerator {
 
     private final Class<? extends Annotation> generatedAnnotation;
 

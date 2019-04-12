@@ -1,7 +1,7 @@
 package javax0.geci.mapper;
 
 import javax0.geci.api.Source;
-import javax0.geci.tools.AbstractGenerator;
+import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.reflection.Selector;
@@ -22,7 +22,7 @@ import java.util.function.Function;
  * in the Geci annotation of the class, or else it just tries to use the default constructor of the class.
  *
  */
-public class Mapper extends AbstractGenerator {
+public class Mapper extends AbstractJavaGenerator {
 
     private static final String DEFAULTS = "!transient & !static";
     private final Class<? extends Annotation> generatedAnnotation;

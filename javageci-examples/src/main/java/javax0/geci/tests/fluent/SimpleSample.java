@@ -32,10 +32,10 @@ public class SimpleSample {
     }
 
     //<editor-fold id="fluent" desc="generated fluent code">
-    public static If11 sample(){
+    public static Ecac sample(){
         return new Wrapper();
     }
-    public static class Wrapper implements If0,If2,If1,If4,If3,If6,If5,If8,If7,If9,If10,If11{
+    public static class Wrapper implements Ecac,Abok,Efeh,Edak,Acuh,Aduf,Ohug,Ofob,Ukeg,Ujaj,Ogoj,Uhab{
         private final javax0.geci.tests.fluent.SimpleSample that;
         public Wrapper(javax0.geci.tests.fluent.SimpleSample that){
             this.that = that;
@@ -70,38 +70,38 @@ public class SimpleSample {
             return next;
         }
     }
-    public interface If0{
+    public interface Aduf{
         String get();
         String got();
     }
-    public interface If2 {
-        If1 b(String arg1);
+    public interface Ohug {
+        Ukeg b(String arg1);
     }
-    public interface If3 {
-        If2 a(String arg1);
+    public interface Efeh {
+        Ohug a(String arg1);
     }
-    public interface If4 {
-        If1 d(String arg1);
+    public interface Acuh {
+        Ukeg d(String arg1);
     }
-    public interface If5 {
-        If4 c(String arg1);
+    public interface Ujaj {
+        Acuh c(String arg1);
     }
-    public interface If6 extends If3,If5{
+    public interface Ogoj extends Efeh,Ujaj{
     }
-    public interface If1 extends If0,If6 {}
-    public interface If7 {
-        If1 b(String arg1);
+    public interface Ukeg extends Ogoj,Aduf {}
+    public interface Edak {
+        Ukeg b(String arg1);
     }
-    public interface If8 {
-        If7 a(String arg1);
+    public interface Abok {
+        Edak a(String arg1);
     }
-    public interface If9 {
-        If1 d(String arg1);
+    public interface Uhab {
+        Ukeg d(String arg1);
     }
-    public interface If10 {
-        If9 c(String arg1);
+    public interface Ofob {
+        Uhab c(String arg1);
     }
-    public interface If11 extends If8,If10{
+    public interface Ecac extends Abok,Ofob{
     }
     //</editor-fold>
 

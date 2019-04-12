@@ -1,7 +1,7 @@
-public static If2 start(){
+public static Ohug start(){
     return new Wrapper();
 }
-public static class Wrapper implements If0,If2,If1{
+public static class Wrapper implements Ukeg,Aduf,Ohug{
     private final javax0.geci.fluent.internal.TestClassBuilder.TestClass that;
     public Wrapper(){
         this.that = new javax0.geci.fluent.internal.TestClassBuilder.TestClass();
@@ -19,15 +19,15 @@ public static class Wrapper implements If0,If2,If1{
         that.c();
     }
 }
-public interface If0{
+public interface Aduf{
     void a();
     void b();
     void c();
     void d();
 }
-public interface If1 extends If0 {
-    If0 b();
+public interface Ukeg extends Aduf {
+    Aduf b();
 }
-public interface If2 {
-    If1 a();
+public interface Ohug {
+    Ukeg a();
 }

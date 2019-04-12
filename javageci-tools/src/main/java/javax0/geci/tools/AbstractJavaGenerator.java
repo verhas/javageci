@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  * name of the class and that the end of the line is the opening brace of the class on the same line.
  */
 //
-public abstract class AbstractGenerator extends AbstractGeneratorEx {
+public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
     private static final Pattern CLASS_LINE = Pattern.compile("class\\s+\\w[\\w\\d_$]*\\s*.*(\\{)\\s*$");
 
     public void processEx(Source source) throws Exception {
@@ -36,7 +36,7 @@ public abstract class AbstractGenerator extends AbstractGeneratorEx {
     }
 
     /**
-     * Concrete classes extending this abstract class {@link AbstractGenerator} should implement this method.
+     * Concrete classes extending this abstract class {@link AbstractJavaGenerator} should implement this method.
      *
      * @param source is the source object that the generator will work from.
      * @param klass the klass that was created from the source during the compilation

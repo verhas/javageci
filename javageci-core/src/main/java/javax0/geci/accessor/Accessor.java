@@ -3,14 +3,14 @@ package javax0.geci.accessor;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
-import javax0.geci.tools.AbstractGenerator;
+import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-public class Accessor extends AbstractGenerator {
+public class Accessor extends AbstractJavaGenerator {
     private static final int NOT_PACKAGE = Modifier.PROTECTED | Modifier.PRIVATE | Modifier.PUBLIC;
 
     @Override
