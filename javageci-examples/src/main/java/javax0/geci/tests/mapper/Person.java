@@ -9,7 +9,7 @@ import java.util.HashMap;
  * Sample
  */
 @Geci("mapper factory='newPerson()'")
-@Geci("equals")
+@Geci("equals filter='!static'")
 public class Person extends AbstractPerson {
     private HashMap<String, String> willMapPrivateHashMap;
     private Person mother;

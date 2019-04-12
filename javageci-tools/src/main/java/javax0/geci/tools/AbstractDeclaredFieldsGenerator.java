@@ -2,6 +2,7 @@ package javax0.geci.tools;
 
 import javax0.geci.api.Source;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 
 /**
@@ -41,7 +42,7 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
      * @param global the parameters collected from the {@code Geci} annotation on the class.
      */
     @SuppressWarnings("unused")
-    public void preprocess(Source source, Class<?> klass, CompoundParams global) {
+    public void preprocess(Source source, Class<?> klass, CompoundParams global) throws Exception {
     }
 
     /**
@@ -53,7 +54,7 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
      * @param global see {@link #preprocess(Source, Class, CompoundParams)}
      */
     @SuppressWarnings("unused")
-    public void postprocess(Source source, Class<?> klass, CompoundParams global) {
+    public void postprocess(Source source, Class<?> klass, CompoundParams global) throws Exception {
     }
 
     /**
