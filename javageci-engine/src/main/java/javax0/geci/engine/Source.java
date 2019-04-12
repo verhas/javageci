@@ -156,6 +156,10 @@ public class Source implements javax0.geci.api.Source {
         return globalSegment;
     }
 
+    public Segment temporary(){
+        return new Segment(0);
+    }
+
     @Override
     public Segment open(String id) throws IOException {
         if (globalSegment != null) {

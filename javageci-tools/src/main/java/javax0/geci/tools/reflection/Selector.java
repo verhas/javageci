@@ -80,7 +80,7 @@ public class Selector<T> {
             matchAnnotations((AnnotatedElement) m, regex));
     }
 
-    private void classOnlySelectory() {
+    private void classOnlySelectory() {//TODO fields and methods could be matched with their type/return type
         selector("interface", m -> only(m, Class.class) && ((Class<?>) m).isInterface());
         selector("primitive", m -> only(m, Class.class) && ((Class<?>) m).isPrimitive());
         selector("annotation", m -> only(m, Class.class) && ((Class<?>) m).isAnnotation());

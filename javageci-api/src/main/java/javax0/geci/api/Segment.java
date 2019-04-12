@@ -35,6 +35,14 @@ public interface Segment extends AutoCloseable {
     Segment write(String s, Object... parameters);
 
     /**
+     * Write all the lines of the segment into this segment.
+     *
+     * @param segment the other segment that contains lines that were created beforehand
+     * @return this
+     */
+    Segment write(Segment segment);
+
+    /**
      * Insert a new line into the segment.
      */
     Segment newline();

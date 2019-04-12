@@ -2,7 +2,6 @@ package javax0.geci.tools;
 
 import javax0.geci.api.Source;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 
 /**
@@ -24,9 +23,7 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
         final var fields = GeciReflectionTools.getDeclaredFieldsSorted(klass);
         for (final var field : fields) {
             var params = GeciReflectionTools.getParameters(field, mnemonic());
-            if (params != null) {
-                processFieldHook(source, klass, new CompoundParams(params, global), field);
-            }
+            processFieldHook(source, klass, new CompoundParams(params, global), field);
         }
         postprocess(source, klass, global);
     }
@@ -61,6 +58,7 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
      * Hook method that should be overridden by extending classess. This way the extending abstract class can keep
      * the signature of the method {@link #process(Source, Class, CompoundParams, Field)}.
      * <p>
+     *
      * @param source see the documentation of the same name argument in
      *               {@link javax0.geci.api.Generator#process(Source)}
      * @param klass  see the documentation of the same name argument in

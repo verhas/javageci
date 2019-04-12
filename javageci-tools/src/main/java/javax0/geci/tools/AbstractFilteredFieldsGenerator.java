@@ -21,7 +21,7 @@ public abstract class AbstractFilteredFieldsGenerator extends AbstractDeclaredFi
 
     @Override
     protected final void processFieldHook(Source source, Class<?> klass, CompoundParams params, Field field) throws Exception {
-        var filter = params.get("filter", "true");
+        var filter = params.get("filter", defaultFilterExpression());
         var selector = Selector.compile(filter);
         if (selector.match(field)) {
             processSelectedFieldHook(source, klass, params, field);
@@ -29,8 +29,19 @@ public abstract class AbstractFilteredFieldsGenerator extends AbstractDeclaredFi
     }
 
     /**
+     * Implementations should override this method if they need a different default filter expression for the fields.
+     *
+     * @return the filter expression that is used when none is specified in the configuration in the class needing
+     * the generated code.
+     */
+    protected String defaultFilterExpression() {
+        return "true";
+    }
+
+    /**
      * Extending this interface can override this method adding extra functionality and keeping the signature and the
      * name of the abstract method {@link AbstractDeclaredFieldsGenerator#process(Source, Class, CompoundParams, Field)}.
+     *
      * @param source see the documentation of the same name argument in
      *               {@link javax0.geci.api.Generator#process(Source)}
      * @param klass  see the documentation of the same name argument in

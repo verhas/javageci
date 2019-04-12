@@ -11,7 +11,7 @@ public class ClassNeedingEquals {
     private byte aByte;
     private boolean aBoolean;
     private char aChar;
-    @Geci("equals exclude='yes'")
+    @Geci("equals filter='false'")
     private ClassNeedingEquals huss;
     private short aShort;
     private long aLong;

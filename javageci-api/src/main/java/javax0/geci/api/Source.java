@@ -17,6 +17,15 @@ public interface Source {
     Segment open(String id) throws IOException;
 
     /**
+     * Create a temporary segment. This segment is dangling and does not belong to the actual source and also it does
+     * not have a name. The starting tab stop of the segment is zero. Extra padding is added to the lines when the
+     * segment is appended to the final segment. As it implies such temporary segments can be used
+     * to write code into this segment and later merge this segment into one segment that belongs to a source.
+     * @return a new anonymous segment
+     */
+    Segment temporary();
+
+    /**
      * Open the "global" segment that is the whole source file. Usually used on sources that are created calling
      * {@link #newSource(String)}
      *

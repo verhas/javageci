@@ -1,5 +1,7 @@
 package javax0.geci.engine;
 
+import javax0.geci.api.GeciException;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,19 +18,33 @@ public class Segment implements javax0.geci.api.Segment {
     }
 
     @Override
-    public String getContent(){
-        return String.join("\n",lines);
+    public String getContent() {
+        return String.join("\n", lines);
     }
 
     @Override
-    public void setContent(String content){
+    public void setContent(String content) {
         lines.clear();
-        lines.addAll(Arrays.asList(content.split("\n",-1)));
+        lines.addAll(Arrays.asList(content.split("\n", -1)));
     }
 
     @Override
     public void close() {
         tabStop = openingTabStop;
+    }
+
+    @Override
+    public Segment write(javax0.geci.api.Segment segment) {
+        if (segment != null) {
+            if (segment instanceof Segment) {
+                var other = (Segment) segment;
+                other.lines.forEach(line -> write(line));
+            } else {
+                throw new GeciException("Segment " + segment + " is not instance of " + Segment.class.getName() +
+                        ". It is " + segment.getClass().getName() + "which is not compatible with this implementation");
+            }
+        }
+        return this;
     }
 
     @Override
