@@ -21,6 +21,7 @@ public interface Source {
      * not have a name. The starting tab stop of the segment is zero. Extra padding is added to the lines when the
      * segment is appended to the final segment. As it implies such temporary segments can be used
      * to write code into this segment and later merge this segment into one segment that belongs to a source.
+     *
      * @return a new anonymous segment
      */
     Segment temporary();
@@ -169,12 +170,24 @@ public interface Source {
 
     class Maven {
         private String module = null;
+        private final String rootModuleDir;
 
-        private String[] source(String main, String java) {
+        private Maven() {
+            rootModuleDir = ".";
+        }
+
+        private Maven(final String root) {
+            rootModuleDir = root;
+        }
+
+        private String[] source(String mainOrTest, String java) {
             if (module == null) {
-                return new String[]{"./src/" + main + "/" + java};
+                return new String[]{"./src/" + mainOrTest + "/" + java};
             } else {
-                return new String[]{"./src/" + main + "/" + java, "./" + module + "/src/" + main + "/" + java};
+                return new String[]{
+                    rootModuleDir + "/" + module + "/src/" + mainOrTest + "/" + java,
+                    "./src/" + mainOrTest + "/" + java
+                };
             }
         }
 
@@ -198,6 +211,10 @@ public interface Source {
             this.module = module;
             return this;
         }
+    }
+
+    static Maven maven(final String root) {
+        return new Maven(root);
     }
 
     static Maven maven() {

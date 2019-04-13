@@ -49,6 +49,7 @@ public class FileCollector {
                                 path)));
                     processed = true;
                     entry.setValue(new String[]{dir});
+                    break;
                 } catch (IOException ignore) {
                 }
             }

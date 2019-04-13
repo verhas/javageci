@@ -8,7 +8,7 @@
     {@include ../plugins.jim}
 
     {dependencies#
-        {@for MODULE in (api,annotation,engine)=
+        {@for MODULE in (api,annotation)=
             {dependency :{GROUPID}:javageci-MODULE:}}
         {@for MODULE in (api,engine)=
             {dependency :org.junit.jupiter:junit-jupiter-MODULE:}}
