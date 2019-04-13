@@ -13,7 +13,7 @@ import static javax0.geci.api.Source.maven;
  * A simple sample code generator that copies the {@link javax0.geci.tools.AbstractDeclaredFieldsGenerator} and
  * {@link javax0.geci.tools.AbstractFilteredFieldsGenerator} to the same name but replacing all fields to be methods.
  */
-public class CopyGenerator extends AbstractJavaGenerator {
+public class TestCopyGenerator extends AbstractJavaGenerator {
 
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
@@ -37,7 +37,7 @@ public class CopyGenerator extends AbstractJavaGenerator {
     @Test
     void generateCopies() throws Exception {
         Assertions.assertFalse(
-            new Geci().source(maven("..").module("javageci-tools").mainSource()).register(new CopyGenerator()).generate()
+            new Geci().source(maven("..").module("javageci-tools").mainSource()).register(new TestCopyGenerator()).generate()
             , Geci.FAILED
         );
     }
