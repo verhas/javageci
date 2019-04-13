@@ -56,7 +56,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
     }
 
     @Override
-    public void preprocess(Source source, Class<?> klass, CompoundParams global) throws IOException {
+    public void preprocess(Source source, Class<?> klass, CompoundParams global) {
         equalsSegment = source.temporary();
         generateEqualsHeader(equalsSegment, klass, global);
         lastField = null;

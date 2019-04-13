@@ -157,6 +157,4 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
      */
     public void process(Source source, Class<?> klass, CompoundParams global, Field[] fields) throws Exception {
     }
-
-    ;
 }

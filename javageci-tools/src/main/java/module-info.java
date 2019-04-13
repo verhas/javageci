@@ -5,4 +5,5 @@ module geci.tools {
     exports javax0.geci.tools.reflection;
     requires geci.annotation;
     requires geci.api;
+    requires geci.engine;
 }

@@ -49,6 +49,12 @@
     <artifactId>javageci-annotation</artifactId>
     
 </dependency>
+            
+<dependency>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-engine</artifactId>
+    
+</dependency>
         
             
 <dependency>
