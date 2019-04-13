@@ -16,7 +16,7 @@ import java.lang.reflect.Field;
  * </li>
  * </ul>
  */
-@Geci("copyClass copyTo='AbstractDeclaredMethodsGenerator'")
+@Geci("copyClass copyTo='AbstractDeclaredMethodsGenerator.java'")
 public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenerator {
 
     @Override

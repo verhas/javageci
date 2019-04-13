@@ -29,7 +29,10 @@ public interface Source {
     /**
      * Open the "global" segment that is the whole source file. Usually used on sources that are created calling
      * {@link #newSource(String)}
-     *
+     * <p>
+     * If you invoke this method on a source that was "hand-made" then you will essentially delete the content of the
+     * file. If you want to get the content of a source file you should call {@link #getLines()} on the source object
+     * itself.
      * @return the new segment object.
      */
     Segment open();

@@ -8,7 +8,10 @@ package javax0.geci.api;
 public interface Segment extends AutoCloseable {
 
     /**
-     * Get the lines of the segment as it is at the moment.
+     * Get the lines of the segment as it is at the moment. This is the text that was written into the segment by the
+     * code generator. There is no way to get the content of a segment that was in the file before the generator
+     * started it's work. The generator should not depend on the code that is inside the generated segment prior
+     * its work started.
      *
      * @return the textual content of the segment as it is at the moment.
      */
