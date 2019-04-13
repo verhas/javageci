@@ -13,18 +13,34 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Sample generator that generates {@code equals()} and {@code hashCode()} methods. The implementation extends the
+ * {@link AbstractFilteredFieldsGenerator} class. There are two different ways to extend this abstract class and for
+ * the sake of the demonstration this implementation uses both: one for creating the {@code equals()} method, and the
+ * other one to create the {@code hashCode()} method.
+ * <p>
+ * The code for {@code equals()} is created overriding the methods
+ * {@link AbstractFilteredFieldsGenerator#preprocess(Source, Class, CompoundParams)},
+ * {@link AbstractFilteredFieldsGenerator#process(Source, Class, CompoundParams, Field)}, and
+ * {@link AbstractFilteredFieldsGenerator#postprocess(Source, Class, CompoundParams)}.
+ * </p>
+ * <p>
+ * The code for {@code hashCode()} is created overriding the method
+ * {@link AbstractFilteredFieldsGenerator#process(Source, Class, CompoundParams, Field[])}
+ * </p>
+ * (Note that in this case the last parameter is an array and not a single field.)
+ */
 public class Equals extends AbstractFilteredFieldsGenerator {
 
     private final Class<? extends Annotation> generatedAnnotation;
     private final List<Field> fields = new ArrayList<>();
     private Segment equalsSegment;
-    private Segment hashCodeSegment;
     private Field lastField;
     private CompoundParams lastParams;
     private boolean generateEquals;
-    private boolean generateHashCode;
 
     public Equals() {
         generatedAnnotation = javax0.geci.annotations.Generated.class;
@@ -40,11 +56,9 @@ public class Equals extends AbstractFilteredFieldsGenerator {
     }
 
     @Override
-    public void preprocess(Source source, Class<?> klass, CompoundParams global) {
+    public void preprocess(Source source, Class<?> klass, CompoundParams global) throws IOException {
         equalsSegment = source.temporary();
         generateEqualsHeader(equalsSegment, klass, global);
-        hashCodeSegment = source.temporary();
-        generateHashCodeHeader(hashCodeSegment, klass, global);
         lastField = null;
         fields.clear();
     }
@@ -58,22 +72,18 @@ public class Equals extends AbstractFilteredFieldsGenerator {
     @Override
     public void postprocess(Source source, Class<?> klass, CompoundParams global) throws IOException {
         if (lastField != null) {
-            generateEqualsForField(equalsSegment, lastParams, lastField, true);
+            generateEqualsForField(equalsSegment, lastParams, lastField, this::retLast);
         }
         generateEqualsTail(equalsSegment);
-        generateHashCodeTail(hashCodeSegment, global);
         final var gid = global.get("id");
         var segment = source.open(gid);
         if (generateEquals) {
             segment.write(equalsSegment);
         }
-        if (generateHashCode) {
-            segment.write(hashCodeSegment);
-        }
     }
 
     private void generateEqualsHeader(Segment segment, Class<?> klass, CompoundParams global) {
-        var equalsMethod = getEqualsMethod(klass);
+        var equalsMethod = getMethodOrNull(klass, "equals", Object.class);
         var subclassingAllowed = global.is("subclass");
         generateEquals = equalsMethod == null || GeciAnnotationTools.isGenerated(equalsMethod);
         segment.write("@" + generatedAnnotation.getCanonicalName() + "(\"" + mnemonic() + "\")");
@@ -96,121 +106,114 @@ public class Equals extends AbstractFilteredFieldsGenerator {
 
     private void generateEqualsForField(Segment segment, CompoundParams params, Field field) {
         if (lastField != null) {
-            generateEqualsForField(segment, lastParams, lastField, false);
+            generateEqualsForField(segment, lastParams, lastField, this::ret);
         }
         lastParams = params;
         lastField = field;
     }
 
-    private void generateEqualsForField(Segment segment, CompoundParams params, Field field, boolean isLast) {
+    private void generateEqualsForField(Segment segment, CompoundParams params, Field field, Function<String, String> convert) {
         var primitive = field.getType().isPrimitive();
         var name = field.getName();
         if (primitive) {
             if (field.getType().equals(float.class)) {
-                segment.write(retZ(isLast, "Float", name));
+                segment.write(convert.apply("Float.compare(that." + name + ", " + name + ") == 0"));
             } else if (field.getType().equals(double.class)) {
-                segment.write(retZ(isLast, "Double", name));
+                segment.write(convert.apply("Double.compare(that." + name + ", " + name + ") == 0"));
             } else {
-                segment.write(retId(isLast, name));
+                segment.write(convert.apply(name + " == that." + name));
             }
         } else {
             if (params.is("useObjects")) {
-                segment.write(retObjEq(isLast, name));
+                segment.write(convert.apply("Objects.equals(" + name + ", that." + name + ")"));
             } else {
                 if (params.is("notNull")) {
-                    segment.write(retEq(isLast, name));
+                    segment.write(convert.apply(name + ".equals(that." + name + ")"));
                 } else {
-                    segment.write(retNNEq(isLast, name));
+                    segment.write(convert.apply(name + " != null ? !!" + name + ".equals(that." + name + ") : that." + name + " == null"));
                 }
             }
         }
     }
 
+    /**
+     * Return the string that is the code for testing the last field in the list of the fields. When we are testing
+     * the fields for equality we return if a field does not match the same field from the other object, otherwise
+     * we go on testing the rest of the fields.
+     * <p>
+     * In case of the last field, however, there are no more fields, this is the last one. Therefore the code is simply
+     * return the result of the comparison of the two fields. If they match then the whoe two objects are equal sine all
+     * fields were some way equal. If the last fields do not match then the two objects are not equal.
+     *
+     * @param condition to check the equality. Since the same string is converted to test the non-equality when this
+     *                  is not the last field this string also optionally contains {@code !!} characters, which are
+     *                  deleted in this case. When the field is not the last one and {@link #ret(String)} is invoked
+     *                  these will become {@code !} negations.
+     * @return the code that handles the condition
+     */
     private String retLast(String condition) {
-        return "return " + condition + ";";
-    }
-
-    private String ret(String condition) {
-        return "if (" + condition + ") return false;";
-    }
-
-    private String retZ(boolean isLast, String type, String name) {
-        if (isLast) {
-            return retLast(type + ".compare(that." + name + ", " + name + ") == 0");
-        } else {
-            return ret(type + ".compare(that." + name + ", " + name + ") != 0");
-        }
-    }
-
-    private String retId(boolean isLast, String name) {
-        if (isLast) {
-            return retLast(name + " == that." + name);
-        } else {
-            return ret(name + " != that." + name);
-        }
-    }
-
-    private String retObjEq(boolean isLast, String name) {
-        if (isLast) {
-            return retLast("Objects.equals(" + name + ", that." + name + ")");
-        } else {
-            return ret("!Objects.equals(" + name + ", that." + name + ")");
-        }
-    }
-
-    private String retEq(boolean isLast, String name) {
-        if (isLast) {
-            return retLast(name + ".equals(that." + name + ")");
-        } else {
-            return ret("!" + name + ".equals(that." + name + ")");
-        }
-    }
-
-    private String retNNEq(boolean isLast, String name) {
-        if (isLast) {
-            return retLast(name + " != null ? " + name + ".equals(that." + name + ") : that." + name + " == null");
-        } else {
-            return ret(name + "!= null ? !" + name + ".equals(that." + name + ") : that." + name + " != null");
-        }
+        final var modCondition = condition.replace("!!", "");
+        return "return " + modCondition + ";";
     }
 
     /**
-     * Get the equals() method from the class or return null, if the class does not declare its equals() method.
+     * Return the string that is the code for testing the field in the list of the fields in case this is NOT the last
+     * field. See also {@link #retLast(String)}.
+     * <p>
+     * Note that the {@code condition} is the string that tests for equality. In this case, however, we need to test
+     * inequality, thus the condition has to be reversed. The format of the conditions is very limited, there are only
+     * six different strings that are used as condition, and therefore some very simple rule can be used to reverse
+     * the condition:
+     * <ul>
+     * <li>If there is a '{@code ==}' sign in the condition then it has to be converted to '{@code !=}' and then</li>
+     * <li>if there is a '{@code !!}' in the condition it has to become '{@code !}'</li>
+     * <li>If there is NO '{@code ==}' in the condition string then the condition has to be preceeded
+     * with '{@code !}'</li>
+     * </ul>
+     * <p>
+     * Note that this is not a general algorithm to convert an arbitrary boolean Java expression. It just works for
+     * these six cases.
      *
-     * @param klass from which we need the equals() method
-     * @return the method or null
+     * @param condition that tests the equality and which is negated using the special algorithm.
+     * @return the code that handles the condition, simply {@code if( not condition) return false;}
      */
-    private Method getEqualsMethod(Class<?> klass) {
-        try {
-            return klass.getDeclaredMethod("equals", Object.class);
-        } catch (NoSuchMethodException ex) {
-            return null;
-        }
-    }
-
-    private Method getHashCodeMethod(Class<?> klass) {
-        try {
-            return klass.getDeclaredMethod("hashCode");
-        } catch (NoSuchMethodException ex) {
-            return null;
-        }
-    }
-
-    private void generateHashCodeHeader(Segment segment, Class<?> klass, CompoundParams global) {
-        var hashCodeMethod = getHashCodeMethod(klass);
-        generateHashCode = hashCodeMethod == null || GeciAnnotationTools.isGenerated(hashCodeMethod);
-        segment.write("@javax0.geci.annotations.Generated(\"equals\")");
-        segment.write("@Override");
-        segment.write_r("public int hashCode() {");
-    }
-
-    private void generateHashCodeTail(Segment segment, CompoundParams global) {
-        if (global.is("useObjects")) {
-            generateHashCodeBodyUsingObjects(segment);
+    private String ret(final String condition) {
+        final String notCondition;
+        if (condition.contains("==")) {
+            notCondition = condition.replace("==", "!=").replace("!!", "!");
         } else {
-            generateHashCodeBody(segment, global);
+            notCondition = "!" + condition;
         }
-        segment.write_l("}");
+        return "if (" + notCondition + ") return false;";
+    }
+
+
+    private Method getMethodOrNull(Class<?> klass, String name, Class<?>... args) {
+        try {
+            return klass.getDeclaredMethod(name, args);
+        } catch (NoSuchMethodException ex) {
+            return null;
+        }
+    }
+
+    @Override
+    public void process(Source source, Class<?> klass, CompoundParams global, Field[] fields) throws Exception {
+        final var gid = global.get("id");
+        var segment = source.open(gid);
+        var hashCodeMethod = getMethodOrNull(klass, "hashCode");
+        var generateHashCode = hashCodeMethod == null || GeciAnnotationTools.isGenerated(hashCodeMethod);
+        if (generateHashCode) {
+            segment.write("@javax0.geci.annotations.Generated(\"equals\")");
+            segment.write("@Override");
+            segment.write_r("public int hashCode() {");
+
+            if (global.is("useObjects")) {
+                generateHashCodeBodyUsingObjects(segment);
+            } else {
+                generateHashCodeBody(segment, global);
+            }
+            segment.write_l("}");
+        }
     }
 
     private void generateHashCodeBody(Segment segment, CompoundParams global) {
@@ -231,7 +234,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
                     segment.write("result = 31 * result + (int) (%s ^ (%s >>> 32));", name, name);
                 } else if (field.getType().equals(float.class)) {
                     segment.write("result = 31 * result + (%s != +0.0f ? Float.floatToIntBits(%s) : 0);",
-                            name, name);
+                        name, name);
                 } else if (field.getType().equals(double.class)) {
                     segment.write("temp = Double.doubleToLongBits(%s);", name);
                     segment.write("result = 31 * result + (int) (temp ^ (temp >>> 32));");
@@ -243,7 +246,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
                     segment.write("result = 31 * result + %s.hashCode();", name);
                 } else {
                     segment.write("result = 31 * result + (%s != null ? %s.hashCode() : 0);",
-                            name, name);
+                        name, name);
                 }
             }
         }
@@ -256,9 +259,10 @@ public class Equals extends AbstractFilteredFieldsGenerator {
 
     private void generateHashCodeBodyUsingObjects(Segment segment) {
         segment.write("return Objects.hash(%s);",
-                fields.stream().map(Field::getName).collect(Collectors.joining(", ")));
+            fields.stream().map(Field::getName).collect(Collectors.joining(", ")));
     }
 
+    @Override
     protected String defaultFilterExpression() {
         return "!static";
     }

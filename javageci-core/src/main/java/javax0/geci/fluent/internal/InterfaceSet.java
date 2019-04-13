@@ -38,7 +38,7 @@ public class InterfaceSet {
      * Add all interface names to the set.
      *
      * @param interfaces the names of the interfaces to be added
-     * @return this
+     * @return {@code this}
      */
     public InterfaceSet set(Set<String> interfaces) {
         this.interfaceSet.addAll(interfaces);
@@ -49,7 +49,7 @@ public class InterfaceSet {
      * Add all interface names to the set.
      *
      * @param interfaces the names of the interfaces to be added
-     * @return this
+     * @return {@code this}
      */
     public InterfaceSet set(String... interfaces) {
         this.interfaceSet.addAll(Arrays.stream(interfaces).filter(Objects::nonNull).collect(Collectors.toSet()));
@@ -67,7 +67,7 @@ public class InterfaceSet {
      * {@link #then(String...)} adds the interface names only when the last {@code #when(boolean)} argument was true.
      *
      * @param flag the flag to control the execution of the next {@link #then(String...)}.
-     * @return this
+     * @return {@code this}
      */
     public InterfaceSet when(boolean flag) {
         lastWhen = flag;
@@ -78,7 +78,7 @@ public class InterfaceSet {
      * Adds the names of the interfaces to the set if the last flag passed to {@link #when(boolean)} was true.
      *
      * @param interfaces the names of the interfaces to be added
-     * @return this
+     * @return {@code this}
      */
     public InterfaceSet then(String... interfaces) {
         if (lastWhen) {

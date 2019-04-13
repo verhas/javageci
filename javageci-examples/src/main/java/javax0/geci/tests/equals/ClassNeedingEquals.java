@@ -30,6 +30,11 @@ public class ClassNeedingEquals {
     //<editor-fold id="equals">
     @javax0.geci.annotations.Generated("equals")
     @Override
+    public int hashCode() {
+        return Objects.hash(aBoolean, aByte, aChar, aDouble, aFloat, aLong, aShort, anInt, h, x);
+    }
+    @javax0.geci.annotations.Generated("equals")
+    @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ClassNeedingEquals)) return false;
@@ -47,10 +52,5 @@ public class ClassNeedingEquals {
         return Objects.equals(x, that.x);
     }
 
-    @javax0.geci.annotations.Generated("equals")
-    @Override
-    public int hashCode() {
-        return Objects.hash(aBoolean, aByte, aChar, aDouble, aFloat, aLong, aShort, anInt, h, x);
-    }
     //</editor-fold>
 }

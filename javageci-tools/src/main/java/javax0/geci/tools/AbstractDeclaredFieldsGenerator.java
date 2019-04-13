@@ -19,13 +19,14 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
 
     @Override
     public final void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
-        preprocess(source, klass, global);
+        preprocessHook(source, klass, global);
         final var fields = GeciReflectionTools.getDeclaredFieldsSorted(klass);
         for (final var field : fields) {
             var params = GeciReflectionTools.getParameters(field, mnemonic());
             processFieldHook(source, klass, new CompoundParams(params, global), field);
         }
-        postprocess(source, klass, global);
+        processFieldHook(source, klass, global, fields);
+        postprocessHook(source, klass, global);
     }
 
     /**
@@ -43,6 +44,22 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
     }
 
     /**
+     * Hook method that should be overridden by extending abstract classes that intend to leave the override-ability
+     * of the method {@link #preprocess(Source, Class, CompoundParams)} intact.
+     * This way the extending abstract class can keep the signature of the method
+     * {@link #preprocess(Source, Class, CompoundParams)}.
+     *
+     * @param source see the documentation of the same name argument in
+     *               {@link javax0.geci.api.Generator#process(Source)}
+     * @param klass  see the documentation of the same name argument in
+     *               {@link AbstractJavaGenerator#process(Source, Class, CompoundParams)}
+     * @param global the parameters collected from the {@code Geci} annotation on the class.
+     */
+    protected void preprocessHook(Source source, Class<?> klass, CompoundParams global) throws Exception {
+        preprocess(source, klass, global);
+    }
+
+    /**
      * This method is invoked after the last field was processed. The actual implementation has to perform the last
      * code generation actions on the source object.
      *
@@ -55,8 +72,24 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
     }
 
     /**
-     * Hook method that should be overridden by extending classess. This way the extending abstract class can keep
-     * the signature of the method {@link #process(Source, Class, CompoundParams, Field)}.
+     * Hook method that should be overridden by extending abstract classes that intend to leave the override-ability
+     * of the method {@link #postprocess(Source, Class, CompoundParams)} intact.
+     * This way the extending abstract class can keep the signature of the method
+     * {@link #postprocess(Source, Class, CompoundParams)}.
+     *
+     * @param source see {@link #preprocess(Source, Class, CompoundParams)}
+     * @param klass  see {@link #preprocess(Source, Class, CompoundParams)}
+     * @param global see {@link #preprocess(Source, Class, CompoundParams)}
+     */
+    public void postprocessHook(Source source, Class<?> klass, CompoundParams global) throws Exception {
+        postprocess(source, klass, global);
+    }
+
+    /**
+     * Hook method that should be overridden by extending abstract classes that intend to leave the override-ability
+     * of the method {@link #process(Source, Class, CompoundParams, Field)} intact.
+     * This way the extending abstract class can keep the signature of the method
+     * {@link #process(Source, Class, CompoundParams, Field)}.
      * <p>
      *
      * @param source see the documentation of the same name argument in
@@ -73,6 +106,25 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
     }
 
     /**
+     * Hook method that should be overridden by extending abstract classes that intend to leave the override-ability
+     * of the method {@link #process(Source, Class, CompoundParams, Field)} intact.
+     * This way the extending abstract class can keep the signature of the method
+     * {@link #process(Source, Class, CompoundParams, Field)}.
+     * <p>
+     *
+     * @param source see the documentation of the same name argument in
+     *               {@link javax0.geci.api.Generator#process(Source)}
+     * @param klass  see the documentation of the same name argument in
+     *               {@link AbstractJavaGenerator#process(Source, Class, CompoundParams)}
+     * @param global the parameters collected from the class.
+     * @param fields the fields that the process has to work on in a deterministic order
+     * @throws Exception any exception that the is thrown by the generator
+     */
+    protected void processFieldHook(Source source, Class<?> klass, CompoundParams global, Field[] fields) throws Exception {
+        process(source, klass, global, fields);
+    }
+
+    /**
      * This method is invoked for each {@code field}, which is declared in the class. The actual implementation has
      * to generate the code in this method that handles the very specific field, or it may just build up it's own
      * data structure that is to be used when the method {@link #postprocess(Source, Class, CompoundParams)} is invoked.
@@ -86,5 +138,25 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
      * @param field  the field that the process has to work on.
      * @throws Exception any exception that the is thrown by the generator
      */
-    public abstract void process(Source source, Class<?> klass, CompoundParams params, Field field) throws Exception;
+    public void process(Source source, Class<?> klass, CompoundParams params, Field field) throws Exception {
+    }
+
+    ;
+
+    /**
+     * This method is invoked after all the invocation of {@link #process(Source, Class, CompoundParams, Field)} and
+     * before the invocation of {@link #postprocess(Source, Class, CompoundParams)}.
+     *
+     * @param source see the documentation of the same name argument in
+     *               {@link javax0.geci.api.Generator#process(Source)}
+     * @param klass  see the documentation of the same name argument in
+     *               {@link AbstractJavaGenerator#process(Source, Class, CompoundParams)}
+     * @param global the parameters collected from the class.
+     * @param fields the fields that the process has to work on in a deterministic order
+     * @throws Exception any exception that the is thrown by the generator
+     */
+    public void process(Source source, Class<?> klass, CompoundParams global, Field[] fields) throws Exception {
+    }
+
+    ;
 }

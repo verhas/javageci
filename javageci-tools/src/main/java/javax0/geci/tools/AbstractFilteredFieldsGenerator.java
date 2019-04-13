@@ -4,6 +4,10 @@ import javax0.geci.api.Source;
 import javax0.geci.tools.reflection.Selector;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -18,14 +22,42 @@ import java.lang.reflect.Field;
  * {@code Geci} annotation is either {@code true} and {@code false}.
  */
 public abstract class AbstractFilteredFieldsGenerator extends AbstractDeclaredFieldsGenerator {
-
+private final List<Field> fields = new ArrayList<>();
     @Override
-    protected final void processFieldHook(Source source, Class<?> klass, CompoundParams params, Field field) throws Exception {
+    protected final void processFieldHook(Source source, Class<?> klass, CompoundParams params, Field field)
+        throws Exception {
         var filter = params.get("filter", defaultFilterExpression());
         var selector = Selector.compile(filter);
         if (selector.match(field)) {
             processSelectedFieldHook(source, klass, params, field);
+            fields.add(field);
         }
+    }
+
+    /**
+     * This implementation clears the private {@code fields} field ArrayList and then passes the control to the
+     * method {@link #preprocess(Source, Class, CompoundParams)}. This way the original functionality is kept and
+     * the method {@link #processSelectedFieldHook(Source, Class, CompoundParams, Field)} can collect the filtered
+     * fields after a fresh start into the object variable {@code fields} even if the generator object was called to
+     * generate some code for a different class beforehand.
+     *
+     * @param source see the documentation of the same name argument in
+     *               {@link javax0.geci.api.Generator#process(Source)}
+     * @param klass  see the documentation of the same name argument in
+     *               {@link AbstractJavaGenerator#process(Source, Class, CompoundParams)}
+     * @param global the parameters collected from the {@code Geci} annotation on the class.
+     * @throws Exception
+     */
+    @Override
+    protected void preprocessHook(Source source, Class<?> klass, CompoundParams global) throws Exception {
+        fields.clear();
+        preprocess(source, klass, global);
+    }
+
+    @Override
+    protected final void processFieldHook(Source source, Class<?> klass, CompoundParams global, Field[] fields)
+        throws Exception {
+        processSelectedFieldHook(source, klass, global,this.fields.toArray(Field[]::new));
     }
 
     /**
@@ -46,12 +78,30 @@ public abstract class AbstractFilteredFieldsGenerator extends AbstractDeclaredFi
      *               {@link javax0.geci.api.Generator#process(Source)}
      * @param klass  see the documentation of the same name argument in
      *               {@link AbstractJavaGenerator#process(Source, Class, CompoundParams)}
+     * @param global the parameters collected from the class and also from the actual field.
+     * @param fields the field that the process has to work on.
+     * @throws Exception any exception that the is thrown by the generator
+     */
+    protected void processSelectedFieldHook(Source source, Class<?> klass, CompoundParams global, Field[] fields)
+        throws Exception {
+        process(source, klass, global, fields);
+    }
+
+    /**
+     * Extending this interface can override this method adding extra functionality and keeping the signature and the
+     * name of the abstract method {@link AbstractDeclaredFieldsGenerator#process(Source, Class, CompoundParams, Field)}.
+     *
+     * @param source see the documentation of the same name argument in
+     *               {@link javax0.geci.api.Generator#process(Source)}
+     * @param klass  see the documentation of the same name argument in
+     *               {@link AbstractJavaGenerator#process(Source, Class, CompoundParams)}
      * @param params the parameters collected from the class and also from the actual field. The parameters defined on
      *               the field annotation have precedence over the annotations on the class.
      * @param field  the field that the process has to work on.
      * @throws Exception any exception that the is thrown by the generator     *
      */
-    protected void processSelectedFieldHook(Source source, Class<?> klass, CompoundParams params, Field field) throws Exception {
+    protected void processSelectedFieldHook(Source source, Class<?> klass, CompoundParams params, Field field)
+        throws Exception {
         process(source, klass, params, field);
     }
 }

@@ -23,18 +23,6 @@ public class Person extends AbstractPerson {
     //<editor-fold id="equals">
     @javax0.geci.annotations.Generated("equals")
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Person that = (Person) o;
-        if (father!= null ? !father.equals(that.father) : that.father != null) return false;
-        if (mother!= null ? !mother.equals(that.mother) : that.mother != null) return false;
-        return willMapPrivateHashMap != null ? willMapPrivateHashMap.equals(that.willMapPrivateHashMap) : that.willMapPrivateHashMap == null;
-    }
-
-    @javax0.geci.annotations.Generated("equals")
-    @Override
     public int hashCode() {
         int result = 0;
 
@@ -43,6 +31,18 @@ public class Person extends AbstractPerson {
         result = 31 * result + (willMapPrivateHashMap != null ? willMapPrivateHashMap.hashCode() : 0);
         return result;
     }
+    @javax0.geci.annotations.Generated("equals")
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Person that = (Person) o;
+        if (father != null ? !father.equals(that.father) : that.father != null) return false;
+        if (mother != null ? !mother.equals(that.mother) : that.mother != null) return false;
+        return willMapPrivateHashMap != null ? willMapPrivateHashMap.equals(that.willMapPrivateHashMap) : that.willMapPrivateHashMap == null;
+    }
+
     //</editor-fold>
 
     //<editor-fold id="mapper">

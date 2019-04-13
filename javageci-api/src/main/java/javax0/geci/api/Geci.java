@@ -1,5 +1,7 @@
 package javax0.geci.api;
 
+import java.util.Arrays;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
 import static javax0.geci.api.Source.Set.set;
@@ -65,6 +67,18 @@ public interface Geci {
      * @return {@code this}
      */
     Geci register(Generator... generatorArr);
+
+
+    /**
+     * Regaiter one or more generators passing object suppliers.
+     *
+     * @param generatorSuppliers the suppliers that each can generate one generator.
+     * @return {@code this}
+     */
+    default Geci register(Supplier<? extends Generator>... generatorSuppliers) {
+        register(Arrays.stream(generatorSuppliers).map(Supplier::get).toArray(Generator[]::new));
+        return this;
+    }
 
     /**
      * Set filters to filter the sources. The absolute file names of the files are matched against the patterns and

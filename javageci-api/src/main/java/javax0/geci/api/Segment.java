@@ -30,7 +30,7 @@ public interface Segment extends AutoCloseable {
      *
      * @param s          the content of the line
      * @param parameters parameters that are used as actual values in the {@code s} format string
-     * @return this
+     * @return {@code this}
      */
     Segment write(String s, Object... parameters);
 
@@ -38,7 +38,7 @@ public interface Segment extends AutoCloseable {
      * Write all the lines of the segment into this segment.
      *
      * @param segment the other segment that contains lines that were created beforehand
-     * @return this
+     * @return {@code this}
      */
     Segment write(Segment segment);
 
@@ -53,7 +53,7 @@ public interface Segment extends AutoCloseable {
      *
      * @param s          the content of the line
      * @param parameters parameters that are used as actual values in the {@code s} format string
-     * @return this
+     * @return {@code this}
      */
     Segment write_r(String s, Object... parameters);
 
@@ -67,7 +67,7 @@ public interface Segment extends AutoCloseable {
      *
      * @param s          the content of the line
      * @param parameters parameters that are used as actual values in the {@code s} format string
-     * @return this
+     * @return {@code this}
      */
     Segment write_l(String s, Object... parameters);
 
