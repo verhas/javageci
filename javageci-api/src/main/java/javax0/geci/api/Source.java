@@ -173,7 +173,7 @@ public interface Source {
         private final String rootModuleDir;
 
         private Maven() {
-            rootModuleDir = ".";
+            rootModuleDir = null;
         }
 
         private Maven(final String root) {
@@ -184,10 +184,17 @@ public interface Source {
             if (module == null) {
                 return new String[]{"./src/" + mainOrTest + "/" + java};
             } else {
-                return new String[]{
-                    rootModuleDir + "/" + module + "/src/" + mainOrTest + "/" + java,
-                    "./src/" + mainOrTest + "/" + java
-                };
+                if (rootModuleDir == null) {
+                    return new String[]{
+                        "./" + module + "/src/" + mainOrTest + "/" + java,
+                        "./src/" + mainOrTest + "/" + java
+                    };
+                } else {
+                    return new String[]{
+                        rootModuleDir + "/" + module + "/src/" + mainOrTest + "/" + java,
+                        "./" + module + "/src/" + mainOrTest + "/" + java
+                    };
+                }
             }
         }
 
