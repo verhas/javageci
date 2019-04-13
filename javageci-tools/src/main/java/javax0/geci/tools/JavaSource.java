@@ -244,7 +244,8 @@ public class JavaSource implements AutoCloseable {
     }
 
     /**
-     * Add a new line to the
+     * Add a new line to the current code.
+     *
      * @return {@code this}
      */
     public JavaSource newline() {
