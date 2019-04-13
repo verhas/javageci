@@ -1,5 +1,6 @@
 package javax0.geci.tools;
 
+import javax0.geci.annotations.Geci;
 import javax0.geci.api.Source;
 
 import java.lang.reflect.Field;
@@ -15,6 +16,7 @@ import java.lang.reflect.Field;
  * </li>
  * </ul>
  */
+@Geci("copyClass copyTo='AbstractDeclaredMethodsGenerator'")
 public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenerator {
 
     @Override
