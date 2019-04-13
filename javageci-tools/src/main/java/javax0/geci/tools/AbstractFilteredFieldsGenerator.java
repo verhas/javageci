@@ -1,5 +1,6 @@
 package javax0.geci.tools;
 
+import javax0.geci.annotations.Geci;
 import javax0.geci.api.Source;
 import javax0.geci.tools.reflection.Selector;
 
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
  * the filtering of the single field, which is annotation the only reasonable selector expression on a field
  * {@code Geci} annotation is either {@code true} and {@code false}.
  */
+@Geci("copyClass copyTo='AbstractFilteredMethodsGenerator.java'")
 public abstract class AbstractFilteredFieldsGenerator extends AbstractDeclaredFieldsGenerator {
 private final List<Field> fields = new ArrayList<>();
     @Override

@@ -9,6 +9,10 @@ import org.junit.jupiter.api.Test;
 
 import static javax0.geci.api.Source.maven;
 
+/**
+ * A simple sample code generator that copies the {@link javax0.geci.tools.AbstractDeclaredFieldsGenerator} and
+ * {@link javax0.geci.tools.AbstractFilteredFieldsGenerator} to the same name but replacing all fields to be methods.
+ */
 public class CopyGenerator extends AbstractJavaGenerator {
 
     @Override
@@ -19,7 +23,10 @@ public class CopyGenerator extends AbstractJavaGenerator {
         dst.write(
             String.join("\n", source.getLines())
                 .replaceAll("Field", "Method")
-                .replaceAll("field", "method"));
+                .replaceAll("field", "method")
+                // we have to remove the annotation otherwise the next run would copy the content of the files to
+                // themselves and they would grow infinitely and also they would not compile.
+                .replaceAll("@Geci\\(\"copyClass.*?\"\\)", ""));
     }
 
     @Override
