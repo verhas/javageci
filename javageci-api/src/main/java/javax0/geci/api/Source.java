@@ -172,6 +172,9 @@ public interface Source {
         }
     }
 
+    /**
+     * Class to build up the directory structures that correspond to the Maven directory structure
+     */
     class Maven {
         private String module = null;
         private final String rootModuleDir;
@@ -257,22 +260,43 @@ public interface Source {
             }
         }
 
+        /**
+         * See also {@link #source(String, String)}.
+         * @return the array of directories where the main java sources could be found.
+         */
         public String[] mainSource() {
             return source("main", "java");
         }
 
+        /**
+         * See also {@link #source(String, String)}.
+         * @return the array of directories where the test java sources could be found.
+         */
         public String[] testSource() {
             return source("test", "java");
         }
 
+        /**
+         * See also {@link #source(String, String)}.
+         * @return the array of directories where the test resource files could be found.
+         */
         public String[] testResources() {
             return source("test", "resources");
         }
 
+        /**
+         * See also {@link #source(String, String)}.
+         * @return the array of directories where the main resource files could be found.
+         */
         public String[] mainResources() {
             return source("main", "resources");
         }
 
+        /**
+         * Specify the maven module where the sources needing the code generation are.
+         * @param module the name of the maven module
+         * @return {@code this}
+         */
         public Maven module(String module) {
             this.module = module;
             return this;
@@ -282,7 +306,7 @@ public interface Source {
     /**
      * This method can be used to specify that the directories are standard maven directories. When the
      * project is multi-module and the test code invoking Geci is not in the same module as the code needing to be
-     * processed by the generator then declaration of sources should use this method. The argument should be '{@code..}'
+     * processed by the generator then declaration of sources should use this method. The argument should be '{@code ..}'
      * or whatever the directory of the root module is relative to the directory of the module where the test is.
      *
      * @param root the directory to the root module where the top level {@code pom.xml} containing the

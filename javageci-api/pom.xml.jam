@@ -6,5 +6,8 @@
     {description|Javageci library API interfaces}
 
     {@include ../plugins.jim}
-
+    {dependencies#
+        {@for MODULE in (api,engine)=
+            {dependency :org.junit.jupiter:junit-jupiter-MODULE:}}
+    }
 }

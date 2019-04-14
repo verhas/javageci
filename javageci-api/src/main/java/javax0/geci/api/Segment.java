@@ -47,6 +47,7 @@ public interface Segment extends AutoCloseable {
 
     /**
      * Insert a new line into the segment.
+     * @return {@code this}
      */
     Segment newline();
 
