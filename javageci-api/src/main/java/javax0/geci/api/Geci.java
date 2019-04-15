@@ -1,12 +1,15 @@
 package javax0.geci.api;
 
-import java.util.Arrays;
-import java.util.function.Supplier;
+import java.nio.file.Path;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 
-import static javax0.geci.api.Source.Set.set;
-
 public interface Geci {
+
+    String MAIN_SOURCE = "mainSource";
+    String MAIN_RESOURCES = "mainResources";
+    String TEST_SOURCE = "testSource";
+    String TEST_RESOURCES = "testResources";
 
     /**
      * Add a new directory to the list of source directories that Geci should process.
@@ -28,6 +31,17 @@ public interface Geci {
      * @return {@code this}
      */
     Geci source(Source.Set set, String... directory);
+
+    /**
+     * Set the source set with the given name specified in the {@code nameAndSet} parameter that has the name as
+     * well as the array of directory names.
+     *
+     * @param nameAndSet the name of the set and the directories array
+     * @return {@code this}
+     */
+    default Geci source(Source.NamedSourceSet nameAndSet) {
+        return source(nameAndSet.set, nameAndSet.directories);
+    }
 
 
     /**
@@ -53,10 +67,10 @@ public interface Geci {
      * @return {@code this}
      */
     default Geci source(Source.Maven maven) {
-        source(set("mainSource"), maven.mainSource());
-        source(set("mainResources"), maven.mainResources());
-        source(set("testSource"), maven.testSource());
-        source(set("testResources"), maven.testResources());
+        source(maven.mainSource());
+        source(maven.mainResources());
+        source(maven.testSource());
+        source(maven.testResources());
         return this;
     }
 
@@ -67,18 +81,6 @@ public interface Geci {
      * @return {@code this}
      */
     Geci register(Generator... generatorArr);
-
-
-    /**
-     * Regaiter one or more generators passing object suppliers.
-     *
-     * @param generatorSuppliers the suppliers that each can generate one generator.
-     * @return {@code this}
-     */
-    default Geci register(Supplier<? extends Generator>... generatorSuppliers) {
-        register(Arrays.stream(generatorSuppliers).map(Supplier::get).toArray(Generator[]::new));
-        return this;
-    }
 
     /**
      * Set filters to filter the sources. The absolute file names of the files are matched against the patterns and
@@ -103,6 +105,28 @@ public interface Geci {
      * @return {@code this}
      */
     Geci only(String... patterns);
+
+    /**
+     * Set filters to filter the sources. The paths are tested using the predicates provided as
+     * argument. This method is more difficult to use than the one that tests the absolute file
+     * names against regular expression patterns, and thus will be used rarer. On the other
+     * hand it gives more control into the hand of the caller to filter out files.
+     *
+     * @param predicates regular expression patterns used to filter the source files
+     * @return {@code this}
+     */
+    Geci only(Predicate<Path>... predicates);
+
+
+    /**
+     * Although generators should work independently some generators are designed to work in different phases.
+     * These generators also implement the {@link Phased} interface. This method should record the number of
+     * phases that have to be performed. The phases will be 0, 1, ... , n-1
+     *
+     * @param n the number of the phases to perform
+     * @return {@code this}
+     */
+    Geci phases(int n);
 
     /**
      * Run the code generation.

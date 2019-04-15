@@ -7,6 +7,35 @@ import java.util.Objects;
 public interface Source {
 
     /**
+     * This method can be used to specify that the directories are standard maven directories. When the
+     * project is multi-module and the test code invoking Geci is not in the same module as the code needing to be
+     * processed by the generator then declaration of sources should use this method. The argument should be '{@code ..}'
+     * or whatever the directory of the root module is relative to the directory of the module where the test is.
+     *
+     * @param root the directory to the root module where the top level {@code pom.xml} containing the
+     *             <pre>
+     *                                                 {@code <modules>
+     *                                                     <module>...</module>
+     *                                                   </modules>}
+     *                                                 </pre>
+     *             declaration is.
+     * @return a new Maven source directory configuration object.
+     */
+    static Maven maven(final String root) {
+        return new Maven(root);
+    }
+
+    /**
+     * Simple method to specify that the sources are in a maven project and they follow the standard directory
+     * structure.
+     *
+     * @return a new Maven source directory configuration object.
+     */
+    static Maven maven() {
+        return new Maven();
+    }
+
+    /**
      * Return the named segment that the generator can write. Return {@code null} if there is no such segment
      * in the file.
      *
@@ -136,7 +165,8 @@ public interface Source {
         private final String name;
 
         private Set(String name) {
-            if (name == null) throw new IllegalArgumentException("Name can not be null");
+            if (name == null)
+                throw new IllegalArgumentException("Name can not be null");
             this.name = name;
         }
 
@@ -172,12 +202,22 @@ public interface Source {
         }
     }
 
+    class NamedSourceSet {
+        final Set set;
+        final String[] directories;
+
+        public NamedSourceSet(Set set, String[] directories) {
+            this.set = set;
+            this.directories = directories;
+        }
+    }
+
     /**
      * Class to build up the directory structures that correspond to the Maven directory structure
      */
     class Maven {
-        private String module = null;
         private final String rootModuleDir;
+        private String module = null;
 
         private Maven() {
             rootModuleDir = null;
@@ -242,58 +282,64 @@ public interface Source {
          * @param javaOrResources is either '{@code java}' or '{@code resources}'
          * @return the array of directory names where the generator has to look for the sources
          */
-        private String[] source(String mainOrTest, String javaOrResources) {
+        private NamedSourceSet source(String name, String mainOrTest, String javaOrResources) {
             if (module == null) {
-                return new String[]{"./src/" + mainOrTest + "/" + javaOrResources};
+                return new NamedSourceSet(Set.set(name), new String[]{"./src/" + mainOrTest + "/" + javaOrResources});
             } else {
                 if (rootModuleDir == null) {
-                    return new String[]{
-                        "./" + module + "/src/" + mainOrTest + "/" + javaOrResources,
-                        "./src/" + mainOrTest + "/" + javaOrResources
-                    };
+                    return new NamedSourceSet(Set.set(name), new String[]{
+                            "./" + module + "/src/" + mainOrTest + "/" + javaOrResources,
+                            "./src/" + mainOrTest + "/" + javaOrResources
+                    });
                 } else {
-                    return new String[]{
-                        rootModuleDir + "/" + module + "/src/" + mainOrTest + "/" + javaOrResources,
-                        "./" + module + "/src/" + mainOrTest + "/" + javaOrResources
-                    };
+                    return new NamedSourceSet(Set.set(name), new String[]{
+                            rootModuleDir + "/" + module + "/src/" + mainOrTest + "/" + javaOrResources,
+                            "./" + module + "/src/" + mainOrTest + "/" + javaOrResources
+                    });
                 }
             }
         }
 
+
         /**
-         * See also {@link #source(String, String)}.
+         * See also {@link #source(String, String, String)}
+         *
          * @return the array of directories where the main java sources could be found.
          */
-        public String[] mainSource() {
-            return source("main", "java");
+        public NamedSourceSet mainSource() {
+            return source(Geci.MAIN_SOURCE, "main", "java");
         }
 
         /**
-         * See also {@link #source(String, String)}.
+         * See also {@link #source(String, String, String)}
+         *
          * @return the array of directories where the test java sources could be found.
          */
-        public String[] testSource() {
-            return source("test", "java");
+        public NamedSourceSet testSource() {
+            return source(Geci.TEST_SOURCE, "test", "java");
         }
 
         /**
-         * See also {@link #source(String, String)}.
+         * See also {@link #source(String, String, String)}
+         *
          * @return the array of directories where the test resource files could be found.
          */
-        public String[] testResources() {
-            return source("test", "resources");
+        public NamedSourceSet testResources() {
+            return source(Geci.TEST_RESOURCES,"test", "resources");
         }
 
         /**
-         * See also {@link #source(String, String)}.
+         * See also {@link #source(String, String, String)}
+         *
          * @return the array of directories where the main resource files could be found.
          */
-        public String[] mainResources() {
-            return source("main", "resources");
+        public NamedSourceSet mainResources() {
+            return source(Geci.MAIN_RESOURCES, "main", "resources");
         }
 
         /**
          * Specify the maven module where the sources needing the code generation are.
+         *
          * @param module the name of the maven module
          * @return {@code this}
          */
@@ -301,34 +347,5 @@ public interface Source {
             this.module = module;
             return this;
         }
-    }
-
-    /**
-     * This method can be used to specify that the directories are standard maven directories. When the
-     * project is multi-module and the test code invoking Geci is not in the same module as the code needing to be
-     * processed by the generator then declaration of sources should use this method. The argument should be '{@code ..}'
-     * or whatever the directory of the root module is relative to the directory of the module where the test is.
-     *
-     * @param root the directory to the root module where the top level {@code pom.xml} containing the
-     *             <pre>
-     *                                     {@code <modules>
-     *                                         <module>...</module>
-     *                                       </modules>}
-     *                                     </pre>
-     *             declaration is.
-     * @return a new Maven source directory configuration object.
-     */
-    static Maven maven(final String root) {
-        return new Maven(root);
-    }
-
-    /**
-     * Simple method to specify that the sources are in a maven project and they follow the standard directory
-     * structure.
-     *
-     * @return a new Maven source directory configuration object.
-     */
-    static Maven maven() {
-        return new Maven();
     }
 }

@@ -49,7 +49,7 @@ private final List<Method> methods = new ArrayList<>();
      * @param klass  see the documentation of the same name argument in
      *               {@link AbstractJavaGenerator#process(Source, Class, CompoundParams)}
      * @param global the parameters collected from the {@code Geci} annotation on the class.
-     * @throws Exception
+     * @throws Exception any exception that the is thrown by the generator
      */
     @Override
     protected void preprocessHook(Source source, Class<?> klass, CompoundParams global) throws Exception {

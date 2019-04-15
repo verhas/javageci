@@ -38,7 +38,7 @@ import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 
-public class HelloWorldTestGenerator extends AbstractGenerator {
+public class HelloWorldTestGenerator extends AbstractJavaGenerator {
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
         try(var segment = source.open("HelloWorldTest")){

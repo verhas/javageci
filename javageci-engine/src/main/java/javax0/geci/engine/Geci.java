@@ -2,13 +2,16 @@ package javax0.geci.engine;
 
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Generator;
+import javax0.geci.api.Phased;
 import javax0.geci.api.Source;
 import javax0.geci.util.FileCollector;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
+import java.util.function.IntFunction;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static javax0.geci.api.Source.Set.set;
 
@@ -18,6 +21,18 @@ public class Geci implements javax0.geci.api.Geci {
 
     private final Map<Source.Set, String[]> directories = new HashMap<>();
     private final List<Generator> generators = new ArrayList<>();
+    private Set<Predicate<Path>> predicates = new HashSet<>();
+    private int phases = 1;
+
+    @Override
+    public javax0.geci.api.Geci phases(int phases) {
+        if (phases < 1) {
+            throw new GeciException("The number of phases should be a positive number.");
+        }
+        this.phases = phases;
+        return this;
+    }
+
 
     @Override
     public javax0.geci.api.Geci source(String... directory) {
@@ -37,19 +52,25 @@ public class Geci implements javax0.geci.api.Geci {
         return this;
     }
 
-    private Set<Pattern> patterns = null;
-
     @Override
     public javax0.geci.api.Geci only(String... patterns) {
-        this.patterns = Arrays.stream(patterns).map(Pattern::compile).collect(Collectors.toSet());
+        Collections.addAll(this.predicates,
+                Arrays.stream(patterns)
+                        .map(Pattern::compile)
+                        .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
+                        .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
+        return this;
+    }
+
+    @Override
+    public javax0.geci.api.Geci only(Predicate<Path>... predicates) {
+        Collections.addAll(this.predicates, Arrays.stream(predicates)
+                .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
     }
 
     private void setDefaultDirectories() {
-        source(set("mainSource"), Source.maven().mainSource());
-        source(set("mainResources"), Source.maven().mainResources());
-        source(set("testSource"), Source.maven().testSource());
-        source(set("testResources"), Source.maven().testResources());
+        source(Source.maven());
     }
 
     @Override
@@ -58,10 +79,20 @@ public class Geci implements javax0.geci.api.Geci {
             setDefaultDirectories();
         }
         final var collector = new FileCollector(directories);
-        collector.collect(patterns);
-        for (final var source : collector.sources) {
-            for (var generator : generators) {
-                generator.process(source);
+        collector.collect(predicates);
+        for (int i = 0; i < phases; i++) {
+            for (final var source : collector.sources) {
+                for (var generator : generators) {
+                    if (generator instanceof Phased) {
+                        if (((Phased) generator).active(i)) {
+                            generator.process(source);
+                        }
+                    } else {
+                        if (i == 0) {
+                            generator.process(source);
+                        }
+                    }
+                }
             }
         }
         var generated = false;

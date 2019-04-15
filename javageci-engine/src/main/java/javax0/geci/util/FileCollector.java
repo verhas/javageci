@@ -8,10 +8,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public class FileCollector {
@@ -29,11 +27,11 @@ public class FileCollector {
      * global {@code directories} map so that for each {@link Source.Set} key in the map there will be only
      * a one element array containing the name of the directory that was used to collect the files.
      *
-     * @param patterns limits the collected files to a subset that matches at least one of the patterns in the set. If
+     * @param predicates limits the collected files to a subset that matches at least one of the predicates. If
      *                 the set is empty or the parameter is {@code null} then there is no filtering, all files
-     *                 are collected that are otherwise collected from the directory
+     *                 are collected that are otherwise collected from the directory.
      */
-    public void collect(Set<Pattern> patterns) {
+    public void collect(Set<Predicate<Path>> predicates) {
         for (var entry : directories.entrySet()) {
             var processed = false;
             for (final var directory : entry.getValue()) {
@@ -41,8 +39,8 @@ public class FileCollector {
                 try {
                     Files.find(Paths.get(dir), Integer.MAX_VALUE,
                         (filePath, fileAttr) -> fileAttr.isRegularFile())
-                        .filter(path -> (patterns == null || patterns.isEmpty())
-                            || patterns.stream().anyMatch(pattern -> pattern.matcher(toAbsolute(path)).find()))
+                        .filter(path -> (predicates == null || predicates.isEmpty())
+                            || predicates.stream().anyMatch(predicate -> predicate.test(path)))
                         .forEach(path -> sources.add(
                             new Source(this,
                                 dir,

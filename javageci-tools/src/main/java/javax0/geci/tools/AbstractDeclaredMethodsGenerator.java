@@ -83,6 +83,7 @@ public abstract class AbstractDeclaredMethodsGenerator extends AbstractJavaGener
      * @param source see {@link #preprocess(Source, Class, CompoundParams)}
      * @param klass  see {@link #preprocess(Source, Class, CompoundParams)}
      * @param global see {@link #preprocess(Source, Class, CompoundParams)}
+     * @throws Exception any exception that the is thrown by the generator
      */
     public void postprocessHook(Source source, Class<?> klass, CompoundParams global) throws Exception {
         postprocess(source, klass, global);

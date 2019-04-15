@@ -80,7 +80,7 @@ public interface Segment extends AutoCloseable {
     }
 
     /**
-     * Usually is not implemented separately and is needed for to be auto cloaseable so that the segment
+     * Usually this method is not implemented separately and is needed for to be auto closeable so that the segment
      * can be used in a try-with-resources block.
      */
     default void close() {

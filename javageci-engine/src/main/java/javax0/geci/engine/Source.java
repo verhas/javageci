@@ -20,7 +20,6 @@ public class Source implements javax0.geci.api.Source {
     private static final Pattern startPattern = Pattern.compile("^(\\s*)//\\s*<\\s*editor-fold\\s+(.*)>\\s*$");
     private static final Pattern endPattern = Pattern.compile("^\\s*//\\s*<\\s*/\\s*editor-fold\\s*>\\s*$");
     private static final Pattern attributePattern = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*\"(.*?)\"");
-    private static final String NOT_COMPILED_YET = null;
     final List<String> lines = new ArrayList<>();
     private final String dir;
     private final String className;
