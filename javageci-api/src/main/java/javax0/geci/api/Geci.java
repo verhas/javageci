@@ -119,16 +119,6 @@ public interface Geci {
 
 
     /**
-     * Although generators should work independently some generators are designed to work in different phases.
-     * These generators also implement the {@link Phased} interface. This method should record the number of
-     * phases that have to be performed. The phases will be 0, 1, ... , n-1
-     *
-     * @param n the number of the phases to perform
-     * @return {@code this}
-     */
-    Geci phases(int n);
-
-    /**
      * Run the code generation.
      *
      * @return {@code false} if the code generation did not produce any output. It means that the code was

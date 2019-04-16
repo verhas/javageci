@@ -2,7 +2,6 @@ package javax0.geci.engine;
 
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Generator;
-import javax0.geci.api.Phased;
 import javax0.geci.api.Source;
 import javax0.geci.util.FileCollector;
 
@@ -22,17 +21,6 @@ public class Geci implements javax0.geci.api.Geci {
     private final Map<Source.Set, String[]> directories = new HashMap<>();
     private final List<Generator> generators = new ArrayList<>();
     private Set<Predicate<Path>> predicates = new HashSet<>();
-    private int phases = 1;
-
-    @Override
-    public javax0.geci.api.Geci phases(int phases) {
-        if (phases < 1) {
-            throw new GeciException("The number of phases should be a positive number.");
-        }
-        this.phases = phases;
-        return this;
-    }
-
 
     @Override
     public javax0.geci.api.Geci source(String... directory) {
@@ -75,22 +63,24 @@ public class Geci implements javax0.geci.api.Geci {
 
     @Override
     public boolean generate() throws IOException {
+        final var phases = generators.stream()
+                .mapToInt(Generator::phases)
+                .max()
+                .orElse(1);
+        final FileCollector collector;
         if (directories.isEmpty()) {
             setDefaultDirectories();
+            collector = new FileCollector(directories);
+            collector.lenient();
+        } else {
+            collector = new FileCollector(directories);
         }
-        final var collector = new FileCollector(directories);
         collector.collect(predicates);
-        for (int i = 0; i < phases; i++) {
+        for (int phase = 0; phase < phases; phase++) {
             for (final var source : collector.sources) {
                 for (var generator : generators) {
-                    if (generator instanceof Phased) {
-                        if (((Phased) generator).active(i)) {
-                            generator.process(source);
-                        }
-                    } else {
-                        if (i == 0) {
-                            generator.process(source);
-                        }
+                    if (generator.activeIn(phase)) {
+                        generator.process(source);
                     }
                 }
             }
