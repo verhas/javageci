@@ -40,6 +40,7 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
      * @param klass  see the documentation of the same name argument in
      *               {@link AbstractJavaGenerator#process(Source, Class, CompoundParams)}
      * @param global the parameters collected from the {@code Geci} annotation on the class.
+     * @throws Exception any exception that the is thrown by the generator
      */
     @SuppressWarnings("unused")
     public void preprocess(Source source, Class<?> klass, CompoundParams global) throws Exception {
@@ -56,6 +57,7 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
      * @param klass  see the documentation of the same name argument in
      *               {@link AbstractJavaGenerator#process(Source, Class, CompoundParams)}
      * @param global the parameters collected from the {@code Geci} annotation on the class.
+     * @throws Exception any exception that the is thrown by the generator
      */
     protected void preprocessHook(Source source, Class<?> klass, CompoundParams global) throws Exception {
         preprocess(source, klass, global);
@@ -68,6 +70,7 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
      * @param source see {@link #preprocess(Source, Class, CompoundParams)}
      * @param klass  see {@link #preprocess(Source, Class, CompoundParams)}
      * @param global see {@link #preprocess(Source, Class, CompoundParams)}
+     * @throws Exception any exception that the is thrown by the generator
      */
     @SuppressWarnings("unused")
     public void postprocess(Source source, Class<?> klass, CompoundParams global) throws Exception {

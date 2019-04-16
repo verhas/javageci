@@ -284,14 +284,14 @@ public class Source implements javax0.geci.api.Source {
      */
     private SegmentDescriptor findSegment(String id) {
         for (int i = 0; i < lines.size(); i++) {
-            var line = lines.get(i);
-            splitHelper.match(line);
-            if (splitHelper.isSegmentStart()) {
-                var attr = splitHelper.attributes();
+            final var line = lines.get(i);
+            final var matcher = splitHelper.match(line);
+            if (matcher.isSegmentStart()) {
+                var attr = matcher.attributes();
                 if (id.equals(attr.get("id"))) {
                     var seg = new SegmentDescriptor();
                     seg.attr = attr;
-                    seg.tab = splitHelper.tabbing();
+                    seg.tab = matcher.tabbing();
                     seg.startLine = i;
                     seg.endLine = findSegmentEnd(i);
                     return seg;
@@ -309,9 +309,9 @@ public class Source implements javax0.geci.api.Source {
      */
     private int findSegmentEnd(int start) {
         for (int i = start + 1; i < lines.size(); i++) {
-            var line = lines.get(i);
-            splitHelper.match(line);
-            if (splitHelper.isSegmentEnd()) {
+            final var line = lines.get(i);
+            final var matcher = splitHelper.match(line);
+            if (matcher.isSegmentEnd()) {
                 return i;
             }
         }

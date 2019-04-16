@@ -43,7 +43,6 @@ public interface Generator {
      * true} from this method when {@code phase} is zero or two and
      * {@code B} should return {@code true} when {@code phase} is one.
      * That way
-     * <p>
      * <pre>
      * phase       A.activeIn(phase)     B.activeIn(phase)
      *   0           true                 false
