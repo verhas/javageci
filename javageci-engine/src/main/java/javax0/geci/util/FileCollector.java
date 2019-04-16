@@ -2,6 +2,7 @@ package javax0.geci.util;
 
 
 import javax0.geci.api.GeciException;
+import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.engine.Source;
 
 import java.io.IOException;
@@ -27,7 +28,8 @@ public class FileCollector {
     }
 
     /**
-     * Normalize a file name. Convert all \ separator to / and remove all '/./' path parts.
+     * Normalize a file name. Convert all {@code \} separator to {@code
+     * /} and remove all '{@code /./}' path parts.
      *
      * @param s the not yet normalized file name
      * @return the file directory name
@@ -38,7 +40,8 @@ public class FileCollector {
     }
 
     /**
-     * Normalize a directory name. The same as normalizing a file, but also adding a trailing / if that is missing.
+     * Normalize a directory name. The same as normalizing a file, but
+     * also adding a trailing / if that is missing.
      *
      * @param s the not yet normalized directory name
      * @return the normalized directory name
@@ -65,7 +68,8 @@ public class FileCollector {
     }
 
     /**
-     * Calculate the relative file name, relative to the start point of the source set.
+     * Calculate the relative file name, relative to the start point of
+     * the source set.
      *
      * @param directory the starting, top level directory of the source set
      * @param path      the path in the source set
@@ -77,8 +81,9 @@ public class FileCollector {
     }
 
     /**
-     * Convert the path to absolute path and also normalize off some weird stuff that may remain after
-     * applying the JDK methods (e.g.: {@code /./} inside the path)
+     * Convert the path to absolute path and also normalize off some
+     * weird stuff that may remain after applying the JDK methods (e.g.:
+     * {@code /./} inside the path)
      *
      * @param path to convert to absolute path string
      * @return the absolute path as a string
@@ -118,14 +123,25 @@ public class FileCollector {
         lenient = true;
     }
 
+    private static final SegmentSplitHelper javaSegmentSplitHelper = new JavaSegmentSplitHelper();
+
+    public SegmentSplitHelper getSegmentSplitHelper(Source source){
+        return javaSegmentSplitHelper;
+    }
+
     /**
-     * Collect the names of the files that are in the directories given in the sources. Also modify the
-     * global {@code directories} map so that for each {@link Source.Set} key in the map there will be only
-     * a one element array containing the name of the directory that was used to collect the files.
+     * Collect the names of the files that are in the directories given
+     * in the sources. Also modify the global {@code directories} map so
+     * that for each {@link Source.Set} key in the map there will be
+     * only a one element array containing the name of the directory
+     * that was used to collect the files.
      *
-     * @param predicates limits the collected files to a subset that matches at least one of the predicates. If
-     *                   the set is empty or the parameter is {@code null} then there is no filtering, all files
-     *                   are collected that are otherwise collected from the directory.
+     * @param predicates limits the collected files to a subset that
+     *                   matches at least one of the predicates. If the
+     *                   set is empty or the parameter is {@code null}
+     *                   then there is no filtering, all files are
+     *                   collected that are otherwise collected from the
+     *                   directory.
      */
     public void collect(Set<Predicate<Path>> predicates) {
         var processedSome = false;
@@ -167,9 +183,16 @@ public class FileCollector {
         }
     }
 
+    /**
+     * Add a new source to the set of the new sources. The new sources.
+     * The collection of the new sources contains those sources that are
+     * not read from the disk, but are created during the code
+     * generation by generators who do not (only) modify existing source
+     * files but generate new sources as well.
+     *
+     * @param source to add to the collection of new sources
+     */
     public void addNewSource(Source source) {
         newSources.add(source);
     }
-
-
 }
