@@ -2,6 +2,7 @@ package javax0.geci.engine;
 
 
 import javax0.geci.api.GeciException;
+import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.util.FileCollector;
 
@@ -14,12 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class Source implements javax0.geci.api.Source {
-    private static final Pattern startPattern = Pattern.compile("^(\\s*)//\\s*<\\s*editor-fold\\s+(.*)>\\s*$");
-    private static final Pattern endPattern = Pattern.compile("^\\s*//\\s*<\\s*/\\s*editor-fold\\s*>\\s*$");
-    private static final Pattern attributePattern = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*\"(.*?)\"");
     final List<String> lines = new ArrayList<>();
     private final String dir;
     private final String className;
@@ -31,20 +28,7 @@ public class Source implements javax0.geci.api.Source {
     boolean inMemory = false;
     private Segment globalSegment = null;
     private boolean touched = false;
-
-
-    /**
-     * A source is touched if the generator was writing to it. It is even touched if the generator was writing the same
-     * content to it what there was originally. This flag is used to identify the situation when a generator does not
-     * touch any source When a generator is executed and does not touch any source it throws an exception because it
-     * certainly means that there is a configuration error. Either it is supposed to touch something or it should
-     * not be executed, the test should just be disabled.
-     *
-     * @return true when the source was touched
-     */
-    public boolean isTouched(){
-        return touched;
-    }
+    private final SegmentSplitHelper splitHelper;
 
     /**
      * The constructor is not supposed to be used from outside, only through the {@link FileCollector} which
@@ -59,9 +43,23 @@ public class Source implements javax0.geci.api.Source {
     public Source(FileCollector collector, String dir, Path path) {
         this.collector = collector;
         this.dir = dir;
-        this.className = FileCollector.calculateClassName(dir, path);
-        this.relativeFile = FileCollector.calculateRelativeName(dir, path);
-        this.absoluteFile = FileCollector.toAbsolute(path);
+        className = FileCollector.calculateClassName(dir, path);
+        relativeFile = FileCollector.calculateRelativeName(dir, path);
+        absoluteFile = FileCollector.toAbsolute(path);
+        splitHelper = collector.getSegmentSplitHelper(this);
+    }
+
+    /**
+     * A source is touched if the generator was writing to it. It is even touched if the generator was writing the same
+     * content to it what there was originally. This flag is used to identify the situation when a generator does not
+     * touch any source When a generator is executed and does not touch any source it throws an exception because it
+     * certainly means that there is a configuration error. Either it is supposed to touch something or it should
+     * not be executed, the test should just be disabled.
+     *
+     * @return true when the source was touched
+     */
+    public boolean isTouched() {
+        return touched;
     }
 
     @Override
@@ -155,7 +153,7 @@ public class Source implements javax0.geci.api.Source {
         return globalSegment;
     }
 
-    public Segment temporary(){
+    public Segment temporary() {
         return new Segment(0);
     }
 
@@ -287,13 +285,13 @@ public class Source implements javax0.geci.api.Source {
     private SegmentDescriptor findSegment(String id) {
         for (int i = 0; i < lines.size(); i++) {
             var line = lines.get(i);
-            var lineMatcher = startPattern.matcher(line);
-            if (lineMatcher.matches()) {
-                var attr = parseParametersString(lineMatcher.group(2));
+            splitHelper.match(line);
+            if (splitHelper.isSegmentStart()) {
+                var attr = splitHelper.attributes();
                 if (id.equals(attr.get("id"))) {
                     var seg = new SegmentDescriptor();
                     seg.attr = attr;
-                    seg.tab = lineMatcher.group(1).length();
+                    seg.tab = splitHelper.tabbing();
                     seg.startLine = i;
                     seg.endLine = findSegmentEnd(i);
                     return seg;
@@ -301,33 +299,6 @@ public class Source implements javax0.geci.api.Source {
             }
         }
         return null;
-    }
-
-    /**
-     * Parses the parameters on the line that contains the {@code // <editor-fold...>} line. For example
-     * if the line is
-     * <pre>
-     *     // <editor-fold id="aa" desc="sample description" other_param="other">
-     * </pre>
-     * <p>
-     * then the map will contain the values:
-     * <pre>
-     *     Map.of("id","aa","desc","sample description","other_param","other")
-     * </pre>
-     *
-     * @param attributes the string containing the part of the line that is after the {@code editor-fold} and
-     *                   before the closing {@code >}
-     * @return the attributes map
-     */
-    private Map<String, String> parseParametersString(String attributes) {
-        var attributeMatcher = attributePattern.matcher(attributes);
-        var attr = new HashMap<String, String>();
-        while (attributeMatcher.find()) {
-            var key = attributeMatcher.group(1);
-            var value = attributeMatcher.group(2);
-            attr.put(key, value);
-        }
-        return attr;
     }
 
     /**
@@ -339,8 +310,8 @@ public class Source implements javax0.geci.api.Source {
     private int findSegmentEnd(int start) {
         for (int i = start + 1; i < lines.size(); i++) {
             var line = lines.get(i);
-            var lineMatcher = endPattern.matcher(line);
-            if (lineMatcher.matches()) {
+            splitHelper.match(line);
+            if (splitHelper.isSegmentEnd()) {
                 return i;
             }
         }

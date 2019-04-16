@@ -27,8 +27,6 @@ public interface Generator {
      * phase} is larger than {@code n-1}. This is the simplest case.
      * (Also such a generator should implement the method {@link
      * #phases()} to define the number of phases it needs.
-     *
-     * <p>
      * <p>
      * In a more complex situation some special generators may cooperate
      * with other generators. Say there are two generators {@code A} and
@@ -40,30 +38,22 @@ public interface Generator {
      * second phase (phase {@code 1}). After {@code B} is finished the
      * first generator, generator {@code A} can finish its work in the
      * third phase (phase {@code 2}).
-     *
      * <p>
-     *
      * In this situation the generator {@code A} should return {@code
      * true} from this method when {@code phase} is zero or two and
      * {@code B} should return {@code true} when {@code phase} is one.
      * That way
-     *
      * <p>
-     *
      * <pre>
      * phase       A.activeIn(phase)     B.activeIn(phase)
      *   0           true                 false
      *   1           false                true
      *   2           true                 false
      * </pre>
-     *
      * <p>
-     *
      * Other than the phasing there is no guarantee on the order of the
      * generators execution.
-     *
      * <p>
-     *
      * The default behaviour implemented in the interface is to be
      * active in the phase {@code 0} only.
      *
@@ -84,8 +74,6 @@ public interface Generator {
      * be the actual number of phases the Geci will execute. If Geci is
      * configured to run other generators that need more phases then
      * Geci will execute more phases.
-     *
-     * <p>
      * <p>
      * The default behaviour is to require only one phase.
      *

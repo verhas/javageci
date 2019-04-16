@@ -13,7 +13,7 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
     final Pattern endPattern;
     private boolean segmentStart;
     private boolean segmentEnd;
-    private Map<String, String> attributes;
+    private Map<String, String> attrs;
     private int tabs;
 
     public RegexBasedSegmentSplitHelper(Pattern startPattern, Pattern endPattern) {
@@ -26,7 +26,7 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
         final var matcher = startPattern.matcher(line);
         segmentStart = matcher.matches();
         if (segmentStart) {
-            attributes = parseParametersString(matcher.group(2));
+            attrs = parseParametersString(matcher.group(2));
             tabs = matcher.group(1).length();
         }
         segmentEnd = endPattern.matcher(line).matches();
@@ -70,12 +70,12 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
     }
 
     @Override
-    public int tabs() {
-        return 0;
+    public int tabbing() {
+        return tabs;
     }
 
     @Override
-    public String attribute(String key) {
-        return attributes.get(key);
+    public Map<String,String> attributes() {
+        return attrs;
     }
 }
