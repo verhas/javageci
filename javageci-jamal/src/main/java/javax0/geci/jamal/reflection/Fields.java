@@ -10,10 +10,12 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
- * Macro that evaluates to a string, which is a comma separated list of the field fingerprints that are in the class
- * specified in the macro argument and match the selection expression. The format of the macro argument is parsed
- * by the method {@link FieldsMethodsParser#parse(String, String)} and the format is defined accordingly in
- * {@link FieldsMethodsParser}
+ * Macro that evaluates to a string, which is a comma separated list of
+ * the field fingerprints that are in the class specified in the macro
+ * argument and match the selection expression. The format of the macro
+ * argument is parsed by the method {@link
+ * FieldsMethodsParser#parse(String, String)} and the format is defined
+ * accordingly in {@link FieldsMethodsParser}
  */
 public class Fields implements Macro {
 
