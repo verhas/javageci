@@ -80,19 +80,23 @@ public class Selector<T> {
             matchAnnotations((AnnotatedElement) m, regex));
     }
 
-    private void classOnlySelectory() {//TODO fields and methods could be matched with their type/return type
-        selector("interface", m -> only(m, Class.class) && ((Class<?>) m).isInterface());
-        selector("primitive", m -> only(m, Class.class) && ((Class<?>) m).isPrimitive());
-        selector("annotation", m -> only(m, Class.class) && ((Class<?>) m).isAnnotation());
-        selector("anonymous", m -> only(m, Class.class) && ((Class<?>) m).isAnonymousClass());
-        selector("array", m -> only(m, Class.class) && ((Class<?>) m).isArray());
-        selector("enum", m -> only(m, Class.class) && ((Class<?>) m).isEnum());
-        selector("member", m -> only(m, Class.class) && ((Class<?>) m).isMemberClass());
-        selector("local", m -> only(m, Class.class) && ((Class<?>) m).isLocalClass());
+    private Class<?> toClass(T m){
+        return (Class<?>)m;
+    }
 
-        regexSelector("simpleName", (m, regex) -> only(m, Class.class) && regex.matcher(((Class) m).getSimpleName()).find());
-        regexSelector("canonicalName", (m, regex) -> only(m, Class.class) && regex.matcher(((Class) m).getCanonicalName()).find());
-        regexSelector("extends", (m, regex) -> only(m, Class.class) && regex.matcher(((Class) m).getSuperclass().getCanonicalName()).find());
+    private void classOnlySelectory() {//TODO fields and methods could be matched with their type/return type
+        selector("interface", m -> only(m, Class.class) && toClass(m).isInterface());
+        selector("primitive", m -> only(m, Class.class) && toClass(m).isPrimitive());
+        selector("annotation", m -> only(m, Class.class) && toClass(m).isAnnotation());
+        selector("anonymous", m -> only(m, Class.class) && toClass(m).isAnonymousClass());
+        selector("array", m -> only(m, Class.class) && toClass(m).isArray());
+        selector("enum", m -> only(m, Class.class) && toClass(m).isEnum());
+        selector("member", m -> only(m, Class.class) && toClass(m).isMemberClass());
+        selector("local", m -> only(m, Class.class) && toClass(m).isLocalClass());
+
+        regexSelector("simpleName", (m, regex) -> only(m, Class.class) && regex.matcher(toClass(m).getSimpleName()).find());
+        regexSelector("canonicalName", (m, regex) -> only(m, Class.class) && regex.matcher(toClass(m).getCanonicalName()).find());
+        regexSelector("extends", (m, regex) -> only(m, Class.class) && regex.matcher(toClass(m).getSuperclass().getCanonicalName()).find());
     }
 
     private void methodOnlySelectors() {
