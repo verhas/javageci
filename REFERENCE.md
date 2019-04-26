@@ -49,7 +49,7 @@ To understand how to utilize Java::Geci you have be familiar with the
 architecture and how it inserts it's code generation phase into the
 build process. The structure is not conventional.
 
-Code generation principly can happen:
+Code generation principally can happen:
 
 * (BC) before compilation
 * (DC) during compilation
@@ -57,7 +57,7 @@ Code generation principly can happen:
 * (DCL) during class loading
 * (DRT) during run-time
 
-In the followings we will discuss these different cases. Note that AC,
+In the following we will discuss these different cases. Note that DT,
 the way Java::Geci works is discussed last because that is the case we
 will deal with in detail. After all that is how Java::Geci works and
 this document is mainly all about Java::Geci.
