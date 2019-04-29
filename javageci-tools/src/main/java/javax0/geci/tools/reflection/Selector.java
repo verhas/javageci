@@ -77,7 +77,19 @@ public class Selector<T> {
 
 
         regexSelector("annotation", (m, regex) -> only(m, AnnotatedElement.class) &&
-            matchAnnotations((AnnotatedElement) m, regex));
+                matchAnnotations((AnnotatedElement) m, regex));
+    }
+
+    /**
+     * Compile a string to the internal structure of the member selector that can later be used to match a member.
+     *
+     * @param expression a logical expression described as a string
+     * @return {@code this} object to allow method chaining
+     */
+    public static Selector compile(String expression) {
+        final var it = new Selector();
+        it.top = SelectorCompiler.compile(expression);
+        return it;
     }
 
     private Class<?> toClass(T m) {
@@ -114,18 +126,19 @@ public class Selector<T> {
         selector("native", m -> only(m, Method.class) && Modifier.isNative(getModifiers(m)));
         selector("strict", m -> only(m, Method.class) && Modifier.isStrict(getModifiers(m)));
         selector("default", m -> only(m, Method.class) &&
-            ((Member) m).getDeclaringClass().isInterface() && !Modifier.isAbstract(getModifiers(m)));
+                ((Member) m).getDeclaringClass().isInterface() && !Modifier.isAbstract(getModifiers(m)));
         selector("vararg", m -> only(m, Method.class) && ((Method) m).isVarArgs());
         selector("implements", m -> only(m, Method.class) && methodImplements((Method) m));
         selector("overrides", m -> only(m, Method.class) && methodOverrides((Method) m));
+        selector("void", m -> only(m, Method.class) && ((Method) m).getReturnType().equals(Void.TYPE));
 
         regexSelector("returns", (m, regex) -> only(m, Method.class) && regex.matcher(
-            ((Method) m).getReturnType().getCanonicalName()).find());
+                ((Method) m).getReturnType().getCanonicalName()).find());
         regexSelector("throws", (m, regex) -> only(m, Method.class) &&
-            Arrays.stream(((Method) m).getGenericExceptionTypes())
-                .anyMatch(exception -> regex.matcher(exception.getTypeName()).find()));
+                Arrays.stream(((Method) m).getGenericExceptionTypes())
+                        .anyMatch(exception -> regex.matcher(exception.getTypeName()).find()));
         regexSelector("signature", (m, regex) ->
-            only(m, Method.class) && regex.matcher(MethodTool.methodSignature((Method) m)).find());
+                only(m, Method.class) && regex.matcher(MethodTool.methodSignature((Method) m)).find());
 
     }
 
@@ -141,9 +154,9 @@ public class Selector<T> {
         selector("private", m -> Modifier.isPrivate(getModifiers(m)));
         selector("protected", m -> Modifier.isProtected(getModifiers(m)));
         selector("package", m ->
-            !Modifier.isPublic(getModifiers(m)) &&
-                !Modifier.isProtected(getModifiers(m)) &&
-                !Modifier.isPrivate(getModifiers(m)));
+                !Modifier.isPublic(getModifiers(m)) &&
+                        !Modifier.isProtected(getModifiers(m)) &&
+                        !Modifier.isPrivate(getModifiers(m)));
         selector("static", m -> Modifier.isStatic(getModifiers(m)));
         selector("public", m -> Modifier.isPublic(getModifiers(m)));
         selector("final", m -> Modifier.isFinal(getModifiers(m)));
@@ -249,10 +262,6 @@ public class Selector<T> {
         return false;
     }
 
-    private static boolean notImplemented() {
-        throw new IllegalArgumentException("Not implemented");
-    }
-
     /**
      * Check that the argument {@code m} is a Method, Field, Class or whatever it is.
      *
@@ -315,18 +324,6 @@ public class Selector<T> {
     public Selector regexSelector(String name, BiFunction<T, Pattern, Boolean> function) {
         regexMemberSelectors.put(name, function);
         return this;
-    }
-
-    /**
-     * Compile a string to the internal structure of the member selector that can later be used to match a member.
-     *
-     * @param expression a logical expression described as a string
-     * @return {@code this} object to allow method chaining
-     */
-    public static Selector compile(String expression) {
-        final var it = new Selector();
-        it.top = SelectorCompiler.compile(expression);
-        return it;
     }
 
     /**
@@ -395,6 +392,6 @@ public class Selector<T> {
      */
     private boolean matchAnnotations(AnnotatedElement m, Pattern pattern) {
         return Arrays.stream(m.getAnnotations()).anyMatch(a ->
-            pattern.matcher(a.annotationType().getCanonicalName()).find());
+                pattern.matcher(a.annotationType().getCanonicalName()).find());
     }
 }

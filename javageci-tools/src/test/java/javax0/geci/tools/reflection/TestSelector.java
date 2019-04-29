@@ -11,7 +11,7 @@ import java.util.Properties;
 import java.util.function.Function;
 
 @SuppressWarnings("ALL")
-class SelectorTest {
+class TestSelector {
 
     private static final Member IGNORED_MEMBER = null;
     private static final Class[] NO_ARGS = null;
@@ -41,6 +41,8 @@ class SelectorTest {
 
     void method_notVararg(Object[] x) {
     }
+
+    int method_int(){return 0;}
 
     @Test
     @DisplayName("compiles empty string")
@@ -164,6 +166,8 @@ class SelectorTest {
     void testReturns() throws NoSuchMethodException {
         final var f1 = this.getClass().getDeclaredMethod("z");
         Assertions.assertTrue(Selector.compile("returns ~ /int/").match(f1));
+        Assertions.assertTrue(Selector.compile("simpleName ~ /int/").match(f1));
+        Assertions.assertFalse(Selector.compile("array").match(f1));
         final var f2 = this.getClass().getDeclaredMethod("testReturns");
         Assertions.assertTrue(Selector.compile("returns ~ /void/").match(f2));
     }
@@ -455,6 +459,19 @@ class SelectorTest {
     }
 
 
+    @Test
+    @DisplayName("Recognize that a void method is indeed void")
+    void testMethodReturnTypeIsVoid() throws NoSuchMethodException {
+        final var thisMethod = this.getClass().getDeclaredMethod("testMethodReturnTypeIsVoid");
+        Assertions.assertTrue(Selector.compile("void").match(thisMethod));
+    }
+    @Test
+    @DisplayName("Recognize that an int returning method is not void")
+    void testMethodReturnTypeIsNotVoid() throws NoSuchMethodException {
+        final var thisMethod = this.getClass().getDeclaredMethod("method_int");
+        Assertions.assertFalse(Selector.compile("void").match(thisMethod));
+    }
+
     interface A {
         void q();
     }
@@ -470,7 +487,7 @@ class SelectorTest {
         }
     }
 
-    static abstract class X extends SelectorTest implements Function {
+    static abstract class X extends TestSelector implements Function {
         abstract int method_abstract();
 
         public Object apply(Object t) {

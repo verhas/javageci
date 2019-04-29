@@ -1,49 +1,70 @@
 # Filter expressions
 
-Many of the generators use filter expressions that select certain members from a class. For example you want to map an
-object to a `Map` and you use the `mapper` generator. You want to control which fields should be stored into the map.
-This can be done through the configuration key `filter` specifying a filter expression. The expression will select
-certain fields to be included and exclude others.
+Many of the generators use filter expressions that select certain
+members from a class. For example you want to map an object to a `Map`
+and you use the `mapper` generator. You want to control which fields
+should be stored into the map. This can be done through the
+configuration key `filter` specifying a filter expression. The
+expression will select certain fields to be included and exclude others.
+
+Generators are encouraged to use the configuration parameter `filter`
+for the purpose. This configuration key is also supported by the
+abstract generators `AbstractFilteredMethodsGenerator` and
+`AbstractFilteredFieldsGenerator`. Generators extending one of these
+abstract generators will get the methods or fields already filtered.
 
 ## What is a filter expression
 
-A filter expression is a logical expression. For example the filter expression
+A filter expression is a string, a logical expression. For example the
+filter expression
 
 `public | private`
 
-will select all members (fields or methods, whichever the code generator works with) that are either `private` or
-`public`, but will not select `protected` or package private members. You can use `|` to express OR relation and `&`
-to express AND relation. For example the filter expression
+will select all members (fields or methods, whichever the code generator
+works with) that are either `private` or `public`, but will not select
+`protected` or package private members. You can use `|` to express OR
+relation and `&` to express AND relation. For example the filter
+expression
 
 `public | private & final`
 
-will select the members that are `public` or `private` but the `private` fields also have to be `final` or else they
-will not be selected. (The operator `&` has higher precedence than `|`.)
+will select the members that are `public` or `private` but the `private`
+fields also have to be `final` or else they will not be selected. (The
+operator `&` has higher precedence than `|`.)
 
-The expressions can use the `!` character to negate the following part and `(` and `)` can also be used to override the
-evaluation order. The words and matchers are numerous, and are documented in the following section.
+The expressions can use the `!` character to negate the following part
+and `(` and `)` can also be used to override the evaluation order. The
+words and matchers are numerous, and are documented in the following
+section.
 
-The filter
-expression compiler and matcher can also be extended with specific words and matchers. If a generator does that it
-MUST document these extensions. If the documentation does not mention any extension then it uses the default set
-of words and matchers. 
+The filter expression compiler and matcher can also be extended with
+specific words and matchers. If a generator does that it MUST document
+these extensions. If the documentation does not mention any extension
+then it uses the default set of words and matchers.
 
 ## Filter words and matchers
 
-Words are simple selectors, like `private` or `package` that will select a member if the access protection of the member
-is private or package private. Matchers are regular expression matchers that identify certain feature of a member and
-compare it against a regular expression. For example `simpleName ~ /Map$/` will match any class member where
-the simple name
-ends with the characters `M`, `a` and `p`. (Quite obviously, since only classes can have simple names it can only be
-used for selectors that select from a set of classes.)
-Regular expressions are checked using the standard Java `java.util.regex.Matcher` class' `find()` method.
-It means that the regular expression may match only a substring and does not need to match the whole string.
+Words are simple selectors, like `private` or `package` that will select
+a member if the access protection of the member is private or package
+private. Matchers are regular expression matchers that identify certain
+feature of a member and compare it against a regular expression. For
+example `simpleName ~ /Map$/` will match any class member where the
+simple name ends with the characters `M`, `a` and `p`. (Quite obviously,
+since only classes can have simple names it can only be used for
+selectors that select from a set of classes.) Regular expressions are
+checked using the standard Java `java.util.regex.Matcher` class'
+`find()` method. It means that the regular expression may match only a
+substring and does not need to match the whole string.
 
 ### Type words and matchers
 
-The following words and matchers work only with members that are types (classes, interfaces, enums etc.) and must not
-apply to fields and methods. If any of these are used in case of something that is not a class then the code will throw
-`IllegalArgumentException`. Generators should encapsulate that into a `GeciException` and code generation will fail.
+The following words and matchers work with members that are types
+(classes, interfaces, enums etc.) If they are applied to fields then the
+type of the field will be checked against these words. In case they are
+applied to methods then the return type will be considered. Note, that
+some of these combinations may not make sense. For example a method will
+never have a returns type which is a `local` class, therefore applying
+`local` when selecting methods will always yield to `false`.
 
 * `interface` checks that the certain class type is an interface
 * `primitive` checks that the type is primitive
@@ -51,53 +72,75 @@ apply to fields and methods. If any of these are used in case of something that 
 * `anonymous` checks that the type is annotation
 * `array` checks that the type is an array
 * `enum` checks that the type is an enumeration
-* `member` checks that the type is a member class, a.k.a. inner and nested classes 
-* `local` checks that the type is a local class. Local classes are defined inside a method.
-* `extends ~ /regex/` the canonical name of the superclass matches the regular expression. 
-* `simpleName ~ /regex/` the simple name of the class matches the regular expression.
-* `canonicalName ~ /regex/` the canonical name of the class matches the regular expression.
-* The matcher `name ~ /regex/` is universal, can be applied to fields and methods as well and 
-  therefore it is listed below with the universal matchers in the last section.
+* `member` checks that the type is a member class, a.k.a. inner and
+  nested classes
+* `local` checks that the type is a local class. Local classes are
+  defined inside a method.
+* `extends ~ /regex/` the canonical name of the superclass matches the 
+  regular expression. 
+* `simpleName ~ /regex/` the simple name of the class matches the
+  regular expression.
+* `canonicalName ~ /regex/` the canonical name of the class matches the
+  regular expression.
+* The matcher `name ~ /regex/` is universal, can be applied to fields
+  and methods as well and therefore it is listed below with the
+  universal matchers in the last section.
 
 ### Method only words and matchers
 
-The following words and matchers work only with members that are methods and must not
-apply to fields and methods. If any of these are used in case of something that is not a method then the code will throw
-`IllegalArgumentException`. Generators should encapsulate that into a `GeciException` and code generation will fail.
+The following words and matchers work only with members that are methods
+and must not apply to fields and methods. If any of these are used in
+case of something that is not a method then the code will throw
+`IllegalArgumentException`. Generators should encapsulate that into a
+`GeciException` and code generation will fail.
 
-* `synthetic` checks that the method is synthetic generated by the compiler and not one existing in the source code.
+* `synthetic` checks that the method is synthetic generated by the
+  compiler and not one existing in the source code.
 * `synchronized` checks that the method is synchronized
 * `native` checks that method is native
 * `strict` checks that method is strict
-* `default` checks that method is a default method implemented in an interface
+* `default` checks that method is a default method implemented in an
+  interface
 * `vararg`  checks that method has variable number of arguments.
-* `implements`  checks that method implements a method defined at least in one interface
-* `overrides`  checks that method overrides a method of the superclass or any class above that in the inheritance
-   chain.
-* `returns ~ /regex/`  checks that the canonical name of the return type of the method matches the regular expression 
-* `throws ~ /regex/` checks that any of the declared exceptions matches the regular expression. 
-* `signature ~ /regex/` checks that the signature of the method matches the regular expression. The signature of the
-  method uses the formal argument names `arg0` ,`arg1`,...,`argN`.
-* The matcher `name ~ /regex/` is universal, can be applied to fields and methods as well and 
-  therefore it is listed below with the universal matchers in the last section.
+* `implements`  checks that method implements a method defined at least
+  in one interface
+* `overrides`  checks that method overrides a method of the superclass
+  or any class above that in the inheritance chain. 
+* `void` checks that the method is `void`. This will have the same
+  result as `returns ~ /void/`.
+* `returns ~ /regex/`  checks that the canonical name of the return type
+  of the method matches the regular expression 
+* `throws ~ /regex/` checks that any of the declared exceptions matches
+  the regular expression. 
+* `signature ~ /regex/` checks that the signature of the method matches
+  the regular expression. The signature of the
+  method uses the formal argument names `arg0` ,`arg1`,...,`argN`. 
+* The matcher `name ~ /regex/` is universal, can be applied to fields
+  and methods as well and therefore it is listed below with the
+  universal matchers in the last section.
   
 ### Field only words
 
 
 The following words work only with members that are fields and must not
-apply to types and methods. If any of these are used in case of something that is not a field then the code will throw
-`IllegalArgumentException`. Generators should encapsulate that into a `GeciException` and code generation will fail.
+apply to types and methods. If any of these are used in case of
+something that is not a field then the code will throw
+`IllegalArgumentException`. Generators should encapsulate that into a
+`GeciException` and code generation will fail.
 
 * `transient` checks that the field is transient
 * `volatile` checks that the field is volatile
 
 ### Universal words and matcher
 
-The following words and matchers can be applies to select any type of members.
+The following words and matchers can be applies to select any type of
+members.
 
-* `true` is simply true. It can be used when the filter is used in the configuration of the member overriding the global
-  configuration. This will create a filter expression that includes everything. When this is applied in the configuration
-  of a specific member the everything is that member.
+* `true` is simply true. It can be used when the filter is used in the
+  configuration of the member overriding the global configuration. This
+  will create a filter expression that includes everything. When this is
+  applied in the configuration of a specific member the everything is
+  that member. 
 * `false` is just the opposite of `true`.
 * `private` the access protection of the member is private.
 * `protected` the access protection of the member is protected
@@ -105,4 +148,5 @@ The following words and matchers can be applies to select any type of members.
 * `static` the member is static
 * `public`  the access protection of the member is public
 * `final` the member is final
-* `name ~ /regex/` the name of the member matches the regular expression.
+* `name ~ /regex/` the name of the member matches the regular
+  expression.
