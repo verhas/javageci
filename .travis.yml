@@ -1,6 +1,5 @@
 language: java
 
-
 before_install:
   - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
 
@@ -14,6 +13,7 @@ script:
   - echo JAVA_HOME = ${JAVA_HOME}
   - java -version
 
+dist:xenial
 install: mvn -X clean install
 jdk:
  - openjdk11
