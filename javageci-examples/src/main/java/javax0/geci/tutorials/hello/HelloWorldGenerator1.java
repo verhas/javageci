@@ -4,8 +4,6 @@ import javax0.geci.api.GeciException;
 import javax0.geci.api.Generator;
 import javax0.geci.api.Source;
 
-import java.io.IOException;
-
 public class HelloWorldGenerator1 implements Generator {
     public void process(Source source) {
         try {

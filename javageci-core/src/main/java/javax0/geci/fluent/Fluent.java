@@ -30,6 +30,7 @@ public class Fluent extends AbstractJavaGenerator {
             final FluentBuilderImpl builder;
             if (definedBy.length() > 0) {
                 final var definingMethod = getDefiningMethod(definedBy, klass);
+                definingMethod.setAccessible(true);
                 builder = (FluentBuilderImpl) definingMethod.invoke(null);
             } else if (syntax.length() > 0) {
                 builder = (FluentBuilderImpl) FluentBuilder.from(klass).syntax(syntax);

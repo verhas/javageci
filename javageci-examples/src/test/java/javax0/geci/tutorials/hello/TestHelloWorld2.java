@@ -12,7 +12,8 @@ public class TestHelloWorld2 {
     @Test
     @DisplayName("Start code generator for HelloWorld2")
     void testGenerateCode() throws Exception {
-        Assertions.assertFalse(new Geci().source(maven().mainSource())
-                .register(new HelloWorldGenerator2()).generate(), Geci.FAILED);
+        Assertions.assertFalse(new Geci()
+                .register(new HelloWorldGenerator2())
+                .generate(), Geci.FAILED);
     }
 }

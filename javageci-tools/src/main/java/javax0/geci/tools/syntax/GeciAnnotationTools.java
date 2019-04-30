@@ -71,11 +71,13 @@ public class GeciAnnotationTools {
     private static String getValue(Object annotation) {
         try {
             Method valueMethod = annotation.getClass().getDeclaredMethod("value");
+            valueMethod.setAccessible(true);
             final var value = new StringBuilder((String) valueMethod.invoke(annotation));
             for (final var method : annotation.getClass().getDeclaredMethods()) {
                 if (method.getReturnType().equals(String.class) &&
                         !method.getName().equals("value") &&
                         !method.getName().equals("toString")) {
+                    method.setAccessible(true);
                     final var param = (String) method.invoke(annotation);
                     if (param != null && param.length() > 0) {
                         value.append(" ")
@@ -102,6 +104,7 @@ public class GeciAnnotationTools {
     private static Annotation[] getValueGecis(Object annotation) {
         try {
             Method value = annotation.getClass().getDeclaredMethod("value");
+            value.setAccessible(true);
             return (Annotation[]) value.invoke(annotation);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassCastException e) {
             throw new GeciException("Can not use '" + annotation.getClass().getCanonicalName()

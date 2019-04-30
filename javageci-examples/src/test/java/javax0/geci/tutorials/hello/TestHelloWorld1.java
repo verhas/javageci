@@ -12,8 +12,8 @@ public class TestHelloWorld1 {
     @Test
     @DisplayName("Start code generator for HelloWorld1")
     void testGenerateCode() throws Exception {
-        Assertions.assertFalse(new Geci().source(maven().mainSource())
-                .only("HelloWorld1.java")
+        Assertions.assertFalse(new Geci()
+                .only("^.*/HelloWorld1.java$")
                 .register(new HelloWorldGenerator1()).generate(), Geci.FAILED);
     }
 }
