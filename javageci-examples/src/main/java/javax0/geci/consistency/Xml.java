@@ -16,10 +16,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A simple XML handling facade. This class is used in the test {@code
+ * javax0.geci.consistency.DocumentationTest} that checks that the
+ * documentation is consistent with the project files. It essentially
+ * checks that the versions in the documentation are the same as in the
+ * project files.
+ */
 public class Xml {
     final Document doc;
     final XPath xPath;
 
+    /**
+     * Get the object from a file.
+     *
+     * @param file that contains the XML content. This is the {@code
+     * pom.xml} file
+     * @return the new object that can be queried using xPath
+     * @throws IOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
+     */
     public static Xml from(File file) throws IOException, SAXException, ParserConfigurationException {
         return new Xml(file);
     }
@@ -31,10 +48,13 @@ public class Xml {
         xPath = XPathFactory.newInstance().newXPath();
     }
 
-    public Document document() {
-        return doc;
-    }
-
+    /**
+     * Get the strings that are at the xPath.
+     *
+     * @param path
+     * @return
+     * @throws XPathExpressionException
+     */
     public List<String> gets(String path) throws XPathExpressionException {
         var nodes = (NodeList) xPath.evaluate(path, doc, XPathConstants.NODESET);
         var strings = new ArrayList<String>(nodes.getLength());
@@ -45,6 +65,12 @@ public class Xml {
         return strings;
     }
 
+    /**
+     * Get a single string that is at the xPath in the xml.
+     * @param path
+     * @return
+     * @throws XPathExpressionException
+     */
     public String get(String path) throws XPathExpressionException {
         return (String) xPath.evaluate(path + "/text()", doc, XPathConstants.STRING);
     }

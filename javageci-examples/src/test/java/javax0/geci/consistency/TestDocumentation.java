@@ -9,29 +9,54 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
-class DocumentationTest {
+class TestDocumentation {
 
 
+    final private StringBuilder messages = new StringBuilder();
+
+    /**
+     * Find the project root directory based on the fact that this is
+     * the only directory that has a {@code README.md} file. Start with
+     * the current working directory and works up maximum 10
+     * directories.
+     *
+     * @return
+     * @throws IOException
+     */
     private String getDirectory() throws IOException {
         var readme = new StringBuilder("README.md");
-        var counter = 10;
+        var counter = new AtomicInteger(10);
         File readmeFile;
         while (true) {
             readmeFile = new File(readme.toString());
-            if (!readmeFile.exists()) {
-                readme.insert(0, "../");
-                counter--;
-            } else {
+            if (readmeFile.exists()) {
                 break;
             }
-            Assertions.assertTrue(counter > 0, "Cannot find the README.md file.");
+            readme.insert(0, "../");
+            Assertions.assertTrue(counter.decrementAndGet() > 0,
+                    "Cannot find the README.md file.");
         }
         return readmeFile.getParentFile().getCanonicalPath();
     }
 
-    final private StringBuilder messages = new StringBuilder();
-
+    /**
+     * Check that the version in the parent POM is the same as the
+     * parent pom versions in the module poms. Since the poms are
+     * generated using Jamal this is less of an issue though.
+     * <p>
+     * If there is any mismatch then the test fails.
+     * <p>
+     * The test also checks the readme and if there is any
+     * <pre>{@code
+     * <version>...</version>
+     * }</pre>
+     * <p>
+     * line it updates it with the current version read from the pom
+     * unless the correct version is already there. If there was update
+     * then the test fails.
+     */
     @Test
     @DisplayName("Test documentation and project file consistency")
     void testDocumentation() {
