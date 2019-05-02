@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
@@ -22,6 +23,14 @@ public class GeciReflectionToolsTest {
     @javax0.geci.annotations.Geci("xxx x='x' y='y' z='z'")
     private static Object something;
     private HashMap<Map<String, Integer>, Object> b;
+
+    private static java.util.Map.Entry<String, Integer>[] m1() {
+        return null;
+    }
+
+    private static java.util.Map.Entry<? extends String, ? super Integer>[] m2() {
+        return null;
+    }
 
     @Test
     void testParameterParser() {
@@ -74,14 +83,6 @@ public class GeciReflectionToolsTest {
         );
     }
 
-    private static java.util.Map.Entry<String, Integer>[] m1() {
-        return null;
-    }
-
-    private static java.util.Map.Entry<? extends String, ? super Integer>[] m2() {
-        return null;
-    }
-
     @Test
     void normalizeType() {
         Assertions.assertAll(
@@ -126,13 +127,6 @@ public class GeciReflectionToolsTest {
         Assertions.assertEquals("barbarumba k1='v1' k2='v2'", gecis[0]);
     }
 
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface Geci {
-        String value();
-
-        String k1() default "";
-    }
-
     @Test
     @DisplayName("Get the gecis from own annotations")
     @GeciReflectionToolsTest.Geci("barbarumba k1='v1' k2='v2'")
@@ -149,5 +143,66 @@ public class GeciReflectionToolsTest {
         final var gecis = GeciAnnotationTools.getGecis(this.getClass().getDeclaredMethod("getGecisFromOwnAnnotationParams"));
         Assertions.assertEquals(1, gecis.length);
         Assertions.assertEquals("barbarumba k2='v2' k1='v1'", gecis[0]);
+    }
+
+    @Test
+    @DisplayName("Get the gecis from own annotations with annotation parameter that is not named Geci")
+    @GeciReflectionToolsTest.MyGeci(value = "barbarumba k2='v2'", k1 = "v1")
+    void getGecisFromOwnAnnotationMyNameParams() throws NoSuchMethodException {
+        final var gecis = GeciAnnotationTools.getGecis(this.getClass().getDeclaredMethod("getGecisFromOwnAnnotationMyNameParams"));
+        Assertions.assertEquals(1, gecis.length);
+        Assertions.assertEquals("barbarumba k2='v2' k1='v1'", gecis[0]);
+    }
+
+    @Test
+    @DisplayName("Get the gecis from own annotations with annotation parameter that is not named Geci")
+    @GeciReflectionToolsTest.MyWrongGeci(value = "barbarumba k2='v2'", k1 = "v1")
+    void getGecisFromOwnAnnotationMyWrongNameParams() throws NoSuchMethodException {
+        final var gecis = GeciAnnotationTools.getGecis(this.getClass().getDeclaredMethod("getGecisFromOwnAnnotationMyWrongNameParams"));
+        Assertions.assertEquals(0, gecis.length);
+    }
+
+    @Test
+    @DisplayName("Get the gecis from own annotations with annotation parameter that is not named Geci")
+    @GeciReflectionToolsTest.MyGeci(value = "barbarumba k2='v2'", k1 = "v1")
+    @GeciReflectionToolsTest.MyGeci(k1 = "v1")
+    void getGecisFromOwnAnnotationMyNameParamsMultiple() throws NoSuchMethodException {
+        final var gecis = GeciAnnotationTools.getGecis(this.getClass().getDeclaredMethod("getGecisFromOwnAnnotationMyNameParamsMultiple"));
+        Assertions.assertEquals(2, gecis.length);
+        Assertions.assertEquals("barbarumba k2='v2' k1='v1'", gecis[0]);
+        Assertions.assertEquals("mygeci k1='v1'", gecis[1]);
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Geci {
+        String value();
+
+        String k1() default "";
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Gecis {
+        Geci[] value();
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Repeatable(MyGecis.class)
+    @Geci("")
+    public @interface MyGeci {
+        String value() default "";
+
+        String k1() default "";
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface MyWrongGeci {
+        String value();
+
+        String k1() default "";
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface MyGecis {
+        MyGeci[] value();
     }
 }

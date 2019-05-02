@@ -11,49 +11,93 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GeciAnnotationTools {
     private static final Pattern ANNOTATTION_PATTERN = Pattern.compile("@Geci\\(\"(.*)\"\\)");
     private static final Pattern pattern = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*'(.*?)'");
 
     /**
-     * Get the strings of the values of the {@link Geci} annotations that are on the element parameter.
-     * The {@link Geci} annotation has a single value parameter that is a string.
+     * Get the strings of the values of the {@link Geci} annotations
+     * that are on the element parameter. The {@link Geci} annotation
+     * has a single value parameter that is a string.
+     *
      * <p>
-     * The method takes care of the special case when there is only one {@link Geci} annotation on the element and
-     * also when there are many.
      * <p>
-     * Note that the annotation does not need to be the one, which is defined in the javageci annotation library.
-     * It can be any annotation interface so long as long the name is {@code Geci} and the method {@code value()}
-     * returns {@code java.lang.String}.
+     * The method takes care of the special case when there is only one
+     * {@link Geci} annotation on the element and also when there are
+     * many.
+     *
+     * <p>
+     * <p>
+     * Note that the annotation does not need to be the one, which is
+     * defined in the javageci annotation library. It can be any
+     * annotation interface so long as long the name is {@code Geci} and
+     * the method {@code value()} returns {@code java.lang.String}.
      *
      * @param element the class, method or field that is annotated.
-     * @return the array of strings that contains the values of the annotations. If the element is not annotated
-     * then the returned array will have zero elements. If there is one {@link Geci} annotation then the
-     * returned String array will have one element. If there are many annotations then the array will contains each
+     * @return the array of strings that contains the values of the
+     * annotations. If the element is not annotated then the returned
+     * array will have zero elements. If there is one {@link Geci}
+     * annotation then the returned String array will have one element.
+     * If there are many annotations then the array will contains each
      * of the values.
      */
     public static String[] getGecis(AnnotatedElement element) {
-        final var allAnnotations = element.getDeclaredAnnotations();
-        var annotations =
-                Arrays.stream(allAnnotations)
-                        .filter(a -> annotationName(a).equals("Gecis"))
-                        .flatMap(g -> Arrays.stream((getValueGecis(g))))
-                        .collect(Collectors.toSet());
-        if (annotations.isEmpty()) {
-            annotations = Arrays.stream(allAnnotations)
-                    .filter(a -> annotationName(a).equals("Geci"))
-                    .collect(Collectors.toSet());
-        }
-        return annotations.stream()
+        return getDeclaredAnnotationUnwrapped(element)
+                .filter(GeciAnnotationTools::isAnnotationGeci)
                 .map(GeciAnnotationTools::getValue)
                 .toArray(String[]::new);
+    }
+
+    private static Stream<Annotation> getDeclaredAnnotationUnwrapped(AnnotatedElement element) {
+        final var allAnnotations = element.getDeclaredAnnotations();
+        return Arrays.stream(allAnnotations)
+                .flatMap(GeciAnnotationTools::getSelfOrRepeated);
+    }
+
+    /**
+     * Checks that an annotation is a Geci annotation or not.
+     * <p>
+     * <p>
+     * An annotation is Geci annotation in case the name of the
+     * annotation interface is {@code Geci} or if the annotation
+     * interface itself is annotated with a Geci annotation.
+     * <p>
+     * <p>
+     * This is a recursive definition and because annotations may be
+     * annotated recursively directly by themselves or indirectly
+     * through other annotations we have to be careful not to check an
+     * annotation for Geciness that we have already started to check.
+     *
+     * <p>
+     * <p>
+     * The rule is that if an annotation could only be Geci because it
+     * is recursively annotated by itself then it is not Geci. Somewhere
+     * in the loop there has to be an annotation that has the name
+     * {@code Geci}.
+     *
+     * @param annotation the annotation that we want to know if it is
+     *                   Geci or not
+     * @return {@code true} if the annotation is a Geci annotation.
+     */
+    private static boolean isAnnotationGeci(Annotation annotation) {
+        return isAnnotationGeci(annotation, new HashSet<>());
+    }
+
+    private static boolean isAnnotationGeci(Annotation a,
+                                            Set<Annotation> checked) {
+        checked.add(a);
+        if (annotationName(a).equals("Geci")) {
+            return true;
+        }
+        final var annotations = a.annotationType().getDeclaredAnnotations();
+        return Arrays.stream(annotations)
+                .filter(x -> !checked.contains(x))
+                .anyMatch(x -> isAnnotationGeci(x, checked));
     }
 
     private static String annotationName(Annotation a) {
@@ -68,11 +112,14 @@ public class GeciAnnotationTools {
      * @param annotation the annotation that contains the configuration
      * @return the configuration string
      */
-    private static String getValue(Object annotation) {
+    private static String getValue(Annotation annotation) {
         try {
             Method valueMethod = annotation.getClass().getDeclaredMethod("value");
             valueMethod.setAccessible(true);
-            final var value = new StringBuilder((String) valueMethod.invoke(annotation));
+            final var rawValue = (String) valueMethod.invoke(annotation);
+            final var value = getValue(annotation.annotationType()
+                    .getSimpleName()
+                    .toLowerCase(), rawValue.trim());
             for (final var method : annotation.getClass().getDeclaredMethods()) {
                 if (method.getReturnType().equals(String.class) &&
                         !method.getName().equals("value") &&
@@ -96,36 +143,88 @@ public class GeciAnnotationTools {
     }
 
     /**
-     * Get the annotations that are in the {@code @Gecis} annotation.
+     * Get the value string adjusted with the name of the annotation.
      *
-     * @param annotation the collection annotation
-     * @return the array of the underlying annotations
+     * <p>
+     * The annotation value string should start with the mnemonic of the
+     * generator. If the generator uses it's own annotation than the
+     * name of the annotation can be used to match the mnemonic of the
+     * generator. For example, if there is a generator that has the
+     * mnemonic {@code mygenerator} then the annotation {@code
+     * MyGenerator} can be used to configure it. At the same time it would
+     * be waste of characters to write
+     *
+     * <pre>{@code
+     *
+     * @MyGenerator("mygenerator a='1' b='2' ... z='xxx"")
+     *
+     * }</pre>
+     * <p>
+     * Therefore in situations like this the mnemonic can be omitted
+     * from the start of the configuration string and Java::Geci will
+     * use the name of the annotation all lower cased as the mnemonic
+     * of the generator. Thus
+     *
+     * <pre>{@code
+     *
+     * @MyGenerator("a='1' b='2' ... z='xxx"")
+     *
+     * }</pre>
+     * <p>
+     * will be served to the generator {@code mygenerator} even though
+     * the configuration string in the annotation does not start with
+     * this mnemonic of the generator.
+     *
+     * <p>
+     * This method checks the value string and if it starts with a
+     * mnemonic then it simply returns the string. If there seems to be
+     * a mnemonic missing from the start of the string then it will
+     * prepend the name of the class of the annotation in from of the
+     * string separated by a space.
+     *
+     * <p>
+     * If the string that starts at the start of the value string and
+     * lasts till the first space of at last the end of it contains a
+     * {@code =} character then it is not a mnemonic and then the
+     * mnemonic will be inserted. Otherwise the value will be return
+     * virgo intacta.
+     *
+     * @param annotationName the name of the annotation to be used as
+     *                       mnemonic (already lowercase)
+     * @param value          the value to modify or leave alone
+     * @return the value modified or as it was
      */
-    private static Annotation[] getValueGecis(Object annotation) {
-        try {
-            Method value = annotation.getClass().getDeclaredMethod("value");
-            value.setAccessible(true);
-            return (Annotation[]) value.invoke(annotation);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassCastException e) {
-            throw new GeciException("Can not use '" + annotation.getClass().getCanonicalName()
-                    + "' as generator annotation.", e);
+    private static StringBuilder getValue(String annotationName,
+                                          String value) {
+        final var mnemonicEnd = value.indexOf(' ');
+        final String mnemomic = mnemonicEnd == -1 ? value : value.substring(0, mnemonicEnd);
+        if (mnemomic.contains("=") || mnemomic.length() == 0) {
+            return new StringBuilder(annotationName)
+                    .append(value.length() == 0 ? "" : " ")
+                    .append(value);
+        } else {
+            return new StringBuilder(value);
         }
     }
 
     /**
      * Checks if the element is real source code or was generated.
-     * <p>
-     * Generators are encouraged to annotate the generated elements with the annotation {@link Generated}. This is
-     * good for the human reader and the same time some generators can decide if an element is in the compiled class
-     * because it was generated or because the programmer provided a version for the element manually. For example the
-     * delegator generator does not generate the delegating methods that are provided by the programmer manually
-     * but it regenerates all methods that are needed and have the {@link Generated} annotation.
+     *
+     * <p> Generators are encouraged to annotate the generated elements
+     * with the annotation {@link Generated}. This is good for the human
+     * reader and the same time some generators can decide if an element
+     * is in the compiled class because it was generated or because the
+     * programmer provided a version for the element manually. For
+     * example the delegator generator does not generate the delegating
+     * methods that are provided by the programmer manually but it
+     * regenerates all methods that are needed and have the {@link
+     * Generated} annotation.
      *
      * @param element that needs the decision if it is generated or manually programmed
      * @return {@code true} if the element was generated (has the annotation {@link Generated}).
      */
     public static boolean isGenerated(AnnotatedElement element) {
-        return Selector.compile("annotation ~ /Generated/").match(element);
+        return Selector.<AnnotatedElement>compile("annotation ~ /Generated/").match(element);
     }
 
     /**
@@ -246,5 +345,19 @@ public class GeciAnnotationTools {
             pars.put(key, value);
         }
         return pars;
+    }
+
+    private static Stream<Annotation> getSelfOrRepeated(Annotation annotation) {
+        try {
+            final var value = annotation.annotationType().getMethod("value");
+            value.setAccessible(true);
+            if (Annotation[].class.isAssignableFrom(value.getReturnType())) {
+                return Stream.of((Annotation[]) value.invoke(annotation));
+            } else {
+                return Stream.of(annotation);
+            }
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            return Stream.of(annotation);
+        }
     }
 }
