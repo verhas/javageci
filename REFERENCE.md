@@ -816,7 +816,7 @@ up-to-date JavaDoc documentation.
 The interface `Generator` defines the method `process()` in a way that
 it should not throw exception. If there is an exception during code
 generation then it has to wrapped into some run-time exception. This
-will be propagared to the unit test level and thus the test will fail,
+will be propagated to the unit test level and thus the test will fail,
 as it should.
 
 For the wrapping Java::Geci provides the exception class

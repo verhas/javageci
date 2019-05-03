@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  */
 public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
 
-    private static final Pattern attributePattern = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*\"(.*?)\"");
+    private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*\"(.*?)\"");
     final Pattern startPattern;
     final Pattern endPattern;
 
@@ -54,23 +54,27 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
     }
 
     /**
-     * Parses the parameters on the line that contains the {@code // <editor-fold...>} line. For example
-     * if the line is
-     * <pre>
+     * Parses the parameters on the line that contains the
+     * {@code // <editor-fold...>} line. For example if the line is
+     * <pre>{@code
      *     // <editor-fold id="aa" desc="sample description" other_param="other">
+     *  }
      * </pre>
      * <p>
      * then the map will contain the values:
-     * <pre>
-     *     Map.of("id","aa","desc","sample description","other_param","other")
+     * <pre>{@code
+     *     "id" -> "aa"
+     *     "desc" -> "sample description"
+     *     "other_param" -> "other"
+     * }
      * </pre>
      *
      * @param attributes the string containing the part of the line that is after the {@code editor-fold} and
      *                   before the closing {@code >}
      * @return the attributes map
      */
-    private Map<String, String> parseParametersString(String attributes) {
-        var attributeMatcher = attributePattern.matcher(attributes);
+    public static Map<String, String> parseParametersString(String attributes) {
+        var attributeMatcher = ATTRIBUTE_PATTERN.matcher(attributes);
         var attr = new HashMap<String, String>();
         while (attributeMatcher.find()) {
             var key = attributeMatcher.group(1);

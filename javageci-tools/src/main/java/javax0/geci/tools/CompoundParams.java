@@ -13,18 +13,23 @@ import java.util.stream.Collectors;
  * <p>
  * A CompoundParams can also contain many other CompoundParams instead of string maps. In that case the underlying
  * compound param objects are scanned.
- * <p>
- * A compound parameters object also contains the ID of the parameter set. This is used as the default value for
- * the key "id".
- * <p>
- * According to the conventions the parameter "id" is used to identify the editor-fold section where the generated
- * code is to be placed. Many times code generators use only one segment as their output. In such cases the use of
- * the "id" is an extra and not needed indirection. Instead the code can use the name of the generator as identifier
- * and can omit the key "id" from the annotation.
- * <p>
- * For example the generator {@code accessor} generates setters and getters into one single editor-fold (unless
- * som field annotation specifies different segment id, but usually it is not the case). If that editor-fold segment
- * is named {@code "accessor"} then there is no need to specify this separately in the annotation.
+ *
+ * <p> A compound parameters object also contains the ID of the
+ * parameter set. This is used as the default value for the key "id".
+ *
+ * <p> According to the conventions the parameter "id" is used to
+ * identify the editor-fold section where the generated code is to be
+ * placed. Many times code generators use only one segment as their
+ * output. In such cases the use of the "id" is an extra and a not
+ * needed indirection. Instead the code can use the name of the
+ * generator as identifier and can omit the key "id" from the
+ * annotation.
+ *
+ * <p> For example the generator {@code accessor} generates setters and
+ * getters into one single editor-fold (unless som field annotation
+ * specifies different segment id, but usually it is not the case). If
+ * that editor-fold segment is named {@code "accessor"} then there is no
+ * need to specify this separately in the annotation.
  */
 public class CompoundParams {
 

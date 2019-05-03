@@ -17,8 +17,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class GeciAnnotationTools {
-    private static final Pattern ANNOTATTION_PATTERN = Pattern.compile("@Geci\\(\"(.*)\"\\)");
+    private static final Pattern SEGMENT_HEADER_PATTERN = Pattern.compile("//\\s*<\\s*editor-fold.*>");
+    private static final Pattern ANNOTATION_PATTERN = Pattern.compile("@Geci\\(\"(.*)\"\\)");
     private static final Pattern pattern = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*'(.*?)'");
+    private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*\"(.*?)\"");
 
     /**
      * Get the strings of the values of the {@link Geci} annotations
@@ -241,15 +243,13 @@ public class GeciAnnotationTools {
      *                          specific for this generator are read.
      * @param prefix            characters that should prefix the annotation. In case of Java it is {@code //}.
      *                          The line is first trimmed from leading and trailing space, then the {@code prefix}
-     *                          characters are removed from the start, {@code postfix} characters are removed from
-     *                          the end and then it has to match the annotation syntax. If this parameter is
+     *                          characters are removed from the start then it has to match the
+     *                          annotation syntax. If this parameter is
      *                          {@code null} then it is treated as empty string, a.k.a. there is no prefix.
-     * @param postfix           the postfix that may follow the parameter definition at the end of the line. If this
-     *                          parameter is {@code null} it is treated as empty string, a.k.a. there is no postfix.
      * @param nextLine          is a regular expression that should match the line after the successfully matched
      *                          configuration line. If the next line does not match the pattern then the previous line
      *                          is ignored. Typically this is something line {@code /final\s*int\s*xx} when the
-     *                          generator wants to get the parameters for the {@code final int xx} variable.
+     *                          generator wants to get the parameters for the {@code final int xx} declaration.
      *                          If this variable is {@code null} then there is no pattern matching performed, and all
      *                          parameter holding line that looks like a {@code Geci} annotation is accepted and
      *                          processed.
@@ -264,7 +264,6 @@ public class GeciAnnotationTools {
     public static CompoundParams getParameters(Source source,
                                                String generatorMnemonic,
                                                String prefix,
-                                               String postfix,
                                                Pattern nextLine) {
         CompoundParams paramConditional = null;
         for (var line : source.getLines()) {
@@ -274,7 +273,7 @@ public class GeciAnnotationTools {
                 }
             }
 
-            final Matcher match = getMatch(prefix, postfix, line);
+            final Matcher match = getMatch(prefix, line);
             if (match.matches()) {
                 if (paramConditional == null) {
                     var string = match.group(1);
@@ -285,6 +284,51 @@ public class GeciAnnotationTools {
             }
         }
         return null;
+    }
+
+    /**
+     * Get the parameters from the source file directly reading the
+     * source. This method tries to find a line that has the format
+     *
+     * <pre>{@code
+     *  // <editor-fold id="mnemonic" a="parm" b="param" ... >
+     * }</pre>
+     *
+     * <p>
+     * and read the parameters from that line.
+     *
+     * @param source   the source object holding the code lines
+     * @param mnemonic the name of the generator
+     * @return a compound object that contains the parameters defined in
+     * the segments that have the {@code id="mnemonic"} or {@code null}
+     * if there is no appropriate segment starting line that would match
+     * the syntax and the mnemonic
+     */
+    public static CompoundParams getSegmentParameters(Source source,
+                                                      String mnemonic) {
+        final var params = new ArrayList<Map<String, String>>();
+        for (var line : source.getLines()) {
+            final var trimmedLine = line.trim();
+            final var matchLine = trimmedLine.trim();
+            if (SEGMENT_HEADER_PATTERN.matcher(matchLine).matches()) {
+                var attributeMatcher = ATTRIBUTE_PATTERN.matcher(matchLine);
+                var attr = new HashMap<String, String>();
+                while (attributeMatcher.find()) {
+                    var key = attributeMatcher.group(1);
+                    var value = attributeMatcher.group(2);
+                    attr.put(key, value);
+                }
+                if (attr.getOrDefault("id", "").equals(mnemonic)) {
+                    attr.remove("id");
+                    params.add(attr);
+                }
+            }
+        }
+        if (params.size() > 0) {
+            return new CompoundParams(mnemonic, params.toArray(new Map[0]));
+        } else {
+            return null;
+        }
     }
 
     public static CompoundParams getParameters(String generatorMnemonic, String string) {
@@ -299,23 +343,22 @@ public class GeciAnnotationTools {
     }
 
     /**
-     * Get a matcher of the line against the {@code @Geci( ... ) } pattern to extract the configuration parameters
-     * from a comment line. Before the regular expression matching the line is tirmmed, prefix and postfix
-     * is chopped off from the start and the end of the line and then the remaining line is trimmed again.
+     * Get a matcher of the line against the {@code @Geci( ... ) }
+     * pattern to extract the configuration parameters from a comment
+     * line. Before the regular expression matching the line is trimmed,
+     * prefix is chopped off from the start and the end of
+     * the line and then the remaining line is trimmed again.
      *
-     * @param prefix  the string that is chopped off from the start of the line if it is there
-     * @param postfix this string that is chopped off from the end of the line it it is there
-     * @param line    the line to match
+     * @param prefix the string that is chopped off from the start of the line if it is there
+     * @param line   the line to match
      * @return the matcher of regular expression matching
      */
-    private static Matcher getMatch(String prefix, String postfix, String line) {
+    private static Matcher getMatch(String prefix, String line) {
         final var trimmedLine = line.trim();
-        final var leftChopped = prefix != null && trimmedLine.startsWith(prefix) ?
+        final var chopped = prefix != null && trimmedLine.startsWith(prefix) ?
                 trimmedLine.substring(prefix.length()) : trimmedLine;
-        final var rightChopped = postfix != null && leftChopped.endsWith(postfix) ?
-                leftChopped.substring(0, leftChopped.length() - postfix.length()) : leftChopped;
-        final var matchLine = rightChopped.trim();
-        return ANNOTATTION_PATTERN.matcher(matchLine);
+        final var matchLine = chopped.trim();
+        return ANNOTATION_PATTERN.matcher(matchLine);
     }
 
     /**

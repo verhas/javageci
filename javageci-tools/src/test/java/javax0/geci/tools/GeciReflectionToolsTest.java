@@ -106,7 +106,7 @@ public class GeciReflectionToolsTest {
             }
         };
 
-        var map = GeciAnnotationTools.getParameters(testSource, "aaa", "//", null, Pattern.compile(".*something;.*"));
+        var map = GeciAnnotationTools.getParameters(testSource, "aaa", "//", Pattern.compile(".*something;.*"));
         assertNotNull(map);
         assertEquals(map.get("a"), "b");
         assertEquals(map.get("b"), "c");
