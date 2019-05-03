@@ -1,18 +1,19 @@
 package javax0.geci.tools;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
- * A parameter set that is composed from two or more parameter maps. The parameter maps are passed to the constructor
- * in the order they should be looked at from left to right. When a parameter is retrieved by any method first the
- * leftmost parameter map is consulted, then the next and so on.
- * <p>
- * A CompoundParams can also contain many other CompoundParams instead of string maps. In that case the underlying
- * compound param objects are scanned.
+ * A parameter set that is composed from two or more parameter maps. The
+ * parameter maps are passed to the constructor in the order they should
+ * be looked at from left to right. When a parameter is retrieved by any
+ * method first the leftmost parameter map is consulted, then the next
+ * and so on.
+ *
+ * <p> A CompoundParams can also contain many other CompoundParams
+ * instead of string maps. In that case the underlying compound param
+ * objects are scanned.
  *
  * <p> A compound parameters object also contains the ID of the
  * parameter set. This is used as the default value for the key "id".
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
  */
 public class CompoundParams {
 
+    private static final String Q = "\"";
     private final Map<String, String>[] params;
     private final CompoundParams[] cparams;
     private final String id;
@@ -62,14 +64,9 @@ public class CompoundParams {
     public CompoundParams(CompoundParams... cparams) {
         this.params = null;
         this.cparams = cparams;
-        String id = null;
-        for (var cparam : cparams) {
-            if (cparam != null) {
-                id = cparam.id;
-                break;
-            }
-        }
-        this.id = id;
+        this.id = Arrays.stream(cparams)
+                .filter(Objects::nonNull).limit(1).map(c -> c.id)
+                .findFirst().orElse(null);
     }
 
     /**
@@ -80,24 +77,26 @@ public class CompoundParams {
      * @return the value of the parameter
      */
     public String get(String key, String defaults) {
-        var s = get0(key);
-        if (s == null) {
-            return defaults;
-        } else {
-            return s;
-        }
+        return Optional.ofNullable(get0(key)).orElse(defaults);
     }
 
     /**
-     * Get a parameter. The implementation looks through the underlying map array or compound parameters array in the
-     * order they were specified in the constructor. If the key is not found then {@code ""} is returned.
-     * <p>
-     * The key "id" is handled in a special way. In case there is no "id" defined in the parameters then the
-     * identifier of the parameter set is returned. In the nomal use case that is the mnemonic of the actual
-     * generator calling this method. That way generators can get the "id" of the segment they are supposed to
-     * write that has the same name as the generator and the using code does not need to specify it in the "id"
-     * parameter. This is a simple convention over configuration simplification that is implemented by all the
-     * generators, which use this method to get the "id" to identify the segment where to write the generated code.
+     * Get a parameter. The implementation looks through the underlying
+     * map array or compound parameters array in the order they were
+     * specified in the constructor. If the key is not found then {@code
+     * ""} is returned.
+     *
+     * <p> The key "id" is handled in a special way. In case there is no
+     * "id" defined in the parameters then the identifier of the
+     * parameter set is returned. In the normal use case that is the
+     * mnemonic of the actual generator calling this method. That way
+     * generators can get the "id" of the segment they are supposed to
+     * write that has the same name as the generator and the using code
+     * does not need to specify it in the "id" parameter. This is a
+     * simple convention over configuration simplification that is
+     * implemented by all the generators, which use this method to get
+     * the "id" to identify the segment where to write the generated
+     * code.
      *
      * @param key the name of the parameter.
      * @return the parameter or {@code ""} if the parameter is not defined. In case the key is {@code "id"} and is
@@ -109,18 +108,20 @@ public class CompoundParams {
 
     private String get0(String key) {
         if (params != null) {
-            for (var param : params) {
-                if (param != null && param.containsKey(key)) {
-                    return param.get(key);
-                }
-            }
+            return Arrays.stream(params)
+                    .filter(Objects::nonNull)
+                    .filter(p -> p.containsKey(key))
+                    .map(p -> p.get(key))
+                    .findFirst()
+                    .orElse("id".equals(key) ? id : null);
         }
         if (cparams != null) {
-            for (var param : cparams) {
-                if (param != null && param.get0(key) != null) {
-                    return param.get0(key);
-                }
-            }
+            return Arrays.stream(cparams)
+                    .filter(Objects::nonNull)
+                    .map(p -> p.get0(key))
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse("id".equals(key) ? id : null);
         }
         if ("id".equals(key)) {
             return id;
@@ -149,28 +150,27 @@ public class CompoundParams {
         return !is(key);
     }
 
-
+    /**
+     * Returns the set of queryable keys. The key {@code id} will only
+     * be listed if it is explicitly contained in some of the maps or
+     * underlying compound parameters.
+     *
+     * @return the set of the keys
+     */
     public Set<String> keySet() {
-        Set<String> keys = new HashSet<>();
+        final Stream<Set<String>> keyStream;
         if (params != null) {
-            for (var param : params) {
-                if (param != null) {
-                    keys.addAll(param.keySet());
-                }
-            }
+            keyStream = Arrays.stream(params)
+                    .map(Map::keySet);
+        } else if (cparams != null) {
+            keyStream = Arrays.stream(cparams)
+                    .map(CompoundParams::keySet);
         } else {
-            if (cparams != null) {
-                for (var cparam : cparams) {
-                    if (cparam != null) {
-                        keys.addAll(cparam.keySet());
-                    }
-                }
-            }
+            keyStream = Stream.of();
         }
-        return keys;
+        return keyStream.flatMap(Collection::stream)
+                .collect(Collectors.toSet());
     }
-
-    private static final String Q = "\"";
 
     @Override
     public String toString() {
