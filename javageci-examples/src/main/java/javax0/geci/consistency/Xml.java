@@ -33,9 +33,9 @@ public class Xml {
      * @param file that contains the XML content. This is the {@code
      * pom.xml} file
      * @return the new object that can be queried using xPath
-     * @throws IOException
-     * @throws SAXException
-     * @throws ParserConfigurationException
+     * @throws IOException if the file can not be read
+     * @throws SAXException if the file has bad syntax
+     * @throws ParserConfigurationException if he parser is not properly configured
      */
     public static Xml from(File file) throws IOException, SAXException, ParserConfigurationException {
         return new Xml(file);
@@ -51,9 +51,9 @@ public class Xml {
     /**
      * Get the strings that are at the xPath.
      *
-     * @param path
-     * @return
-     * @throws XPathExpressionException
+     * @param path the path we use to fetch the strings
+     * @return the list of the strings that can be found on the path
+     * @throws XPathExpressionException if something happens during parsing
      */
     public List<String> gets(String path) throws XPathExpressionException {
         var nodes = (NodeList) xPath.evaluate(path, doc, XPathConstants.NODESET);
@@ -67,9 +67,9 @@ public class Xml {
 
     /**
      * Get a single string that is at the xPath in the xml.
-     * @param path
-     * @return
-     * @throws XPathExpressionException
+     * @param path the path we use to fetch the strings
+     * @return the string that can be found on the path
+     * @throws XPathExpressionException if something happens during parsing
      */
     public String get(String path) throws XPathExpressionException {
         return (String) xPath.evaluate(path + "/text()", doc, XPathConstants.STRING);

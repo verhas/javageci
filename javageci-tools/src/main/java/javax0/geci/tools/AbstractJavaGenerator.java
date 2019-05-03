@@ -46,8 +46,8 @@ import java.util.regex.Pattern;
  * commented annotations are found first when querying a parameter. Thus
  * if there is a
  *
- * <pre>{@code
- * @Geci("mnemonic key='bar'")
+ * <pre>
+ * {@code @}{@code Geci("mnemonic key='bar'")
  * class myClass {
  *  ...
  *
