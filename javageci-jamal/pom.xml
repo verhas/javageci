@@ -6,12 +6,12 @@
     
     
     <artifactId>javageci-jamal</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.1</version>
 
     <parent>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-parent</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.1</version>
 
 </parent>
     <name>javageci jamal</name>
@@ -86,13 +86,13 @@
 <dependency>
     <groupId>com.javax0.jamal</groupId>
     <artifactId>jamal-engine</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.3</version>
 </dependency>
         
 <dependency>
 <groupId>com.javax0.jamal</groupId>
 <artifactId>jamal-testsupport</artifactId>
-<version>1.0.3-SNAPSHOT</version>
+<version>1.0.3</version>
 <scope>test</scope>
 </dependency>
     </dependencies>
