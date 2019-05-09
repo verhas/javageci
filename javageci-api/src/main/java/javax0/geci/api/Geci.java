@@ -1,6 +1,8 @@
 package javax0.geci.api;
 
 import java.nio.file.Path;
+import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 
@@ -129,6 +131,27 @@ public interface Geci {
      */
     Geci only(Predicate<Path>... predicates);
 
+    /**
+     * Set the source code comparator. This comparator returns {@code true}
+     * if the source code was changed. The arguments to the {@code isModified}
+     * bi-predicate are the lists of strings that contain the source code
+     * as it was read from the disk (first argument) and as it is after the
+     * code generation (second argument).
+     *
+     * <p>If this method is not invoked then the implementation of the interface uses
+     * a bi-comparator that simply checks that the number of the lines are the
+     * same and all the lines are equal.
+     *
+     * <p>There can be more relaxed implementations for certain application. If it is
+     * known that the source code is Java code then formatting may be neglected and
+     * the predicate may return {@code false} even if the codes are not the same but
+     * the difference is only formatting and white space.
+     *
+     * @param isModified the bi predicate that compares the source code before and after code
+     *                   generation
+     * @return {@code this}
+     */
+    Geci comparator(BiPredicate<List<String>, List<String>> isModified);
 
     /**
      * Run the code generation.

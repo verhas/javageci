@@ -28,12 +28,10 @@ public class GeciAnnotationTools {
      * has a single value parameter that is a string.
      *
      * <p>
-     * <p>
      * The method takes care of the special case when there is only one
      * {@link Geci} annotation on the element and also when there are
      * many.
      *
-     * <p>
      * <p>
      * Note that the annotation does not need to be the one, which is
      * defined in the javageci annotation library. It can be any

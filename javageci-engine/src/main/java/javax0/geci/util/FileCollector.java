@@ -36,7 +36,7 @@ public class FileCollector {
      */
     public static String normalize(String s) {
         return s.replace("\\", "/")
-                .replace("/./", "/");
+            .replace("/./", "/");
     }
 
     /**
@@ -63,8 +63,8 @@ public class FileCollector {
      */
     public static String calculateClassName(String directory, Path path) {
         return calculateRelativeName(directory, path)
-                .replaceAll("/", ".")
-                .replaceAll("\\.\\w+$", "");
+            .replaceAll("/", ".")
+            .replaceAll("\\.\\w+$", "");
     }
 
     /**
@@ -77,7 +77,7 @@ public class FileCollector {
      */
     public static String calculateRelativeName(String directory, Path path) {
         return normalize(path.toString())
-                .substring(directory.length());
+            .substring(directory.length());
     }
 
     /**
@@ -99,7 +99,7 @@ public class FileCollector {
      * resources.
      *
      * <p>
-     *
+     * <p>
      * In this case these source sets are not configured explicitly and
      * therefore the user should not be notified throwing an exception
      * and aborting the code generation if some of the source sets are
@@ -109,7 +109,7 @@ public class FileCollector {
      * directories.
      *
      * <p>
-     *
+     * <p>
      * Calling this method the file collection will throw an exception
      * only in case there is no any defined source sets available. If
      * some of the source sets are not available this is not a problem.
@@ -125,9 +125,11 @@ public class FileCollector {
 
     private static final SegmentSplitHelper javaSegmentSplitHelper = new JavaSegmentSplitHelper();
 
-    public SegmentSplitHelper getSegmentSplitHelper(Source source){
+    public SegmentSplitHelper getSegmentSplitHelper(Source source) {
         return javaSegmentSplitHelper;
     }
+
+    private static final int MAX_DEPTH_UNLIMITED = Integer.MAX_VALUE;
 
     /**
      * Collect the names of the files that are in the directories given
@@ -150,14 +152,14 @@ public class FileCollector {
             for (final var directory : entry.getValue()) {
                 var dir = normalized(directory);
                 try {
-                    Files.find(Paths.get(dir), Integer.MAX_VALUE,
-                            (filePath, fileAttr) -> fileAttr.isRegularFile())
-                            .filter(path -> (predicates == null || predicates.isEmpty())
-                                    || predicates.stream().anyMatch(predicate -> predicate.test(path)))
-                            .forEach(path -> sources.add(
-                                    new Source(this,
-                                            dir,
-                                            path)));
+                    Files.find(Paths.get(dir), MAX_DEPTH_UNLIMITED,
+                        (filePath, fileAttr) -> fileAttr.isRegularFile())
+                        .filter(path -> (predicates == null || predicates.isEmpty())
+                            || predicates.stream().anyMatch(predicate -> predicate.test(path)))
+                        .forEach(path -> sources.add(
+                            new Source(this,
+                                dir,
+                                path)));
                     processed = true;
                     processedSome = true;
                     entry.setValue(new String[]{dir});
@@ -167,19 +169,19 @@ public class FileCollector {
             }
             if (!processed && !lenient) {
                 throw new GeciException("Source directory [" +
-                        String.join(",", entry.getValue()) + "] is not found");
+                    String.join(",", entry.getValue()) + "] is not found");
             }
         }
         if (!processedSome) {
             throw new GeciException("None of the configured directories {" +
-                    directories.entrySet().stream()
-                            .map(entry -> "\"" +
-                                    entry.getKey() +
-                                    " : " + "[" +
-                                    String.join(",", entry.getValue())
-                                    + "]")
-                            .collect(Collectors.joining(",\n"))
-                    + "} are found.");
+                directories.entrySet().stream()
+                    .map(entry -> "\"" +
+                        entry.getKey() +
+                        " : " + "[" +
+                        String.join(",", entry.getValue())
+                        + "]")
+                    .collect(Collectors.joining(",\n"))
+                + "} are found.");
         }
     }
 

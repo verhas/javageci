@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiPredicate;
 
 public class Source implements javax0.geci.api.Source {
     final List<String> lines = new ArrayList<>();
@@ -100,12 +101,12 @@ public class Source implements javax0.geci.api.Source {
 
     private Path inDir(String dir, String fileName) {
         return Paths.get(FileCollector.normalize(
-                dir +
-                        Paths
-                                .get(relativeFile)
-                                .getParent()
-                                .resolve(fileName)
-                                .toString()));
+            dir +
+                Paths
+                    .get(relativeFile)
+                    .getParent()
+                    .resolve(fileName)
+                    .toString()));
     }
 
     @Override
@@ -207,7 +208,7 @@ public class Source implements javax0.geci.api.Source {
     void consolidate() {
         if (!inMemory && !segments.isEmpty()) {
             throw new GeciException(
-                    "This is an internal error: source was not read into memory but segments were generated");
+                "This is an internal error: source was not read into memory but segments were generated");
         }
         if (globalSegment == null) {
             for (var entry : segments.entrySet()) {
@@ -231,17 +232,8 @@ public class Source implements javax0.geci.api.Source {
     /**
      * @return {@code true} if the file was modified
      */
-    boolean isModified() {
-        if (originals.size() == lines.size()) {
-            for (int i = 0; i < lines.size(); i++) {
-                if (!lines.get(i).equals(originals.get(i))) {
-                    return true;
-                }
-            }
-            return false;
-        } else {
-            return true;
-        }
+    boolean isModified(BiPredicate<List<String>, List<String>> sourceModified) {
+        return sourceModified.test(originals, lines);
     }
 
     /**

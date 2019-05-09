@@ -86,7 +86,7 @@ public class Selector<T> {
      * @param expression a logical expression described as a string
      * @return {@code this} object to allow method chaining
      */
-    public static <T> Selector compile(String expression) {
+    public static Selector compile(String expression) {
         final var it = new Selector();
         it.top = SelectorCompiler.compile(expression);
         return it;

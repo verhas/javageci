@@ -8,9 +8,11 @@ import javax0.geci.util.FileCollector;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 import static javax0.geci.api.Source.Set.set;
 
@@ -43,17 +45,28 @@ public class Geci implements javax0.geci.api.Geci {
     @Override
     public javax0.geci.api.Geci only(String... patterns) {
         Collections.addAll(this.predicates,
-                Arrays.stream(patterns)
-                        .map(Pattern::compile)
-                        .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
-                        .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
+            Arrays.stream(patterns)
+                .map(Pattern::compile)
+                .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
+                .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
     }
 
     @Override
     public javax0.geci.api.Geci only(Predicate<Path>... predicates) {
         Collections.addAll(this.predicates, Arrays.stream(predicates)
-                .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
+            .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
+        return this;
+    }
+
+    private BiPredicate<List<String>, List<String>> sourceComparator =
+        (orig, gen) -> orig.size() != gen.size() ||
+            IntStream.range(0, gen.size()).anyMatch(i -> !gen.get(i).equals(orig.get(i)));
+
+
+    @Override
+    public javax0.geci.api.Geci comparator(BiPredicate<List<String>, List<String>> sourceComparator) {
+        this.sourceComparator = sourceComparator;
         return this;
     }
 
@@ -64,9 +77,9 @@ public class Geci implements javax0.geci.api.Geci {
     @Override
     public boolean generate() throws IOException {
         final var phases = generators.stream()
-                .mapToInt(Generator::phases)
-                .max()
-                .orElse(1);
+            .mapToInt(Generator::phases)
+            .max()
+            .orElse(1);
         final FileCollector collector;
         if (directories.isEmpty()) {
             setDefaultDirectories();
@@ -99,13 +112,13 @@ public class Geci implements javax0.geci.api.Geci {
             throw new GeciException("The generators did not touch any source");
         }
         for (var source : collector.sources) {
-            if (source.isModified()) {
+            if (source.isModified(sourceComparator)) {
                 source.save();
                 generated = true;
             }
         }
         for (var source : collector.newSources) {
-            if (source.isModified()) {
+            if (source.isModified(sourceComparator)) {
                 source.save();
                 generated = true;
             }
