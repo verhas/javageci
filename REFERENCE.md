@@ -438,6 +438,13 @@ known that the source code is Java code then formatting may be neglected
 and the predicate may return {@code false} even if the codes are not the
 same but the difference is only formatting and white space.
 
+Another possible use-case can be when the generator writes some time
+stamp into the source code to signal the last time the code was
+generated. in that case a simple though bit more complex than the
+default trivial source code comparator may mask out the time stamp
+treating that as irrelevant change and signal only code change if the
+code was significantly modified.
+
 This comparator should return {@code true} if the source code was
 changed. The arguments to the bi-predicate are the lists of strings that
 contain the source code as it was read from the disk (first argument)
