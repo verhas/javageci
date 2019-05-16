@@ -5,7 +5,7 @@ import javax0.geci.annotations.Geci;
 import java.util.Map;
 import java.util.Set;
 
-@Geci("accessor include='private,protected'")
+@Geci("accessor filter='private | protected'")
 public class Contained1 {
 
     @SuppressWarnings("EmptyMethod")
@@ -20,9 +20,9 @@ public class Contained1 {
 
     int packge;
 
-    @Geci("accessor access='protected'")
+    @Geci("accessor access='package!' getter='isTrue'")
     protected boolean truth;
-    @Geci("accessor exclude='yes'")
+    @Geci("accessor filter='false'")
     protected int not_this;
 
     public Map<String,Set<Map<Integer,Boolean>>> doNothingReally(int a, Map b, Set<Set> set){
@@ -43,11 +43,11 @@ public class Contained1 {
         return birnen;
     }
 
-    protected void setTruth(boolean truth){
+     void setTruth(boolean truth){
         this.truth = truth;
     }
 
-    protected boolean getTruth(){
+     boolean isTrue(){
         return truth;
     }
 
