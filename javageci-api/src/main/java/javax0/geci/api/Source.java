@@ -46,6 +46,16 @@ public interface Source {
     Segment open(String id) throws IOException;
 
     /**
+     * Same as {@link #open(String)} but if the segment cannot be found then it
+     * throws a Geci exception instead of returning {@code null}
+     *
+     * @param id the name of the segment as defined in the {@code id="..."} xml tag of the {@code <editor-fold ...>}
+     * @return the segment and never {@code null}
+     * @throws IOException in case there is no file or file is not readable
+     */
+    Segment safeOpen(String id) throws IOException;
+
+    /**
      * Create a temporary segment. This segment is dangling and does not belong to the actual source and also it does
      * not have a name. The starting tab stop of the segment is zero. Extra padding is added to the lines when the
      * segment is appended to the final segment. As it implies such temporary segments can be used

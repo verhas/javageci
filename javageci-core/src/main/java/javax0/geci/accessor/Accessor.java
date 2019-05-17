@@ -11,20 +11,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Set;
 
-public class Accessor extends AbstractFilteredFieldsGenerator {
+public class Accessor extends AbstractAccessor {
 
     private static final Set<String> accessModifiers =
             Set.of("public", "private", "protected", "package");
 
-    private static void writeGetter(String name, String getterName,
-                                    String type, String access, Segment segment) {
-        segment._r("%s %s %s(){", access, type, getterName)
-                .write("return %s;", name)
-                ._l("}")
-                .newline();
-    }
-
-    private static void writeSetter(String name, String setterName,
+    @Override
+    protected void writeSetter(Field field,String name, String setterName,
                                     String type, String access, Segment segment) {
         segment._r("%s void %s(%s %s){",
                 access, setterName, type, name)
@@ -33,52 +26,9 @@ public class Accessor extends AbstractFilteredFieldsGenerator {
                 .newline();
     }
 
-    private static String cap(String s) {
-        return s.substring(0, 1).toUpperCase() + s.substring(1);
-    }
 
     @Override
     public String mnemonic() {
         return "accessor";
-    }
-
-    private String check(final String access) {
-        if (!access.endsWith("!") && !accessModifiers.contains(access)) {
-            throw new GeciException("'" + access + "' is not a valid access modifier");
-        }
-        final String modifiedAccess;
-        if (access.endsWith("!")) {
-            modifiedAccess = access.substring(0, access.length() - 1);
-        } else {
-            modifiedAccess = access;
-        }
-        if (modifiedAccess.equals("package")) {
-            return "";
-        }
-        return modifiedAccess;
-    }
-
-    @Override
-    public void process(Source source, Class<?> klass,
-                        CompoundParams params,
-                        Field field) throws Exception {
-        final var id = params.get("id");
-        source.init(id);
-        var isFinal = Modifier.isFinal(field.getModifiers());
-        var name = field.getName();
-        var fieldType = GeciReflectionTools.typeAsString(field);
-        var access = check(params.get("access", "public"));
-        var ucName = cap(name);
-        var setter = params.get("setter", "set" + ucName);
-        var getter = params.get("getter", "get" + ucName);
-        var only = params.get("only");
-        try (var segment = source.open(id)) {
-            if (!isFinal && !"getter".equals(only)) {
-                writeSetter(name, setter, fieldType, access, segment);
-            }
-            if (!"setter".equals(only)) {
-                writeGetter(name, getter, fieldType, access, segment);
-            }
-        }
     }
 }

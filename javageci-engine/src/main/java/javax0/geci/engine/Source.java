@@ -26,10 +26,10 @@ public class Source implements javax0.geci.api.Source {
     private final Map<String, Segment> segments = new HashMap<>();
     private final List<String> originals = new ArrayList<>();
     private final FileCollector collector;
+    private final SegmentSplitHelper splitHelper;
     boolean inMemory = false;
     private Segment globalSegment = null;
     private boolean touched = false;
-    private final SegmentSplitHelper splitHelper;
 
     /**
      * The constructor is not supposed to be used from outside, only through the {@link FileCollector} which
@@ -101,12 +101,12 @@ public class Source implements javax0.geci.api.Source {
 
     private Path inDir(String dir, String fileName) {
         return Paths.get(FileCollector.normalize(
-            dir +
-                Paths
-                    .get(relativeFile)
-                    .getParent()
-                    .resolve(fileName)
-                    .toString()));
+                dir +
+                        Paths
+                                .get(relativeFile)
+                                .getParent()
+                                .resolve(fileName)
+                                .toString()));
     }
 
     @Override
@@ -159,6 +159,15 @@ public class Source implements javax0.geci.api.Source {
     }
 
     @Override
+    public Segment safeOpen(String id) throws IOException {
+        final var segment = open(id);
+        if (segment == null) {
+            throw new GeciException(getAbsoluteFile() + " does not have segment named '" + id + "'");
+        }
+        return segment;
+    }
+
+    @Override
     public Segment open(String id) throws IOException {
         if (globalSegment != null) {
             throw new GeciException("Segment was opened after the global segment was already created.");
@@ -208,7 +217,7 @@ public class Source implements javax0.geci.api.Source {
     void consolidate() {
         if (!inMemory && !segments.isEmpty()) {
             throw new GeciException(
-                "This is an internal error: source was not read into memory but segments were generated");
+                    "This is an internal error: source was not read into memory but segments were generated");
         }
         if (globalSegment == null) {
             for (var entry : segments.entrySet()) {

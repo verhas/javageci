@@ -9,13 +9,13 @@ import org.junit.jupiter.api.Test;
 
 import static javax0.geci.api.Source.maven;
 
-public class TestAccessor {
+public class TestChainedAccessor {
 
     @Test
     public void testAccessor() throws Exception {
         Assertions.assertFalse(new Geci().source(maven()
                         .module("javageci-examples").mainSource())
-                        .register(new Accessor()).generate(),
+                        .register(new ChainedAccessor()).generate(),
                 Geci.FAILED);
     }
 }

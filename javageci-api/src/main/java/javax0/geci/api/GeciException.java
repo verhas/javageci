@@ -5,8 +5,8 @@ public class GeciException extends RuntimeException {
         super();
     }
 
-    public GeciException(String message) {
-        super(message);
+    public GeciException(String message, String ... args) {
+        super(String.format(message,args));
     }
 
     public GeciException(String message, Throwable cause) {

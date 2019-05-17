@@ -12,6 +12,11 @@ public abstract class AbstractTestSource implements Source {
     }
 
     @Override
+    public Segment safeOpen(String id) {
+        return null;
+    }
+
+    @Override
     public Segment temporary() {
         return null;
     }

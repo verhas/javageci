@@ -116,7 +116,7 @@ public class GeciReflectionTools {
     }
 
     private static String removeJavaLang(String s) {
-        if (s.matches("^java\\.lang\\.\\w+(\\.\\.\\.|\\[])?$")) {
+        if (s.startsWith("java.lang.")) {
             return s.substring("java.lang.".length());
         } else {
             return s;
@@ -124,10 +124,12 @@ public class GeciReflectionTools {
     }
 
     /**
-     * Get the generic type name of the type passed as argument. The JDK {@code Type#getTypeName()} returns
-     * a string that contains the classes with their names and not with the canonical names (inner classes
-     * have {@code $} in the names instead of dot). This method goes through the type structure and converts
-     * the names (generic types also) to
+     * Get the generic type name of the type passed as argument. The JDK
+     * {@code Type#getTypeName()} returns a string that contains the
+     * classes with their names and not with the canonical names (inner
+     * classes have {@code $} in the names instead of dot). This method
+     * goes through the type structure and converts the names (generic
+     * types also) to
      *
      * @param t the type
      * @return the type as string
@@ -146,9 +148,71 @@ public class GeciReflectionTools {
         } else if (t instanceof TypeVariable) {
             normalizedName = t.getTypeName();
         } else {
-            throw new GeciException("Type is something not handled. It is '" + t.getClass() + "' for the type '" + t.getTypeName() + "'");
+            throw new GeciException(
+                    "Type is something not handled. It is '%s' for the type '%s'",
+                    "" + t.getClass(), t.getTypeName());
         }
         return normalizedName;
+    }
+
+    /**
+     * Get the simple class name with the generic parameters as they are
+     * defined in the declaration of the class. Since this can only be
+     * used inside the class there is no need for the canonical name
+     * when a code generator needs this string (see {@code
+     * ChainedAccessor}).
+     * <p>
+     * Only the simple name is returned even if the class is an
+     * inner class. For example:
+     *
+     * <pre>{@code
+     *         java.util.Map.Entry.class -> Entry<K,V>
+     * }</pre>
+     * <p>
+     * If you need the surrounding classes in the name then call
+     * {@link #getLocalGenericClassName(Class)}.
+     *
+     * @param t the class we need the name for
+     * @return the name of the class with the generic declarations
+     * in case there are generic parameters of the class.
+     */
+    public static String getSimpleGenericClassName(Class<?> t) {
+        return t.getSimpleName() + getGenericParametersString(t);
+    }
+
+    /**
+     * Get the local class name with the generic parameters as they are
+     * defined in the declaration of the class. This method is almost
+     * the same as {@link #getSimpleGenericClassName(Class)}. The only
+     * difference is when {@code t} is an inner class. In this case this
+     * method will return the class name that contains the names of the
+     * encapsulating classes. For example this method will
+     *
+     * <pre>{@code
+     *         java.util.Map.Entry.class -> Map.Entry<K,V>
+     * }</pre>
+     * <p>
+     * return the class name {@code Map} as part of the name.
+     *
+     * @param t the class we need the name for
+     * @return the name of the class with the generic declarations
+     * in case there are generic parameters of the class.
+     */
+    public static String getLocalGenericClassName(Class<?> t) {
+        return normalizeTypeName(t.getCanonicalName()
+                .substring(t.getPackageName().length() + 1))
+                + getGenericParametersString(t);
+    }
+
+    private static String getGenericParametersString(Class<?> t) {
+        final var generics = Arrays.stream(t.getTypeParameters())
+                .map(pt -> getGenericTypeName(pt))
+                .collect(Collectors.joining(","));
+        if (generics.length() == 0) {
+            return "";
+        } else {
+            return "<" + generics + ">";
+        }
     }
 
     private static String getGenericWildcardTypeName(WildcardType t) {

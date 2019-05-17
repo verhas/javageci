@@ -91,7 +91,21 @@ public class GeciReflectionToolsTest {
                 () -> assertEquals("java.util.Map.Entry<String,Integer>[]", GeciReflectionTools.getGenericTypeName(this.getClass().getDeclaredMethod("m1").getGenericReturnType())),
                 () -> assertEquals("java.util.Map.Entry<? extends String,? super Integer>[]", GeciReflectionTools.getGenericTypeName(this.getClass().getDeclaredMethod("m2").getGenericReturnType()))
         );
+    }
 
+
+    private static class Z<H> {
+        private static class U<T extends String>{}
+    }
+
+    @Test
+    void getSimpleGenericName() {
+        Assertions.assertAll(
+                () -> assertEquals("Entry<K,V>", GeciReflectionTools.getSimpleGenericClassName(java.util.Map.Entry.class)),
+                () -> assertEquals("Map.Entry<K,V>", GeciReflectionTools.getLocalGenericClassName(java.util.Map.Entry.class)),
+                () -> assertEquals("U<T>", GeciReflectionTools.getSimpleGenericClassName(Z.U.class)),
+                () -> assertEquals("GeciReflectionToolsTest.Z.U<T>", GeciReflectionTools.getLocalGenericClassName(Z.U.class))
+        );
     }
 
     @Test
