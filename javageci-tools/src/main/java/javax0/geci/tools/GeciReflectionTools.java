@@ -150,7 +150,7 @@ public class GeciReflectionTools {
         } else {
             throw new GeciException(
                     "Type is something not handled. It is '%s' for the type '%s'",
-                    "" + t.getClass(), t.getTypeName());
+                    t.getClass(), t.getTypeName());
         }
         return normalizedName;
     }
@@ -206,7 +206,7 @@ public class GeciReflectionTools {
 
     private static String getGenericParametersString(Class<?> t) {
         final var generics = Arrays.stream(t.getTypeParameters())
-                .map(pt -> getGenericTypeName(pt))
+                .map(GeciReflectionTools::getGenericTypeName)
                 .collect(Collectors.joining(","));
         if (generics.length() == 0) {
             return "";
@@ -359,7 +359,7 @@ public class GeciReflectionTools {
         final var allMethods = new HashSet<>();
         allMethods.addAll(methods);
         allMethods.addAll(declaredMethods);
-        final var methodArray = allMethods.toArray(new Method[0]);
+        final Method[] methodArray = allMethods.toArray(new Method[0]);
         Arrays.sort(methodArray, Comparator.comparing(MethodTool::methodSignature));
         return methodArray;
     }

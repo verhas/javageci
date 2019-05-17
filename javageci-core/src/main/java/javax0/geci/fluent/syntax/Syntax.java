@@ -70,6 +70,7 @@ public class Syntax {
      * @param <T> the type of the elements
      * @return the modifiable list of nodes
      */
+    @SafeVarargs
     private static <T> List<T> listOf(T... ts) {
         return new ArrayList<>(List.of(ts));
     }

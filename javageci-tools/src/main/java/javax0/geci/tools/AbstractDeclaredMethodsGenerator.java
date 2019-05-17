@@ -148,8 +148,6 @@ public abstract class AbstractDeclaredMethodsGenerator extends AbstractJavaGener
     public void process(Source source, Class<?> klass, CompoundParams params, Method method) throws Exception {
     }
 
-    ;
-
     /**
      * This method is invoked after all the invocation of {@link #process(Source, Class, CompoundParams, Method)} and
      * before the invocation of {@link #postprocess(Source, Class, CompoundParams)}.

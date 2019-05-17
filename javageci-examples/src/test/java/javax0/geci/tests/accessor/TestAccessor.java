@@ -2,7 +2,6 @@
 package javax0.geci.tests.accessor;
 
 import javax0.geci.accessor.Accessor;
-import javax0.geci.accessor.ChainedAccessor;
 import javax0.geci.engine.Geci;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

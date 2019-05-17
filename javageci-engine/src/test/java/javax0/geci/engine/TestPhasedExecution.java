@@ -36,9 +36,11 @@ public class TestPhasedExecution {
             } catch (IOException e) {
                 throw new GeciException("Cannot touch it!");
             }
-            testString.append("Phase " + actualPhase +
-                    " generator '" + this.getClass().getSimpleName()
-                    + "'\n");
+            testString.append("Phase ")
+                    .append(actualPhase)
+                    .append(" generator '")
+                    .append(this.getClass().getSimpleName())
+                    .append("'\n");
         }
 
         @Override
@@ -58,9 +60,11 @@ public class TestPhasedExecution {
 
         @Override
         public void process(javax0.geci.api.Source source) {
-            testString.append("Phase " + actualPhase +
-                    " generator '" + this.getClass().getSimpleName() +
-                    "'\n");
+            testString.append("Phase ")
+                    .append(actualPhase)
+                    .append(" generator '")
+                    .append(this.getClass().getSimpleName())
+                    .append("'\n");
         }
 
         @Override

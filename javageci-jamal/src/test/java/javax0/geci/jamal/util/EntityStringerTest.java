@@ -26,7 +26,7 @@ public class EntityStringerTest {
 
     @Test
     @DisplayName("creates the expected fingerprint for the methods")
-    void testFingerprint2Method() throws NoSuchMethodException, BadSyntax {
+    void testFingerprint2Method() throws BadSyntax {
         Assertions.assertEquals("argless",EntityStringer.fingerprint2Method("javax0.geci.jamal.util.EntityStringerTest|argless").getName());
         Assertions.assertEquals("arg1pri",EntityStringer.fingerprint2Method("javax0.geci.jamal.util.EntityStringerTest|arg1pri|int[][]").getName());
         Assertions.assertEquals("arg1obj",EntityStringer.fingerprint2Method("javax0.geci.jamal.util.EntityStringerTest|arg1obj|java.lang.Integer").getName());

@@ -1,7 +1,5 @@
 package javax0.geci.tests.delegator;
 
-import javax0.geci.annotations.Geci;
-
 import java.util.Map;
 import java.util.Set;
 
@@ -12,7 +10,6 @@ public class Contained1 {
 
     }
 
-    @SuppressWarnings("FieldCanBeLocal")
     private final String apple = "";
     private int birnen;
 

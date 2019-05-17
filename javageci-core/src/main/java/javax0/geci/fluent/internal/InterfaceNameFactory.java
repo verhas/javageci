@@ -36,10 +36,10 @@ public class InterfaceNameFactory {
             int z = counter;
             counter += 119;
             while( z > 0 ){
-                sb.append("aeou".substring(z&3,(z&3)+1));
+                sb.append("aeou", z&3, (z&3)+1);
                 z = z >> 2;
                 if( z > 0 ){
-                    sb.append("bcdfghjklmnpqrst".substring(z&7,(z&7)+1));
+                    sb.append("bcdfghjklmnpqrst", z&7, (z&7)+1);
                     z = z >> 4;
                 }
             }

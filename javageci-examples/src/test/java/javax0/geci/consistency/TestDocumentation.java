@@ -22,8 +22,8 @@ class TestDocumentation {
      * the current working directory and works up maximum 10
      * directories.
      *
-     * @return
-     * @throws IOException
+     * @return the canonical path of the project root directory
+     * @throws IOException if the directory structure cannot be read
      */
     private String getDirectory() throws IOException {
         var readme = new StringBuilder("README.md");

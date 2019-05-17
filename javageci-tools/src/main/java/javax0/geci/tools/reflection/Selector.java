@@ -333,8 +333,9 @@ public class Selector<T> {
      * @return {@code true} if the selection matches the
      */
     @SuppressWarnings("WeakerAccess")
-    public boolean match(T member) {
-        return match(member, top);
+    public boolean match(Object member) {
+        //noinspection unchecked
+        return match((T)member, top);
     }
 
     private boolean matchOr(T m, SelectorNode.Or node) {

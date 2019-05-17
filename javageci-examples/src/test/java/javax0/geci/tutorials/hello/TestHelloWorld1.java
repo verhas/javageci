@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static javax0.geci.api.Source.maven;
-
 public class TestHelloWorld1 {
 
     @Test

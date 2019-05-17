@@ -2,6 +2,7 @@ package javax0.geci.jamal;
 
 import java.util.Map;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class PreprocessedFile {
     public int a;
     private Map myMap;

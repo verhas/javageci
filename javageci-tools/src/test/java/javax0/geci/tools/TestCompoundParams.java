@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class TestCompoundParams {
 
@@ -24,7 +23,7 @@ public class TestCompoundParams {
     void testKeySetFromMap() {
         final var sut = new CompoundParams("theId", Map.of("a", "1", "b", "2"));
         Assertions.assertEquals("a,b",
-                sut.keySet().stream().collect(Collectors.joining(",")));
+                String.join(",", sut.keySet()));
     }
 
     @Test
@@ -43,7 +42,7 @@ public class TestCompoundParams {
     void testKeySetFromMapMultiple() {
         final var sut = new CompoundParams("theId", Map.of("a", "1", "b", "2"), Map.of("a", "4", "b", "4", "c", "5"));
         Assertions.assertEquals("a,b,c",
-                sut.keySet().stream().collect(Collectors.joining(",")));
+                String.join(",", sut.keySet()));
     }
 
     @Test
@@ -72,7 +71,7 @@ public class TestCompoundParams {
                         Map.of("a", "4", "b", "4", "c", "5"))
         );
         Assertions.assertEquals("a,b,c",
-                sut.keySet().stream().collect(Collectors.joining(",")));
+                String.join(",", sut.keySet()));
     }
 
     @Test
@@ -102,6 +101,6 @@ public class TestCompoundParams {
                         Map.of("a", "4", "b", "4", "c", "5"))
         );
         Assertions.assertEquals("a,b,c",
-                sut.keySet().stream().collect(Collectors.joining(",")));
+                String.join(",", sut.keySet()));
     }
 }

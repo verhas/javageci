@@ -1,7 +1,6 @@
 package javax0.geci.fluent.tree;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**

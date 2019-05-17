@@ -224,17 +224,20 @@ public class GeciAnnotationTools {
      * @return {@code true} if the element was generated (has the annotation {@link Generated}).
      */
     public static boolean isGenerated(AnnotatedElement element) {
-        return Selector.<AnnotatedElement>compile("annotation ~ /Generated/").match(element);
+        return Selector.compile("annotation ~ /Generated/").match(element);
     }
 
     /**
-     * Get the parameters from the source file directly reading the source. When a generator uses this method the
-     * project may not need {@code com.javax0.geci:javageci-annotation:*} as a {@code compile} time dependency
-     * when the "annotation" is commented out. This configuration tool can also be used when the source is not
+     * Get the parameters from the source file directly reading the
+     * source. When a generator uses this method the project may not
+     * need {@code com.javax0.geci:javageci-annotation:*} as a {@code
+     * compile} time dependency when the "annotation" is commented out.
+     * This configuration tool can also be used when the source is not
      * Java, as it does not depend on Java annotations.
-     * <p>
-     * The lines of the source are read from the start and the parameters composed from the first line that is
-     * successfully processed are returned.
+     *
+     * <p> The lines of the source are read from the start and the
+     * parameters composed from the first line that is successfully
+     * processed are returned.
      *
      * @param source            the source object holding the code lines
      * @param generatorMnemonic the name of the generator that needs the parameters. Only the parameters that are
@@ -323,7 +326,7 @@ public class GeciAnnotationTools {
             }
         }
         if (params.size() > 0) {
-            return new CompoundParams(mnemonic, params.toArray(new Map[0]));
+            return new CompoundParams(mnemonic, params.toArray(Map[]::new));
         } else {
             return null;
         }

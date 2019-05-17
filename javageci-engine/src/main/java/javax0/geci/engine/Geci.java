@@ -53,7 +53,8 @@ public class Geci implements javax0.geci.api.Geci {
     }
 
     @Override
-    public javax0.geci.api.Geci only(Predicate<Path>... predicates) {
+    @SafeVarargs
+    public final javax0.geci.api.Geci only(Predicate<Path>... predicates) {
         Collections.addAll(this.predicates, Arrays.stream(predicates)
             .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;

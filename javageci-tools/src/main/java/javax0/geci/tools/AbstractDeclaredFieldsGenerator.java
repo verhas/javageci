@@ -147,8 +147,6 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
     public void process(Source source, Class<?> klass, CompoundParams params, Field field) throws Exception {
     }
 
-    ;
-
     /**
      * This method is invoked after all the invocation of {@link #process(Source, Class, CompoundParams, Field)} and
      * before the invocation of {@link #postprocess(Source, Class, CompoundParams)}.
