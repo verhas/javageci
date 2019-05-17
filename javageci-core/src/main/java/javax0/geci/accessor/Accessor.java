@@ -13,20 +13,23 @@ import java.util.Set;
 
 public class Accessor extends AbstractFilteredFieldsGenerator {
 
-    private static final Set<String> accessModifiers = Set.of("public", "private", "protected", "package");
+    private static final Set<String> accessModifiers =
+            Set.of("public", "private", "protected", "package");
 
-    private static void writeGetter(String name, String getterName, String type, String access, Segment segment) {
-        segment.write_r(access + " " + type + " " + getterName + "(){")
-                .write("return " + name + ";")
-                .write_l("}")
+    private static void writeGetter(String name, String getterName,
+                                    String type, String access, Segment segment) {
+        segment._r("%s %s %s(){", access, type, getterName)
+                .write("return %s;", name)
+                ._l("}")
                 .newline();
     }
 
-    private static void writeSetter(String name, String setterName, String type, String access, Segment segment) {
-        segment.write_r(access + " void " + setterName + "(" +
-                type + " " + name + "){")
-                .write("this." + name + " = " + name + ";")
-                .write_l("}")
+    private static void writeSetter(String name, String setterName,
+                                    String type, String access, Segment segment) {
+        segment._r("%s void %s(%s %s){",
+                access, setterName, type, name)
+                .write("this.%s = %s;", name, name)
+                ._l("}")
                 .newline();
     }
 
@@ -41,22 +44,24 @@ public class Accessor extends AbstractFilteredFieldsGenerator {
 
     private String check(final String access) {
         if (!access.endsWith("!") && !accessModifiers.contains(access)) {
-            throw new GeciException("'"+access+"' is not a valid access modifier");
+            throw new GeciException("'" + access + "' is not a valid access modifier");
         }
         final String modifiedAccess;
-        if( access.endsWith("!")){
-            modifiedAccess = access.substring(0,access.length()-1);
-        }else {
+        if (access.endsWith("!")) {
+            modifiedAccess = access.substring(0, access.length() - 1);
+        } else {
             modifiedAccess = access;
         }
-        if( modifiedAccess.equals("package")){
+        if (modifiedAccess.equals("package")) {
             return "";
         }
         return modifiedAccess;
     }
 
     @Override
-    public void process(Source source, Class<?> klass, CompoundParams params, Field field) throws Exception {
+    public void process(Source source, Class<?> klass,
+                        CompoundParams params,
+                        Field field) throws Exception {
         final var id = params.get("id");
         source.init(id);
         var isFinal = Modifier.isFinal(field.getModifiers());
@@ -67,7 +72,6 @@ public class Accessor extends AbstractFilteredFieldsGenerator {
         var setter = params.get("setter", "set" + ucName);
         var getter = params.get("getter", "get" + ucName);
         var only = params.get("only");
-        source.init(id);
         try (var segment = source.open(id)) {
             if (!isFinal && !"getter".equals(only)) {
                 writeSetter(name, setter, fieldType, access, segment);

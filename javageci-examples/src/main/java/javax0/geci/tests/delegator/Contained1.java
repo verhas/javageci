@@ -20,7 +20,7 @@ public class Contained1 {
 
     int packge;
 
-    @Geci("accessor access='package!' getter='isTrue'")
+    @Geci("accessor access='package' getter='isTrue'")
     protected boolean truth;
     @Geci("accessor filter='false'")
     protected int not_this;
