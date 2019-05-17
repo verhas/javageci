@@ -6,6 +6,7 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 /**
@@ -32,7 +33,7 @@ import java.util.regex.Pattern;
  * <li>{@code signature ~ /^has.*\(String,.*\)/} will select a member if the name starts with {@code has} and the
  * signature of the method contains a {@code }String} as the first argument.</li>
  * <li>{@code returns ~ /String/} will select a method if the return value is {@code String}</li>
- * <li>{@code annotation ~ /Generated/} will select a member if it is annotation with an annotation that
+ * <li>{@code annotation ~ /Generated/} will select a member if it is annotated with an annotation that
  * starts with {@code Generated}</li>
  * <li> any other identifier "selector" will select a member if the configured {@code Function<Member,Boolean>} assigned to the name
  * "selector" returns {@code true}. Selector functions can be added calling the method {@link #selector(String, Function)}.</li>

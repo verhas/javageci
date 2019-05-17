@@ -106,6 +106,15 @@ public class CompoundParams {
         return Objects.requireNonNullElse(get0(key), "");
     }
 
+    /**
+     * Shortcut to {@code get("id")}
+     *
+     * @return the ID from the configuration
+     */
+    public String id() {
+        return get("id");
+    }
+
     private String get0(String key) {
         if (params != null) {
             return Arrays.stream(params)
