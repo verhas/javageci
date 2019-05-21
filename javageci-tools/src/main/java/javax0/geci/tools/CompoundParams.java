@@ -1,6 +1,7 @@
 package javax0.geci.tools;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -70,7 +71,8 @@ public class CompoundParams {
     }
 
     /**
-     * Get the parameter or return the {@code defaults} if the parameter is not defined.
+     * Get the parameter or return the {@code defaults} if the parameter
+     * is not defined.
      *
      * @param key      the name of the parameter
      * @param defaults to use when the parameter is not defined
@@ -78,6 +80,20 @@ public class CompoundParams {
      */
     public String get(String key, String defaults) {
         return Optional.ofNullable(get0(key)).orElse(defaults);
+    }
+
+    /**
+     * Get the parameter or return the value supplied by the parameter
+     * {@code defaultSupplier} if the parameter is not defined. <p> This
+     * method can be used instead of {@link #get(String, String)} when
+     * the calculation of the default string costs a lot.
+     *
+     * @param key             the name of the parameter
+     * @param defaultSupplier to use when the parameter is not defined
+     * @return the value of the parameter
+     */
+    public String get(String key, Supplier<String> defaultSupplier) {
+        return Optional.ofNullable(get0(key)).orElse(defaultSupplier.get());
     }
 
     /**
@@ -99,8 +115,10 @@ public class CompoundParams {
      * code.
      *
      * @param key the name of the parameter.
-     * @return the parameter or {@code ""} if the parameter is not defined. In case the key is {@code "id"} and is
-     * not defined in the underlying array then the parameter set identifier is returned.
+     * @return the parameter or {@code ""} if the parameter is not
+     * defined. In case the key is {@code "id"} and is not defined in
+     * the underlying array then the parameter set identifier is
+     * returned.
      */
     public String get(String key) {
         return Objects.requireNonNullElse(get0(key), "");

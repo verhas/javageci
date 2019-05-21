@@ -1,6 +1,7 @@
 package javax0.geci.tools;
 
 import javax0.geci.annotations.Geci;
+import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 
 import java.lang.reflect.Field;
@@ -131,9 +132,9 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
     }
 
     /**
-     * This method is invoked for each {@code field}, which is declared in the class. The actual implementation has
-     * to generate the code in this method that handles the very specific field, or it may just build up it's own
-     * data structure that is to be used when the method {@link #postprocess(Source, Class, CompoundParams)} is invoked.
+     * This method is invoked for each {@code field}, which is declared in the class. Generators can
+     * override this method or they can override the version that also gets the segment as an argument.
+     * See also the documentation of {@link #process(Source, Class, CompoundParams, Field, Segment)}.
      *
      * @param source see the documentation of the same name argument in
      *               {@link javax0.geci.api.Generator#process(Source)}
@@ -145,6 +146,27 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
      * @throws Exception any exception that the is thrown by the generator
      */
     public void process(Source source, Class<?> klass, CompoundParams params, Field field) throws Exception {
+        try (final var segment = source.safeOpen(params.id())) {
+            process(source, klass, params, field, segment);
+        }
+    }
+
+    /**
+     * This method is invoked for each {@code field}, which is declared in the class. The actual implementation has
+     * to generate the code in this method that handles the very specific field, or it may just build up it's own
+     * data structure that is to be used when the method {@link #postprocess(Source, Class, CompoundParams)} is invoked.
+     *
+     * @param source  see the documentation of the same name argument in
+     *                {@link javax0.geci.api.Generator#process(Source)}
+     * @param klass   see the documentation of the same name argument in
+     *                {@link AbstractJavaGenerator#process(Source, Class, CompoundParams)}
+     * @param params  the parameters collected from the class and also from the actual field. The parameters defined on
+     *                the field annotation have precedence over the annotations on the class.
+     * @param field   the field that the process has to work on.
+     * @param segment is the segment where the code is to be written. It is guaranteed not-null when this method is called.
+     * @throws Exception any exception that the is thrown by the generator
+     */
+    public void process(Source source, Class<?> klass, CompoundParams params, Field field, Segment segment) throws Exception {
     }
 
     /**

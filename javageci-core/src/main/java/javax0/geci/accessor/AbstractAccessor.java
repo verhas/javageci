@@ -58,23 +58,20 @@ public abstract class AbstractAccessor extends AbstractFilteredFieldsGenerator {
     @Override
     public void process(Source source, Class<?> klass,
                         CompoundParams params,
-                        Field field) throws Exception {
-        final var id = params.get("id");
-        source.init(id);
-        var isFinal = Modifier.isFinal(field.getModifiers());
-        var name = field.getName();
-        var fieldType = GeciReflectionTools.typeAsString(field);
-        var access = check(params.get("access", "public"));
-        var setter = params.get("setter", setterName(name));
-        var getter = params.get("getter", getterName(name));
-        var only = params.get("only");
-        try (var segment = source.safeOpen(id)) {
-            if (!isFinal && !"getter".equals(only)) {
-                writeSetter(field, name, setter, fieldType, access, segment);
-            }
-            if (!"setter".equals(only)) {
-                writeGetter(field, name, getter, fieldType, access, segment);
-            }
+                        Field field,
+                        Segment segment) throws Exception {
+        final var isFinal = Modifier.isFinal(field.getModifiers());
+        final var name = field.getName();
+        final var fieldType = GeciReflectionTools.typeAsString(field);
+        final var access = check(params.get("access", "public"));
+        final var setter = params.get("setter", () -> setterName(name));
+        final var getter = params.get("getter", () -> getterName(name));
+        final var only = params.get("only");
+        if (!isFinal && !"getter".equals(only)) {
+            writeSetter(field, name, setter, fieldType, access, segment);
+        }
+        if (!"setter".equals(only)) {
+            writeGetter(field, name, getter, fieldType, access, segment);
         }
     }
 }
