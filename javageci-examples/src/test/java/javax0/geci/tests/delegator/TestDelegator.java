@@ -11,8 +11,13 @@ public class TestDelegator {
 
     @Test
     public void testDelegator() throws Exception {
-        if (new Geci().source(maven().module("javageci-examples").mainSource()).register(new Delegator()).generate()) {
-            Assertions.fail(Geci.FAILED);
-        }
+        Assertions.assertFalse(
+                new Geci()
+                        .source(maven()
+                                .module("javageci-examples")
+                                .mainSource())
+                        .register(Delegator.builder().build())
+                        .generate(),
+                Geci.FAILED);
     }
 }

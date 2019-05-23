@@ -24,10 +24,16 @@ check the generated code or generate the code when the check fails.
 
 ```java
     @Test
-    public void createDelegator() throws Exception {
-        Assertions.seertFalse(new Geci().source(maven().module("javageci-examples").javaSource())
-                                  .register(new Delegator()).generate(),Geci.FAIL);
-        }
+    public void testDelegator() throws Exception {
+        Assertions.assertFalse(
+                new Geci()
+                        .source(maven()
+                                .module("javageci-examples")
+                                .mainSource())
+                        .register(Delegator.builder().build())
+                        .generate(),
+                Geci.FAILED);
+    }
 ```
 
 then annotate the class and the field:
@@ -92,10 +98,12 @@ defined in that module you are free to use any other annotation you may
 define in your own project. The framework will work any annotation so
 long as long their simple name is `Geci`. The generator does not even
 require that the name of the annotation is `Generated`. All it requires
-is to use the `new Delegator(YourAnnotation.class)` constructor and then
-it will use that annotation to mark the generated methods and eventually
-will look for this annotation in the method when it decides if an
-already existing method was manually created or generated.
+is to use the
+`Delegator.builder().generatedAnnotation(YourAnnotation.class).build()`
+builder chain and then it will use that annotation to mark the generated
+methods and eventually will look for this annotation in the method when
+it decides if an already existing method was manually created or
+generated.
 
 You can also filter the methods that have to be generated to delegate
 functionality. The class or field annotation

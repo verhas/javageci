@@ -1,5 +1,6 @@
 package javax0.geci.delegator;
 
+import javax0.geci.annotations.GeneratorBuilder;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractFilteredFieldsGenerator;
 import javax0.geci.tools.CompoundParams;
@@ -16,14 +17,15 @@ import java.util.stream.Collectors;
 
 public class Delegator extends AbstractFilteredFieldsGenerator {
 
-    private final Class<? extends Annotation> generatedAnnotation;
+    private Class<? extends Annotation> generatedAnnotation;
+    private String filter = "!static";
 
-    public Delegator() {
+    private Delegator() {
         generatedAnnotation = javax0.geci.annotations.Generated.class;
     }
 
-    public Delegator(Class<? extends Annotation> generatedAnnotation) {
-        this.generatedAnnotation = generatedAnnotation;
+    public static Builder builder() {
+        return new Delegator().new Builder();
     }
 
     @Override
@@ -61,6 +63,29 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
             return localMethod.getDeclaredAnnotation(generatedAnnotation) == null;
         } catch (NoSuchMethodException e) {
             return false;
+        }
+    }
+
+    @Override
+    protected String defaultFilterExpression() {
+        return filter;
+    }
+
+    public class Builder implements GeneratorBuilder<Delegator> {
+
+        public Builder generatedAnnotation(Class<? extends Annotation> generatedAnnotation) {
+            Delegator.this.generatedAnnotation = generatedAnnotation;
+            return this;
+        }
+
+        public Builder filter(String filter) {
+            Delegator.this.filter = filter;
+            return this;
+        }
+
+        @Override
+        public Delegator build() {
+            return Delegator.this;
         }
     }
 }
