@@ -45,6 +45,12 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
      */
     @SuppressWarnings("unused")
     public void preprocess(Source source, Class<?> klass, CompoundParams global) throws Exception {
+        try (final var segment = source.safeOpen(global.id())) {
+            preprocess(source, klass, global, segment);
+        }
+    }
+
+    public void preprocess(Source source, Class<?> klass, CompoundParams global, Segment segment) throws Exception {
     }
 
     /**
@@ -182,5 +188,26 @@ public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenera
      * @throws Exception any exception that the is thrown by the generator
      */
     public void process(Source source, Class<?> klass, CompoundParams global, Field[] fields) throws Exception {
+        try (final var segment = source.safeOpen(global.id())) {
+            process(source, klass, global, fields, segment);
+        }
     }
+
+    /**
+     * This method is the same as {@link #process(Source, Class, CompoundParams, Field[])} but it also
+     * opens the segment defined in the global configuration.
+     *
+     * @param source  see the documentation of the same name argument in
+     *                {@link javax0.geci.api.Generator#process(Source)}
+     * @param klass   see the documentation of the same name argument in
+     *                {@link AbstractJavaGenerator#process(Source, Class, CompoundParams)}
+     * @param global  the parameters collected from the class.
+     * @param fields  the fields that the process has to work on in a deterministic order
+     * @param segment the segment identified in the global (not field level) configuration
+     * @throws Exception any exception that the is thrown by the generator
+     */
+    public void process(Source source, Class<?> klass, CompoundParams global, Field[] fields, Segment segment) throws Exception {
+
+    }
+
 }
