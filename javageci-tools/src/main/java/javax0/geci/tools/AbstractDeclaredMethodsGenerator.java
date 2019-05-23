@@ -82,6 +82,10 @@ public abstract class AbstractDeclaredMethodsGenerator extends AbstractJavaGener
      */
     @SuppressWarnings("unused")
     public void postprocess(Source source, Class<?> klass, CompoundParams global) throws Exception {
+        postprocess(source, klass, global, source.safeOpen(global.id()));
+    }
+
+    public void postprocess(Source source, Class<?> klass, CompoundParams global, Segment segment) throws Exception {
     }
 
     /**

@@ -1,5 +1,6 @@
 package javax0.geci.delegator;
 
+import javax0.geci.annotations.Geci;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractFilteredFieldsGenerator;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Geci("builder")
 public class Delegator extends AbstractFilteredFieldsGenerator {
 
     private Class<? extends Annotation> generatedAnnotation = javax0.geci.annotations.Generated.class;
@@ -22,10 +24,6 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
     private String methods = "public & !static";
 
     private Delegator() {
-    }
-
-    public static Builder builder() {
-        return new Delegator().new Builder();
     }
 
     @Override
@@ -69,25 +67,35 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
         return filter;
     }
 
+    //<editor-fold id="builder">
+    @javax0.geci.annotations.Generated("builder")
+    public static Delegator.Builder builder() {
+        return new Delegator().new Builder();
+    }
+
     public class Builder {
-
-        public Builder generatedAnnotation(Class<? extends Annotation> generatedAnnotation) {
-            Delegator.this.generatedAnnotation = generatedAnnotation;
-            return this;
-        }
-
-        public Builder filter(String filter) {
+        @javax0.geci.annotations.Generated("builder")
+        public Builder filter(String filter){
             Delegator.this.filter = filter;
             return this;
         }
 
-        public Builder methods(String methods) {
+        @javax0.geci.annotations.Generated("builder")
+        public Builder generatedAnnotation(Class generatedAnnotation){
+            Delegator.this.generatedAnnotation = generatedAnnotation;
+            return this;
+        }
+
+        @javax0.geci.annotations.Generated("builder")
+        public Builder methods(String methods){
             Delegator.this.methods = methods;
             return this;
         }
 
+        @javax0.geci.annotations.Generated("builder")
         public Delegator build() {
             return Delegator.this;
         }
     }
+    //</editor-fold>
 }

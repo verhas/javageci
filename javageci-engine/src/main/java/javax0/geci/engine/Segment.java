@@ -30,7 +30,6 @@ public class Segment implements javax0.geci.api.Segment {
 
     @Override
     public void close() {
-        tabStop = openingTabStop;
     }
 
     @Override
