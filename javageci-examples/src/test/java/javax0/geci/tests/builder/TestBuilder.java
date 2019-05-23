@@ -10,7 +10,7 @@ public class TestBuilder {
     @Test
     void testBuilder() throws Exception {
         Assertions.assertFalse(
-                new Geci().source("./javageci-core/src/main/java/", "../javageci-core/src/main/java/").register(new Builder()).generate(),
+                new Geci().source("./javageci-core/src/main/java/", "../javageci-core/src/main/java/").register(Builder.builder().generatedAnnotation(null).build()).generate(),
                 Geci.FAILED
         );
     }

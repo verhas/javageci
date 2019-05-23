@@ -1,8 +1,10 @@
 package javax0.geci.tools;
 
+import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.syntax.GeciAnnotationTools;
 
+import java.lang.annotation.Annotation;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -66,6 +68,12 @@ import java.util.regex.Pattern;
 public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
     private static final Pattern CLASS_LINE = Pattern.compile("class\\s+\\w[\\w\\d_$]*\\s*.*\\{\\s*$");
 
+    protected void writeGenerated(Segment segment, Class<? extends Annotation> annotation) {
+        if (annotation != null) {
+            segment.write("@" + annotation.getCanonicalName() + "(\"" + mnemonic() + "\")");
+        }
+    }
+
     public void processEx(Source source) throws Exception {
         final var klass = source.getKlass();
         if (klass != null) {
@@ -73,7 +81,7 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
                     GeciAnnotationTools.getParameters(source, mnemonic(), "//", CLASS_LINE));
             var segment = GeciAnnotationTools.getSegmentParameters(source, mnemonic());
             var global = new CompoundParams(annotation, segment);
-            if (annotation != null || segment != null ) {
+            if (annotation != null || segment != null) {
                 process(source, klass, global);
             }
         }
