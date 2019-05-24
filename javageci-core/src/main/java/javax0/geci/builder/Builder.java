@@ -9,6 +9,8 @@ import javax0.geci.tools.GeciReflectionTools;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
 public class Builder extends AbstractFilteredFieldsGenerator {
     private Class<? extends Annotation> generatedAnnotation = Generated.class;
@@ -16,6 +18,7 @@ public class Builder extends AbstractFilteredFieldsGenerator {
     private String builderName = "Builder";
     private String builderFactoryMethod = "builder";
     private String buildMethod = "build";
+    private String aggregatorMethod = "add";
 
     @Override
     public String mnemonic() {
@@ -28,10 +31,10 @@ public class Builder extends AbstractFilteredFieldsGenerator {
         final var bfm = global.get("builderFactoryMethod", builderFactoryMethod);
         writeGenerated(segment, generatedAnnotation);
         segment.write_r("public static %s.%s %s() {", klass.getSimpleName(), bn, bfm)
-            .write("return new %s().new %s();", klass.getSimpleName(), bn)
-            .write_l("}")
-            .newline()
-            .write_r("public class %s {", bn);
+                .write("return new %s().new %s();", klass.getSimpleName(), bn)
+                .write_l("}")
+                .newline()
+                .write_r("public class %s {", bn);
     }
 
     @Override
@@ -39,12 +42,40 @@ public class Builder extends AbstractFilteredFieldsGenerator {
         final var bn = params.get("builderName", builderName);
         final var name = field.getName();
         final var type = GeciReflectionTools.normalizeTypeName(field.getType().getName());
+        if (!Modifier.isFinal(field.getModifiers())) {
+            generateSetter(klass, segment, bn, name, type);
+        }
+        if (aggregatorMethod != null && aggregatorMethod.length() > 0 &&
+                Arrays.stream(field.getType().getDeclaredMethods()).anyMatch(m -> m.getName().equals(aggregatorMethod))) {
+            generateAggregators(klass, segment, bn, name, field);
+        }
+    }
+
+    private void generateAggregators(Class<?> klass, Segment segment, String builder, String name, Field field) {
+        final var aggMethod = aggregatorMethod + name.substring(0, 1).toUpperCase() + name.substring(1);
+        Arrays.stream(GeciReflectionTools.getDeclaredMethodsSorted(field.getType()))
+                .filter(m -> m.getName().equals(aggregatorMethod))
+                .filter(m -> m.getParameterTypes().length == 1)
+                .forEach(
+                        method -> {
+                            final var type = GeciReflectionTools.normalizeTypeName(method.getParameterTypes()[0].getName());
+                            writeGenerated(segment, generatedAnnotation);
+                            segment.write_r("public %s %s(%s x){", builder, aggMethod, type)
+                                    .write("%s.this.%s(x);", klass.getSimpleName(), aggregatorMethod)
+                                    .write("return this;")
+                                    .write_l("}")
+                                    .newline();
+                        }
+                );
+    }
+
+    private void generateSetter(Class<?> klass, Segment segment, String bn, String name, String type) {
         writeGenerated(segment, generatedAnnotation);
         segment.write_r("public %s %s(%s %s){", bn, name, type, name)
-            .write("%s.this.%s = %s;", klass.getSimpleName(), name, name)
-            .write("return this;")
-            .write_l("}")
-            .newline();
+                .write("%s.this.%s = %s;", klass.getSimpleName(), name, name)
+                .write("return this;")
+                .write_l("}")
+                .newline();
     }
 
     @Override
@@ -52,8 +83,8 @@ public class Builder extends AbstractFilteredFieldsGenerator {
         final var bm = global.get("buildMethod", buildMethod);
         writeGenerated(segment, generatedAnnotation);
         segment.write_r("public %s %s() {", klass.getSimpleName(), bm)
-            .write("return %s.this;", klass.getSimpleName())
-            .write_l("}");
+                .write("return %s.this;", klass.getSimpleName())
+                .write_l("}");
         segment.write_l("}"); // end of builder class
     }
 
@@ -68,6 +99,11 @@ public class Builder extends AbstractFilteredFieldsGenerator {
     }
 
     public class BuilderBuilder {
+        public BuilderBuilder aggregatorMethod(String aggregatorMethod) {
+            Builder.this.aggregatorMethod = aggregatorMethod;
+            return this;
+        }
+
         public BuilderBuilder buildMethod(String buildMethod) {
             Builder.this.buildMethod = buildMethod;
             return this;
