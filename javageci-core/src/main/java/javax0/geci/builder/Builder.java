@@ -10,6 +10,8 @@ import javax0.geci.tools.GeciReflectionTools;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 
 public class Builder extends AbstractFilteredFieldsGenerator {
@@ -41,7 +43,7 @@ public class Builder extends AbstractFilteredFieldsGenerator {
     public void process(Source source, Class<?> klass, CompoundParams params, Field field, Segment segment) throws Exception {
         final var bn = params.get("builderName", builderName);
         final var name = field.getName();
-        final var type = GeciReflectionTools.normalizeTypeName(field.getType().getName());
+        final var type = GeciReflectionTools.normalizeTypeName(field.getType().getName(), klass);
         if (!Modifier.isFinal(field.getModifiers())) {
             generateSetter(klass, segment, bn, name, type);
         }
@@ -58,16 +60,34 @@ public class Builder extends AbstractFilteredFieldsGenerator {
                 .filter(m -> m.getParameterTypes().length == 1)
                 .forEach(
                         method -> {
-                            final var type = GeciReflectionTools.normalizeTypeName(method.getParameterTypes()[0].getName());
+                            var type = method.getParameterTypes()[0];
+                            final String typeName;
+                            final var typeParameters = field.getType().getTypeParameters();
+                            Type genType;
+                            Type[] parTypes;
+                            Class parType;
+                            if ((genType = field.getGenericType()) instanceof ParameterizedType &&
+                                    (parTypes = ((ParameterizedType) genType).getActualTypeArguments()).length == 1
+                                    && parTypes[0] instanceof Class
+                                    && type.isAssignableFrom(parType = (Class) parTypes[0])) {
+                                typeName = GeciReflectionTools.normalizeTypeName(parType.getTypeName()
+                                        , klass);
+                            } else {
+                                typeName = GeciReflectionTools.normalizeTypeName(type.getName(), klass);
+                            }
                             writeGenerated(segment, generatedAnnotation);
-                            segment.write_r("public %s %s(%s x){", builder, aggMethod, type)
-                                    .write("%s.this.%s(x);", klass.getSimpleName(), aggregatorMethod)
+                            segment.write_r("public %s %s(%s x){", builder, aggMethod, typeName)
+                                    .write_r("if( %s.this.%s == null ){", klass.getSimpleName(), name)
+                                    .write("throw new IllegalArgumentException(\"Collection field %s is null\");", name)
+                                    .write_l("}")
+                                    .write("%s.this.%s.%s(x);", klass.getSimpleName(), name, aggregatorMethod)
                                     .write("return this;")
                                     .write_l("}")
                                     .newline();
                         }
                 );
     }
+
 
     private void generateSetter(Class<?> klass, Segment segment, String bn, String name, String type) {
         writeGenerated(segment, generatedAnnotation);
@@ -99,32 +119,32 @@ public class Builder extends AbstractFilteredFieldsGenerator {
     }
 
     public class BuilderBuilder {
-        public BuilderBuilder aggregatorMethod(String aggregatorMethod){
+        public BuilderBuilder aggregatorMethod(String aggregatorMethod) {
             Builder.this.aggregatorMethod = aggregatorMethod;
             return this;
         }
 
-        public BuilderBuilder buildMethod(String buildMethod){
+        public BuilderBuilder buildMethod(String buildMethod) {
             Builder.this.buildMethod = buildMethod;
             return this;
         }
 
-        public BuilderBuilder builderFactoryMethod(String builderFactoryMethod){
+        public BuilderBuilder builderFactoryMethod(String builderFactoryMethod) {
             Builder.this.builderFactoryMethod = builderFactoryMethod;
             return this;
         }
 
-        public BuilderBuilder builderName(String builderName){
+        public BuilderBuilder builderName(String builderName) {
             Builder.this.builderName = builderName;
             return this;
         }
 
-        public BuilderBuilder filter(String filter){
+        public BuilderBuilder filter(String filter) {
             Builder.this.filter = filter;
             return this;
         }
 
-        public BuilderBuilder generatedAnnotation(Class generatedAnnotation){
+        public BuilderBuilder generatedAnnotation(Class generatedAnnotation) {
             Builder.this.generatedAnnotation = generatedAnnotation;
             return this;
         }
@@ -133,6 +153,6 @@ public class Builder extends AbstractFilteredFieldsGenerator {
             return Builder.this;
         }
     }
-    //</editor-fold>
+//</editor-fold>
 }
 

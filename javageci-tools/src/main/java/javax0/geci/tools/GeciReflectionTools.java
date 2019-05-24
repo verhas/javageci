@@ -115,6 +115,24 @@ public class GeciReflectionTools {
         return s;
     }
 
+    /**
+     * Normalize a type assuming that the type will be used inside the
+     * class {@code klass}. First this method does all normalizations
+     * that are performed by {@link #normalizeTypeName(String)} and then
+     * it checks if the type is in the same package as the given class
+     *
+     * @param s     generic type name to be normalized
+     * @param klass the class where the type name will be used
+     * @return the normalized type name
+     */
+    public static String normalizeTypeName(String s, Class<?> klass) {
+        s = normalizeTypeName(s);
+        if (s.startsWith(klass.getPackageName() + ".")) {
+            s = s.substring(klass.getPackageName().length() + 1);
+        }
+        return s;
+    }
+
     private static String removeJavaLang(String s) {
         if (s.startsWith("java.lang.")) {
             return s.substring("java.lang.".length());
