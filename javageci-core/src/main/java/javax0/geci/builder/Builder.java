@@ -99,32 +99,32 @@ public class Builder extends AbstractFilteredFieldsGenerator {
     }
 
     public class BuilderBuilder {
-        public BuilderBuilder aggregatorMethod(String aggregatorMethod) {
+        public BuilderBuilder aggregatorMethod(String aggregatorMethod){
             Builder.this.aggregatorMethod = aggregatorMethod;
             return this;
         }
 
-        public BuilderBuilder buildMethod(String buildMethod) {
+        public BuilderBuilder buildMethod(String buildMethod){
             Builder.this.buildMethod = buildMethod;
             return this;
         }
 
-        public BuilderBuilder builderFactoryMethod(String builderFactoryMethod) {
+        public BuilderBuilder builderFactoryMethod(String builderFactoryMethod){
             Builder.this.builderFactoryMethod = builderFactoryMethod;
             return this;
         }
 
-        public BuilderBuilder builderName(String builderName) {
+        public BuilderBuilder builderName(String builderName){
             Builder.this.builderName = builderName;
             return this;
         }
 
-        public BuilderBuilder filter(String filter) {
+        public BuilderBuilder filter(String filter){
             Builder.this.filter = filter;
             return this;
         }
 
-        public BuilderBuilder generatedAnnotation(Class generatedAnnotation) {
+        public BuilderBuilder generatedAnnotation(Class generatedAnnotation){
             Builder.this.generatedAnnotation = generatedAnnotation;
             return this;
         }
