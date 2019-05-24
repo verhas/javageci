@@ -74,17 +74,17 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
     }
 
     public class Builder {
-        public Builder filter(String filter){
+        public Builder filter(String filter) {
             Delegator.this.filter = filter;
             return this;
         }
 
-        public Builder generatedAnnotation(Class generatedAnnotation){
+        public Builder generatedAnnotation(Class generatedAnnotation) {
             Delegator.this.generatedAnnotation = generatedAnnotation;
             return this;
         }
 
-        public Builder methods(String methods){
+        public Builder methods(String methods) {
             Delegator.this.methods = methods;
             return this;
         }

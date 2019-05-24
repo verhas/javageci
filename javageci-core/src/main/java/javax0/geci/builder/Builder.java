@@ -62,7 +62,6 @@ public class Builder extends AbstractFilteredFieldsGenerator {
                         method -> {
                             var type = method.getParameterTypes()[0];
                             final String typeName;
-                            final var typeParameters = field.getType().getTypeParameters();
                             Type genType;
                             Type[] parTypes;
                             Class parType;
@@ -70,14 +69,13 @@ public class Builder extends AbstractFilteredFieldsGenerator {
                                     (parTypes = ((ParameterizedType) genType).getActualTypeArguments()).length == 1
                                     && parTypes[0] instanceof Class
                                     && type.isAssignableFrom(parType = (Class) parTypes[0])) {
-                                typeName = GeciReflectionTools.normalizeTypeName(parType.getTypeName()
-                                        , klass);
+                                typeName = GeciReflectionTools.normalizeTypeName(parType.getTypeName(), klass);
                             } else {
                                 typeName = GeciReflectionTools.normalizeTypeName(type.getName(), klass);
                             }
                             writeGenerated(segment, generatedAnnotation);
-                            segment.write_r("public %s %s(%s x){", builder, aggMethod, typeName)
-                                    .write_r("if( %s.this.%s == null ){", klass.getSimpleName(), name)
+                            segment.write_r("public %s %s(%s x) {", builder, aggMethod, typeName)
+                                    .write_r("if( %s.this.%s == null ) {", klass.getSimpleName(), name)
                                     .write("throw new IllegalArgumentException(\"Collection field %s is null\");", name)
                                     .write_l("}")
                                     .write("%s.this.%s.%s(x);", klass.getSimpleName(), name, aggregatorMethod)
@@ -91,7 +89,7 @@ public class Builder extends AbstractFilteredFieldsGenerator {
 
     private void generateSetter(Class<?> klass, Segment segment, String bn, String name, String type) {
         writeGenerated(segment, generatedAnnotation);
-        segment.write_r("public %s %s(%s %s){", bn, name, type, name)
+        segment.write_r("public %s %s(%s %s) {", bn, name, type, name)
                 .write("%s.this.%s = %s;", klass.getSimpleName(), name, name)
                 .write("return this;")
                 .write_l("}")
@@ -119,32 +117,32 @@ public class Builder extends AbstractFilteredFieldsGenerator {
     }
 
     public class BuilderBuilder {
-        public BuilderBuilder aggregatorMethod(String aggregatorMethod){
+        public BuilderBuilder aggregatorMethod(String aggregatorMethod) {
             Builder.this.aggregatorMethod = aggregatorMethod;
             return this;
         }
 
-        public BuilderBuilder buildMethod(String buildMethod){
+        public BuilderBuilder buildMethod(String buildMethod) {
             Builder.this.buildMethod = buildMethod;
             return this;
         }
 
-        public BuilderBuilder builderFactoryMethod(String builderFactoryMethod){
+        public BuilderBuilder builderFactoryMethod(String builderFactoryMethod) {
             Builder.this.builderFactoryMethod = builderFactoryMethod;
             return this;
         }
 
-        public BuilderBuilder builderName(String builderName){
+        public BuilderBuilder builderName(String builderName) {
             Builder.this.builderName = builderName;
             return this;
         }
 
-        public BuilderBuilder filter(String filter){
+        public BuilderBuilder filter(String filter) {
             Builder.this.filter = filter;
             return this;
         }
 
-        public BuilderBuilder generatedAnnotation(Class generatedAnnotation){
+        public BuilderBuilder generatedAnnotation(Class generatedAnnotation) {
             Builder.this.generatedAnnotation = generatedAnnotation;
             return this;
         }

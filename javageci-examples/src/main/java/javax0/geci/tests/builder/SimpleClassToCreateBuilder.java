@@ -33,20 +33,20 @@ public class SimpleClassToCreateBuilder {
 
     public class Builder {
         @javax0.geci.annotations.Generated("builder")
-        public Builder d(Double d){
+        public Builder d(Double d) {
             SimpleClassToCreateBuilder.this.d = d;
             return this;
         }
 
         @javax0.geci.annotations.Generated("builder")
-        public Builder habraka(SimpleClassToCreateBuilder.Habraka habraka){
+        public Builder habraka(SimpleClassToCreateBuilder.Habraka habraka) {
             SimpleClassToCreateBuilder.this.habraka = habraka;
             return this;
         }
 
         @javax0.geci.annotations.Generated("builder")
-        public Builder addHabraka(Integer x){
-            if( SimpleClassToCreateBuilder.this.habraka == null ){
+        public Builder addHabraka(Integer x) {
+            if( SimpleClassToCreateBuilder.this.habraka == null ) {
                 throw new IllegalArgumentException("Collection field habraka is null");
             }
             SimpleClassToCreateBuilder.this.habraka.add(x);
@@ -54,8 +54,8 @@ public class SimpleClassToCreateBuilder {
         }
 
         @javax0.geci.annotations.Generated("builder")
-        public Builder addHabraka(String x){
-            if( SimpleClassToCreateBuilder.this.habraka == null ){
+        public Builder addHabraka(String x) {
+            if( SimpleClassToCreateBuilder.this.habraka == null ) {
                 throw new IllegalArgumentException("Collection field habraka is null");
             }
             SimpleClassToCreateBuilder.this.habraka.add(x);
@@ -63,14 +63,14 @@ public class SimpleClassToCreateBuilder {
         }
 
         @javax0.geci.annotations.Generated("builder")
-        public Builder selfWhyNot(SimpleClassToCreateBuilder selfWhyNot){
+        public Builder selfWhyNot(SimpleClassToCreateBuilder selfWhyNot) {
             SimpleClassToCreateBuilder.this.selfWhyNot = selfWhyNot;
             return this;
         }
 
         @javax0.geci.annotations.Generated("builder")
-        public Builder addWillGetAggregatorOnly(String x){
-            if( SimpleClassToCreateBuilder.this.willGetAggregatorOnly == null ){
+        public Builder addWillGetAggregatorOnly(String x) {
+            if( SimpleClassToCreateBuilder.this.willGetAggregatorOnly == null ) {
                 throw new IllegalArgumentException("Collection field willGetAggregatorOnly is null");
             }
             SimpleClassToCreateBuilder.this.willGetAggregatorOnly.add(x);
@@ -78,14 +78,14 @@ public class SimpleClassToCreateBuilder {
         }
 
         @javax0.geci.annotations.Generated("builder")
-        public Builder willGetBoth(java.util.Collection willGetBoth){
+        public Builder willGetBoth(java.util.Collection willGetBoth) {
             SimpleClassToCreateBuilder.this.willGetBoth = willGetBoth;
             return this;
         }
 
         @javax0.geci.annotations.Generated("builder")
-        public Builder addWillGetBoth(Integer x){
-            if( SimpleClassToCreateBuilder.this.willGetBoth == null ){
+        public Builder addWillGetBoth(Integer x) {
+            if( SimpleClassToCreateBuilder.this.willGetBoth == null ) {
                 throw new IllegalArgumentException("Collection field willGetBoth is null");
             }
             SimpleClassToCreateBuilder.this.willGetBoth.add(x);
@@ -93,7 +93,7 @@ public class SimpleClassToCreateBuilder {
         }
 
         @javax0.geci.annotations.Generated("builder")
-        public Builder z(int z){
+        public Builder z(int z) {
             SimpleClassToCreateBuilder.this.z = z;
             return this;
         }
