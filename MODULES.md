@@ -18,7 +18,9 @@ these jar files are
     <artifactId>javageci-MODULE</artifactId>
     <version>version</version>
     
-There are 7 modules:
+The JPMS module names are `geci.MODULE`
+    
+There are 7 modules (each can stand in place of `MODULE` above):
 
 1. `api` the API interfaces.
 2. `engine` the framework implementation.
@@ -133,3 +135,19 @@ in production; and also the tests for the generators in core.
 This module contains an experimental code generator that lets you
 program your Java code with a preprocessor. The usability of the tool is
 questionable, thus this is still an experiment.
+
+## Recommendations
+
+You can have simple generators in your project in the `src/test`
+directory. More than simple generators deserve their own project. 
+
+Generators implemented in a separate project will contain their code in
+the `src/main` source directory and evidently the dependencies should
+also have `compile` scope instead of `test`. The project using the
+generator will have a `test` scope dependency on the generator project.
+
+When you develop one or more generator in a separate project and you use
+JPMS then it is recommended to `require transitive geci.engine`. This
+will release the programs that use the generator from the burden to
+express their dependency on the `engine` module, which they do have if
+ever they use the generator.
