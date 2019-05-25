@@ -1,6 +1,5 @@
 package javax0.geci.delegator;
 
-import javax0.geci.annotations.Geci;
 import javax0.geci.annotations.Generated;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
@@ -17,15 +16,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Geci("builder")
 public class Delegator extends AbstractFilteredFieldsGenerator {
-    private static class Configuration {
+    private static class Config {
         private Class<? extends Annotation> generatedAnnotation = Generated.class;
         private String filter = "!static";
         private String methods = "public & !static";
     }
 
-    private final Configuration configuration = new Configuration();
+    private final Config config = new Config();
 
     private Delegator() {
     }
@@ -36,31 +34,31 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
     }
 
     @Override
-    public void process(Source source, Class<?> klass, CompoundParams params, Field field, Segment segment) throws Exception {
+    public void process(Source source, Class<?> klass, CompoundParams params, Field field, Segment segment) {
         final var name = field.getName();
-        final var methodFilter = params.get("methods", this.configuration.methods);
+        final var local = localConfig(params);
         final List<Method> methods = Arrays.stream(GeciReflectionTools.getDeclaredMethodsSorted(field.getType()))
-            .filter(Selector.compile(methodFilter)::match)
+            .filter(Selector.compile(local.methods)::match)
             .collect(Collectors.toList());
         for (final var method : methods) {
             if (!manuallyCoded(klass, method)) {
-                writeGenerated(segment, configuration.generatedAnnotation);
-                segment.write_r(MethodTool.with(method).signature() + " {");
-                if ("void".equals(method.getReturnType().getName())) {
-                    segment.write(name + "." + MethodTool.with(method).call() + ";");
-                } else {
-                    segment.write("return " + name + "." + MethodTool.with(method).call() + ";");
-                }
-                segment.write_l("}");
-                segment.newline();
+                writeGenerated(segment, config.generatedAnnotation);
+                segment.write_r(MethodTool.with(method).signature() + " {")
+                    .write((isVoid(method) ? "" : "return ") + name + "." + MethodTool.with(method).call() + ";")
+                    .write_l("}")
+                    .newline();
             }
         }
+    }
+
+    private static boolean isVoid(Method method) {
+        return "void".equals(method.getReturnType().getName());
     }
 
     private boolean manuallyCoded(Class<?> klass, Method method) {
         try {
             var localMethod = klass.getDeclaredMethod(method.getName(), method.getParameterTypes());
-            return localMethod.getDeclaredAnnotation(configuration.generatedAnnotation) == null;
+            return localMethod.getDeclaredAnnotation(config.generatedAnnotation) == null;
         } catch (NoSuchMethodException e) {
             return false;
         }
@@ -68,33 +66,39 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
 
     @Override
     protected String defaultFilterExpression() {
-        return configuration.filter;
+        return config.filter;
     }
 
-    //<editor-fold id="builder">
+    //<editor-fold id="configBuilder">
     public static Delegator.Builder builder() {
         return new Delegator().new Builder();
     }
 
     public class Builder {
         public Builder filter(String filter) {
-            Delegator.this.configuration.filter = filter;
+            config.filter = filter;
             return this;
         }
 
         public Builder generatedAnnotation(Class generatedAnnotation) {
-            Delegator.this.configuration.generatedAnnotation = generatedAnnotation;
+            config.generatedAnnotation = generatedAnnotation;
             return this;
         }
 
         public Builder methods(String methods) {
-            Delegator.this.configuration.methods = methods;
+            config.methods = methods;
             return this;
         }
 
         public Delegator build() {
             return Delegator.this;
         }
+    }
+    private Config localConfig(CompoundParams params){
+        final var local = new Config();
+        local.filter = params.get("filter",config.filter);
+        local.methods = params.get("methods",config.methods);
+        return local;
     }
     //</editor-fold>
 }

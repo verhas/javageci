@@ -15,12 +15,17 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 
 public class Builder extends AbstractFilteredFieldsGenerator {
-    private Class<? extends Annotation> generatedAnnotation = Generated.class;
-    private String filter = "private & !static & !final";
-    private String builderName = "Builder";
-    private String builderFactoryMethod = "builder";
-    private String buildMethod = "build";
-    private String aggregatorMethod = "add";
+
+    private static class Config {
+        private Class<? extends Annotation> generatedAnnotation = Generated.class;
+        private String filter = "private & !static & !final";
+        private String builderName = "Builder";
+        private String builderFactoryMethod = "builder";
+        private String buildMethod = "build";
+        private String aggregatorMethod = "add";
+    }
+
+    private final Config config = new Config();
 
     @Override
     public String mnemonic() {
@@ -29,34 +34,33 @@ public class Builder extends AbstractFilteredFieldsGenerator {
 
     @Override
     public void preprocess(Source source, Class<?> klass, CompoundParams global, Segment segment) {
-        final var bn = global.get("builderName", builderName);
-        final var bfm = global.get("builderFactoryMethod", builderFactoryMethod);
-        writeGenerated(segment, generatedAnnotation);
-        segment.write_r("public static %s.%s %s() {", klass.getSimpleName(), bn, bfm)
-            .write("return new %s().new %s();", klass.getSimpleName(), bn)
+        final var local = localConfig(global);
+        writeGenerated(segment, config.generatedAnnotation);
+        segment.write_r("public static %s.%s %s() {", klass.getSimpleName(), local.builderName, local.builderFactoryMethod)
+            .write("return new %s().new %s();", klass.getSimpleName(), local.builderName)
             .write_l("}")
             .newline()
-            .write_r("public class %s {", bn);
+            .write_r("public class %s {", local.builderName);
     }
 
     @Override
-    public void process(Source source, Class<?> klass, CompoundParams params, Field field, Segment segment) throws Exception {
-        final var bn = params.get("builderName", builderName);
+    public void process(Source source, Class<?> klass, CompoundParams params, Field field, Segment segment) {
+        final var local = localConfig(params);
         final var name = field.getName();
         final var type = GeciReflectionTools.normalizeTypeName(field.getType().getName(), klass);
         if (!Modifier.isFinal(field.getModifiers())) {
-            generateSetter(klass, segment, bn, name, type);
+            generateSetter(klass, segment, local.builderName, name, type);
         }
-        if (aggregatorMethod != null && aggregatorMethod.length() > 0 &&
-            Arrays.stream(field.getType().getDeclaredMethods()).anyMatch(m -> m.getName().equals(aggregatorMethod))) {
-            generateAggregators(klass, segment, bn, name, field);
+        if (config.aggregatorMethod != null && config.aggregatorMethod.length() > 0 &&
+            Arrays.stream(field.getType().getDeclaredMethods()).anyMatch(m -> m.getName().equals(config.aggregatorMethod))) {
+            generateAggregators(klass, segment, local.builderName, name, field);
         }
     }
 
     private void generateAggregators(Class<?> klass, Segment segment, String builder, String name, Field field) {
-        final var aggMethod = aggregatorMethod + name.substring(0, 1).toUpperCase() + name.substring(1);
+        final var aggMethod = config.aggregatorMethod + name.substring(0, 1).toUpperCase() + name.substring(1);
         Arrays.stream(GeciReflectionTools.getDeclaredMethodsSorted(field.getType()))
-            .filter(m -> m.getName().equals(aggregatorMethod))
+            .filter(m -> m.getName().equals(config.aggregatorMethod))
             .filter(m -> m.getParameterTypes().length == 1)
             .forEach(
                 method -> {
@@ -73,12 +77,12 @@ public class Builder extends AbstractFilteredFieldsGenerator {
                     } else {
                         typeName = GeciReflectionTools.normalizeTypeName(type.getName(), klass);
                     }
-                    writeGenerated(segment, generatedAnnotation);
+                    writeGenerated(segment, config.generatedAnnotation);
                     segment.write_r("public %s %s(%s x) {", builder, aggMethod, typeName)
                         .write_r("if( %s.this.%s == null ) {", klass.getSimpleName(), name)
                         .write("throw new IllegalArgumentException(\"Collection field %s is null\");", name)
                         .write_l("}")
-                        .write("%s.this.%s.%s(x);", klass.getSimpleName(), name, aggregatorMethod)
+                        .write("%s.this.%s.%s(x);", klass.getSimpleName(), name, config.aggregatorMethod)
                         .write("return this;")
                         .write_l("}")
                         .newline();
@@ -88,7 +92,7 @@ public class Builder extends AbstractFilteredFieldsGenerator {
 
 
     private void generateSetter(Class<?> klass, Segment segment, String bn, String name, String type) {
-        writeGenerated(segment, generatedAnnotation);
+        writeGenerated(segment, config.generatedAnnotation);
         segment.write_r("public %s %s(%s %s) {", bn, name, type, name)
             .write("%s.this.%s = %s;", klass.getSimpleName(), name, name)
             .write("return this;")
@@ -98,9 +102,9 @@ public class Builder extends AbstractFilteredFieldsGenerator {
 
     @Override
     public void postprocess(Source source, Class<?> klass, CompoundParams global, Segment segment) {
-        final var bm = global.get("buildMethod", buildMethod);
-        writeGenerated(segment, generatedAnnotation);
-        segment.write_r("public %s %s() {", klass.getSimpleName(), bm)
+        final var local = localConfig(global);
+        writeGenerated(segment, config.generatedAnnotation);
+        segment.write_r("public %s %s() {", klass.getSimpleName(), local.buildMethod)
             .write("return %s.this;", klass.getSimpleName())
             .write_l("}");
         segment.write_l("}"); // end of builder class
@@ -108,42 +112,42 @@ public class Builder extends AbstractFilteredFieldsGenerator {
 
     @Override
     protected String defaultFilterExpression() {
-        return filter;
+        return config.filter;
     }
 
-    //<editor-fold id="builder" builderName="BuilderBuilder">
-    public static Builder.BuilderBuilder builder() {
-        return new Builder().new BuilderBuilder();
+    //<editor-fold id="configBuilder" builderName="ConfBuilder">
+    public static Builder.ConfBuilder builder() {
+        return new Builder().new ConfBuilder();
     }
 
-    public class BuilderBuilder {
-        public BuilderBuilder aggregatorMethod(String aggregatorMethod) {
-            Builder.this.aggregatorMethod = aggregatorMethod;
+    public class ConfBuilder {
+        public ConfBuilder aggregatorMethod(String aggregatorMethod) {
+            config.aggregatorMethod = aggregatorMethod;
             return this;
         }
 
-        public BuilderBuilder buildMethod(String buildMethod) {
-            Builder.this.buildMethod = buildMethod;
+        public ConfBuilder buildMethod(String buildMethod) {
+            config.buildMethod = buildMethod;
             return this;
         }
 
-        public BuilderBuilder builderFactoryMethod(String builderFactoryMethod) {
-            Builder.this.builderFactoryMethod = builderFactoryMethod;
+        public ConfBuilder builderFactoryMethod(String builderFactoryMethod) {
+            config.builderFactoryMethod = builderFactoryMethod;
             return this;
         }
 
-        public BuilderBuilder builderName(String builderName) {
-            Builder.this.builderName = builderName;
+        public ConfBuilder builderName(String builderName) {
+            config.builderName = builderName;
             return this;
         }
 
-        public BuilderBuilder filter(String filter) {
-            Builder.this.filter = filter;
+        public ConfBuilder filter(String filter) {
+            config.filter = filter;
             return this;
         }
 
-        public BuilderBuilder generatedAnnotation(Class generatedAnnotation) {
-            Builder.this.generatedAnnotation = generatedAnnotation;
+        public ConfBuilder generatedAnnotation(Class generatedAnnotation) {
+            config.generatedAnnotation = generatedAnnotation;
             return this;
         }
 
@@ -151,7 +155,16 @@ public class Builder extends AbstractFilteredFieldsGenerator {
             return Builder.this;
         }
     }
-//</editor-fold>
+    private Config localConfig(CompoundParams params){
+        final var local = new Config();
+        local.aggregatorMethod = params.get("aggregatorMethod",config.aggregatorMethod);
+        local.buildMethod = params.get("buildMethod",config.buildMethod);
+        local.builderFactoryMethod = params.get("builderFactoryMethod",config.builderFactoryMethod);
+        local.builderName = params.get("builderName",config.builderName);
+        local.filter = params.get("filter",config.filter);
+        return local;
+    }
+    //</editor-fold>
 }
 
 

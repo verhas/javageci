@@ -1,5 +1,6 @@
 package javax0.geci.equals;
 
+import javax0.geci.annotations.Generated;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractFilteredFieldsGenerator;
@@ -35,20 +36,16 @@ import java.util.stream.Collectors;
  */
 public class Equals extends AbstractFilteredFieldsGenerator {
 
-    private final Class<? extends Annotation> generatedAnnotation;
+    private static class Config {
+        private Class<? extends Annotation> generatedAnnotation = Generated.class;
+    }
+
+    private final Config config = new Config();
+    private boolean generateEquals;
     private final List<Field> fields = new ArrayList<>();
     private Segment equalsSegment;
     private Field lastField;
     private CompoundParams lastParams;
-    private boolean generateEquals;
-
-    public Equals() {
-        generatedAnnotation = javax0.geci.annotations.Generated.class;
-    }
-
-    public Equals(Class<? extends Annotation> generatedAnnotation) {
-        this.generatedAnnotation = generatedAnnotation;
-    }
 
     @Override
     public String mnemonic() {
@@ -75,8 +72,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
             generateEqualsForField(equalsSegment, lastParams, lastField, this::retLast);
         }
         generateEqualsTail(equalsSegment);
-        final var gid = global.get("id");
-        var segment = source.open(gid);
+        var segment = source.open(global.id());
         if (generateEquals) {
             segment.write(equalsSegment);
         }
@@ -86,22 +82,21 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         var equalsMethod = getMethodOrNull(klass, "equals", Object.class);
         var subclassingAllowed = global.is("subclass");
         generateEquals = equalsMethod == null || GeciAnnotationTools.isGenerated(equalsMethod);
-        segment.write("@" + generatedAnnotation.getCanonicalName() + "(\"" + mnemonic() + "\")");
-        segment.write("@Override");
-        segment.write_r("public %sboolean equals(Object o) {", subclassingAllowed ? "final " : "");
-        segment.write("if (this == o) return true;");
+        writeGenerated(segment, config.generatedAnnotation);
+        segment.write("@Override")
+            .write_r("public %sboolean equals(Object o) {", subclassingAllowed ? "final " : "")
+            .write("if (this == o) return true;");
         if (subclassingAllowed) {
             segment.write("if (!(o instanceof %s)) return false;", klass.getSimpleName());
         } else {
             segment.write("if (o == null || getClass() != o.getClass()) return false;");
         }
-        segment.newline();
-        segment.write("%s that = (%s) o;", klass.getSimpleName(), klass.getSimpleName());
+        segment.newline()
+            .write("%s that = (%s) o;", klass.getSimpleName(), klass.getSimpleName());
     }
 
     private void generateEqualsTail(Segment segment) {
-        segment.write_l("}");
-        segment.newline();
+        segment.write_l("}").newline();
     }
 
     private void generateEqualsForField(Segment segment, CompoundParams params, Field field) {
@@ -266,4 +261,25 @@ public class Equals extends AbstractFilteredFieldsGenerator {
     protected String defaultFilterExpression() {
         return "!static";
     }
+
+    //<editor-fold id="configBuilder">
+    public static Equals.Builder builder() {
+        return new Equals().new Builder();
+    }
+
+    public class Builder {
+        public Builder generatedAnnotation(Class generatedAnnotation) {
+            config.generatedAnnotation = generatedAnnotation;
+            return this;
+        }
+
+        public Equals build() {
+            return Equals.this;
+        }
+    }
+    private Config localConfig(CompoundParams params){
+        final var local = new Config();
+        return local;
+    }
+    //</editor-fold>
 }
