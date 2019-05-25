@@ -1,2 +1,2 @@
 
-![model structure](images/module-structure.svg)
+![model structure](images/module-dependency.svg)

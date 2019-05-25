@@ -5,6 +5,7 @@ module geci.core {
     requires jamal.engine;
     requires jamal.api;
 
+    exports javax0.geci.factory;
     exports javax0.geci.builder;
     exports javax0.geci.delegator;
     exports javax0.geci.accessor;
