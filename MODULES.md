@@ -4,7 +4,7 @@ This document describes the modules and their dependencies in
 Java::Geci. The understanding of this structure helps to decide which
 modules are needed when you use the library.
 
-Module Structure Diagram 
+Module Structure Diagram with dependencies
 
 ![model structure](images/module-dependency.svg)
 
