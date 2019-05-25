@@ -22,7 +22,8 @@ import java.util.List;
  */
 @Geci("copyClass copyTo='AbstractFilteredMethodsGenerator.java'")
 public abstract class AbstractFilteredFieldsGenerator extends AbstractDeclaredFieldsGenerator {
-private final List<Field> fields = new ArrayList<>();
+    private final List<Field> fields = new ArrayList<>();
+
     @Override
     protected final void processFieldHook(Source source, Class<?> klass, CompoundParams params, Field field)
         throws Exception {
@@ -49,7 +50,7 @@ private final List<Field> fields = new ArrayList<>();
      * @throws Exception any exception that the is thrown by the generator
      */
     @Override
-    protected void preprocessHook(Source source, Class<?> klass, CompoundParams global) throws Exception {
+    protected final void preprocessHook(Source source, Class<?> klass, CompoundParams global) throws Exception {
         fields.clear();
         preprocess(source, klass, global);
     }
@@ -57,7 +58,7 @@ private final List<Field> fields = new ArrayList<>();
     @Override
     protected final void processFieldHook(Source source, Class<?> klass, CompoundParams global, Field[] fields)
         throws Exception {
-        processSelectedFieldHook(source, klass, global,this.fields.toArray(Field[]::new));
+        processSelectedFieldHook(source, klass, global, this.fields.toArray(Field[]::new));
     }
 
     /**

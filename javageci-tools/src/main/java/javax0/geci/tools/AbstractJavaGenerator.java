@@ -74,7 +74,7 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
         }
     }
 
-    public void processEx(Source source) throws Exception {
+    public final void processEx(Source source) throws Exception {
         final var klass = source.getKlass();
         if (klass != null) {
             var annotation = Optional.ofNullable(GeciReflectionTools.getParameters(klass, mnemonic())).orElseGet(() ->

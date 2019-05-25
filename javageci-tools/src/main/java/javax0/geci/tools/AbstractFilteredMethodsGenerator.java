@@ -23,7 +23,8 @@ import java.util.List;
  */
 
 public abstract class AbstractFilteredMethodsGenerator extends AbstractDeclaredMethodsGenerator {
-private final List<Method> methods = new ArrayList<>();
+    private final List<Method> methods = new ArrayList<>();
+
     @Override
     protected final void processMethodHook(Source source, Class<?> klass, CompoundParams params, Method method)
         throws Exception {
@@ -58,7 +59,7 @@ private final List<Method> methods = new ArrayList<>();
     @Override
     protected final void processMethodHook(Source source, Class<?> klass, CompoundParams global, Method[] methods)
         throws Exception {
-        processSelectedMethodHook(source, klass, global,this.methods.toArray(Method[]::new));
+        processSelectedMethodHook(source, klass, global, this.methods.toArray(Method[]::new));
     }
 
     /**
