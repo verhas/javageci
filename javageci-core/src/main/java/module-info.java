@@ -1,5 +1,4 @@
 module geci.core {
-    requires geci.api;
     requires geci.tools;
     requires geci.annotation;
     requires jamal.engine;

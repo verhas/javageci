@@ -1,58 +1,68 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:dc="http://purl.org/dc/elements/1.1/" version="1.1" xmlns:xl="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="-9 -13 800 332" width="800" height="332">
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" version="1.1" xmlns:xl="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="230 108 630 282" width="630" height="282">
   <defs>
     <font-face font-family="Helvetica Neue" font-size="16" panose-1="2 0 5 3 0 0 0 2 0 4" units-per-em="1000" underline-position="-100" underline-thickness="50" slope="0" x-height="517" cap-height="714" ascent="951.9958" descent="-212.99744" font-weight="400">
       <font-face-src>
         <font-face-name name="HelveticaNeue"/>
       </font-face-src>
     </font-face>
-    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="Arrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="black">
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="Arrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="#666">
       <g>
         <path d="M 8 0 L 0 -3 L 0 3 Z" fill="none" stroke="currentColor" stroke-width="1"/>
       </g>
     </marker>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="Arrow_Marker_2" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="black">
+      <g>
+        <path d="M 8 0 L 0 -3 L 0 3 Z" fill="none" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <font-face font-family="Helvetica Neue" font-size="12" panose-1="2 0 5 3 0 0 0 2 0 4" units-per-em="1000" underline-position="-100" underline-thickness="50" slope="0" x-height="517" cap-height="714" ascent="951.9958" descent="-212.99744" font-weight="400">
+      <font-face-src>
+        <font-face-name name="HelveticaNeue"/>
+      </font-face-src>
+    </font-face>
   </defs>
   <metadata> Produced by OmniGraffle 7.10.2 
-    <dc:date>2019-05-25 00:51:44 +0000</dc:date>
+    <dc:date>2019-05-25 02:03:41 +0000</dc:date>
   </metadata>
   <g id="modules" fill-opacity="1" stroke="none" stroke-opacity="1" stroke-dasharray="none" fill="none">
     <title>modules</title>
     <g id="modules: Layer 1">
       <title>Layer 1</title>
       <g id="Graphic_2">
-        <path d="M 442 173 L 580 173 C 583.866 173 587 176.134 587 180 L 587 205 C 587 208.866 583.866 212 580 212 L 442 212 C 438.134 212 435 208.866 435 205 L 435 180 C 435 176.134 438.134 173 442 173 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-        <text transform="translate(440 182.5)" fill="black">
+        <path d="M 427 172 L 565 172 C 568.866 172 572 175.134 572 179 L 572 204 C 572 207.866 568.866 211 565 211 L 427 211 C 423.134 211 420 207.866 420 204 L 420 179 C 420 175.134 423.134 172 427 172 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+        <text transform="translate(425 181.5)" fill="black">
           <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="29.064" y="15">annotations</tspan>
         </text>
       </g>
       <g id="Graphic_5">
-        <path d="M 208 173 L 346 173 C 349.866 173 353 176.134 353 180 L 353 205 C 353 208.866 349.866 212 346 212 L 208 212 C 204.134 212 201 208.866 201 205 L 201 180 C 201 176.134 204.134 173 208 173 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
-        <text transform="translate(206 182.5)" fill="black">
+        <path d="M 714 283 L 852 283 C 855.866 283 859 286.134 859 290 L 859 315 C 859 318.866 855.866 322 852 322 L 714 322 C 710.134 322 707 318.866 707 315 L 707 290 C 707 286.134 710.134 283 714 283 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <text transform="translate(712 292.5)" fill="black">
           <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="60.184" y="15">api</tspan>
         </text>
       </g>
       <g id="Graphic_6">
-        <path d="M 645 93 L 783 93 C 786.866 93 790 96.13401 790 100 L 790 125 C 790 128.866 786.866 132 783 132 L 645 132 C 641.134 132 638 128.866 638 125 L 638 100 C 638 96.13401 641.134 93 645 93 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
-        <text transform="translate(643 102.5)" fill="black">
+        <path d="M 597 109 L 735 109 C 738.866 109 742 112.13401 742 116 L 742 141 C 742 144.866 738.866 148 735 148 L 597 148 C 593.134 148 590 144.866 590 141 L 590 116 C 590 112.13401 593.134 109 597 109 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <text transform="translate(595 118.5)" fill="black">
           <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="55.296" y="15">core</tspan>
         </text>
       </g>
       <g id="Graphic_7">
-        <path d="M 105 279 L 243 279 C 246.866 279 250 282.134 250 286 L 250 311 C 250 314.866 246.866 318 243 318 L 105 318 C 101.13401 318 98 314.866 98 311 L 98 286 C 98 282.134 101.13401 279 105 279 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
-        <text transform="translate(103 288.5)" fill="black">
+        <path d="M 238 279 L 376 279 C 379.866 279 383 282.134 383 286 L 383 311 C 383 314.866 379.866 318 376 318 L 238 318 C 234.134 318 231 314.866 231 311 L 231 286 C 231 282.134 234.134 279 238 279 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <text transform="translate(236 288.5)" fill="black">
           <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="47.144" y="15">engine</tspan>
         </text>
       </g>
       <g id="Graphic_8">
-        <path d="M 134 -12 L 272 -12 C 275.866 -12 279 -8.865993 279 -5 L 279 20 C 279 23.865993 275.866 27 272 27 L 134 27 C 130.134 27 127 23.865993 127 20 L 127 -5 C 127 -8.865993 130.134 -12 134 -12 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
-        <text transform="translate(132 -2.5)" fill="black">
-          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="36.624" y="15">examples</tspan>
+        <path d="M 238 109 L 376 109 C 379.866 109 383 112.13401 383 116 L 383 141 C 383 144.866 379.866 148 376 148 L 238 148 C 234.134 148 231 144.866 231 141 L 231 116 C 231 112.13401 234.134 109 238 109 Z" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <text transform="translate(236 118.5)" fill="#666">
+          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="#666" x="36.624" y="15">examples</tspan>
         </text>
       </g>
       <g id="Graphic_9">
-        <path d="M -1 186 L 137 186 C 140.866 186 144 189.134 144 193 L 144 218 C 144 221.866 140.866 225 137 225 L -1 225 C -4.865993 225 -8 221.866 -8 218 L -8 193 C -8 189.134 -4.865993 186 -1 186 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
-        <text transform="translate(-3 195.5)" fill="black">
+        <path d="M 238 350 L 376 350 C 379.866 350 383 353.134 383 357 L 383 382 C 383 385.866 379.866 389 376 389 L 238 389 C 234.134 389 231 385.866 231 382 L 231 357 C 231 353.134 234.134 350 238 350 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <text transform="translate(236 359.5)" fill="black">
           <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="52.032" y="15">jamal</tspan>
         </text>
       </g>
@@ -63,49 +73,43 @@
         </text>
       </g>
       <g id="Line_11">
-        <line x1="201.0567" y1="27" x2="176.92503" y2="269.1488" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="307" y1="148" x2="307" y2="269.1" marker-end="url(#Arrow_Marker)" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_12">
-        <line x1="222.63402" y1="27" x2="469.3417" y2="272.02366" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
-      </g>
-      <g id="Line_13">
-        <line x1="210.8" y1="27" x2="265.52323" y2="163.80808" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="328.6794" y1="148" x2="466.96004" y2="272.3794" marker-end="url(#Arrow_Marker)" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_14">
-        <line x1="235.46486" y1="27" x2="467.5511" y2="166.40244" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="348.3803" y1="148" x2="409.54454" y2="176.82298" marker-end="url(#Arrow_Marker)" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_15">
-        <line x1="278.33585" y1="22.979968" x2="628.96676" y2="95.02742" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="383" y1="128.5" x2="580.1" y2="128.5" marker-end="url(#Arrow_Marker)" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_16">
-        <line x1="90.22581" y1="225" x2="144.33239" y2="272.47087" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="307" y1="350" x2="307" y2="327.9" marker-end="url(#Arrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_17">
-        <line x1="142.89639" y1="221.77421" x2="411.42936" y2="280.12367" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
-      </g>
-      <g id="Line_18">
-        <line x1="144" y1="200.77273" x2="191.1191" y2="197.84187" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <path d="M 383 369.5 L 393.98527 369.5 C 393.9951 369.5 394.0049 369.50002 394.01473 369.50007 L 469.07705 369.8686 C 469.0869 369.86865 469.0967 369.86868 469.1065 369.86868 L 490 369.86868 C 493.3137 369.86868 496 367.1824 496 363.86868 L 496 327.9" marker-end="url(#Arrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_19">
-        <line x1="498.75943" y1="279" x2="506.6412" y2="223.30234" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="496" y1="279" x2="496" y2="222.4" marker-end="url(#Arrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_20">
-        <line x1="455.71226" y1="279" x2="326.1988" y2="216.31312" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
-      </g>
-      <g id="Line_21">
-        <line x1="192.94811" y1="279" x2="251.15272" y2="219.1001" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="572" y1="299.55923" x2="697.101" y2="301.3028" marker-end="url(#Arrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_22">
-        <line x1="250" y1="298.5" x2="410.1" y2="298.5" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
-      </g>
-      <g id="Line_23">
-        <line x1="638.1376" y1="126.38786" x2="362.6006" y2="176.82941" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="383" y1="298.5" x2="410.1" y2="298.5" marker-end="url(#Arrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_24">
-        <line x1="691.1452" y1="132" x2="526.3861" y2="272.57425" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="646.5" y1="148" x2="522.50036" y2="271.99964" marker-end="url(#Arrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_25">
-        <line x1="664.51875" y1="132" x2="573.4981" y2="167.87022" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="628.7188" y1="148" x2="582.0371" y2="172.4169" marker-end="url(#Arrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_26">
+        <rect x="602.1425" y="287.8866" width="58.444" height="25" fill="white"/>
+        <text transform="translate(607.1425 292.8866)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="12" font-weight="400" fill="black" x="0" y="11">transitive</tspan>
+        </text>
       </g>
     </g>
   </g>
