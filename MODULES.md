@@ -34,7 +34,7 @@ There are 7 modules:
     
 ## Modules
 
-###`api`
+### `api`
 
 This module contains the interfaces that define the API of the
 framework. Programs that implement code generators depend on this
@@ -48,7 +48,7 @@ generator classes instead of implementing the interface from zero.
 The module `engine` implements the interfaces of this module except the
 `Generator`.
  
-###`engine`
+### `engine`
 
 This module contans the framework that does all the support work for the
 generators like scanning the file system for source code; starting up
@@ -63,7 +63,7 @@ be `test` scope.
 Note that the programs using generators do not need to depend on the
 `api` module.
 
-###`annotations`
+### `annotations`
 
 This module contains the `@Geci` and the `@Generated` annotations.
 Programs that use code generators may depend on this module. The classes
@@ -97,7 +97,7 @@ the compiled class byte code does not contain this annotation and thus
 cannot be reflectively queried. This there is the need for this
 annotation.
 
-###`core`
+### `core`
 
 This module contains the code generator classes that are developed as
 part of the Java::Geci project. These include
@@ -113,12 +113,12 @@ part of the Java::Geci project. These include
 Programs that use one of these generators should have a dependency on
 this module.
 
-###`tools`
+### `tools`
 
 This module contains support tools that many code generators use. This
 module contains also the abstract generator classes that actual
 generator implementation may extend instead of implementing the
 `Generator` interface directly.
 
-###`examples`
-###`jamal`
+### `examples`
+### `jamal`
