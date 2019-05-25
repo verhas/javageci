@@ -111,7 +111,9 @@ part of the Java::Geci project. These include
 * mapper
 
 Programs that use one of these generators should have a dependency on
-this module.
+this module. Since this module has a transitive dependency on the module
+`engine` there is no need for explicitly require dependency on the
+`engine` module for programs that use the code generators.
 
 ### `tools`
 
@@ -121,4 +123,13 @@ generator implementation may extend instead of implementing the
 `Generator` interface directly.
 
 ### `examples`
+
+Examples contain sample use of code generators; some code generators,
+like the "Hello, World" code generator, which are not meant to be used
+in production; and also the tests for the generators in core.
+
 ### `jamal`
+
+This module contains an experimental code generator that lets you
+program your Java code with a preprocessor. The usability of the tool is
+questionable, thus this is still an experiment.

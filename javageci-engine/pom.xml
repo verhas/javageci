@@ -49,12 +49,6 @@
     <artifactId>javageci-tools</artifactId>
     
 </dependency>
-            
-<dependency>
-    <groupId>com.javax0.geci</groupId>
-    <artifactId>javageci-core</artifactId>
-    
-</dependency>
         
             
 <dependency>

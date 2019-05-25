@@ -1,5 +1,4 @@
 module geci.examples {
-    requires geci.engine;
     requires geci.tools;
     requires geci.annotation;
     requires geci.core;

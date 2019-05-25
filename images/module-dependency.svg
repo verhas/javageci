@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:dc="http://purl.org/dc/elements/1.1/" version="1.1" xmlns:xl="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="230 108 626 347" width="626" height="347">
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" version="1.1" xmlns:xl="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="196 62 660 393" width="660" height="393">
   <defs>
     <font-face font-family="Helvetica Neue" font-size="16" panose-1="2 0 5 3 0 0 0 2 0 4" units-per-em="1000" underline-position="-100" underline-thickness="50" slope="0" x-height="517" cap-height="714" ascent="951.9958" descent="-212.99744" font-weight="400">
       <font-face-src>
         <font-face-name name="HelveticaNeue"/>
       </font-face-src>
     </font-face>
-    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="Arrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="#666">
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="Arrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="black">
       <g>
         <path d="M 8 0 L 0 -3 L 0 3 Z" fill="none" stroke="currentColor" stroke-width="1"/>
       </g>
     </marker>
-    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="Arrow_Marker_2" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="black">
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="Arrow_Marker_2" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="#666">
       <g>
         <path d="M 8 0 L 0 -3 L 0 3 Z" fill="none" stroke="currentColor" stroke-width="1"/>
       </g>
@@ -24,7 +24,7 @@
     </font-face>
   </defs>
   <metadata> Produced by OmniGraffle 7.10.2 
-    <dc:date>2019-05-25 02:10:01 +0000</dc:date>
+    <dc:date>2019-05-25 02:20:18 +0000</dc:date>
   </metadata>
   <g id="modules" fill-opacity="1" stroke="none" stroke-opacity="1" stroke-dasharray="none" fill="none">
     <title>modules</title>
@@ -73,41 +73,47 @@
         </text>
       </g>
       <g id="Line_11">
-        <line x1="307" y1="148" x2="307" y2="269.1" marker-end="url(#Arrow_Marker)" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <path d="M 703.9825 115.42168 C 581.1781 90.75281 341.1573 49.859405 243.63636 84.36364 C 143.09167 119.93771 229.5704 223.07948 278.66894 272.0678" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_12">
-        <line x1="333.60116" y1="148" x2="508.41436" y2="276.14697" marker-end="url(#Arrow_Marker)" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="333.60116" y1="148" x2="508.41436" y2="276.14697" marker-end="url(#Arrow_Marker_2)" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_14">
-        <line x1="362.46667" y1="148" x2="456.16036" y2="180.9392" marker-end="url(#Arrow_Marker)" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="362.46667" y1="148" x2="456.16036" y2="180.9392" marker-end="url(#Arrow_Marker_2)" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_15">
-        <line x1="383" y1="128.98305" x2="693.1002" y2="130.95403" marker-end="url(#Arrow_Marker)" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="383" y1="128.98305" x2="693.1002" y2="130.95403" marker-end="url(#Arrow_Marker_2)" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_16">
-        <line x1="307" y1="415" x2="307" y2="327.9" marker-end="url(#Arrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="307" y1="415" x2="307" y2="327.9" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_17">
-        <line x1="379.45367" y1="415.9099" x2="507.0131" y2="326.67486" marker-end="url(#Arrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="379.45367" y1="415.9099" x2="507.0131" y2="326.67486" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_19">
-        <line x1="543" y1="282" x2="543" y2="225.4" marker-end="url(#Arrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="543" y1="282" x2="543" y2="225.4" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_20">
-        <line x1="619" y1="301.5" x2="693.1" y2="301.5" marker-end="url(#Arrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="619" y1="301.5" x2="693.1" y2="301.5" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_22">
-        <line x1="383" y1="299.4661" x2="457.1008" y2="300.40806" marker-end="url(#Arrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="383" y1="299.4661" x2="457.1008" y2="300.40806" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_24">
-        <line x1="751.9294" y1="151" x2="578.1035" y2="276.2136" marker-end="url(#Arrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="751.9294" y1="151" x2="578.1035" y2="276.2136" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Line_25">
-        <line x1="715.5747" y1="151" x2="629.7895" y2="177.3745" marker-end="url(#Arrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="715.5747" y1="151" x2="629.7895" y2="177.3745" marker-end="url(#Arrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Graphic_26">
         <rect x="626.7159" y="289" width="58.444" height="25" fill="white"/>
         <text transform="translate(631.7159 294)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="12" font-weight="400" fill="black" x="0" y="11">transitive</tspan>
+        </text>
+      </g>
+      <g id="Graphic_28">
+        <rect x="269" y="62" width="58.444" height="25" fill="white"/>
+        <text transform="translate(274 67)" fill="black">
           <tspan font-family="Helvetica Neue" font-size="12" font-weight="400" fill="black" x="0" y="11">transitive</tspan>
         </text>
       </g>
