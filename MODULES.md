@@ -150,4 +150,4 @@ When you develop one or more generator in a separate project and you use
 JPMS then it is recommended to `require transitive geci.engine`. This
 will release the programs that use the generator from the burden to
 express their dependency on the `engine` module, which they do have if
-ever they use the generator.
+they use the generator.
