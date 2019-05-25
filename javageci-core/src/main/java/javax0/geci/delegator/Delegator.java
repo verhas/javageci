@@ -19,10 +19,13 @@ import java.util.stream.Collectors;
 
 @Geci("builder")
 public class Delegator extends AbstractFilteredFieldsGenerator {
+    private static class Configuration {
+        private Class<? extends Annotation> generatedAnnotation = Generated.class;
+        private String filter = "!static";
+        private String methods = "public & !static";
+    }
 
-    private Class<? extends Annotation> generatedAnnotation = Generated.class;
-    private String filter = "!static";
-    private String methods = "public & !static";
+    private final Configuration configuration = new Configuration();
 
     private Delegator() {
     }
@@ -35,13 +38,13 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
     @Override
     public void process(Source source, Class<?> klass, CompoundParams params, Field field, Segment segment) throws Exception {
         final var name = field.getName();
-        final var methodFilter = params.get("methods", this.methods);
+        final var methodFilter = params.get("methods", this.configuration.methods);
         final List<Method> methods = Arrays.stream(GeciReflectionTools.getDeclaredMethodsSorted(field.getType()))
-                .filter(Selector.compile(methodFilter)::match)
-                .collect(Collectors.toList());
+            .filter(Selector.compile(methodFilter)::match)
+            .collect(Collectors.toList());
         for (final var method : methods) {
             if (!manuallyCoded(klass, method)) {
-                writeGenerated(segment,generatedAnnotation);
+                writeGenerated(segment, configuration.generatedAnnotation);
                 segment.write_r(MethodTool.with(method).signature() + " {");
                 if ("void".equals(method.getReturnType().getName())) {
                     segment.write(name + "." + MethodTool.with(method).call() + ";");
@@ -57,7 +60,7 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
     private boolean manuallyCoded(Class<?> klass, Method method) {
         try {
             var localMethod = klass.getDeclaredMethod(method.getName(), method.getParameterTypes());
-            return localMethod.getDeclaredAnnotation(generatedAnnotation) == null;
+            return localMethod.getDeclaredAnnotation(configuration.generatedAnnotation) == null;
         } catch (NoSuchMethodException e) {
             return false;
         }
@@ -65,7 +68,7 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
 
     @Override
     protected String defaultFilterExpression() {
-        return filter;
+        return configuration.filter;
     }
 
     //<editor-fold id="builder">
@@ -75,17 +78,17 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
 
     public class Builder {
         public Builder filter(String filter) {
-            Delegator.this.filter = filter;
+            Delegator.this.configuration.filter = filter;
             return this;
         }
 
         public Builder generatedAnnotation(Class generatedAnnotation) {
-            Delegator.this.generatedAnnotation = generatedAnnotation;
+            Delegator.this.configuration.generatedAnnotation = generatedAnnotation;
             return this;
         }
 
         public Builder methods(String methods) {
-            Delegator.this.methods = methods;
+            Delegator.this.configuration.methods = methods;
             return this;
         }
 
