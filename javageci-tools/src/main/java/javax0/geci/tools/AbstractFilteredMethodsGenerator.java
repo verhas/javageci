@@ -51,7 +51,7 @@ public abstract class AbstractFilteredMethodsGenerator extends AbstractDeclaredM
      * @throws Exception any exception that the is thrown by the generator
      */
     @Override
-    protected void preprocessHook(Source source, Class<?> klass, CompoundParams global) throws Exception {
+    protected final void preprocessHook(Source source, Class<?> klass, CompoundParams global) throws Exception {
         methods.clear();
         preprocess(source, klass, global);
     }
