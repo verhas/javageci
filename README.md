@@ -147,6 +147,7 @@ For further information visit the following documentations
 * [Explanations](EXPLANATION.md)
 * [Frequently Asked Questions](FAQ.md)
 * [Module Structure of Java::Geci](MODULES.md)
+* [Configuring Generators](CONFIGURATION.md)
 
 Generators provided with Java::Geci out of the box
 
