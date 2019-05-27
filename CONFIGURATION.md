@@ -1,18 +1,18 @@
 # Configuring Generators
 
 Generators are classes that implement the `Generator` interface, thus
-their configuration is very much depends on how they are implemented.
+their configuration very much depends on how they are implemented.
 Their implementation is out of the control of the Java::Geci library.
-After all this is the major goal of the framework: anyone can develop a
+After all, this is the major goal of the framework: anyone can develop a
 generator and it is up to them how their code can be configured.
 
-Having said that, however, there are guidelines for code generator
-development that also include configuration management for code
+Having said that, however, there are guidelines for the code generator
+development that also includes configuration management for code
 generators. This document describes how to develop a code generator that
 follows these guidelines and also how a generator following those
 guidelines can be configured.
 
-The advantage following these guidelines are twofold:
+The advantage following these guidelines is twofold:
 
 1. There are tools readily available for code generators to handle
     configuration data. Using these tools the code generator code can
@@ -25,18 +25,18 @@ The advantage following these guidelines are twofold:
     api to set those values are the same for all code generators.
 
 From now on in this document when talking about a code generator we
-assume that the actual implementation fully follow these guidelines.
+assume that the actual implementation fully follows these guidelines.
     
 ## Configuration scopes
 
 Code generators can be configured with many scopes. The smaller scope
 configuration usually overrides the larger scope configuration. For
-example a configuration value can be set
+example, a configuration value can be set
 
 * default values are coded in the generator code by the programmer and
   they have a scope for the whole lifetime of the specific release of
   the code generator running different times on many different machines
-  at different geo locations. (Or in space.)
+  at different geo-locations. (Or in space.)
 
 * for the generator object whole lifecycle, which means that the
   generator will use the set value for all the source files it
@@ -58,7 +58,7 @@ example a configuration value can be set
 ## Configuration support
 
 Java::Geci provides support for configuration management on the
-generator object life style scope and on the class and member scope.
+generator object lifestyle scope and on the class and member scope.
 
 ### Generator Configuration Builder
 
@@ -86,7 +86,7 @@ object, which is a (non-static) inner class of the generator class. This
 builder class has a method for each of the fields declared in the class
 `Config`.
 
-For example there is a code generator in the `core` package named
+For example, there is a code generator in the `core` package named
 `ConfigBuilder` and it has the following code
 
 ```java
@@ -138,7 +138,7 @@ Each filed named `xyz` has a corresponding method with the same name
 that sets the value of the field. The method `build()` returns the
 configured generator object.
 
-Following this structure the generator can be instantiated using the
+Following this structure, the generator can be instantiated using the
 
 ```java
 ConfigBuilder.builder().filter("(private|protected) & !static & !final"). ... .build()
@@ -147,7 +147,7 @@ ConfigBuilder.builder().filter("(private|protected) & !static & !final"). ... .b
 setting all the configuration parameters that can be used by the
 generator. When the generator is attending to a source file reading it
 and then generating code it also reads the configuration from the
-`editor-fold` and from the annotations. A well designed generator will
+`editor-fold` and from the annotations. A well-designed generator will
 read and interpret the configuration key `xyz` if that appears in the
 `Config` class and is `String` type.
 
@@ -155,13 +155,13 @@ read and interpret the configuration key `xyz` if that appears in the
 
 The `String` configuration values that are defined in the `Config` class
 can be overridden in the source code. The scope of these values will be
-the code generation of the actual sorce file and they have no effect on
+the code generation of the actual source file and they have no effect on
 the code generation on the next source code processing.
 
 > Note that generally a `Generator` can work on any source file, like on
 XML, JSON or even on binary files and generate usually Java code. If
 the generator works on anything else but Java source code then it is
-totally up to the generator implemenation if it reads configuration
+totally up to the generator implementation if it reads the configuration
 values if any from the source file it uses to work on. From now on we
 assume that the generator works on Java source code and the generator
 class is directly or through other abstract classes extends the
@@ -178,7 +178,7 @@ the Geci annotation of the class. An annotation is a Geci annotation if
 
 Every Geci annotation has a mnemonic that defines which generator it is
 configuring. This mnemonic should present in the string of the `value()`
-parameter of the annotation. In this case this is the first word in the
+parameter of the annotation. In this case, this is the first word in the
 string value separated by one or more spaces from the parameters. For
 example the annotation
 
@@ -191,8 +191,8 @@ has the mnemonic `accessor` and the parameter, it has only one, is
 
 When a Geci annotation is not named `Geci` then the name of the
 annotation can also be used to identify the generator it is configuring.
-In that case the name of the annotation can be the mnemonic of the
-generator. The first character of the annotation is lower cased in this
+In that case, the name of the annotation can be the mnemonic of the
+generator. The first character of the annotation is lowercased in this
 case before it is used as the mnemonic of the generator.
 
 The example above can be converted to use an annotation named `Accessor`
@@ -209,21 +209,21 @@ the generator. The other annotations are ignored.
 If there is no Geci annotation on a class then the generator reads the
 source code and tries to find a line that is a comment line (starting
 with `//` characters) and contains something that is syntactically is a
-Geci annotation. In this case you can ONLY use the name `Geci` as an
-annotation look like name because the code is scanned as a series of
+Geci annotation. In this case, you can ONLY use the name `Geci` as an
+annotation look like the name because the code is scanned as a series of
 lines and not via reflection. The code will treat any line that is a
 commented `@Geci` annotation if it is followed by a line that looks like
 the start of the class. If there are more than one such comments in
 front of a class then only the one will be taken into account that has
 the mnemonic at the start of the string.
 
-Also note that you cannot use `@Geci(value="...")` format. The line
-scanning expects only `@Geci("...")` format in the comment. In general
+Also, note that you cannot use `@Geci(value="...")` format. The line
+scanning expects only `@Geci("...")` format in the comment. In general,
 the use of the annotation in a comment is a last resort feature and it
 is recommended to use normal annotations instead.
 
 When the generator has collected the parameters from the annotation on
-the class or from the the comment that looks like an annotation (and
+the class or from the comment that looks like an annotation (and
 never from both) then it finds a line that looks like
 
 ```java
@@ -236,7 +236,7 @@ generator triggered to generate code for the class if the source code
 contains the line as above.
 
 > Note that the parameters in the annotation (commented or real
-annotation) use single apostrophe (`'`) to enclose the values of the
+annotation) use a single apostrophe (`'`) to enclose the values of the
 parameters when they are specified inside the `value` string. Normal
 annotation arguments and `editor-fold` parameters use double quotes
 (`"`). Escaping single apostrophe in annotation value and escaping
@@ -250,7 +250,7 @@ character.
 ### Parameter checking
 
 Configuration parameter names can be mistyped. When using the builder
-for the generator object life-time scope the compiler will not allow the
+for the generator object lifetime scope the compiler will not allow the
 programmer to enter any wrong configuration name. When using annotation
 parameters (and not encoding the parameter into the `value` string) then
 again, the compiler will warn the programmer when there is a typo in the
@@ -258,7 +258,7 @@ name of a parameter.
 
 When the parameter is defined in a comment or in the `value` string or
 in the `editor-fold` segment the compiler has no means to detect the
-spelling error. To warn the programmer in this case the generators check
+spelling error. To warn the programmer, in this case, the generators check
 that all the parameters defined in the source code are expected by the
 generator and in case there is a configuration value that the generator
 does not understand then they will throw a `GeciException`.
@@ -274,13 +274,13 @@ this case there is no check. This is not a good practice.
 The checking ignores the parameter `desc` because this parameter can be
 used in the `editor-fold` line to specify a string that the IDE displays
 when the fold is closed. You can use `desc` freely, the generators will
-ignore it. (Unless one generator explicitly uses that as parameter. Not
+ignore it. (Unless one generator explicitly uses that as a parameter. Not
 recommended.)
 
 ## Using config builder
 
 Writing the generator code to properly handle the configuration
-parameters will result a lot of boiler plate code even when using the
+parameters will result in a lot of boilerplate code even when using the
 library support. You need the builder class, the method
 `implementedKeys()` and some other utility methods. All these can be
 generated automatically knowing the names of the configuration
@@ -310,7 +310,7 @@ void buildGenerators() throws Exception {
 The generator will create
 
 * the `config` field, 
-* the `builder()` method, which is the fatory method for the builder
+* the `builder()` method, which is the factory method for the builder
   class
 * the builder class itself
 * the method `implementedKeys()` returning all coonfigurable keys
@@ -330,18 +330,18 @@ argument variable `params`. If a configuration parameter is defined in
 the `params` parameter set then that is used, otherwise the builder
 configured or default value from `config` is used.
 
-When a generator needs some paramater it is a good practice to pass the
+When a generator needs some parameter it is a good practice to pass the
 parameters read by the framework to this method and use the returned
 value to get the actual value of the parameter.
 
-When the generator uses configuration from the class level as well as
-field or method (or other member) level then the combined parameters has
+When the generator uses the configuration from the class level as well as
+field or method (or other members) level then the combined parameters has
 to be passed as `params`. The hierarchy and configuration inheritance is
 handled automatically by this structure and there is no need to manually
 program the decision what parameter to use at a certain point in the
 code generator.
 
-Note that this method will copy the non string values from the `config`
+Note that this method will copy the non-string values from the `config`
 object but will not touch the `final` fields (because that is not
 possible, and they are there in case the generator class developer wants
-to store some contant values there).
+to store some constant values there).
