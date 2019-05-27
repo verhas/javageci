@@ -74,6 +74,16 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
         return new Delegator().new Builder();
     }
 
+    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+        "filter",
+        "methods",
+        "id"
+    );
+
+    @Override
+    protected java.util.Set<String> implementedKeys() {
+        return implementedKeys;
+    }
     public class Builder {
         public Builder filter(String filter) {
             config.filter = filter;

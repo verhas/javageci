@@ -173,6 +173,24 @@ public class CompoundParams {
         );
     }
 
+    public boolean is(String key, boolean defaultValue) {
+        var s = get(key);
+        if (s == null) {
+            return defaultValue;
+        } else {
+            return is(key);
+        }
+    }
+
+    public boolean is(String key, String defaultValue) {
+        var s = get(key);
+        if (s == null) {
+            return is(defaultValue);
+        } else {
+            return is(key);
+        }
+    }
+
     public boolean isNot(String key) {
         return !is(key);
     }
@@ -187,15 +205,15 @@ public class CompoundParams {
     public Set<String> keySet() {
         final Stream<Set<String>> keyStream;
         if (params != null) {
-            keyStream = Arrays.stream(params)
+            keyStream = Arrays.stream(params).filter(Objects::nonNull)
                     .map(Map::keySet);
         } else if (cparams != null) {
-            keyStream = Arrays.stream(cparams)
+            keyStream = Arrays.stream(cparams).filter(Objects::nonNull)
                     .map(CompoundParams::keySet);
         } else {
             keyStream = Stream.of();
         }
-        return keyStream.flatMap(Collection::stream)
+        return keyStream.filter(Objects::nonNull).flatMap(Collection::stream)
                 .collect(Collectors.toSet());
     }
 

@@ -182,10 +182,12 @@ example the annotation
 has the mnemonic `accessor` and the parameters ..., it has only one, so
 the parameter is `filter`.
 
-When a Geci annotation has a different name the name of the annotation
-can also be used to identify the generator it is configuring. In that
-case the name of the annotation can be the mnemonic of the generator.
+When a Geci annotation is not named `Geci` then the name of the
+annotation can also be used to identify the generator it is configuring.
+In that case the name of the annotation can be the mnemonic of the
+generator. The first character of the annotation is lower cased in this
+case before it is used as the mnemonic of the generator.
 
-
-There can be several `@Geci`
-annotations on a class and the generator takes only the one into account
+There can be several `@Geci` annotations on a class and the generator
+takes only the one into account, the one that specifies the mnemonic of
+the generator.

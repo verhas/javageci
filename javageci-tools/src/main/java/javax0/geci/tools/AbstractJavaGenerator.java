@@ -1,11 +1,13 @@
 package javax0.geci.tools;
 
+import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.syntax.GeciAnnotationTools;
 
 import java.lang.annotation.Annotation;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -81,10 +83,40 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
                     GeciAnnotationTools.getParameters(source, mnemonic(), "//", CLASS_LINE));
             var segment = GeciAnnotationTools.getSegmentParameters(source, mnemonic());
             var global = new CompoundParams(annotation, segment);
+            final var keys = implementedKeys();
+            if (keys != null) {
+                checkAllowedKeys(keys, global, source);
+            }
             if (annotation != null || segment != null) {
                 process(source, klass, global);
             }
         }
+    }
+
+    private void checkAllowedKeys(Set<String> keys, CompoundParams global, Source source) {
+        for (final var key : global.keySet()) {
+            if (!keys.contains(key)) {
+                throw new GeciException("The configuration '"
+                        + key
+                        + "' can not be used with the generator "
+                        + mnemonic()
+                        + " in source code "
+                        + source.getAbsoluteFile());
+            }
+        }
+    }
+
+    /**
+     * Concrete classes can return an immutable set of the keys that the
+     * generator processes. The method {@code processEx()} checks the
+     * actual configuration keys against this set and in case there is
+     * any configuration key that is not used by the generator then it
+     * throws {@code GeciException}.
+     *
+     * @return
+     */
+    protected Set<String> implementedKeys() {
+        return null;
     }
 
     /**

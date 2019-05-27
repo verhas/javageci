@@ -184,7 +184,7 @@ public class GeciReflectionToolsTest {
         final var gecis = GeciAnnotationTools.getGecis(this.getClass().getDeclaredMethod("getGecisFromOwnAnnotationMyNameParamsMultiple"));
         Assertions.assertEquals(2, gecis.length);
         Assertions.assertEquals("barbarumba k2='v2' k1='v1'", gecis[0]);
-        Assertions.assertEquals("mygeci k1='v1'", gecis[1]);
+        Assertions.assertEquals("myGeci k1='v1'", gecis[1]);
     }
 
     @Retention(RetentionPolicy.RUNTIME)

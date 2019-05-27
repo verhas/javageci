@@ -38,6 +38,8 @@ public class Equals extends AbstractFilteredFieldsGenerator {
 
     private static class Config {
         private Class<? extends Annotation> generatedAnnotation = Generated.class;
+        private String subclass ="no";
+        private String useObjects ="no";
     }
 
     private final Config config = new Config();
@@ -80,7 +82,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
 
     private void generateEqualsHeader(Segment segment, Class<?> klass, CompoundParams global) {
         var equalsMethod = getMethodOrNull(klass, "equals", Object.class);
-        var subclassingAllowed = global.is("subclass");
+        var subclassingAllowed = global.is("subclass", config.subclass);
         generateEquals = equalsMethod == null || GeciAnnotationTools.isGenerated(equalsMethod);
         writeGenerated(segment, config.generatedAnnotation);
         segment.write("@Override")
@@ -119,7 +121,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
                 segment.write(convert.apply(name + " == that." + name));
             }
         } else {
-            if (params.is("useObjects")) {
+            if (params.is("useObjects",config.useObjects)) {
                 segment.write(convert.apply("Objects.equals(" + name + ", that." + name + ")"));
             } else {
                 if (params.is("notNull")) {
@@ -202,7 +204,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
             segment.write("@Override");
             segment.write_r("public int hashCode() {");
 
-            if (global.is("useObjects")) {
+            if (global.is("useObjects",config.useObjects)) {
                 generateHashCodeBodyUsingObjects(segment);
             } else {
                 generateHashCodeBody(segment, global);
@@ -267,9 +269,29 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         return new Equals().new Builder();
     }
 
+    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+        "subclass",
+        "useObjects",
+        "id"
+    );
+
+    @Override
+    protected java.util.Set<String> implementedKeys() {
+        return implementedKeys;
+    }
     public class Builder {
         public Builder generatedAnnotation(Class generatedAnnotation) {
             config.generatedAnnotation = generatedAnnotation;
+            return this;
+        }
+
+        public Builder subclass(String subclass) {
+            config.subclass = subclass;
+            return this;
+        }
+
+        public Builder useObjects(String useObjects) {
+            config.useObjects = useObjects;
             return this;
         }
 
@@ -279,6 +301,8 @@ public class Equals extends AbstractFilteredFieldsGenerator {
     }
     private Config localConfig(CompoundParams params){
         final var local = new Config();
+        local.subclass = params.get("subclass",config.subclass);
+        local.useObjects = params.get("useObjects",config.useObjects);
         return local;
     }
     //</editor-fold>

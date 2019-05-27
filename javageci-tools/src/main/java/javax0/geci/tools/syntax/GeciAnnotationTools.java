@@ -71,7 +71,7 @@ public class GeciAnnotationTools {
      * This is a recursive definition and because annotations may be
      * annotated recursively directly by themselves or indirectly
      * through other annotations we have to be careful not to check an
-     * annotation for Geciness that we have already started to check.
+     * annotation for "Geciness" that we have already started to check.
      *
      * <p>
      * <p>
@@ -105,9 +105,19 @@ public class GeciAnnotationTools {
     }
 
     /**
-     * Get the value string from the annotation and in case there are other parameters that
-     * return a String value and are defined on the annotation then append the "key='value'" after
-     * the value string. That way the annotation parameters become part of the configuration.
+     * Get the value string from the annotation and in case there are
+     * other annotation parameters that return a {@code String} value
+     * and they are defined on the annotation then append the
+     * "key='value'" after the value string. That way the annotation
+     * parameters become part of the configuration.
+     *
+     * <p>Also when the value does not contain a mnemonic at the start
+     * then the name of the annotation will be prepended to the string
+     * with a space separating it from the parameters. Note that since
+     * annotations are Java interfaces and thus are supposed to start
+     * with upper case letters but mnemonics are like variables,
+     * starting with lower case letters the name of the annotation is
+     * modified lower casing the first character.
      *
      * @param annotation the annotation that contains the configuration
      * @return the configuration string
@@ -117,9 +127,9 @@ public class GeciAnnotationTools {
             Method valueMethod = annotation.getClass().getDeclaredMethod("value");
             valueMethod.setAccessible(true);
             final var rawValue = (String) valueMethod.invoke(annotation);
-            final var value = getValue(annotation.annotationType()
-                    .getSimpleName()
-                    .toLowerCase(), rawValue.trim());
+            final var annotationName = annotation.annotationType().getSimpleName();
+            final var value = getValue(annotationName.substring(0, 1)
+                    .toLowerCase() + annotationName.substring(1), rawValue.trim());
             for (final var method : annotation.getClass().getDeclaredMethods()) {
                 if (method.getReturnType().equals(String.class) &&
                         !method.getName().equals("value") &&
@@ -145,25 +155,22 @@ public class GeciAnnotationTools {
     /**
      * Get the value string adjusted with the name of the annotation.
      *
-     * <p>
-     * The annotation value string should start with the mnemonic of the
-     * generator. If the generator uses it's own annotation than the
+     * <p> The annotation value string should start with the mnemonic of
+     * the generator. If the generator uses it's own annotation than the
      * name of the annotation can be used to match the mnemonic of the
      * generator. For example, if there is a generator that has the
      * mnemonic {@code mygenerator} then the annotation {@code
-     * MyGenerator} can be used to configure it. At the same time it would
-     * be waste of characters to write
+     * MyGenerator} can be used to configure it. At the same time it
+     * would be waste of characters to write
      *
      * <pre>{@code
      *
      * @MyGenerator("mygenerator a='1' b='2' ... z='xxx"")
      *
-     * }</pre>
-     * <p>
-     * Therefore in situations like this the mnemonic can be omitted
-     * from the start of the configuration string and Java::Geci will
-     * use the name of the annotation all lower cased as the mnemonic
-     * of the generator. Thus
+     * }</pre> <p> Therefore in situations like this the mnemonic can be
+     * omitted from the start of the configuration string and Java::Geci
+     * will use the name of the annotation first character lower cased
+     * as the mnemonic of the generator. Thus
      *
      * <pre>{@code
      *
@@ -190,15 +197,19 @@ public class GeciAnnotationTools {
      * virgo intacta.
      *
      * @param annotationName the name of the annotation to be used as
-     *                       mnemonic (already lowercase)
+     *                       mnemonic (first character already
+     *                       lowercase)
      * @param value          the value to modify or leave alone
      * @return the value modified or as it was
      */
     private static StringBuilder getValue(String annotationName,
                                           String value) {
         final var mnemonicEnd = value.indexOf(' ');
-        final String mnemomic = mnemonicEnd == -1 ? value : value.substring(0, mnemonicEnd);
-        if (mnemomic.contains("=") || mnemomic.length() == 0) {
+        final String mnemonic = mnemonicEnd == -1 ?
+                value
+                :
+                value.substring(0, mnemonicEnd);
+        if (mnemonic.contains("=") || mnemonic.length() == 0) {
             return new StringBuilder(annotationName)
                     .append(value.length() == 0 ? "" : " ")
                     .append(value);
@@ -220,8 +231,10 @@ public class GeciAnnotationTools {
      * regenerates all methods that are needed and have the {@link
      * Generated} annotation.
      *
-     * @param element that needs the decision if it is generated or manually programmed
-     * @return {@code true} if the element was generated (has the annotation {@link Generated}).
+     * @param element that needs the decision if it is generated or
+     *                manually programmed
+     * @return {@code true} if the element was generated (has the
+     * annotation {@link Generated}).
      */
     public static boolean isGenerated(AnnotatedElement element) {
         return Selector.compile("annotation ~ /Generated/").match(element);
@@ -295,8 +308,12 @@ public class GeciAnnotationTools {
      *  // <editor-fold id="mnemonic" a="parm" b="param" ... >
      * }</pre>
      *
-     * <p>
-     * and read the parameters from that line.
+     * <p> and read the parameters from that line.
+     *
+     * <p>The parameter {@code desc} is ignored since that is used by
+     * the editor to display a short description when the editor fold is
+     * closed and thus it would not be nice to forbid the use of it in
+     * case the generator does not have a parameter named "desc".
      *
      * @param source   the source object holding the code lines
      * @param mnemonic the name of the generator
@@ -317,7 +334,9 @@ public class GeciAnnotationTools {
                 while (attributeMatcher.find()) {
                     var key = attributeMatcher.group(1);
                     var value = attributeMatcher.group(2);
-                    attr.put(key, value);
+                    if (!key.equals("desc")) {
+                        attr.put(key, value);
+                    }
                 }
                 if (attr.getOrDefault("id", "").equals(mnemonic)) {
                     attr.remove("id");

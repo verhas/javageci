@@ -120,6 +120,19 @@ public class Builder extends AbstractFilteredFieldsGenerator {
         return new Builder().new ConfBuilder();
     }
 
+    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+        "aggregatorMethod",
+        "buildMethod",
+        "builderFactoryMethod",
+        "builderName",
+        "filter",
+        "id"
+    );
+
+    @Override
+    protected java.util.Set<String> implementedKeys() {
+        return implementedKeys;
+    }
     public class ConfBuilder {
         public ConfBuilder aggregatorMethod(String aggregatorMethod) {
             config.aggregatorMethod = aggregatorMethod;

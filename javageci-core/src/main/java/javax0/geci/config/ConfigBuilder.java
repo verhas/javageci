@@ -25,7 +25,6 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         private String builderName = "Builder";
         private String builderFactoryMethod = "builder";
         private String buildMethod = "build";
-        private String aggregatorMethod = "add";
     }
 
     private final Config config = new Config();
@@ -38,28 +37,44 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         final var fields = collectConfigurableFields(global, allDeclaredFields);
 
         final var local = localConfig(global);
-        generateBuilderFactoryMethod(klass, segment,local);
-        startBuilderClass(segment,local);
+        generateBuilderFactoryMethod(klass, segment, local);
+        generateConfigKeySet(segment, fields);
+        startBuilderClass(segment, local);
         allDeclaredFields.forEach(field -> generateBuilderMethod(klass, segment, local, field));
-        finishBuilderClass(klass, segment,local);
+        finishBuilderClass(klass, segment, local);
         generateLocalConfigMethod(segment, fields);
+    }
+
+    private void generateConfigKeySet(Segment segment, List<Field> fields) {
+        segment.write_r("private static final java.util.Set<String> implementedKeys = java.util.Set.of(");
+        fields.forEach(field -> {
+            final var name = field.getName();
+            segment.write("\"%s\",", name);
+        });
+        segment.write("\"id\"")
+                .write_l(");")
+        .newline();
+        segment.write_l("@Override")
+                .write_r("protected java.util.Set<String> implementedKeys() {")
+                .write("return implementedKeys;")
+                .write_l("}");
     }
 
     private void generateLocalConfigMethod(Segment segment, List<Field> fields) {
         segment.write_r("private Config localConfig(CompoundParams params){")
-            .write("final var local = new Config();");
+                .write("final var local = new Config();");
         fields.forEach(field -> {
             final var name = field.getName();
             segment.write("local.%s = params.get(\"%s\",config.%s);", name, name, name);
         });
         segment.write("return local;")
-            .write_l("}");
+                .write_l("}");
     }
 
     private void finishBuilderClass(Class<?> klass, Segment segment, Config local) {
         segment.write_r("public %s %s() {", klass.getSimpleName(), local.buildMethod)
-            .write("return %s.this;", klass.getSimpleName())
-            .write_l("}");
+                .write("return %s.this;", klass.getSimpleName())
+                .write_l("}");
         segment.write_l("}");
 
     }
@@ -69,10 +84,10 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         final var type = GeciReflectionTools.normalizeTypeName(field.getType().getName(), klass);
         if (!Modifier.isFinal(field.getModifiers())) {
             segment.write_r("public %s %s(%s %s) {", local.builderName, name, type, name)
-                .write("config.%s = %s;", name, name)
-                .write("return this;")
-                .write_l("}")
-                .newline();
+                    .write("config.%s = %s;", name, name)
+                    .write("return this;")
+                    .write_l("}")
+                    .newline();
         }
     }
 
@@ -82,9 +97,9 @@ public class ConfigBuilder extends AbstractJavaGenerator {
 
     private void generateBuilderFactoryMethod(Class<?> klass, Segment segment, Config local) {
         segment.write_r("public static %s.%s %s() {", klass.getSimpleName(), local.builderName, local.builderFactoryMethod)
-            .write("return new %s().new %s();", klass.getSimpleName(), local.builderName)
-            .write_l("}")
-            .newline();
+                .write("return new %s().new %s();", klass.getSimpleName(), local.builderName)
+                .write_l("}")
+                .newline();
     }
 
     /**
@@ -96,10 +111,10 @@ public class ConfigBuilder extends AbstractJavaGenerator {
      */
     private List<Field> collectConfigurableFields(CompoundParams params, List<Field> allDeclaredFields) {
         return allDeclaredFields.stream().filter(
-            field -> {
-                var l = localConfig(new CompoundParams(GeciReflectionTools.getParameters(field, mnemonic()), params));
-                return Selector.compile(l.filter).match(field) && field.getType().equals(String.class);
-            }
+                field -> {
+                    var l = localConfig(new CompoundParams(GeciReflectionTools.getParameters(field, mnemonic()), params));
+                    return Selector.compile(l.filter).match(field) && field.getType().equals(String.class);
+                }
         ).collect(Collectors.toList());
     }
 
@@ -113,12 +128,19 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         return new ConfigBuilder().new Builder();
     }
 
-    public class Builder {
-        public Builder aggregatorMethod(String aggregatorMethod) {
-            config.aggregatorMethod = aggregatorMethod;
-            return this;
-        }
+    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+        "buildMethod",
+        "builderFactoryMethod",
+        "builderName",
+        "filter",
+        "id"
+    );
 
+    @Override
+    protected java.util.Set<String> implementedKeys() {
+        return implementedKeys;
+    }
+    public class Builder {
         public Builder buildMethod(String buildMethod) {
             config.buildMethod = buildMethod;
             return this;
@@ -145,7 +167,6 @@ public class ConfigBuilder extends AbstractJavaGenerator {
     }
     private Config localConfig(CompoundParams params){
         final var local = new Config();
-        local.aggregatorMethod = params.get("aggregatorMethod",config.aggregatorMethod);
         local.buildMethod = params.get("buildMethod",config.buildMethod);
         local.builderFactoryMethod = params.get("builderFactoryMethod",config.builderFactoryMethod);
         local.builderName = params.get("builderName",config.builderName);
