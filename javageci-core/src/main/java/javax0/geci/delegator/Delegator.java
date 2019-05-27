@@ -23,8 +23,6 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
         private String methods = "public & !static";
     }
 
-    private final Config config = new Config();
-
     private Delegator() {
     }
 
@@ -38,15 +36,15 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
         final var name = field.getName();
         final var local = localConfig(params);
         final List<Method> methods = Arrays.stream(GeciReflectionTools.getDeclaredMethodsSorted(field.getType()))
-            .filter(Selector.compile(local.methods)::match)
-            .collect(Collectors.toList());
+                .filter(Selector.compile(local.methods)::match)
+                .collect(Collectors.toList());
         for (final var method : methods) {
             if (!manuallyCoded(klass, method)) {
                 writeGenerated(segment, config.generatedAnnotation);
                 segment.write_r(MethodTool.with(method).signature() + " {")
-                    .write((isVoid(method) ? "" : "return ") + name + "." + MethodTool.with(method).call() + ";")
-                    .write_l("}")
-                    .newline();
+                        .write((isVoid(method) ? "" : "return ") + name + "." + MethodTool.with(method).call() + ";")
+                        .write_l("}")
+                        .newline();
             }
         }
     }
@@ -70,6 +68,7 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
     }
 
     //<editor-fold id="configBuilder">
+    private final Config config = new Config();
     public static Delegator.Builder builder() {
         return new Delegator().new Builder();
     }
@@ -107,6 +106,7 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
     private Config localConfig(CompoundParams params){
         final var local = new Config();
         local.filter = params.get("filter",config.filter);
+        local.generatedAnnotation = config.generatedAnnotation;
         local.methods = params.get("methods",config.methods);
         return local;
     }

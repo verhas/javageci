@@ -53,10 +53,66 @@ public class GeciAnnotationTools {
                 .toArray(String[]::new);
     }
 
+    /**
+     * @param element the annotated element for which we need the
+     *                annotations
+     * @return a stream of the annotations used on the {@code element}.
+     * In case any of the annotations is a collection of repeated
+     * annotations then the repeated annotations will be returned
+     * instead of the collecting annotations. I.e.: if an element has a
+     * {@code Gecis} annotation, which is never used directly in the
+     * source code, but is put into the byte code by the compiler to
+     * wrap the repeated {@code Geci} annotations then the stream will
+     * contain the {@code Geci} annotations and not the one {@code
+     * Gecis}.
+     */
     private static Stream<Annotation> getDeclaredAnnotationUnwrapped(AnnotatedElement element) {
         final var allAnnotations = element.getDeclaredAnnotations();
         return Arrays.stream(allAnnotations)
                 .flatMap(GeciAnnotationTools::getSelfOrRepeated);
+    }
+
+    /**
+     * Get a stream that delivers the annotation itself, or a stream
+     * that returns the annotations that are repeated using this
+     * annotation as a group annotations.
+     *
+     * <p>For example the module {@code annotations} in Java::Geci
+     * defines the annotations {@code Geci} and also {@code Gecis}.
+     * Source code will never directly use {@code Gecis}, but they may
+     * contain several {@code Geci} annotations.
+     *
+     * <p>When a class or other annotated element has several {@code
+     * Geci} annotations then these annotations are collected into a
+     * {@code Gecis} annotation and this one is returned. The {@code
+     * value()} method of this annotation returns an array of {@code
+     * Geci} annotations. This is standard Java annotation handling.
+     *
+     * <p>This method returns a stream. When the annotation is a
+     * "normal" annotation then the stream will contain only one
+     * element. When the annotation is used to group several annotations
+     * and their {@code value()} method returns an array of annotation
+     * objects then the stream will deliver these objects instead of the
+     * annotation.
+     *
+     * @param annotation which will be delivered in the stream or which
+     *                   contains the other annotations.
+     * @return the stream of the annotation or annotations
+     */
+    private static Stream<Annotation> getSelfOrRepeated(Annotation annotation) {
+        try {
+            final var value = annotation.annotationType().getMethod("value");
+            value.setAccessible(true);
+            if (Annotation[].class.isAssignableFrom(value.getReturnType())) {
+                return Stream.of((Annotation[]) value.invoke(annotation));
+            } else {
+                return Stream.of(annotation);
+            }
+        } catch (NoSuchMethodException |
+                IllegalAccessException |
+                InvocationTargetException e) {
+            return Stream.of(annotation);
+        }
     }
 
     /**
@@ -88,13 +144,29 @@ public class GeciAnnotationTools {
         return isAnnotationGeci(annotation, new HashSet<>());
     }
 
-    private static boolean isAnnotationGeci(Annotation a,
+    /**
+     * This is the recursive implementation of {@link
+     * #getGecis(AnnotatedElement)}. The second parameter is an empty
+     * set at the start and later it is filled when invoked recursively.
+     * This will prevent infinite loops in case there is an annotation
+     * loop, like {@code @interface A} if annotated using {@code @B} and
+     * {@code @interface B} is annotared using {@code @A}.
+     *
+     * @param annotation the annotation that we want to know if it is
+     *                   Geci or not
+     * @param checked    a set containing all the annotations for which
+     *                   this method was already invoked. (Not
+     *                   necessarily returned yet though.)
+     * @return {@code true} if the annotation is a Geci annotation.
+     */
+    private static boolean isAnnotationGeci(Annotation annotation,
                                             Set<Annotation> checked) {
-        checked.add(a);
-        if (annotationName(a).equals("Geci")) {
+        checked.add(annotation);
+        if (annotationName(annotation).equals("Geci")) {
             return true;
         }
-        final var annotations = a.annotationType().getDeclaredAnnotations();
+        final var annotations = annotation.annotationType()
+                .getDeclaredAnnotations();
         return Arrays.stream(annotations)
                 .filter(x -> !checked.contains(x))
                 .anyMatch(x -> isAnnotationGeci(x, checked));
@@ -253,27 +325,44 @@ public class GeciAnnotationTools {
      * processed are returned.
      *
      * @param source            the source object holding the code lines
-     * @param generatorMnemonic the name of the generator that needs the parameters. Only the parameters that are
+     * @param generatorMnemonic the name of the generator that needs the
+     *                          parameters. Only the parameters that are
      *                          specific for this generator are read.
-     * @param prefix            characters that should prefix the annotation. In case of Java it is {@code //}.
-     *                          The line is first trimmed from leading and trailing space, then the {@code prefix}
-     *                          characters are removed from the start then it has to match the
+     * @param prefix            characters that should prefix the
+     *                          annotation. In case of Java it is {@code
+     *                          //}. The line is first trimmed from
+     *                          leading and trailing space, then the
+     *                          {@code prefix} characters are removed
+     *                          from the start then it has to match the
      *                          annotation syntax. If this parameter is
-     *                          {@code null} then it is treated as empty string, a.k.a. there is no prefix.
-     * @param nextLine          is a regular expression that should match the line after the successfully matched
-     *                          configuration line. If the next line does not match the pattern then the previous line
-     *                          is ignored. Typically this is something line {@code /final\s*int\s*xx} when the
-     *                          generator wants to get the parameters for the {@code final int xx} declaration.
-     *                          If this variable is {@code null} then there is no pattern matching performed, and all
-     *                          parameter holding line that looks like a {@code Geci} annotation is accepted and
-     *                          processed.
-     *                          <p>
-     *                          Note also that if one or more lines looks like {@code Geci} annotations then they are
-     *                          skipped and the {@code nextLine} pattern is matched against the next line that is not
-     *                          a configuration line. This allows the program to have multiple configuration lines
-     *                          for different generators preceding the same source line.
-     * @return the new {@link CompoundParams} object or {@code null} in case there is no configuration found in the
-     * file for the specific generator with the specified conditions.
+     *                          {@code null} then it is treated as empty
+     *                          string, a.k.a. no prefix.
+     * @param nextLine          is a regular expression that should
+     *                          match the line after the successfully
+     *                          matched configuration line. If the next
+     *                          line does not match the pattern then the
+     *                          previous line is ignored. Typically this
+     *                          is something line {@code
+     *                          /final\s*int\s*xx} when the generator
+     *                          wants to get the parameters for the
+     *                          {@code final int xx} declaration. If
+     *                          this variable is {@code null} then there
+     *                          is no pattern matching performed, and
+     *                          all parameter holding line that looks
+     *                          like a {@code Geci} annotation is
+     *                          accepted and processed.
+     *                          <p> Note also that if one or more lines
+     *                          looks like {@code Geci} annotations then
+     *                          they are skipped and the {@code
+     *                          nextLine} pattern is matched against the
+     *                          next line that is not a configuration
+     *                          line. This allows the program to have
+     *                          multiple configuration lines for
+     *                          different generators preceding the same
+     *                          source line.
+     * @return the new {@link CompoundParams} object or {@code null} in
+     * case there is no configuration found in the file for the
+     * specific generator with the specified conditions.
      */
     public static CompoundParams getParameters(Source source,
                                                String generatorMnemonic,
@@ -282,7 +371,7 @@ public class GeciAnnotationTools {
         CompoundParams paramConditional = null;
         for (var line : source.getLines()) {
             if (paramConditional != null) {
-                if (nextLine == null || nextLine.matcher(line).matches()) {
+                if (nextLine == null || nextLine.matcher(line).find()) {
                     return paramConditional;
                 }
             }
@@ -382,19 +471,23 @@ public class GeciAnnotationTools {
     }
 
     /**
-     * Get the parameters into a map from the string. The {@link Geci} annotation has one single value that is a string.
-     * This string is supposed to have the format:
+     * Get the parameters into a map from the string. The {@link Geci}
+     * annotation has one single value that is a string. This string is
+     * supposed to have the format:
      *
      * <pre>
      *
      *     generator_menomic key='value' ... key='value'
      * </pre>
-     * <p>
-     * The key can be anything that is more or less an identifier (contains only alphanumeric characters, underscore
-     * and {@code $} charater, but can also start with any of those, thus it could be '{@code 1966}').
-     * <p>
-     * The value is enclosed between single quotes, that makes it easier to type and read as single quotes do not need
-     * escaping in strings. These quotes can not be skipped.
+     *
+     * <p> The key can be anything that is more or less an identifier
+     * (contains only alphanumeric characters, underscore and {@code $}
+     * charater, but can also start with any of those, thus it could be
+     * '{@code 1966}').
+     *
+     * <p>The value is enclosed between single quotes, that makes it
+     * easier to type and read as single quotes do not need escaping in
+     * strings. These quotes can not be skipped.
      *
      * @param s the string parameter
      * @return the map composed from the string
@@ -410,17 +503,5 @@ public class GeciAnnotationTools {
         return pars;
     }
 
-    private static Stream<Annotation> getSelfOrRepeated(Annotation annotation) {
-        try {
-            final var value = annotation.annotationType().getMethod("value");
-            value.setAccessible(true);
-            if (Annotation[].class.isAssignableFrom(value.getReturnType())) {
-                return Stream.of((Annotation[]) value.invoke(annotation));
-            } else {
-                return Stream.of(annotation);
-            }
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            return Stream.of(annotation);
-        }
-    }
+
 }

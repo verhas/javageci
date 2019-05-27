@@ -38,11 +38,10 @@ public class Equals extends AbstractFilteredFieldsGenerator {
 
     private static class Config {
         private Class<? extends Annotation> generatedAnnotation = Generated.class;
-        private String subclass ="no";
-        private String useObjects ="no";
+        private String subclass = "no";
+        private String useObjects = "no";
     }
 
-    private final Config config = new Config();
     private boolean generateEquals;
     private final List<Field> fields = new ArrayList<>();
     private Segment equalsSegment;
@@ -86,15 +85,15 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         generateEquals = equalsMethod == null || GeciAnnotationTools.isGenerated(equalsMethod);
         writeGenerated(segment, config.generatedAnnotation);
         segment.write("@Override")
-            .write_r("public %sboolean equals(Object o) {", subclassingAllowed ? "final " : "")
-            .write("if (this == o) return true;");
+                .write_r("public %sboolean equals(Object o) {", subclassingAllowed ? "final " : "")
+                .write("if (this == o) return true;");
         if (subclassingAllowed) {
             segment.write("if (!(o instanceof %s)) return false;", klass.getSimpleName());
         } else {
             segment.write("if (o == null || getClass() != o.getClass()) return false;");
         }
         segment.newline()
-            .write("%s that = (%s) o;", klass.getSimpleName(), klass.getSimpleName());
+                .write("%s that = (%s) o;", klass.getSimpleName(), klass.getSimpleName());
     }
 
     private void generateEqualsTail(Segment segment) {
@@ -121,7 +120,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
                 segment.write(convert.apply(name + " == that." + name));
             }
         } else {
-            if (params.is("useObjects",config.useObjects)) {
+            if (params.is("useObjects", config.useObjects)) {
                 segment.write(convert.apply("Objects.equals(" + name + ", that." + name + ")"));
             } else {
                 if (params.is("notNull")) {
@@ -204,7 +203,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
             segment.write("@Override");
             segment.write_r("public int hashCode() {");
 
-            if (global.is("useObjects",config.useObjects)) {
+            if (global.is("useObjects", config.useObjects)) {
                 generateHashCodeBodyUsingObjects(segment);
             } else {
                 generateHashCodeBody(segment, global);
@@ -231,7 +230,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
                     segment.write("result = 31 * result + (int) (%s ^ (%s >>> 32));", name, name);
                 } else if (field.getType().equals(float.class)) {
                     segment.write("result = 31 * result + (%s != +0.0f ? Float.floatToIntBits(%s) : 0);",
-                        name, name);
+                            name, name);
                 } else if (field.getType().equals(double.class)) {
                     segment.write("temp = Double.doubleToLongBits(%s);", name);
                     segment.write("result = 31 * result + (int) (temp ^ (temp >>> 32));");
@@ -243,7 +242,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
                     segment.write("result = 31 * result + %s.hashCode();", name);
                 } else {
                     segment.write("result = 31 * result + (%s != null ? %s.hashCode() : 0);",
-                        name, name);
+                            name, name);
                 }
             }
         }
@@ -256,7 +255,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
 
     private void generateHashCodeBodyUsingObjects(Segment segment) {
         segment.write("return Objects.hash(%s);",
-            fields.stream().map(Field::getName).collect(Collectors.joining(", ")));
+                fields.stream().map(Field::getName).collect(Collectors.joining(", ")));
     }
 
     @Override
@@ -265,6 +264,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
     }
 
     //<editor-fold id="configBuilder">
+    private final Config config = new Config();
     public static Equals.Builder builder() {
         return new Equals().new Builder();
     }
@@ -301,6 +301,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
     }
     private Config localConfig(CompoundParams params){
         final var local = new Config();
+        local.generatedAnnotation = config.generatedAnnotation;
         local.subclass = params.get("subclass",config.subclass);
         local.useObjects = params.get("useObjects",config.useObjects);
         return local;

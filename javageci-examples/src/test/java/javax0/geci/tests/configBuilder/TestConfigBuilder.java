@@ -10,7 +10,7 @@ public class TestConfigBuilder {
     @Test
     void buildGenerators() throws Exception {
         Assertions.assertFalse(
-            new Geci().source("./javageci-core/src/main/java/", "../javageci-core/src/main/java/").register(new ConfigBuilder()).generate(),
+            new Geci().source("./javageci-core/src/main/java/", "../javageci-core/src/main/java/").register(ConfigBuilder.builder().build()).generate(),
             Geci.FAILED
         );
     }

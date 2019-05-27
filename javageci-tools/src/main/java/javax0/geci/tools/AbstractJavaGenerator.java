@@ -68,7 +68,7 @@ import java.util.regex.Pattern;
  * value will be {@code bar}.
  */
 public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
-    private static final Pattern CLASS_LINE = Pattern.compile("class\\s+\\w[\\w\\d_$]*\\s*.*\\{\\s*$");
+    private static final Pattern CLASS_LINE = Pattern.compile("class\\s+[a-zA-Z_][\\w$]*\\s*.*\\{\\s*$");
 
     protected void writeGenerated(Segment segment, Class<? extends Annotation> annotation) {
         if (annotation != null) {
