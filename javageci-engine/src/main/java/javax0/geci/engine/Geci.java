@@ -1,5 +1,6 @@
 package javax0.geci.engine;
 
+import javax0.geci.api.Context;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Generator;
 import javax0.geci.api.Source;
@@ -45,10 +46,10 @@ public class Geci implements javax0.geci.api.Geci {
     @Override
     public javax0.geci.api.Geci only(String... patterns) {
         Collections.addAll(this.predicates,
-            Arrays.stream(patterns)
-                .map(Pattern::compile)
-                .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
-                .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
+                Arrays.stream(patterns)
+                        .map(Pattern::compile)
+                        .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
+                        .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
     }
 
@@ -56,13 +57,13 @@ public class Geci implements javax0.geci.api.Geci {
     @SafeVarargs
     public final javax0.geci.api.Geci only(Predicate<Path>... predicates) {
         Collections.addAll(this.predicates, Arrays.stream(predicates)
-            .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
+                .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
     }
 
     private BiPredicate<List<String>, List<String>> sourceComparator =
-        (orig, gen) -> orig.size() != gen.size() ||
-            IntStream.range(0, gen.size()).anyMatch(i -> !gen.get(i).equals(orig.get(i)));
+            (orig, gen) -> orig.size() != gen.size() ||
+                    IntStream.range(0, gen.size()).anyMatch(i -> !gen.get(i).equals(orig.get(i)));
 
 
     @Override
@@ -77,10 +78,13 @@ public class Geci implements javax0.geci.api.Geci {
 
     @Override
     public boolean generate() throws IOException {
+
+        injectContextIntoGenerators();
+
         final var phases = generators.stream()
-            .mapToInt(Generator::phases)
-            .max()
-            .orElse(1);
+                .mapToInt(Generator::phases)
+                .max()
+                .orElse(1);
         final FileCollector collector;
         if (directories.isEmpty()) {
             setDefaultDirectories();
@@ -125,5 +129,10 @@ public class Geci implements javax0.geci.api.Geci {
             }
         }
         return generated;
+    }
+
+    private void injectContextIntoGenerators() {
+        Context context = new javax0.geci.engine.Context();
+        generators.forEach(g -> g.context(context));
     }
 }

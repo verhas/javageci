@@ -1,5 +1,7 @@
 package javax0.geci.api;
 
+import java.util.function.Supplier;
+
 /**
  * Generators get source code information from the framework and
  * generate code. File writing and inserting the code to the existing
@@ -89,6 +91,19 @@ public interface Generator {
      */
     default int phases() {
         return 1;
+    }
+
+    /**
+     * Generators wanting to use the context should implement this
+     * method. The default implementation simply ignores the context.
+     * The actual implementation should store the context in an instance
+     * variable and it is also recommended to fetch the objects using
+     * the keys the generator intends to use calling the {@link
+     * Context#get(Object, Supplier)} method
+     *
+     * @param context to be injected and to be stored by the generator
+     */
+    default void context(Context context) {
     }
 
 }
