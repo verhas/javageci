@@ -1,18 +1,21 @@
 package javax0.geci.accessor;
 
 import javax0.geci.api.Segment;
+import javax0.geci.tools.CaseTools;
 import javax0.geci.tools.GeciReflectionTools;
 
 import java.lang.reflect.Field;
 import java.util.Set;
+
+import static javax0.geci.tools.CaseTools.ucase;
 
 public class ChainedAccessor extends AbstractAccessor {
 
     private static final Set<String> accessModifiers =
             Set.of("public", "private", "protected", "package");
 
-    protected String setterName(String name) {
-        return "with" + cap(name);
+    public ChainedAccessor(){
+        config.setterNameGenerator = name -> "with" + ucase(name);
     }
 
     @Override
@@ -28,7 +31,9 @@ public class ChainedAccessor extends AbstractAccessor {
                 .newline();
     }
 
-
+    public static AbstractAccessor.Builder builder() {
+        return new ChainedAccessor().new Builder();
+    }
     @Override
     public String mnemonic() {
         return "caccessor";

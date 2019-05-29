@@ -4,6 +4,7 @@ import javax0.geci.annotations.Generated;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractFilteredFieldsGenerator;
+import javax0.geci.tools.CaseTools;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
 
@@ -56,7 +57,7 @@ public class Builder extends AbstractFilteredFieldsGenerator {
     }
 
     private void generateAggregators(Class<?> klass, Segment segment, String builder, String name, Field field) {
-        final var aggMethod = config.aggregatorMethod + name.substring(0, 1).toUpperCase() + name.substring(1);
+        final var aggMethod = config.aggregatorMethod + CaseTools.ucase(name);
         Arrays.stream(GeciReflectionTools.getDeclaredMethodsSorted(field.getType()))
                 .filter(m -> m.getName().equals(config.aggregatorMethod))
                 .filter(m -> m.getParameterTypes().length == 1)

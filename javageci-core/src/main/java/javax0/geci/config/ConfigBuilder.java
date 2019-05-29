@@ -1,5 +1,6 @@
 package javax0.geci.config;
 
+import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractJavaGenerator;
@@ -25,17 +26,23 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         private String builderName = "Builder";
         private String builderFactoryMethod = "builder";
         private String buildMethod = "build";
+        private String configAccess = "private";
     }
 
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
-        final var configClass = Class.forName(klass.getName() + "$Config");
+        final Class<?> configClass;
+        try {
+            configClass = Class.forName(klass.getName() + "$Config");
+        }catch(ClassNotFoundException cnfe){
+            throw new GeciException("There is no class 'Config' in "+klass.getName(),cnfe);
+        }
         final var segment = source.open(global.id());
         final var allDeclaredFields = Arrays.asList(GeciReflectionTools.getDeclaredFieldsSorted(configClass));
         final var fields = configurableFields(global, allDeclaredFields);
 
         final var local = localConfig(global);
-        generateConfigField(segment);
+        generateConfigField(segment,local);
         generateBuilderFactoryMethod(klass, segment, local);
         generateConfigKeySet(segment, fields);
         startBuilderClass(segment, local);
@@ -44,8 +51,8 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         generateLocalConfigMethod(segment, allDeclaredFields, fields);
     }
 
-    private void generateConfigField(Segment segment) {
-        segment.write("private final Config config = new Config();");
+    private void generateConfigField(Segment segment,Config local) {
+        segment.write("%s final Config config = new Config();",local.configAccess);
     }
 
     private void generateConfigKeySet(Segment segment, List<Field> fields) {
@@ -137,24 +144,23 @@ public class ConfigBuilder extends AbstractJavaGenerator {
 
     //<editor-fold id="configBuilder">
     private final Config config = new Config();
-
     public static ConfigBuilder.Builder builder() {
         return new ConfigBuilder().new Builder();
     }
 
     private static final java.util.Set<String> implementedKeys = java.util.Set.of(
-            "buildMethod",
-            "builderFactoryMethod",
-            "builderName",
-            "filter",
-            "id"
+        "buildMethod",
+        "builderFactoryMethod",
+        "builderName",
+        "configAccess",
+        "filter",
+        "id"
     );
 
     @Override
     protected java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
-
     public class Builder {
         public Builder buildMethod(String buildMethod) {
             config.buildMethod = buildMethod;
@@ -171,6 +177,11 @@ public class ConfigBuilder extends AbstractJavaGenerator {
             return this;
         }
 
+        public Builder configAccess(String configAccess) {
+            config.configAccess = configAccess;
+            return this;
+        }
+
         public Builder filter(String filter) {
             config.filter = filter;
             return this;
@@ -180,13 +191,13 @@ public class ConfigBuilder extends AbstractJavaGenerator {
             return ConfigBuilder.this;
         }
     }
-
-    private Config localConfig(CompoundParams params) {
+    private Config localConfig(CompoundParams params){
         final var local = new Config();
-        local.buildMethod = params.get("buildMethod", config.buildMethod);
-        local.builderFactoryMethod = params.get("builderFactoryMethod", config.builderFactoryMethod);
-        local.builderName = params.get("builderName", config.builderName);
-        local.filter = params.get("filter", config.filter);
+        local.buildMethod = params.get("buildMethod",config.buildMethod);
+        local.builderFactoryMethod = params.get("builderFactoryMethod",config.builderFactoryMethod);
+        local.builderName = params.get("builderName",config.builderName);
+        local.configAccess = params.get("configAccess",config.configAccess);
+        local.filter = params.get("filter",config.filter);
         return local;
     }
     //</editor-fold>

@@ -10,33 +10,41 @@ import javax0.geci.tools.GeciReflectionTools;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Set;
+import java.util.function.Function;
 
-public abstract class AbstractAccessor extends AbstractFilteredFieldsGenerator {
+import static javax0.geci.tools.CaseTools.ucase;
+
+public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
+
+    protected static class Config {
+        protected String access = "public";
+        protected String filter = "true";
+        protected Function<String,String> getterNameGenerator = (name) -> getterName(name);
+        protected Function<String,String> setterNameGenerator = (name) -> setterName(name);
+        protected Function<String,String> getterReturnValueDecorator = (name) -> name;
+    }
 
     private static final Set<String> accessModifiers =
             Set.of("public", "private", "protected", "package");
 
-    protected String cap(String s) {
-        return s.substring(0, 1).toUpperCase() + s.substring(1);
-    }
-
     protected void writeGetter(Field field, String name, String getterName,
                                String type, String access, Segment segment) {
         segment._r("%s %s %s(){", access, type, getterName)
-                .write("return %s;", name)
+                .write("return %s;", config.getterReturnValueDecorator.apply(name))
                 ._l("}")
                 .newline();
     }
 
-    protected abstract void writeSetter(Field field, String name, String setterName,
-                                        String type, String access, Segment segment);
-
-    protected String getterName(String name) {
-        return "get" + cap(name);
+    protected void writeSetter(Field field, String name, String setterName,
+                               String type, String access, Segment segment) {
     }
 
-    protected String setterName(String name) {
-        return "set" + cap(name);
+    protected static String getterName(String name) {
+        return "get" + ucase(name);
+    }
+
+    protected static String setterName(String name) {
+        return "set" + ucase(name);
     }
 
     private String check(final String access) {
@@ -55,17 +63,18 @@ public abstract class AbstractAccessor extends AbstractFilteredFieldsGenerator {
         return modifiedAccess;
     }
 
+
     @Override
     public void process(Source source, Class<?> klass,
                         CompoundParams params,
                         Field field,
-                        Segment segment) throws Exception {
+                        Segment segment) {
         final var isFinal = Modifier.isFinal(field.getModifiers());
         final var name = field.getName();
         final var fieldType = GeciReflectionTools.typeAsString(field);
         final var access = check(params.get("access", "public"));
-        final var setter = params.get("setter", () -> setterName(name));
-        final var getter = params.get("getter", () -> getterName(name));
+        final var setter = params.get("setter", () -> config.setterNameGenerator.apply(name));
+        final var getter = params.get("getter", () -> config.getterNameGenerator.apply(name));
         final var only = params.get("only");
         if (!isFinal && !"getter".equals(only)) {
             writeSetter(field, name, setter, fieldType, access, segment);
@@ -74,4 +83,62 @@ public abstract class AbstractAccessor extends AbstractFilteredFieldsGenerator {
             writeGetter(field, name, getter, fieldType, access, segment);
         }
     }
+
+    //<editor-fold id="configBuilder" filter="true" configAccess="protected">
+    protected final Config config = new Config();
+    public static AbstractAccessor.Builder builder() {
+        return new AbstractAccessor().new Builder();
+    }
+
+    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+        "access",
+        "filter",
+        "id"
+    );
+
+    @Override
+    protected java.util.Set<String> implementedKeys() {
+        return implementedKeys;
+    }
+    public class Builder {
+        public Builder access(String access) {
+            config.access = access;
+            return this;
+        }
+
+        public Builder filter(String filter) {
+            config.filter = filter;
+            return this;
+        }
+
+        public Builder getterNameGenerator(java.util.function.Function getterNameGenerator) {
+            config.getterNameGenerator = getterNameGenerator;
+            return this;
+        }
+
+        public Builder getterReturnValueDecorator(java.util.function.Function getterReturnValueDecorator) {
+            config.getterReturnValueDecorator = getterReturnValueDecorator;
+            return this;
+        }
+
+        public Builder setterNameGenerator(java.util.function.Function setterNameGenerator) {
+            config.setterNameGenerator = setterNameGenerator;
+            return this;
+        }
+
+        public AbstractAccessor build() {
+            return AbstractAccessor.this;
+        }
+    }
+    private Config localConfig(CompoundParams params){
+        final var local = new Config();
+        local.access = params.get("access",config.access);
+        local.filter = params.get("filter",config.filter);
+        local.getterNameGenerator = config.getterNameGenerator;
+        local.getterReturnValueDecorator = config.getterReturnValueDecorator;
+        local.setterNameGenerator = config.setterNameGenerator;
+        return local;
+    }
+    //</editor-fold>
+
 }

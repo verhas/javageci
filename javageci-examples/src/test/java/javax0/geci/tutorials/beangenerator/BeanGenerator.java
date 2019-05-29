@@ -3,6 +3,7 @@ package javax0.geci.tutorials.beangenerator;
 
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractGeneratorEx;
+import javax0.geci.tools.CaseTools;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.io.StringReader;
 
 import static javax0.geci.api.Source.Set.set;
+import static javax0.geci.tools.CaseTools.ucase;
 
 public class BeanGenerator extends AbstractGeneratorEx {
 // END SNIPPET
@@ -41,11 +43,11 @@ public class BeanGenerator extends AbstractGeneratorEx {
                     String type = attributes.getNamedItem("type").getNodeValue();
                     segment.write("private " + type + " " + name + ";");
 
-                    segment.write_r("public " + type + " get" + cap(name) + "() {");
+                    segment.write_r("public " + type + " get" + ucase(name) + "() {");
                     segment.write("return " + name + ";");
                     segment.write_l("}");
 
-                    segment.write_r("public void set" + cap(name) + "(" + type + " " + name + ") {");
+                    segment.write_r("public void set" + ucase(name) + "(" + type + " " + name + ") {");
                     segment.write("this." + name + " = " + name + ";");
                     segment.write_l("}");
 
@@ -63,10 +65,6 @@ public class BeanGenerator extends AbstractGeneratorEx {
         final var dbFactory = DocumentBuilderFactory.newInstance();
         final var dBuilder = dbFactory.newDocumentBuilder();
         return dBuilder.parse(new InputSource(new StringReader(source.toString())));
-    }
-
-    private static String cap(String s) {
-        return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
     //END SNIPPET
 // START SNIPPET BeanGenerator_head

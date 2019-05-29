@@ -286,6 +286,8 @@ library support. You need the builder class, the method
 generated automatically knowing the names of the configuration
 parameters.
 
+### Basic elements of usage
+
 The generator `ConfigBuilder` does this code generation. When developing
 a code generator the developer has to create the `private static class
 Config` class with all the fields that can be configured and insert an
@@ -345,3 +347,22 @@ Note that this method will copy the non-string values from the `config`
 object but will not touch the `final` fields (because that is not
 possible, and they are there in case the generator class developer wants
 to store some constant values there).
+
+### Configuring the config builder
+
+The title may be confusing, but the cnfig builder is just a code
+generator that uses the configuration structure described in this
+document and can be configured. The following parameters can be
+configured
+
+* `filter` filters the fields that are used from the `Config` class.
+* `builderName` is the name of the builder class. The default is
+  `Builder`  
+* `builderFactory` the name of the static method that returns a new
+  builder object. The default is `builder`.  
+* `buildMethod` the name of the method that returns the generator
+  instance after it was configured calling the chained builder methods.  
+* `configAccess` the access modifier of the `config` field. The default
+  value is `private`, but this may need to be `protected` in case the
+  generator is created in part of some inheritance. An example is the
+  accessor generator that uses this feature. 

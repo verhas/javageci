@@ -29,6 +29,28 @@ public class TestAccessor {
 
 that will generate the code during test time.
 
+When you use the builder to generate an instance you can define the
+following parameters:
+
+
+* `setterNameGenerator` can be used to specify a
+  `Function<String,String>` that converts the name of the field to the
+  setter name. This can be used in case there are some specific naming
+  conventions used in some of the source files. 
+* `getterNameGenerator` is similar but it can be used to calculate the
+  name of the getter.
+* `getterReturnValueDecorator` is a `Function<String,String>` that can
+  be used to inject code around the getter return value. The getter
+  by default has a return statement that has the format
+  `return field;`. Using this function the string representing the
+  `field` can be replaced with something more complex. The argument to 
+  the `apply()` method to the function will be the name of the field and
+  the result of the function will be used between the `return` keyword
+  and the line ending `;` semicolon. In other word using this function 
+  you can replace the `field` name string with something more complex. 
+* for the following configuration values you can see the documentation
+  below`filter`, `access`
+
 To ignite the code generation for a specific class you have to annotate
 the class as
 

@@ -130,5 +130,9 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
      */
     public abstract void process(Source source, Class<?> klass, CompoundParams global) throws Exception;
 
-    public abstract String mnemonic();
+    private final String calculatedMnemonic = CaseTools.lcase(this.getClass().getSimpleName());
+
+    public String mnemonic() {
+        return calculatedMnemonic;
+    }
 }
