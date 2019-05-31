@@ -263,19 +263,29 @@ that all the parameters defined in the source code are expected by the
 generator and in case there is a configuration value that the generator
 does not understand then they will throw a `GeciException`.
 
-The actual check is done by the abstract class `AbstractJavaGenerator`.
-The concrete implementation has to provide a method `implementedKeys()`
-overriding the one implemented in the abstract class. This method should
-return a set of strings containing all the configuration parameters the
-generator can handle. (Note that the set should also include the
-parameter name `id`). The default implementation returns `null` and in
-this case there is no check. This is not a good practice.
+The actual check is done by the abstract class `CompoundParams`. It is
+performed only when some caller invokes the `setConstraints()` method or
+when a `CompoundParams` object is created uniting other such objects and
+at least one has constraints.
+ 
+The constraints currently are set by the class `AbstractJavaGenerator`
+getting the set of allowed configuration keys invoking the method
+`implementedKeys()`. The concrete implementation has to provide a method
+`implementedKeys()` overriding the one implemented in the abstract
+class. This method should return a set of strings containing all the
+configuration parameters the generator can handle. (Note that the set
+should also include the parameter name `id`). The default implementation
+returns `null` and in this case there is no check. This is not a good
+practice.
+
+The method `implementedKeys()` is automatically created by the config
+builder code generator that generators are encouraged to use.
 
 The checking ignores the parameter `desc` because this parameter can be
 used in the `editor-fold` line to specify a string that the IDE displays
 when the fold is closed. You can use `desc` freely, the generators will
-ignore it. (Unless one generator explicitly uses that as a parameter. Not
-recommended.)
+ignore it. (Unless one generator explicitly uses that as a parameter. It
+is also not recommended.)
 
 ## Using config builder
 
