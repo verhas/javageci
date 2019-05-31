@@ -8,8 +8,6 @@ import java.util.HashMap;
 /**
  * Sample
  */
-@Geci("mapper factory='newPerson()'")
-@Geci("equals")
 public class Person extends AbstractPerson {
     private HashMap<String, String> willMapPrivateHashMap;
     private Person mother;
@@ -45,7 +43,7 @@ public class Person extends AbstractPerson {
 
     //</editor-fold>
 
-    //<editor-fold id="mapper">
+    //<editor-fold id="mapper" factory="newPerson()">
     @javax0.geci.annotations.Generated("mapper")
     public java.util.Map<String,Object> toMap() {
         return toMap0( new java.util.IdentityHashMap<>());

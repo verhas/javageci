@@ -6,44 +6,52 @@ import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractFilteredFieldsGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
+import javax0.geci.tools.reflection.Selector;
 import javax0.geci.tools.syntax.GeciAnnotationTools;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Sample generator that generates {@code equals()} and {@code hashCode()} methods. The implementation extends the
- * {@link AbstractFilteredFieldsGenerator} class. There are two different ways to extend this abstract class and for
- * the sake of the demonstration this implementation uses both: one for creating the {@code equals()} method, and the
- * other one to create the {@code hashCode()} method.
+ * Sample generator that generates {@code equals()} and {@code
+ * hashCode()} methods. The implementation extends the {@link
+ * AbstractFilteredFieldsGenerator} class. There are two different ways
+ * to extend this abstract class and for the sake of the demonstration
+ * this implementation uses both: one for creating the {@code equals()}
+ * method, and the other one to create the {@code hashCode()} method.
+ *
+ * <p> The code for {@code equals()} is created overriding the three
+ * methods
  * <p>
- * The code for {@code equals()} is created overriding the methods
  * {@link AbstractFilteredFieldsGenerator#preprocess(Source, Class, CompoundParams)},
  * {@link AbstractFilteredFieldsGenerator#process(Source, Class, CompoundParams, Field)}, and
  * {@link AbstractFilteredFieldsGenerator#postprocess(Source, Class, CompoundParams)}.
  * </p>
+ *
+ * <p> The code for {@code hashCode()} is created overriding the method
+ * {@link AbstractFilteredFieldsGenerator#process(Source, Class,
+ * CompoundParams, Field[])} </p>
  * <p>
- * The code for {@code hashCode()} is created overriding the method
- * {@link AbstractFilteredFieldsGenerator#process(Source, Class, CompoundParams, Field[])}
- * </p>
- * (Note that in this case the last parameter is an array and not a single field.)
+ * (Note that in this case the last parameter is an array and not a
+ * single field.)
  */
 public class Equals extends AbstractFilteredFieldsGenerator {
 
     private static class Config {
         private Class<? extends Annotation> generatedAnnotation = Generated.class;
+        private String filter;
         private String subclass = "no";
         private String useObjects = "no";
+        private String notNull = "true";
+        private String hashFilter = "true";
     }
 
     private boolean generateEquals;
-    private final List<Field> fields = new ArrayList<>();
     private Segment equalsSegment;
     private Field lastField;
     private CompoundParams lastParams;
@@ -58,13 +66,11 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         equalsSegment = source.temporary();
         generateEqualsHeader(equalsSegment, klass, global);
         lastField = null;
-        fields.clear();
     }
 
     @Override
     public void process(Source source, Class<?> klass, CompoundParams params, Field field) {
         generateEqualsForField(equalsSegment, params, field);
-        fields.add(field);
     }
 
     @Override
@@ -133,17 +139,25 @@ public class Equals extends AbstractFilteredFieldsGenerator {
     }
 
     /**
-     * Return the string that is the code for testing the last field in the list of the fields. When we are testing
-     * the fields for equality we return if a field does not match the same field from the other object, otherwise
-     * we go on testing the rest of the fields.
-     * <p>
-     * In case of the last field, however, there are no more fields, this is the last one. Therefore the code is simply
-     * return the result of the comparison of the two fields. If they match then the whoe two objects are equal sine all
-     * fields were some way equal. If the last fields do not match then the two objects are not equal.
+     * Return the string that is the code for testing the last field in
+     * the list of the fields. When we are testing the fields for
+     * equality we return if a field does not match the same field from
+     * the other object, otherwise we go on testing the rest of the
+     * fields.
      *
-     * @param condition to check the equality. Since the same string is converted to test the non-equality when this
-     *                  is not the last field this string also optionally contains {@code !!} characters, which are
-     *                  deleted in this case. When the field is not the last one and {@link #ret(String)} is invoked
+     * <p> In case of the last field, however, there are no more fields,
+     * this is the last one. Therefore the code is simply return the
+     * result of the comparison of the two fields. If they match then
+     * the whoe two objects are equal sine all fields were some way
+     * equal. If the last fields do not match then the two objects are
+     * not equal.
+     *
+     * @param condition to check the equality. Since the same string is
+     *                  converted to test the non-equality when this is
+     *                  not the last field this string also optionally
+     *                  contains {@code !!} characters, which are
+     *                  deleted in this case. When the field is not the
+     *                  last one and {@link #ret(String)} is invoked
      *                  these will become {@code !} negations.
      * @return the code that handles the condition
      */
@@ -153,22 +167,33 @@ public class Equals extends AbstractFilteredFieldsGenerator {
     }
 
     /**
-     * Return the string that is the code for testing the field in the list of the fields in case this is NOT the last
-     * field. See also {@link #retLast(String)}.
-     * <p>
-     * Note that the {@code condition} is the string that tests for equality. In this case, however, we need to test
-     * inequality, thus the condition has to be reversed. The format of the conditions is very limited, there are only
-     * six different strings that are used as condition, and therefore some very simple rule can be used to reverse
-     * the condition:
+     * Return the string that is the code for testing the field in the
+     * list of the fields in case this is NOT the last field. See also
+     * {@link #retLast(String)}.
+     *
+     * <p> Note that the {@code condition} is the string that tests for
+     * equality. In this case, however, we need to test inequality, thus
+     * the condition has to be reversed. The format of the conditions is
+     * very limited, there are only six different strings that are used
+     * as condition, and therefore some very simple rule can be used to
+     * reverse the condition:
+     *
      * <ul>
-     * <li>If there is a '{@code ==}' sign in the condition then it has to be converted to '{@code !=}' and then</li>
-     * <li>if there is a '{@code !!}' in the condition it has to become '{@code !}'</li>
-     * <li>If there is NO '{@code ==}' in the condition string then the condition has to be preceeded
-     * with '{@code !}'</li>
+     *
+     * <li>If there is a '{@code ==}' sign in the condition then it has
+     * to be converted to '{@code !=}' and then</li>
+     *
+     * <li>if there is a '{@code !!}' in the condition it has to become
+     * '{@code !}'</li>
+     *
+     * <li>If there is NO '{@code ==}' in the condition string then the
+     * condition has to be preceded * with '{@code !}'</li>
+     *
      * </ul>
-     * <p>
-     * Note that this is not a general algorithm to convert an arbitrary boolean Java expression. It just works for
-     * these six cases.
+     *
+     * <p> Note that this is not a general algorithm to convert an
+     * arbitrary boolean Java expression. It just works for these six
+     * cases.
      *
      * @param condition that tests the equality and which is negated using the special algorithm.
      * @return the code that handles the condition, simply {@code if( not condition) return false;}
@@ -199,22 +224,27 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         var hashCodeMethod = getMethodOrNull(klass, "hashCode");
         var generateHashCode = hashCodeMethod == null || GeciAnnotationTools.isGenerated(hashCodeMethod);
         if (generateHashCode) {
-            segment.write("@javax0.geci.annotations.Generated(\"equals\")");
+            writeGenerated(segment, config.generatedAnnotation);
             segment.write("@Override");
             segment.write_r("public int hashCode() {");
-
+            final var hashFields = Arrays.stream(fields).filter(field -> {
+                        final var params = new CompoundParams(GeciReflectionTools.getParameters(field, mnemonic()), global);
+                        final var hashFilter = params.get("hashFilter", params.get("filter", config.hashFilter));
+                        return Selector.compile(hashFilter).match(field);
+                    }
+            ).toArray(Field[]::new);
             if (global.is("useObjects", config.useObjects)) {
-                generateHashCodeBodyUsingObjects(segment);
+                generateHashCodeBodyUsingObjects(segment, hashFields);
             } else {
-                generateHashCodeBody(segment, global);
+                generateHashCodeBody(segment, global, hashFields);
             }
             segment.write_l("}");
         }
     }
 
-    private void generateHashCodeBody(Segment segment, CompoundParams global) {
+    private void generateHashCodeBody(Segment segment, CompoundParams global, Field[] fields) {
         segment.write("int result = 0;");
-        if (thereIsAtLeastOneDoubleField()) {
+        if (thereIsAtLeastOneDoubleField(fields)) {
             segment.write("long temp;");
         }
         segment.newline();
@@ -249,13 +279,13 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         segment.write("return result;");
     }
 
-    private boolean thereIsAtLeastOneDoubleField() {
-        return fields.stream().map(Field::getType).anyMatch(c -> c.equals(double.class));
+    private boolean thereIsAtLeastOneDoubleField(Field[] fields) {
+        return Arrays.stream(fields).map(Field::getType).anyMatch(c -> c.equals(double.class));
     }
 
-    private void generateHashCodeBodyUsingObjects(Segment segment) {
+    private void generateHashCodeBodyUsingObjects(Segment segment, Field[] fields) {
         segment.write("return Objects.hash(%s);",
-                fields.stream().map(Field::getName).collect(Collectors.joining(", ")));
+                Arrays.stream(fields).map(Field::getName).collect(Collectors.joining(", ")));
     }
 
     @Override
@@ -270,6 +300,9 @@ public class Equals extends AbstractFilteredFieldsGenerator {
     }
 
     private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+        "filter",
+        "hashFilter",
+        "notNull",
         "subclass",
         "useObjects",
         "id"
@@ -280,8 +313,23 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         return implementedKeys;
     }
     public class Builder {
+        public Builder filter(String filter) {
+            config.filter = filter;
+            return this;
+        }
+
         public Builder generatedAnnotation(Class generatedAnnotation) {
             config.generatedAnnotation = generatedAnnotation;
+            return this;
+        }
+
+        public Builder hashFilter(String hashFilter) {
+            config.hashFilter = hashFilter;
+            return this;
+        }
+
+        public Builder notNull(String notNull) {
+            config.notNull = notNull;
             return this;
         }
 
@@ -301,7 +349,10 @@ public class Equals extends AbstractFilteredFieldsGenerator {
     }
     private Config localConfig(CompoundParams params){
         final var local = new Config();
+        local.filter = params.get("filter",config.filter);
         local.generatedAnnotation = config.generatedAnnotation;
+        local.hashFilter = params.get("hashFilter",config.hashFilter);
+        local.notNull = params.get("notNull",config.notNull);
         local.subclass = params.get("subclass",config.subclass);
         local.useObjects = params.get("useObjects",config.useObjects);
         return local;

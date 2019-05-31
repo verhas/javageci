@@ -19,6 +19,7 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
     protected static class Config {
         protected String access = "public";
         protected String filter = "true";
+        protected String getter = null;
         protected Function<String,String> getterNameGenerator = (name) -> getterName(name);
         protected Function<String,String> setterNameGenerator = (name) -> setterName(name);
         protected Function<String,String> getterReturnValueDecorator = (name) -> name;
@@ -93,6 +94,7 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
     private static final java.util.Set<String> implementedKeys = java.util.Set.of(
         "access",
         "filter",
+        "getter",
         "id"
     );
 
@@ -108,6 +110,11 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
 
         public Builder filter(String filter) {
             config.filter = filter;
+            return this;
+        }
+
+        public Builder getter(String getter) {
+            config.getter = getter;
             return this;
         }
 
@@ -134,6 +141,7 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
         final var local = new Config();
         local.access = params.get("access",config.access);
         local.filter = params.get("filter",config.filter);
+        local.getter = params.get("getter",config.getter);
         local.getterNameGenerator = config.getterNameGenerator;
         local.getterReturnValueDecorator = config.getterReturnValueDecorator;
         local.setterNameGenerator = config.setterNameGenerator;

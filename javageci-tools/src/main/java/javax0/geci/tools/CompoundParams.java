@@ -1,6 +1,10 @@
 package javax0.geci.tools;
 
+import javax0.geci.api.GeciException;
+import javax0.geci.api.Source;
+
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,6 +43,9 @@ public class CompoundParams {
     private final Map<String, String>[] params;
     private final CompoundParams[] cparams;
     private final String id;
+    private Set<String> allowedKeys = null;
+    private Source source = null;
+    private String mnemonic = null;
 
     /**
      * Create a new {@code CompoundParams} object with the given {@code id} and with the underlying parameter
@@ -55,19 +62,74 @@ public class CompoundParams {
     }
 
     /**
-     * Create a new {@code CompoundParams} object with the given {@code id} and with the underlying
-     * {@code CompoundParameters} array.
-     * <p>
-     * The identifier of the parameters will be copied from the first non-null element of the array.
+     * Create a new {@code CompoundParams} object with the given {@code
+     * id} and with the underlying {@code CompoundParameters} array.
+     *
+     * <p> The identifier of the parameters will be copied from the
+     * first non-null element of the array.
+     *
+     * <p> If any of the argument {@code CompoundParameters} have
+     * defined constraints (a set of allowed keys) then the constraints
+     * will be checked and in case the constraints are violated then it
+     * will throw {@link GeciException}.
+     *
      *
      * @param cparams the compound parameters array.
      */
     public CompoundParams(CompoundParams... cparams) {
         this.params = null;
         this.cparams = cparams;
-        this.id = Arrays.stream(cparams)
-                .filter(Objects::nonNull).limit(1).map(c -> c.id)
+        this.id = find(cparams,c -> c.id);
+        this.source = find(cparams,c -> c.source);
+        this.mnemonic = find(cparams,c -> c.mnemonic);
+        this.allowedKeys = find(cparams,c -> c.allowedKeys);
+        if( source != null &&  mnemonic != null && allowedKeys != null ){
+            checkAllowedKeys();
+        }
+    }
+
+    private <T> T find(CompoundParams[] cparams, Function<CompoundParams,T> mapper){
+        return Arrays.stream(cparams)
+                .filter(Objects::nonNull)
+                .map(mapper)
+                .filter(Objects::nonNull)
+                .limit(1)
                 .findFirst().orElse(null);
+    }
+
+    /**
+     * Set the constraints that this {@code CompoundParameters} should
+     * adhere. The constrain is simply the set of the allowed key
+     * strings. The other parameters are used to construct a meaningful
+     * exception during checking.
+     *
+     * <p> After the constraints are set a check is also performed and a
+     * {@link GeciException} may be thrown.
+     *
+     * @param source the source object from which the keys come from
+     * @param mnemonic the mnemonic of the generator
+     * @param allowedKeys the set of the allowed keys
+     */
+    public void setConstrains(Source source, String mnemonic, Set<String> allowedKeys) {
+        this.source = source;
+        this.mnemonic = mnemonic;
+        this.allowedKeys = allowedKeys;
+        if (source != null && allowedKeys != null) {
+            checkAllowedKeys();
+        }
+    }
+
+    private void checkAllowedKeys() {
+        for (final var key : keySet()) {
+            if (!allowedKeys.contains(key)) {
+                throw new GeciException("The configuration '"
+                        + key
+                        + "' can not be used with the generator "
+                        + mnemonic
+                        + " in source code "
+                        + source.getAbsoluteFile());
+            }
+        }
     }
 
     /**

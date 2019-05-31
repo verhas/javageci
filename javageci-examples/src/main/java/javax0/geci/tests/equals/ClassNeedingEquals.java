@@ -4,12 +4,12 @@ import javax0.geci.annotations.Geci;
 
 import java.util.Objects;
 
-@Geci("equals subclass='ok' useObjects='true'")
 public class ClassNeedingEquals {
 
     private int anInt;
     private byte aByte;
     private boolean aBoolean;
+    @Geci("equals hashFilter='false'")
     private char aChar;
     @Geci("equals filter='false'")
     private ClassNeedingEquals huss;
@@ -27,11 +27,11 @@ public class ClassNeedingEquals {
         return aFloat;
     }
 
-    //<editor-fold id="equals">
+    //<editor-fold id="equals" subclass="ok" useObjects="true">
     @javax0.geci.annotations.Generated("equals")
     @Override
     public int hashCode() {
-        return Objects.hash(aBoolean, aByte, aChar, aDouble, aFloat, aLong, aShort, anInt, h, x);
+        return Objects.hash(aBoolean, aByte, aDouble, aFloat, aLong, aShort, anInt, h, x);
     }
     @javax0.geci.annotations.Generated("equals")
     @Override

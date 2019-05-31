@@ -79,29 +79,13 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
     public final void processEx(Source source) throws Exception {
         final var klass = source.getKlass();
         if (klass != null) {
-            var annotation = Optional.ofNullable(GeciReflectionTools.getParameters(klass, mnemonic())).orElseGet(() ->
+            var annotationParams = Optional.ofNullable(GeciReflectionTools.getParameters(klass, mnemonic())).orElseGet(() ->
                     GeciAnnotationTools.getParameters(source, mnemonic(), "//", CLASS_LINE));
-            var segment = GeciAnnotationTools.getSegmentParameters(source, mnemonic());
-            var global = new CompoundParams(annotation, segment);
-            final var keys = implementedKeys();
-            if (keys != null) {
-                checkAllowedKeys(keys, global, source);
-            }
-            if (annotation != null || segment != null) {
+            var editorFoldParams = GeciAnnotationTools.getSegmentParameters(source, mnemonic());
+            var global = new CompoundParams(annotationParams, editorFoldParams);
+            global.setConstrains(source,mnemonic(),implementedKeys());
+            if (annotationParams != null || editorFoldParams != null) {
                 process(source, klass, global);
-            }
-        }
-    }
-
-    private void checkAllowedKeys(Set<String> keys, CompoundParams global, Source source) {
-        for (final var key : global.keySet()) {
-            if (!keys.contains(key)) {
-                throw new GeciException("The configuration '"
-                        + key
-                        + "' can not be used with the generator "
-                        + mnemonic()
-                        + " in source code "
-                        + source.getAbsoluteFile());
             }
         }
     }
