@@ -1,6 +1,5 @@
 package javax0.geci.tools;
 
-import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.syntax.GeciAnnotationTools;
@@ -83,7 +82,7 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
                     GeciAnnotationTools.getParameters(source, mnemonic(), "//", CLASS_LINE));
             var editorFoldParams = GeciAnnotationTools.getSegmentParameters(source, mnemonic());
             var global = new CompoundParams(annotationParams, editorFoldParams);
-            global.setConstrains(source,mnemonic(),implementedKeys());
+            global.setConstrains(source, mnemonic(), implementedKeys());
             if (annotationParams != null || editorFoldParams != null) {
                 process(source, klass, global);
             }
@@ -97,7 +96,8 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
      * any configuration key that is not used by the generator then it
      * throws {@code GeciException}.
      *
-     * @return
+     * @return {@code null}. Concrete implementations should return the
+     * set of the keys that are accepted by the generator.
      */
     protected Set<String> implementedKeys() {
         return null;

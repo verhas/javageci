@@ -2,6 +2,7 @@ package javax0.geci.toolsgen;
 
 import javax0.geci.api.Source;
 import javax0.geci.engine.Geci;
+import javax0.geci.tools.AbstractFieldsGenerator;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import org.junit.jupiter.api.Assertions;
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import static javax0.geci.api.Source.maven;
 
 /**
- * A simple sample code generator that copies the {@link javax0.geci.tools.AbstractDeclaredFieldsGenerator} and
+ * A simple sample code generator that copies the {@link AbstractFieldsGenerator} and
  * {@link javax0.geci.tools.AbstractFilteredFieldsGenerator} to the same name but replacing all fields to be methods.
  */
 public class TestCopyGenerator extends AbstractJavaGenerator {

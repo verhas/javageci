@@ -19,12 +19,19 @@ import java.lang.reflect.Method;
  * </ul>
  */
 
-public abstract class AbstractDeclaredMethodsGenerator extends AbstractJavaGenerator {
+public abstract class AbstractMethodsGenerator extends AbstractJavaGenerator {
+
+    /**
+     * Concrete implementations may set this method  in their constructor
+     * to {@code false} to work with all the methods including the
+     * inherited methods.
+     */
+    protected boolean declaredOnly = true;
 
     @Override
     public final void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
         preprocessHook(source, klass, global);
-        final var methods = GeciReflectionTools.getDeclaredMethodsSorted(klass);
+        final var methods = declaredOnly ? GeciReflectionTools.getDeclaredMethodsSorted(klass) : GeciReflectionTools.getAllMethodsSorted(klass);
         for (final var method : methods) {
             var params = GeciReflectionTools.getParameters(method, mnemonic());
             processMethodHook(source, klass, new CompoundParams(params, global), method);

@@ -11,7 +11,7 @@ import java.util.List;
 
 
 /**
- * This abstract generator does the same as {@link AbstractDeclaredMethodsGenerator} with the additional functionality
+ * This abstract generator does the same as {@link AbstractMethodsGenerator} with the additional functionality
  * that it looks at the {@code Geci} annotation parameter named {@code filter}, which supposed to contain a
  * {@link Selector} expression and invokes the {@link #process(Source, Class, CompoundParams, Method)} method only
  * for the methods, which match the filter criterion.
@@ -22,7 +22,7 @@ import java.util.List;
  * {@code Geci} annotation is either {@code true} and {@code false}.
  */
 
-public abstract class AbstractFilteredMethodsGenerator extends AbstractDeclaredMethodsGenerator {
+public abstract class AbstractFilteredMethodsGenerator extends AbstractMethodsGenerator {
     private final List<Method> methods = new ArrayList<>();
 
     @Override
@@ -74,7 +74,7 @@ public abstract class AbstractFilteredMethodsGenerator extends AbstractDeclaredM
 
     /**
      * Extending this interface can override this method adding extra functionality and keeping the signature and the
-     * name of the abstract method {@link AbstractDeclaredMethodsGenerator#process(Source, Class, CompoundParams, Method)}.
+     * name of the abstract method {@link AbstractMethodsGenerator#process(Source, Class, CompoundParams, Method)}.
      *
      * @param source see the documentation of the same name argument in
      *               {@link javax0.geci.api.Generator#process(Source)}
@@ -91,7 +91,7 @@ public abstract class AbstractFilteredMethodsGenerator extends AbstractDeclaredM
 
     /**
      * Extending this interface can override this method adding extra functionality and keeping the signature and the
-     * name of the abstract method {@link AbstractDeclaredMethodsGenerator#process(Source, Class, CompoundParams, Method)}.
+     * name of the abstract method {@link AbstractMethodsGenerator#process(Source, Class, CompoundParams, Method)}.
      *
      * @param source see the documentation of the same name argument in
      *               {@link javax0.geci.api.Generator#process(Source)}

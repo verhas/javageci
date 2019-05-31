@@ -17,13 +17,20 @@ import java.lang.reflect.Field;
  * </li>
  * </ul>
  */
-@Geci("copyClass copyTo='AbstractDeclaredMethodsGenerator.java'")
-public abstract class AbstractDeclaredFieldsGenerator extends AbstractJavaGenerator {
+@Geci("copyClass copyTo='AbstractMethodsGenerator.java'")
+public abstract class AbstractFieldsGenerator extends AbstractJavaGenerator {
+
+    /**
+     * Concrete implementations may set this field  in their constructor
+     * to {@code false} to work with all the fields including the
+     * inherited fields.
+     */
+    protected boolean declaredOnly = true;
 
     @Override
     public final void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
         preprocessHook(source, klass, global);
-        final var fields = GeciReflectionTools.getDeclaredFieldsSorted(klass);
+        final var fields = declaredOnly ? GeciReflectionTools.getDeclaredFieldsSorted(klass) : GeciReflectionTools.getAllFieldsSorted(klass);
         for (final var field : fields) {
             var params = GeciReflectionTools.getParameters(field, mnemonic());
             processFieldHook(source, klass, new CompoundParams(params, global), field);
