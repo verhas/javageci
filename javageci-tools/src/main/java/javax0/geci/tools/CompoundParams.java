@@ -218,6 +218,16 @@ public class CompoundParams {
         return null;
     }
 
+
+    public static boolean toBoolean(String s){
+        return s != null && (
+            s.equalsIgnoreCase("yes") ||
+                s.equalsIgnoreCase("ok") ||
+                s.equalsIgnoreCase("1") ||
+                s.equalsIgnoreCase("true")
+        );
+    }
+
     /**
      * Retrieves a parameter boolean value.
      *
@@ -227,12 +237,7 @@ public class CompoundParams {
      */
     public boolean is(String key) {
         var s = get(key);
-        return s != null && (
-                s.equalsIgnoreCase("yes") ||
-                        s.equalsIgnoreCase("ok") ||
-                        s.equalsIgnoreCase("1") ||
-                        s.equalsIgnoreCase("true")
-        );
+        return toBoolean(s);
     }
 
     public boolean is(String key, boolean defaultValue) {

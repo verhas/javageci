@@ -4,6 +4,7 @@ import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractJavaGenerator;
+import javax0.geci.tools.CaseTools;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.reflection.Selector;
@@ -34,25 +35,25 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         final Class<?> configClass;
         try {
             configClass = Class.forName(klass.getName() + "$Config");
-        }catch(ClassNotFoundException cnfe){
-            throw new GeciException("There is no class 'Config' in "+klass.getName(),cnfe);
+        } catch (ClassNotFoundException cnfe) {
+            throw new GeciException("There is no class 'Config' in " + klass.getName(), cnfe);
         }
         final var segment = source.open(global.id());
         final var allDeclaredFields = Arrays.asList(GeciReflectionTools.getDeclaredFieldsSorted(configClass));
         final var fields = configurableFields(global, allDeclaredFields);
 
         final var local = localConfig(global);
-        generateConfigField(segment,local);
+        generateConfigField(segment, local);
         generateBuilderFactoryMethod(klass, segment, local);
         generateConfigKeySet(segment, fields);
         startBuilderClass(segment, local);
-        allDeclaredFields.forEach(field -> generateBuilderMethod(klass, segment, local, field));
+        allDeclaredFields.forEach(field -> generateBuilderMethod(klass, configClass, segment, local, field));
         finishBuilderClass(klass, segment, local);
-        generateLocalConfigMethod(segment, allDeclaredFields, fields);
+        generateLocalConfigMethod(segment, allDeclaredFields, fields, configClass);
     }
 
-    private void generateConfigField(Segment segment,Config local) {
-        segment.write("%s final Config config = new Config();",local.configAccess);
+    private void generateConfigField(Segment segment, Config local) {
+        segment.write("%s final Config config = new Config();", local.configAccess);
     }
 
     private void generateConfigKeySet(Segment segment, List<Field> fields) {
@@ -62,49 +63,66 @@ public class ConfigBuilder extends AbstractJavaGenerator {
             segment.write("\"%s\",", name);
         });
         segment.write("\"id\"")
-                .write_l(");")
-                .newline();
+            .write_l(");")
+            .newline();
         segment.write_l("@Override")
-                .write_r("protected java.util.Set<String> implementedKeys() {")
-                .write("return implementedKeys;")
-                .write_l("}");
+            .write_r("protected java.util.Set<String> implementedKeys() {")
+            .write("return implementedKeys;")
+            .write_l("}");
     }
 
-    private void generateLocalConfigMethod(Segment segment, List<Field> allDeclaredFields, List<Field> fields) {
+    private void generateLocalConfigMethod(Segment segment, List<Field> allDeclaredFields, List<Field> fields, Class<?> configClass) {
         segment.write_r("private Config localConfig(CompoundParams params){")
-                .write("final var local = new Config();");
-        allDeclaredFields.forEach(field -> {
+            .write("final var local = new Config();");
+        for (final var field : allDeclaredFields) {
             field.setAccessible(true);
             final var name = field.getName();
+            final var setterName = "set" + CaseTools.ucase(name);
             if (fields.contains(field)) {
-                segment.write("local.%s = params.get(\"%s\",config.%s);", name, name, name);
+                try {
+                    GeciReflectionTools.getMethod(configClass, setterName, field.getType());
+                    segment.write("local.%s(params.get(\"%s\",config.%s));", setterName, name, name);
+                } catch (NoSuchMethodException e) {
+                    segment.write("local.%s = params.get(\"%s\",config.%s);", name, name, name);
+                }
             } else {
                 if (!Modifier.isFinal(field.getModifiers())) {
-                    segment.write("local.%s = config.%s;", name, name);
+                    try {
+                        GeciReflectionTools.getMethod(configClass, setterName, field.getType());
+                        segment.write("local.%s(config.%s);", setterName, name);
+                    } catch (NoSuchMethodException e) {
+                        segment.write("local.%s = config.%s;", name, name);
+                    }
                 }
             }
-        });
+        }
         segment.write("return local;")
-                .write_l("}");
+            .write_l("}");
     }
 
     private void finishBuilderClass(Class<?> klass, Segment segment, Config local) {
         segment.write_r("public %s %s() {", klass.getSimpleName(), local.buildMethod)
-                .write("return %s.this;", klass.getSimpleName())
-                .write_l("}");
+            .write("return %s.this;", klass.getSimpleName())
+            .write_l("}");
         segment.write_l("}");
 
     }
 
-    private void generateBuilderMethod(Class<?> klass, Segment segment, Config local, Field field) {
+    private void generateBuilderMethod(Class<?> klass, Class<?> configClass, Segment segment, Config local, Field field) {
         final var name = field.getName();
         final var type = GeciReflectionTools.normalizeTypeName(field.getType().getName(), klass);
         if (!Modifier.isFinal(field.getModifiers())) {
-            segment.write_r("public %s %s(%s %s) {", local.builderName, name, type, name)
-                    .write("config.%s = %s;", name, name)
-                    .write("return this;")
-                    .write_l("}")
-                    .newline();
+            final var setterName = "set" + CaseTools.ucase(name);
+            segment.write_r("public %s %s(%s %s) {", local.builderName, name, type, name);
+            try {
+                GeciReflectionTools.getMethod(configClass, setterName, field.getType());
+                segment.write("config.%s(%s);", setterName, name);
+            } catch (NoSuchMethodException e) {
+                segment.write("config.%s = %s;", name, name);
+            }
+            segment.write("return this;")
+                .write_l("}")
+                .newline();
         }
     }
 
@@ -114,9 +132,9 @@ public class ConfigBuilder extends AbstractJavaGenerator {
 
     private void generateBuilderFactoryMethod(Class<?> klass, Segment segment, Config local) {
         segment.write_r("public static %s.%s %s() {", klass.getSimpleName(), local.builderName, local.builderFactoryMethod)
-                .write("return new %s().new %s();", klass.getSimpleName(), local.builderName)
-                .write_l("}")
-                .newline();
+            .write("return new %s().new %s();", klass.getSimpleName(), local.builderName)
+            .write_l("}")
+            .newline();
     }
 
     /**
@@ -130,10 +148,10 @@ public class ConfigBuilder extends AbstractJavaGenerator {
      */
     private List<Field> configurableFields(CompoundParams params, List<Field> allDeclaredFields) {
         return allDeclaredFields.stream().filter(
-                field -> {
-                    var l = localConfig(new CompoundParams(GeciReflectionTools.getParameters(field, mnemonic()), params));
-                    return Selector.compile(l.filter).match(field) && !Modifier.isFinal(field.getModifiers()) && field.getType().equals(String.class);
-                }
+            field -> {
+                var l = localConfig(new CompoundParams(GeciReflectionTools.getParameters(field, mnemonic()), params));
+                return Selector.compile(l.filter).match(field) && !Modifier.isFinal(field.getModifiers()) && field.getType().equals(String.class);
+            }
         ).collect(Collectors.toList());
     }
 

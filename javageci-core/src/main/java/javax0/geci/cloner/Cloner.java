@@ -20,10 +20,14 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         declaredOnly = false;
     }
 
-    private static class Config {
+    private class Config {
         private Class<? extends Annotation> generatedAnnotation = Generated.class;
         private String filter = "!static & !final";
         private String cloneMethod = "clone";
+        private final String declaredOnly = null;
+        private void setDeclaredOnly(String s){
+            Cloner.this.declaredOnly = CompoundParams.toBoolean(s);
+        }
     }
 
     @Override
