@@ -73,7 +73,9 @@ private static class Config {
 ```
  
 Note that the name has to be `Config` in order to use the code
-generation support. (See more about it later.)
+generation support. (See more about it later.) The class can also be
+non-static and in special cases there is a reason to do that, but unless
+you want it to be non-static make it static.
 
 Generators also have a `private`, preferably `final` field
 
@@ -324,9 +326,23 @@ The generator will create
 * the `config` field, 
 * the `builder()` method, which is the factory method for the builder
   class
-* the builder class itself
+* the builder class itself with all the building methods
 * the method `implementedKeys()` returning all coonfigurable keys
 * and a `private Config localConfig(CompoundParams params)` method.
+
+Note that the building methods will assign the argument string to the
+field that has the same name as in the example above. The generator
+however will check if there is a setter method (named `set` +
+capitalized field name) and in case it is there it invokes the setter
+instead of directly accessing the field. This behaviour makes it
+possible to directly alter some values in the generator. For example
+declaring the `Config` class non-static the setter have access to the
+boolean field `declaredOnly` defined in the `AbstractFieldGenerator` and
+`AbstractMethodGenerator` classes (whichever the actual generator
+extends). The code is generated in a similar way in the method
+`localConfig()` thus it is safe to declare the configuration field,
+which is not used more than to trigger the code generation for the
+invocation of the setter, to be `final`.
 
 We have already discussed the first four items in the above list, but
 we have not discussed the method `localConfig()`. This method is to help
