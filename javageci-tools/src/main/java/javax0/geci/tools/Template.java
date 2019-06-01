@@ -2,6 +2,10 @@ package javax0.geci.tools;
 
 import java.util.Map;
 
+/**
+ * A very simple Moustache like (light) templating. The method {@link #resolve(String)} replaces every
+ * {{key}} string with the value as defined in the map passed as a construction parameter.
+ */
 public class Template {
     final Map<String, String> params;
 
