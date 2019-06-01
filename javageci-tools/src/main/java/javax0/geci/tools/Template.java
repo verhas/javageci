@@ -17,7 +17,7 @@ public class Template {
         final StringBuilder sb = new StringBuilder(s);
         int position = 0;
         int start;
-        while ((start = sb.indexOf("{{", position)) > 0) {
+        while ((start = sb.indexOf("{{", position)) >= 0) {
             int end = sb.indexOf("}}",start);
             if( end > 0 ) {
                 final var key = sb.substring(start + 2, end);

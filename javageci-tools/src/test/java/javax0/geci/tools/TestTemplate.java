@@ -27,6 +27,13 @@ public class TestTemplate {
     }
 
     @Test
+    @DisplayName("Parameters replaces also at the start")
+    void startTest(){
+        final var sut = new Template(Map.of("a","b", "huhh","spooky"));
+        Assertions.assertEquals("bthis is {{a...}} spooky bab{{oon", sut.resolve("{{a}}this is {{a...}} {{huhh}} {{a}}a{{a}}{{oon"));
+    }
+
+    @Test
     @DisplayName("When there are params they are replaced but not the undefined")
     void goodTestStill(){
         final var sut = new Template(Map.of("a","b", "huhh","spooky"));
