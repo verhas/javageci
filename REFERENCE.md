@@ -679,6 +679,19 @@ of objects as parameters. The format string will be used in the
 `String.format()` method. Please read the Java documentation on how to
 use the formatting.
 
+It is also possible to define parameters for a segment. The method
+`param()` accepts string pairs (even number of strings) each pair being
+a `key` and a `value`. The parameters defined this way can be used in
+the strings passed to `write()`, `write_r()` or `write_l()` so that
+every `{{key}}` will be replaced by `value`. Note that the only
+requirement is that `key` and `value` are strings. It is not neccessary
+that `key` is an identifier, though in the usual cases it helps
+readability. If a `key` for a `{{key}}` is not defined it remains
+untouched.
+
+You can also reset the parameters calling the method `resetParams()` on
+the segment object.
+
 When the line itself contains newline characters then the indenting will
 automatically be kept for each line. There is no need to spit up the
 generated multi-line string into lines and invoke the `write()` method
