@@ -52,6 +52,19 @@ public interface Segment extends AutoCloseable {
     Segment newline();
 
     /**
+     * Define a parameter that can be used in the write methods.
+     * @param key the key that can be used in the first parameter of the write method between {{ and }}
+     * @param value the value that is to be replaced
+     * @return {@code this}
+     */
+    Segment param(String key, String value);
+
+    /**
+     * Delete the previously defined parameters.
+     */
+    void resetParams();
+
+    /**
      * Write a line into the segment after the last line and increase the indenting for the coming lines.
      * Usually you use this method when the line ends with a '{' character.
      *

@@ -77,21 +77,22 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         for (final var field : allDeclaredFields) {
             field.setAccessible(true);
             final var name = field.getName();
+            segment.param("name",name);
             final var setterName = "set" + CaseTools.ucase(name);
+            segment.param("setterName",setterName);
+            final var hasSetter = doesTheFieldHaveSetter(configClass, field, setterName);
             if (fields.contains(field)) {
-                try {
-                    GeciReflectionTools.getMethod(configClass, setterName, field.getType());
-                    segment.write("local.%s(params.get(\"%s\",config.%s));", setterName, name, name);
-                } catch (NoSuchMethodException e) {
-                    segment.write("local.%s = params.get(\"%s\",config.%s);", name, name, name);
+                if (hasSetter) {
+                    segment.write("local.{{setterName}}(params.get(\"{{name}}\",config.{{name}}));");
+                } else {
+                    segment.write("local.{{name}} = params.get(\"{{name}}\",config.{{name}});");
                 }
             } else {
-                try {
-                    GeciReflectionTools.getMethod(configClass, setterName, field.getType());
-                    segment.write("local.%s(config.%s);", setterName, name);
-                } catch (NoSuchMethodException e) {
+                if (hasSetter) {
+                    segment.write("local.{{setterName}}(config.{{name}});");
+                } else {
                     if (!Modifier.isFinal(field.getModifiers())) {
-                        segment.write("local.%s = config.%s;", name, name);
+                        segment.write("local.{{name}} = config.{{name}};");
                     }
                 }
             }

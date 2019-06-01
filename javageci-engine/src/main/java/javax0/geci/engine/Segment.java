@@ -1,20 +1,32 @@
 package javax0.geci.engine;
 
 import javax0.geci.api.GeciException;
+import javax0.geci.tools.Template;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Segment implements javax0.geci.api.Segment {
     private static final int TAB = 4;
     final List<String> lines = new LinkedList<>();
     final private int openingTabStop;
     private int tabStop;
+    private final Map<String, String> params = new HashMap<>();
 
     public Segment(int tabStop) {
         this.openingTabStop = tabStop;
         this.tabStop = tabStop;
+    }
+
+
+    @Override
+    public void resetParams() {
+        params.clear();
+    }
+
+    @Override
+    public Segment param(String key, String value) {
+        params.put(key, value);
+        return this;
     }
 
     @Override
@@ -40,7 +52,7 @@ public class Segment implements javax0.geci.api.Segment {
                 other.lines.forEach(line -> write(line));
             } else {
                 throw new GeciException("Segment " + segment + " is not instance of " + Segment.class.getName() +
-                        ". It is " + segment.getClass().getName() + "which is not compatible with this implementation");
+                    ". It is " + segment.getClass().getName() + "which is not compatible with this implementation");
             }
         }
         return this;
@@ -51,7 +63,12 @@ public class Segment implements javax0.geci.api.Segment {
         if (s.trim().length() == 0) {
             newline();
         } else {
-            var formatted = String.format(s, parameters);
+            final String formatted;
+            if (!params.isEmpty()) {
+                formatted = new Template(params).resolve(String.format(s, parameters));
+            } else {
+                formatted = String.format(s, parameters);
+            }
             if (formatted.contains("\n")) {
                 Arrays.stream(formatted.split("\n")).forEach(this::write);
             } else {
