@@ -86,11 +86,11 @@ public class ConfigBuilder extends AbstractJavaGenerator {
                     segment.write("local.%s = params.get(\"%s\",config.%s);", name, name, name);
                 }
             } else {
-                if (!Modifier.isFinal(field.getModifiers())) {
-                    try {
-                        GeciReflectionTools.getMethod(configClass, setterName, field.getType());
-                        segment.write("local.%s(config.%s);", setterName, name);
-                    } catch (NoSuchMethodException e) {
+                try {
+                    GeciReflectionTools.getMethod(configClass, setterName, field.getType());
+                    segment.write("local.%s(config.%s);", setterName, name);
+                } catch (NoSuchMethodException e) {
+                    if (!Modifier.isFinal(field.getModifiers())) {
                         segment.write("local.%s = config.%s;", name, name);
                     }
                 }
@@ -111,18 +111,27 @@ public class ConfigBuilder extends AbstractJavaGenerator {
     private void generateBuilderMethod(Class<?> klass, Class<?> configClass, Segment segment, Config local, Field field) {
         final var name = field.getName();
         final var type = GeciReflectionTools.normalizeTypeName(field.getType().getName(), klass);
-        if (!Modifier.isFinal(field.getModifiers())) {
-            final var setterName = "set" + CaseTools.ucase(name);
+        final var setterName = "set" + CaseTools.ucase(name);
+        final var hasSetter = doesTheFieldHaveSetter(configClass, field, setterName);
+        if (!Modifier.isFinal(field.getModifiers()) || hasSetter) {
             segment.write_r("public %s %s(%s %s) {", local.builderName, name, type, name);
-            try {
-                GeciReflectionTools.getMethod(configClass, setterName, field.getType());
+            if (hasSetter) {
                 segment.write("config.%s(%s);", setterName, name);
-            } catch (NoSuchMethodException e) {
+            } else {
                 segment.write("config.%s = %s;", name, name);
             }
             segment.write("return this;")
                 .write_l("}")
                 .newline();
+        }
+    }
+
+    private static boolean doesTheFieldHaveSetter(Class<?> configClass, Field field, String setterName) {
+        try {
+            GeciReflectionTools.getMethod(configClass, setterName, field.getType());
+            return true;
+        } catch (NoSuchMethodException e) {
+            return false;
         }
     }
 

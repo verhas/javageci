@@ -6,23 +6,26 @@ public class NeedCloner extends AbstractNeedCloner {
 
     //<editor-fold id="cloner">
     @javax0.geci.annotations.Generated("cloner")
-    public NeedCloner clone() {
+    public NeedCloner copy() {
         final var it = new NeedCloner();
+        copy(it);
+        return it;
+    }
+    protected void copy(NeedCloner it) {
 
         it.bINt = bINt;
         it.inheritedExcludedField = inheritedExcludedField;
         it.inheritedField = inheritedField;
-        return it;
     }
 
     NeedCloner withBINt(int bINt) {
-        final var it = clone();
+        final var it = copy();
         it.bINt = bINt;
         return it;
     }
 
     NeedCloner withInheritedField(String inheritedField) {
-        final var it = clone();
+        final var it = copy();
         it.inheritedField = inheritedField;
         return it;
     }

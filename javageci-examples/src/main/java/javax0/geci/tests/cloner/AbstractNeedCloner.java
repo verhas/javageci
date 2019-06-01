@@ -7,4 +7,8 @@ public class AbstractNeedCloner {
     @Geci("cloner filter='false'")
     public String inheritedExcludedField;
 
+
+    protected void mopy(AbstractNeedCloner it){
+    }
+
 }

@@ -10,13 +10,16 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
- * EntityString as per entity=field or method and stringer as something that converts to and from string.
- * Methods in this class convert fields or methods to string and back. The macros that list fields or methods
- * return comma separated list of fields, or methods. When other macros in a loop work with these strings they
- * need to get the actual methods and fields to work with during code generation.
- * <p>
- * The string format was designed so that this is also human readable, easy to parse, unique for each field and method
- * and do not interfere with the comma separated macro list handling.
+ * Entity is a field or a method. Stringer is something that converts to and from string. This class can convert a field
+ * (not the value of the field, but the field as in reflection) or a method to string and it can also do the conversion
+ * the other way.
+ *
+ * <p> Methods in this class convert fields or methods to string and back. The Jamal macros that list fields or methods
+ * return comma separated list of fields, or methods. When other macros in a loop work with these strings they need to
+ * get the actual methods and fields to work with during code generation.
+ *
+ * <p> The string format was designed so that this is also human readable, easy to parse, unique for each field and
+ * method and do not interfere with the comma separated macro list handling.
  */
 public class EntityStringer {
 
