@@ -24,8 +24,13 @@ public class Segment implements javax0.geci.api.Segment {
     }
 
     @Override
-    public Segment param(String key, String value) {
-        params.put(key, value);
+    public Segment param(String ... keyValuePairs) {
+        if( keyValuePairs.length %2 == 1 ){
+            throw new IllegalArgumentException("Parameters to Segment.param() should be in pair");
+        }
+        for( int i = 0 ; i < keyValuePairs.length ; i+= 2) {
+            params.put(keyValuePairs[i], keyValuePairs[i+1]);
+        }
         return this;
     }
 

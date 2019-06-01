@@ -53,11 +53,10 @@ public interface Segment extends AutoCloseable {
 
     /**
      * Define a parameter that can be used in the write methods.
-     * @param key the key that can be used in the first parameter of the write method between {{ and }}
-     * @param value the value that is to be replaced
+     * @param keyValuePairs the keys and values that can be used in the first parameter of the write method between {{ and }}
      * @return {@code this}
      */
-    Segment param(String key, String value);
+    Segment param(String ... keyValuePairs);
 
     /**
      * Delete the previously defined parameters.

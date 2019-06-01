@@ -43,17 +43,22 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         final var fields = configurableFields(global, allDeclaredFields);
 
         final var local = localConfig(global);
-        generateConfigField(segment, local);
-        generateBuilderFactoryMethod(klass, segment, local);
+        segment.param("klass", klass.getSimpleName(),
+            "access", local.configAccess,
+            "build", local.buildMethod,
+            "builder", local.builderFactoryMethod,
+            "Builder", local.builderName);
+        generateConfigField(segment);
+        generateBuilderFactoryMethod(segment);
         generateConfigKeySet(segment, fields);
-        startBuilderClass(segment, local);
-        allDeclaredFields.forEach(field -> generateBuilderMethod(klass, configClass, segment, local, field));
-        finishBuilderClass(klass, segment, local);
+        startBuilderClass(segment);
+        allDeclaredFields.forEach(field -> generateBuilderMethod(segment, klass, configClass, field));
+        finishBuilderClass(segment);
         generateLocalConfigMethod(segment, allDeclaredFields, fields, configClass);
     }
 
-    private void generateConfigField(Segment segment, Config local) {
-        segment.write("%s final Config config = new Config();", local.configAccess);
+    private void generateConfigField(Segment segment) {
+        segment.write("{{access}} final Config config = new Config();");
     }
 
     private void generateConfigKeySet(Segment segment, List<Field> fields) {
@@ -77,9 +82,9 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         for (final var field : allDeclaredFields) {
             field.setAccessible(true);
             final var name = field.getName();
-            segment.param("name",name);
             final var setterName = "set" + CaseTools.ucase(name);
-            segment.param("setterName",setterName);
+            segment.param("name", name,
+                "setterName", setterName);
             final var hasSetter = doesTheFieldHaveSetter(configClass, field, setterName);
             if (fields.contains(field)) {
                 if (hasSetter) {
@@ -101,25 +106,28 @@ public class ConfigBuilder extends AbstractJavaGenerator {
             .write_l("}");
     }
 
-    private void finishBuilderClass(Class<?> klass, Segment segment, Config local) {
-        segment.write_r("public %s %s() {", klass.getSimpleName(), local.buildMethod)
-            .write("return %s.this;", klass.getSimpleName())
+    private void finishBuilderClass(Segment segment) {
+        segment.write_r("public {{klass}} {{build}}() {")
+            .write("return {{klass}}.this;")
             .write_l("}");
         segment.write_l("}");
 
     }
 
-    private void generateBuilderMethod(Class<?> klass, Class<?> configClass, Segment segment, Config local, Field field) {
+    private void generateBuilderMethod(Segment segment, Class<?> klass, Class<?> configClass, Field field) {
         final var name = field.getName();
         final var type = GeciReflectionTools.normalizeTypeName(field.getType().getName(), klass);
         final var setterName = "set" + CaseTools.ucase(name);
+        segment.param("name", name,
+            "setter", setterName,
+            "type", type);
         final var hasSetter = doesTheFieldHaveSetter(configClass, field, setterName);
         if (!Modifier.isFinal(field.getModifiers()) || hasSetter) {
-            segment.write_r("public %s %s(%s %s) {", local.builderName, name, type, name);
+            segment.write_r("public {{Builder}} {{name}}({{type}} {{name}}) {");
             if (hasSetter) {
-                segment.write("config.%s(%s);", setterName, name);
+                segment.write("config.{{setter}}({{name}});");
             } else {
-                segment.write("config.%s = %s;", name, name);
+                segment.write("config.{{name}} = {{name}};");
             }
             segment.write("return this;")
                 .write_l("}")
@@ -136,13 +144,13 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         }
     }
 
-    private void startBuilderClass(Segment segment, Config local) {
-        segment.write_r("public class %s {", local.builderName);
+    private void startBuilderClass(Segment segment) {
+        segment.write_r("public class {{Builder}} {");
     }
 
-    private void generateBuilderFactoryMethod(Class<?> klass, Segment segment, Config local) {
-        segment.write_r("public static %s.%s %s() {", klass.getSimpleName(), local.builderName, local.builderFactoryMethod)
-            .write("return new %s().new %s();", klass.getSimpleName(), local.builderName)
+    private void generateBuilderFactoryMethod(Segment segment) {
+        segment.write_r("public static {{klass}}.{{Builder}} {{builder}}() {")
+            .write("return new {{klass}}().new {{Builder}}();")
             .write_l("}")
             .newline();
     }
