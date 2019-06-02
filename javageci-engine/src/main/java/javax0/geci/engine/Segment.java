@@ -35,6 +35,11 @@ public class Segment implements javax0.geci.api.Segment {
     }
 
     @Override
+    public Set<String> paramKeySet(){
+        return params.keySet();
+    }
+
+    @Override
     public String getContent() {
         return String.join("\n", lines);
     }

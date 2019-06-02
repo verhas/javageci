@@ -218,7 +218,6 @@ public abstract class AbstractFieldsGenerator extends AbstractJavaGenerator {
      * @throws Exception any exception that the is thrown by the generator
      */
     public void process(Source source, Class<?> klass, CompoundParams global, Field[] fields, Segment segment) throws Exception {
-
     }
 
 }

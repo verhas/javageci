@@ -28,6 +28,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         private String builderFactoryMethod = "builder";
         private String buildMethod = "build";
         private String configAccess = "private";
+        private String generateImplementedKeys = "true";
     }
 
     @Override
@@ -50,7 +51,9 @@ public class ConfigBuilder extends AbstractJavaGenerator {
             "Builder", local.builderName);
         generateConfigField(segment);
         generateBuilderFactoryMethod(segment);
-        generateConfigKeySet(segment, fields);
+        if (CompoundParams.toBoolean(local.generateImplementedKeys)) {
+            generateConfigKeySet(segment, fields);
+        }
         startBuilderClass(segment);
         allDeclaredFields.forEach(field -> generateBuilderMethod(segment, klass, configClass, field));
         finishBuilderClass(segment);
@@ -190,6 +193,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         "builderName",
         "configAccess",
         "filter",
+        "generateImplementedKeys",
         "id"
     );
 
@@ -223,6 +227,11 @@ public class ConfigBuilder extends AbstractJavaGenerator {
             return this;
         }
 
+        public Builder generateImplementedKeys(String generateImplementedKeys) {
+            config.generateImplementedKeys = generateImplementedKeys;
+            return this;
+        }
+
         public ConfigBuilder build() {
             return ConfigBuilder.this;
         }
@@ -234,6 +243,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         local.builderName = params.get("builderName",config.builderName);
         local.configAccess = params.get("configAccess",config.configAccess);
         local.filter = params.get("filter",config.filter);
+        local.generateImplementedKeys = params.get("generateImplementedKeys",config.generateImplementedKeys);
         return local;
     }
     //</editor-fold>

@@ -101,12 +101,12 @@ public class Source implements javax0.geci.api.Source {
 
     private Path inDir(String dir, String fileName) {
         return Paths.get(FileCollector.normalize(
-                dir +
-                        Paths
-                                .get(relativeFile)
-                                .getParent()
-                                .resolve(fileName)
-                                .toString()));
+            dir +
+                Paths
+                    .get(relativeFile)
+                    .getParent()
+                    .resolve(fileName)
+                    .toString()));
     }
 
     @Override
@@ -217,7 +217,7 @@ public class Source implements javax0.geci.api.Source {
     void consolidate() {
         if (!inMemory && !segments.isEmpty()) {
             throw new GeciException(
-                    "This is an internal error: source was not read into memory but segments were generated");
+                "This is an internal error: source was not read into memory but segments were generated");
         }
         if (globalSegment == null) {
             for (var entry : segments.entrySet()) {
@@ -294,7 +294,7 @@ public class Source implements javax0.geci.api.Source {
                     seg.attr = attr;
                     seg.tab = matcher.tabbing();
                     seg.startLine = i;
-                    seg.endLine = findSegmentEnd(i);
+                    seg.endLine = findSegmentEnd(i,id);
                     return seg;
                 }
             }
@@ -308,7 +308,7 @@ public class Source implements javax0.geci.api.Source {
      * @param start the start of the segment of which we seek the end
      * @return the index of the line that contains the segment ending
      */
-    private int findSegmentEnd(int start) {
+    private int findSegmentEnd(int start, String id) {
         for (int i = start + 1; i < lines.size(); i++) {
             final var line = lines.get(i);
             final var matcher = splitHelper.match(line);
@@ -316,7 +316,7 @@ public class Source implements javax0.geci.api.Source {
                 return i;
             }
         }
-        return lines.size();
+        throw new GeciException("Segment '" + id + "'does not end in file "+ getAbsoluteFile());
     }
 
     /**

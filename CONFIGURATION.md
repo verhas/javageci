@@ -408,13 +408,22 @@ document and can be configured. The following parameters can be
 configured
 
 * `filter` filters the fields that are used from the `Config` class.
-* `builderName` is the name of the builder class. The default is
-  `Builder`  
-* `builderFactory` the name of the static method that returns a new
-  builder object. The default is `builder`.  
-* `buildMethod` the name of the method that returns the generator
-  instance after it was configured calling the chained builder methods.  
+* `builderName` is the name of the builder class. The default is  
+    `Builder`
+* `builderFactory` the name of the static method that returns a new  
+    builder object. The default is `builder`.
+* `buildMethod` the name of the method that returns the generator 
+    instance after it was configured calling the chained builder
+    methods.
 * `configAccess` the access modifier of the `config` field. The default
-  value is `private`, but this may need to be `protected` in case the
-  generator is created in part of some inheritance. An example is the
-  accessor generator that uses this feature. 
+    value is `private`, but this may need to be `protected` in case the
+    generator is created in part of some inheritance. An example is the
+    accessor generator that uses this feature.
+* `generateImplementedKeys` can be set to `false` to avoid the
+    generation of the `implementedKeys()` method. You should set this
+    configuration parameter to `false` is you want to allow any
+    configuration key to be used by the code generation. The usual
+    behaviour is that this method returns the set of the configuration
+    keys that can be used for the given generator and in case there is a
+    typo in the configuration in the source code then it results an
+    error message.

@@ -30,6 +30,8 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         private String copyMethodProtection = "protected";
         private String cloneWith = "true";
         private String copyCallsSuper = "false";
+        // note that this variable is never ever used. It is here to trigger code generation only. The setter is used
+        // and the setter sets the code generator class 'declaredOnly' field
         private final boolean declaredOnly = false;
 
         private void setDeclaredOnly(boolean b) {

@@ -1,5 +1,7 @@
 package javax0.geci.api;
 
+import java.util.Set;
+
 /**
  * A {@code Segment} object represents an editor-fold part in the source file that the code generator can
  * write. A {@code Segment} is retrieved by the code generator calling the {@link Source#open(String)} method
@@ -57,6 +59,9 @@ public interface Segment extends AutoCloseable {
      * @return {@code this}
      */
     Segment param(String ... keyValuePairs);
+
+    Set<String> paramKeySet();
+
 
     /**
      * Delete the previously defined parameters.
