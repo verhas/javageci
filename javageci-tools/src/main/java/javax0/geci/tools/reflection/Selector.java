@@ -64,7 +64,7 @@ public class Selector<T> {
     private final Map<String, BiFunction<T, Pattern, Boolean>> regexMemberSelectors = new HashMap<>();
     private SelectorNode top = null;
 
-    public Selector() {
+    private Selector() {
 
         selector("abstract", m -> only(m, Class.class, Method.class) && Modifier.isAbstract(getModifiers(m)));
 

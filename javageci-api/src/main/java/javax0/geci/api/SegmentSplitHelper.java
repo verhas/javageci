@@ -19,9 +19,13 @@ public interface SegmentSplitHelper {
      */
     Matcher match(String line);
 
+    String[] getSegmentPreface();
+
+    String[] getSegmentPostface();
+
     /**
      * A matcher that can be used to decide if a line starts a segment
-     * or ends a segment. In case the lin starts a segment then this
+     * or ends a segment. In case the line starts a segment then this
      * matcher can also be queried for the parsed (key,value)
      * parameters.
      */
@@ -38,19 +42,34 @@ public interface SegmentSplitHelper {
         boolean isSegmentEnd();
 
         /**
+         * Checking the line that matches the "default" segment. The
+         * default segment is where the segment code will be inserted
+         * if there is no segment defined in the source code. In case
+         * of Java this is before the last line that contains the class
+         * closing '}' character.
+         *
+         * <p>This method will return {@code true} in case of Java (as
+         * an example) when the line contains nothing but a '}'
+         * character.
+         *
+         * @return {@code true} if this line ends the default segment.
+         */
+        boolean isDefaultSegmentEnd();
+
+        /**
          * @return the number of spaces that this segment should use as
-         *         tabulation. If this line is not a segment starting
-         *         line then calling this method is meaningless.
-         *          Implementing classes may throw {@link
-         *          IllegalArgumentException} in such situations.
+         * tabulation. If this line is not a segment starting
+         * line then calling this method is meaningless.
+         * Implementing classes may throw {@link
+         * IllegalArgumentException} in such situations.
          */
         int tabbing();
 
         /**
          * @return the attributes scanned from the line. If this line is
-         *         not a segment starting line then calling this method
-         *         is meaningless. Implementing classes may throw
-         *         {@link IllegalArgumentException} in such situations.
+         * not a segment starting line then calling this method
+         * is meaningless. Implementing classes may throw
+         * {@link IllegalArgumentException} in such situations.
          */
         Map<String, String> attributes();
     }

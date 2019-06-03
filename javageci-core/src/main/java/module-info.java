@@ -8,6 +8,7 @@ module geci.core {
     exports javax0.geci.factory;
     exports javax0.geci.builder;
     exports javax0.geci.cloner;
+    exports javax0.geci.templated;
     exports javax0.geci.config;
     exports javax0.geci.delegator;
     exports javax0.geci.accessor;

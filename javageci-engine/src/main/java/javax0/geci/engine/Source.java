@@ -101,12 +101,12 @@ public class Source implements javax0.geci.api.Source {
 
     private Path inDir(String dir, String fileName) {
         return Paths.get(FileCollector.normalize(
-            dir +
-                Paths
-                    .get(relativeFile)
-                    .getParent()
-                    .resolve(fileName)
-                    .toString()));
+                dir +
+                        Paths
+                                .get(relativeFile)
+                                .getParent()
+                                .resolve(fileName)
+                                .toString()));
     }
 
     @Override
@@ -167,6 +167,14 @@ public class Source implements javax0.geci.api.Source {
         return segment;
     }
 
+    private String[] mnemonize(String id, String... s) {
+        final String[] res = new String[s.length];
+        for (int i = 0; i < s.length; i++) {
+            res[i] = s[i].replaceAll("\\{\\{mnemonic}}", id);
+        }
+        return res;
+    }
+
     @Override
     public Segment open(String id) throws IOException {
         if (globalSegment != null) {
@@ -176,11 +184,20 @@ public class Source implements javax0.geci.api.Source {
             readToMemory();
         }
         if (!segments.containsKey(id)) {
+            boolean defaultSegment = false;
             var segDesc = findSegment(id);
             if (segDesc == null) {
-                return null;
+                segDesc = findDefaultSegment(id);
+                if (segDesc == null) {
+                    return null;
+                }
+                defaultSegment = true;
             }
             var segment = new Segment(segDesc.tab);
+            if (defaultSegment) {
+                segment.setPreface(mnemonize(id, splitHelper.getSegmentPreface()));
+                segment.setPostface(mnemonize(id, splitHelper.getSegmentPostface()));
+            }
             segments.put(id, segment);
 
         }
@@ -217,7 +234,7 @@ public class Source implements javax0.geci.api.Source {
     void consolidate() {
         if (!inMemory && !segments.isEmpty()) {
             throw new GeciException(
-                "This is an internal error: source was not read into memory but segments were generated");
+                    "This is an internal error: source was not read into memory but segments were generated");
         }
         if (globalSegment == null) {
             for (var entry : segments.entrySet()) {
@@ -226,10 +243,15 @@ public class Source implements javax0.geci.api.Source {
                 var segment = entry.getValue();
                 var segDesc = findSegment(id);
                 if (segDesc == null) {
-                    throw new GeciException("Segment " + id + " disappeared from source" + absoluteFile);
+                    segDesc = findDefaultSegment(id);
+                    if (segDesc == null) {
+                        throw new GeciException("Segment " + id + " disappeared from source" + absoluteFile);
+                    }
                 }
                 lines.subList(segDesc.startLine + 1, segDesc.endLine).clear();
+                lines.addAll(segDesc.startLine + 1, segment.postface);
                 lines.addAll(segDesc.startLine + 1, segment.lines);
+                lines.addAll(segDesc.startLine + 1, segment.preface);
             }
         } else {
             touched = true;
@@ -276,6 +298,22 @@ public class Source implements javax0.geci.api.Source {
         inMemory = true;
     }
 
+    private SegmentDescriptor findDefaultSegment(String id) {
+        for (int i = lines.size() - 1; 0 < i; i--) {
+            final var line = lines.get(i);
+            final var matcher = splitHelper.match(line);
+            if (matcher.isDefaultSegmentEnd()) {
+                var seg = new SegmentDescriptor();
+                seg.attr = null;
+                seg.startLine = i - 1;
+                seg.endLine = i;
+                seg.tab = matcher.tabbing();
+                return seg;
+            }
+        }
+        return null;
+    }
+
     /**
      * Search the segment of the given 'id'.
      *
@@ -294,7 +332,7 @@ public class Source implements javax0.geci.api.Source {
                     seg.attr = attr;
                     seg.tab = matcher.tabbing();
                     seg.startLine = i;
-                    seg.endLine = findSegmentEnd(i,id);
+                    seg.endLine = findSegmentEnd(i, id);
                     return seg;
                 }
             }
@@ -316,7 +354,7 @@ public class Source implements javax0.geci.api.Source {
                 return i;
             }
         }
-        throw new GeciException("Segment '" + id + "'does not end in file "+ getAbsoluteFile());
+        throw new GeciException("Segment '" + id + "'does not end in file " + getAbsoluteFile());
     }
 
     /**

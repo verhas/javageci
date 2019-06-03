@@ -15,42 +15,66 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
     private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*\"(.*?)\"");
     final Pattern startPattern;
     final Pattern endPattern;
+    final Pattern defaultPattern;
+    protected int defaultOffset = 0;
+    private String[] segmentPreface = new String[]{""};
+    private String[] segmentPostface = new String[]{""};
+
+    protected void setSegmentPreface(String ... segmentPreface) {
+        this.segmentPreface = segmentPreface;
+    }
+    protected void setSegmentPostface(String ... segmentPostface) {
+        this.segmentPostface = segmentPostface;
+    }
+
+    public String[] getSegmentPreface() {
+        return segmentPreface;
+    }
+
+    public String[] getSegmentPostface() {
+        return segmentPostface;
+    }
 
     /**
      * Create a SegmentSplitHelper using two regular expressions.
-     * @param startPattern should match the start line of a segment.
-     *                     The regular expression MUST define two
-     *                     capture groups that can be queried via {@link
-     *                     java.util.regex.Matcher#group(int)}. The
-     *                     first one has to match the spaces at the
-     *                     start of the line. The length of it will
-     *                     define the tabbing of the segment. The second
-     *                     should capture the attributes.
      *
-     * @param endPattern   should match the end line of a segment.
-     *                     No capture groups need to be defined int this
-     *                     pattern.
+     * @param startPattern   should match the start line of a segment.
+     *                       The regular expression MUST define two
+     *                       capture groups that can be queried via {@link
+     *                       java.util.regex.Matcher#group(int)}. The
+     *                       first one has to match the spaces at the
+     *                       start of the line. The length of it will
+     *                       define the tabbing of the segment. The second
+     *                       should capture the attributes.
+     * @param endPattern     should match the end line of a segment.
+     *                       No capture groups need to be defined int this
+     * @param defaultPattern
      */
-    public RegexBasedSegmentSplitHelper(Pattern startPattern, Pattern endPattern) {
+    public RegexBasedSegmentSplitHelper(Pattern startPattern, Pattern endPattern, Pattern defaultPattern) {
         this.startPattern = startPattern;
         this.endPattern = endPattern;
+        this.defaultPattern = defaultPattern;
     }
 
     @Override
     public SegmentSplitHelper.Matcher match(String line) {
-        final var matcher = startPattern.matcher(line);
-        final var segmentStart = matcher.matches();
+        final var startMatcher = startPattern.matcher(line);
+        final var segmentStart = startMatcher.matches();
         final Map<String, String> attrs;
-        final int tabs;
+        int tabs = 0;
         if (segmentStart) {
-            attrs = parseParametersString(matcher.group(2));
-            tabs = matcher.group(1).length();
+            attrs = parseParametersString(startMatcher.group(2));
+            tabs = startMatcher.group(1).length();
         } else {
-            tabs = 0;
             attrs = null;
         }
         final var segmentEnd = endPattern.matcher(line).matches();
-        return new Matcher(segmentStart, segmentEnd, attrs, tabs);
+        final var defaultMatcher = defaultPattern.matcher(line);
+        final var segmentDefault = defaultMatcher.matches();
+        if( segmentDefault ){
+            tabs = defaultMatcher.group(1).length() + defaultOffset;
+        }
+        return new Matcher(segmentStart, segmentEnd, segmentDefault, attrs, tabs);
     }
 
     /**
@@ -88,12 +112,14 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
 
         private final boolean segmentStart;
         private final boolean segmentEnd;
+        private final boolean segmentDefault;
         private final Map<String, String> attrs;
         private final int tabs;
 
-        Matcher(boolean segmentStart, boolean segmentEnd, Map<String, String> attrs, int tabs) {
+        Matcher(boolean segmentStart, boolean segmentEnd, boolean segmentDefault, Map<String, String> attrs, int tabs) {
             this.segmentStart = segmentStart;
             this.segmentEnd = segmentEnd;
+            this.segmentDefault = segmentDefault;
             this.attrs = attrs;
             this.tabs = tabs;
         }
@@ -110,13 +136,12 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
         }
 
         @Override
+        public boolean isDefaultSegmentEnd() {
+            return segmentDefault;
+        }
+
+        @Override
         public int tabbing() {
-            if (!segmentStart) {
-                throw new IllegalArgumentException("tabbing on " +
-                        SegmentSplitHelper.class.getSimpleName() + "." +
-                        SegmentSplitHelper.Matcher.class.getSimpleName() +
-                        " is not defined when the it is not a segment start.");
-            }
             return tabs;
         }
 

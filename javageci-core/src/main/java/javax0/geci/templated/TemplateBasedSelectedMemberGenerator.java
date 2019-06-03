@@ -5,6 +5,7 @@ import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractFilteredFieldsGenerator;
 import javax0.geci.tools.CompoundParams;
+import javax0.geci.tools.TemplateLoader;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -13,8 +14,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static javax0.geci.tools.TemplateLoader.getTemplateContent;
+
 public class TemplateBasedSelectedMemberGenerator extends AbstractFilteredFieldsGenerator {
-    private static final ClassLoader loader = TemplateBasedSelectedMemberGenerator.class.getClassLoader();
 
     private class Config {
         private Class<? extends Annotation> generatedAnnotation = Generated.class;
@@ -33,17 +35,7 @@ public class TemplateBasedSelectedMemberGenerator extends AbstractFilteredFields
         private String postprocess = null;
     }
 
-    private static String getTemplateContent(String template) {
-        if (template == null) {
-            return "";
-        }
-        try {
-            return new String(Files.readAllBytes(Paths.get(loader.getResource(template).getFile())), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            return "/* template '" + template + "' was not loaded */";
-        }
 
-    }
 
     @Override
     public void preprocess(Source source, Class<?> klass, CompoundParams global, Segment segment) {

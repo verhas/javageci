@@ -1,5 +1,6 @@
 package javax0.geci.api;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -18,6 +19,34 @@ public interface Segment extends AutoCloseable {
      * @return the textual content of the segment as it is at the moment.
      */
     String getContent();
+
+    /**
+     * When the generator does not find a segment based on the starting
+     * and ending line it may decide to insert the segment towards the
+     * end of the file. For example in case of Java the generator (in
+     * class {@link Source} can insert the segment before the last
+     * closing '}' character.
+     *
+     * <p>In that case, however, the segment start and segment end lines
+     * should also be inserted to the code, as they are not part of the
+     * source yet. When such a segment is created {@code preface} should
+     * contain the segment start line and {@code postface} should
+     * contain the lines that are the end of the segment.
+     *
+     * <p>When the code generation runs next time these lines will
+     * already be recognized. This is to ease the work of the developer
+     * inserting the segment start and end when the code generator runs
+     * the first time.
+     *
+     * @param preface the preface lines
+     */
+    void setPreface(String ... preface);
+
+    /**
+     * See the documentation of {@link #setPreface(String...)}
+     * @param postface the postface lines that end a segment
+     */
+    void setPostface(String ... postface);
 
     /**
      * Set the content of the segment.
