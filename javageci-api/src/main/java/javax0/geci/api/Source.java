@@ -4,20 +4,48 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * A {@code Source} represents a source file in the project that the
+ * generator can modify. To do that there are methods that support the
+ * modification. Also there are static methods that support the
+ * definition of where the source files are.
+ *
+ * <p>The source file contains lines. There are certain parts in a
+ * source file that are represented as segments. For example in the Java
+ * code the lines that are between
+ * <pre>
+ *     {@code
+ *     //<editor-fold id="segmentIdentifier">
+ *     //</editor-fold>
+ *     }
+ * </pre>
+ *
+ * contain a segment (excluding the surrounding lines that signal the
+ * start and the end of the segment. The {@code Source} object can be
+ * asked to provide a {@link Segment} object that represents those
+ * lines. Segments can not be read. They are there to be written and
+ * when a segment is written the lines written to the segment will
+ * replace the original lines. Every segment has an identifier, in the
+ * example above this is {@code segmentIdentifier}.
+ */
 public interface Source {
 
     /**
-     * This method can be used to specify that the directories are standard maven directories. When the
-     * project is multi-module and the test code invoking Geci is not in the same module as the code needing to be
-     * processed by the generator then declaration of sources should use this method. The argument should be '{@code ..}'
-     * or whatever the directory of the root module is relative to the directory of the module where the test is.
+     * This method can be used to specify that the directories are
+     * standard maven directories. When the project is multi-module and
+     * the test code invoking Geci is not in the same module as the code
+     * needing to be processed by the generator then declaration of
+     * sources should use this method. The argument should be '{@code
+     * ..}' or whatever the directory of the root module is relative to
+     * the directory of the module where the test is.
      *
-     * @param root the directory to the root module where the top level {@code pom.xml} containing the
-     *             <pre>
-     *                                                 {@code <modules>
-     *                                                     <module>...</module>
-     *                                                   </modules>}
-     *                                                 </pre>
+     * @param root the directory to the root module where the top level
+     *             {@code pom.xml} containing the
+     *   <pre>
+     *   {@code <modules>
+     *       <module>...</module>
+     *     </modules>}
+     *   </pre>
      *             declaration is.
      * @return a new Maven source directory configuration object.
      */
@@ -26,8 +54,8 @@ public interface Source {
     }
 
     /**
-     * Simple method to specify that the sources are in a maven project and they follow the standard directory
-     * structure.
+     * Simple method to specify that the sources are in a maven project
+     * and they follow the standard directory structure.
      *
      * @return a new Maven source directory configuration object.
      */
@@ -36,12 +64,15 @@ public interface Source {
     }
 
     /**
-     * Return the named segment that the generator can write. Return {@code null} if there is no such segment
-     * in the file.
+     * Return the named segment that the generator can write. Return
+     * {@code null} if there is no such segment in the file.
      *
-     * @param id the name of the segment as defined in the {@code id="..."} xml tag of the {@code <editor-fold ...>}
+     * @param id the name of the segment as defined in the
+     *           {@code id="..."} xml tag of the
+     *           {@code <editor-fold ...>}
      * @return the segment or {@code null}.
-     * @throws IOException in case there is no file or file is not readable
+     * @throws IOException in case there is no file or file is not
+     *                     readable
      */
     Segment open(String id) throws IOException;
 
@@ -72,10 +103,13 @@ public interface Source {
     Segment safeOpen(String id) throws IOException;
 
     /**
-     * Create a temporary segment. This segment is dangling and does not belong to the actual source and also it does
-     * not have a name. The starting tab stop of the segment is zero. Extra padding is added to the lines when the
-     * segment is appended to the final segment. As it implies such temporary segments can be used
-     * to write code into this segment and later merge this segment into one segment that belongs to a source.
+     * Create a temporary segment. This segment is dangling and does not
+     * belong to the actual source and also it does not have a name. The
+     * starting tab stop of the segment is zero. Extra padding is added
+     * to the lines when the segment is appended to the final segment.
+     * As it implies such temporary segments can be used to write code
+     * into this segment and later merge this segment into one segment
+     * that belongs to a source.
      *
      * @return a new anonymous segment
      */

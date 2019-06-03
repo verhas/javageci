@@ -69,7 +69,7 @@ never have a returns type which is a `local` class, therefore applying
 * `interface` checks that the certain class type is an interface
 * `primitive` checks that the type is primitive
 * `annotation` checks that the type is an annotation
-* `anonymous` checks that the type is annotation
+* `anonymous` checks that the type is anonymous
 * `array` checks that the type is an array
 * `enum` checks that the type is an enumeration
 * `member` checks that the type is a member class, a.k.a. inner and
@@ -150,3 +150,5 @@ members.
 * `final` the member is final
 * `name ~ /regex/` the name of the member matches the regular
   expression.
+* `annotation ~ /regex/` the class, field or member has an annotation
+  that matches the regular expression

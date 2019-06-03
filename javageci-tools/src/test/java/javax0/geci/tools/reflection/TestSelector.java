@@ -27,6 +27,9 @@ class TestSelector {
     private int j = 0;
     private int var_private;
 
+    @interface Z {
+    }
+
     static void method_static() {
     }
 
@@ -42,7 +45,9 @@ class TestSelector {
     void method_notVararg(Object[] x) {
     }
 
-    int method_int(){return 0;}
+    int method_int() {
+        return 0;
+    }
 
     @Test
     @DisplayName("compiles empty string")
@@ -144,6 +149,13 @@ class TestSelector {
     @DisplayName("Integer class extends Number")
     void testClassExtends() throws NoSuchFieldException {
         Assertions.assertTrue(Selector.compile("extends ~ /Number/").match(Integer.class));
+    }
+
+    @Test
+    @DisplayName("test that a field is ")
+    void testClassIsAnnotation() throws NoSuchFieldException {
+        Assertions.assertTrue(Selector.compile("annotation").match(Z.class));
+        Assertions.assertFalse(Selector.compile("annotation").match(TestSelector.class));
     }
 
     @Test
@@ -465,6 +477,7 @@ class TestSelector {
         final var thisMethod = this.getClass().getDeclaredMethod("testMethodReturnTypeIsVoid");
         Assertions.assertTrue(Selector.compile("void").match(thisMethod));
     }
+
     @Test
     @DisplayName("Recognize that an int returning method is not void")
     void testMethodReturnTypeIsNotVoid() throws NoSuchMethodException {
