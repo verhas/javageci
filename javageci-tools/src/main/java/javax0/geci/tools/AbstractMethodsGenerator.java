@@ -219,7 +219,6 @@ public abstract class AbstractMethodsGenerator extends AbstractJavaGenerator {
      * @throws Exception any exception that the is thrown by the generator
      */
     public void process(Source source, Class<?> klass, CompoundParams global, Method[] methods, Segment segment) throws Exception {
-
     }
 
 }
