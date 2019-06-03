@@ -12,7 +12,6 @@ public class TestHelloWorld3 {
     void testGenerateCode() throws Exception {
         Assertions.assertFalse(new Geci()
                 .register(new HelloWorldGenerator3())
-                .only("^.*/HelloWorld3.java$")
                 .generate(), Geci.FAILED);
     }
 }

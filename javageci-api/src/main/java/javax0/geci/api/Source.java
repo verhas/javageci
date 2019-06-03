@@ -46,6 +46,22 @@ public interface Source {
     Segment open(String id) throws IOException;
 
     /**
+     * Segments start and ends signalled with specific lines. In some
+     * cases the code generator allows the source object to invent a
+     * nonexistent segment. In that case this is called the default
+     * segment. When the default segment is handled the segment start
+     * and end pre and postfixes are inserted into the segment.
+     *
+     * <p>Because this is a kind of dangerous feature this is only
+     * performed when the generator allows it explicitly.
+     *
+     * <p>There is no method to set it false, but the framework resets
+     * this flag before invocation of every generator {@link
+     * Generator#process(Source)}.
+     */
+    void allowDefaultSegment();
+
+    /**
      * Same as {@link #open(String)} but if the segment cannot be found then it
      * throws a Geci exception instead of returning {@code null}
      *

@@ -98,6 +98,7 @@ public class Geci implements javax0.geci.api.Geci {
             for (final var source : collector.sources) {
                 for (var generator : generators) {
                     if (generator.activeIn(phase)) {
+                        source.allowDefaultSegment = false;
                         generator.process(source);
                     }
                 }

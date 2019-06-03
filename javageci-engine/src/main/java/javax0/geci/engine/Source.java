@@ -30,6 +30,7 @@ public class Source implements javax0.geci.api.Source {
     boolean inMemory = false;
     private Segment globalSegment = null;
     private boolean touched = false;
+    boolean allowDefaultSegment = false;
 
     /**
      * The constructor is not supposed to be used from outside, only through the {@link FileCollector} which
@@ -176,6 +177,11 @@ public class Source implements javax0.geci.api.Source {
     }
 
     @Override
+    public void allowDefaultSegment() {
+        this.allowDefaultSegment = true;
+    }
+
+    @Override
     public Segment open(String id) throws IOException {
         if (globalSegment != null) {
             throw new GeciException("Segment was opened after the global segment was already created.");
@@ -187,7 +193,7 @@ public class Source implements javax0.geci.api.Source {
             boolean defaultSegment = false;
             var segDesc = findSegment(id);
             if (segDesc == null) {
-                segDesc = findDefaultSegment(id);
+                segDesc = findDefaultSegment();
                 if (segDesc == null) {
                     return null;
                 }
@@ -243,7 +249,7 @@ public class Source implements javax0.geci.api.Source {
                 var segment = entry.getValue();
                 var segDesc = findSegment(id);
                 if (segDesc == null) {
-                    segDesc = findDefaultSegment(id);
+                    segDesc = findDefaultSegment();
                     if (segDesc == null) {
                         throw new GeciException("Segment " + id + " disappeared from source" + absoluteFile);
                     }
@@ -298,17 +304,19 @@ public class Source implements javax0.geci.api.Source {
         inMemory = true;
     }
 
-    private SegmentDescriptor findDefaultSegment(String id) {
-        for (int i = lines.size() - 1; 0 < i; i--) {
-            final var line = lines.get(i);
-            final var matcher = splitHelper.match(line);
-            if (matcher.isDefaultSegmentEnd()) {
-                var seg = new SegmentDescriptor();
-                seg.attr = null;
-                seg.startLine = i - 1;
-                seg.endLine = i;
-                seg.tab = matcher.tabbing();
-                return seg;
+    private SegmentDescriptor findDefaultSegment() {
+        if (allowDefaultSegment) {
+            for (int i = lines.size() - 1; 0 < i; i--) {
+                final var line = lines.get(i);
+                final var matcher = splitHelper.match(line);
+                if (matcher.isDefaultSegmentEnd()) {
+                    var seg = new SegmentDescriptor();
+                    seg.attr = null;
+                    seg.startLine = i - 1;
+                    seg.endLine = i;
+                    seg.tab = matcher.tabbing();
+                    return seg;
+                }
             }
         }
         return null;
