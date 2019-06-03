@@ -6,9 +6,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.util.Arrays;
 import java.util.Properties;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("ALL")
 class TestSelector {
@@ -47,6 +51,32 @@ class TestSelector {
 
     int method_int() {
         return 0;
+    }
+
+    @Test
+    @DisplayName("List all private primitive fields")
+    void testStream(){
+        Set<Field> fields =
+                Arrays.stream(TestSelector.class.getDeclaredFields())
+                        .filter(Selector.compile("private & primitive")::match)
+                        .collect(Collectors.toSet());
+        Assertions.assertEquals(3,fields.size());
+    }
+
+    @Test
+    void testImplements(){
+        Assertions.assertTrue(Selector.compile("implements ~ /Function/").match(X.class));
+        Assertions.assertTrue(Selector.compile("implements").match(X.class));
+        Assertions.assertFalse(Selector.compile("implements").match(TestSelector.class));
+        Assertions.assertFalse(Selector.compile("implements").match(Object.class));
+    }
+
+    @Test
+    @DisplayName("tests that a class has a super class other than object")
+    void testExtends(){
+        Assertions.assertFalse(Selector.compile("extends").match(Object.class));
+        Assertions.assertFalse(Selector.compile("extends").match(TestSelector.class));
+        Assertions.assertTrue(Selector.compile("extends").match(Integer.class));
     }
 
     @Test
@@ -152,7 +182,7 @@ class TestSelector {
     }
 
     @Test
-    @DisplayName("test that a field is ")
+    @DisplayName("test that a class is an annotation")
     void testClassIsAnnotation() throws NoSuchFieldException {
         Assertions.assertTrue(Selector.compile("annotation").match(Z.class));
         Assertions.assertFalse(Selector.compile("annotation").match(TestSelector.class));
@@ -162,6 +192,7 @@ class TestSelector {
     @DisplayName("field with annotation is recognized")
     void testFieldHasAnnotation() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("j");
+        Assertions.assertTrue(Selector.compile("annotated").match(f));
         Assertions.assertTrue(Selector.compile("annotation ~ /Generated/").match(f));
         Assertions.assertTrue(Selector.compile("annotation ~ /Generated$/").match(f));
         Assertions.assertFalse(Selector.compile("annotation ~ /^Generated/").match(f));

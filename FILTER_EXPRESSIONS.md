@@ -76,6 +76,7 @@ never have a returns type which is a `local` class, therefore applying
   nested classes
 * `local` checks that the type is a local class. Local classes are
   defined inside a method.
+* `extends` checks that the class explicitly extends some other class   
 * `extends ~ /regex/` the canonical name of the superclass matches the 
   regular expression. 
 * `simpleName ~ /regex/` the simple name of the class matches the
@@ -102,8 +103,11 @@ case of something that is not a method then the code will throw
 * `default` checks that method is a default method implemented in an
   interface
 * `vararg`  checks that method has variable number of arguments.
-* `implements`  checks that method implements a method defined at least
-  in one interface
+* `implements`  checks that the method implements a method defined at
+   least in one interface
+* `implements` checks that the class implements at least one interface
+* `implements ~ /regex/` checks that the class implements an interface
+   of which the name matches the regular expression
 * `overrides`  checks that method overrides a method of the superclass
   or any class above that in the inheritance chain. 
 * `void` checks that the method is `void`. This will have the same
@@ -152,3 +156,4 @@ members.
   expression.
 * `annotation ~ /regex/` the class, field or member has an annotation
   that matches the regular expression
+* `annotated` checks that the class, method or field has annotation  

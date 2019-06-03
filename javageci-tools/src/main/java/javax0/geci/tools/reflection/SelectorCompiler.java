@@ -78,7 +78,6 @@ class SelectorCompiler {
         }
     }
 
-
     private SelectorNode expression2() {
         if (isSymbol("!")) {
             lexer.get();

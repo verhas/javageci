@@ -6,7 +6,6 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 /**
@@ -66,7 +65,7 @@ public class Selector<T> {
 
     private Selector() {
 
-        selector("abstract", m -> only(m, Class.class, Method.class) && Modifier.isAbstract(getModifiers(m)));
+        methodAndClassOnlySelectors();
 
         universalSelectors();
 
@@ -74,11 +73,13 @@ public class Selector<T> {
 
         methodOnlySelectors();
 
-        classOnlySelectory();
+        classOnlySelectors();
 
 
         regexSelector("annotation", (m, regex) -> only(m, AnnotatedElement.class) &&
                 matchAnnotations((AnnotatedElement) m, regex));
+        selector("annotated", (m) -> only(m, AnnotatedElement.class) &&
+                hasAnnotations((AnnotatedElement) m));
     }
 
     /**
@@ -106,7 +107,12 @@ public class Selector<T> {
         throw new IllegalArgumentException("Selector cannot be applied to " + m.getClass());
     }
 
-    private void classOnlySelectory() {
+    private void methodAndClassOnlySelectors() {
+        selector("abstract", m -> only(m, Class.class, Method.class) && Modifier.isAbstract(getModifiers(m)));
+        selector("implements", m -> only(m, Method.class, Class.class) && methodOrClassImplements(m));
+    }
+
+    private void classOnlySelectors() {
         selector("interface", m -> toClass(m).isInterface());
         selector("primitive", m -> toClass(m).isPrimitive());
         selector("annotation", m -> toClass(m).isAnnotation());
@@ -115,10 +121,15 @@ public class Selector<T> {
         selector("enum", m -> toClass(m).isEnum());
         selector("member", m -> toClass(m).isMemberClass());
         selector("local", m -> toClass(m).isLocalClass());
+        selector("extends", m -> {
+            final var superClass = toClass(m).getSuperclass();
+            return superClass != null && !"java.lang.Object".equals((superClass.getCanonicalName()));
+        });
 
         regexSelector("simpleName", (m, regex) -> regex.matcher(toClass(m).getSimpleName()).find());
         regexSelector("canonicalName", (m, regex) -> regex.matcher(toClass(m).getCanonicalName()).find());
         regexSelector("extends", (m, regex) -> regex.matcher(toClass(m).getSuperclass().getCanonicalName()).find());
+        regexSelector("implements", (m, regex) -> classImplements(toClass(m), regex));
     }
 
     private void methodOnlySelectors() {
@@ -129,7 +140,6 @@ public class Selector<T> {
         selector("default", m -> only(m, Method.class) &&
                 ((Member) m).getDeclaringClass().isInterface() && !Modifier.isAbstract(getModifiers(m)));
         selector("vararg", m -> only(m, Method.class) && ((Method) m).isVarArgs());
-        selector("implements", m -> only(m, Method.class) && methodImplements((Method) m));
         selector("overrides", m -> only(m, Method.class) && methodOverrides((Method) m));
         selector("void", m -> only(m, Method.class) && ((Method) m).getReturnType().equals(Void.TYPE));
 
@@ -140,7 +150,6 @@ public class Selector<T> {
                         .anyMatch(exception -> regex.matcher(exception.getTypeName()).find()));
         regexSelector("signature", (m, regex) ->
                 only(m, Method.class) && regex.matcher(MethodTool.methodSignature((Method) m)).find());
-
     }
 
     private void fieldOnlySelectors() {
@@ -195,7 +204,7 @@ public class Selector<T> {
      *
      * @param m the method to check
      * @return {@code true} if the method implements a method defined in an interface. If the method itself is
-     * declared in an interface then it does not implement anything and {@code methodImplements()} returns {@code false}
+     * declared in an interface then it does not implement anything and {@code methodOrClassImplements()} returns {@code false}
      * unless this is a default method that implements another method declared in an interface that the declaring
      * interface extends directly or through transitive closure of the interfaces extending each other.
      */
@@ -212,8 +221,39 @@ public class Selector<T> {
         return false;
     }
 
+    private boolean methodOrClassImplements(Object m) {
+        if (m instanceof Method) {
+            return methodImplements((Method) m);
+        }
+        if (m instanceof Class) {
+            return classImplements((Class) m);
+        }
+        return false;
+    }
+
+    private static boolean classImplements(Class<?> klass) {
+        if (klass.isInterface()) {
+            return false;
+        }
+        Class[] interfaces = klass.getInterfaces();
+        return interfaces != null && interfaces.length > 0;
+    }
+
+    private static boolean classImplements(Class<?> klass, Pattern regex) {
+        if (klass.isInterface()) {
+            return false;
+        }
+        Class[] interfaces = klass.getInterfaces();
+        for (final var iface : interfaces) {
+            if (regex.matcher(iface.getName()).find()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
-     * Collect all the interaces that this class implements including all the interfaces that are transitively extended
+     * Collect all the interfaces that this class implements including all the interfaces that are transitively extended
      * by any of the directly or transitively indirectly implemented interfaces.
      *
      * @param klass the class for which we need all the interfaces
@@ -336,7 +376,7 @@ public class Selector<T> {
     @SuppressWarnings("WeakerAccess")
     public boolean match(Object member) {
         //noinspection unchecked
-        return match((T)member, top);
+        return match((T) member, top);
     }
 
     private boolean matchOr(T m, SelectorNode.Or node) {
@@ -382,6 +422,11 @@ public class Selector<T> {
             return selectors.get(terminalNode.terminal).apply(m);
         }
         throw new IllegalArgumentException("Invalid node type in the compiled structure");
+    }
+
+    private boolean hasAnnotations(AnnotatedElement m) {
+        final var ann = m.getAnnotations();
+        return ann != null && ann.length > 0;
     }
 
     /**
