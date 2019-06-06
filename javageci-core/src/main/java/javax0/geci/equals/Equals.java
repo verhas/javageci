@@ -318,7 +318,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
             return this;
         }
 
-        public Builder generatedAnnotation(Class generatedAnnotation) {
+        public Builder generatedAnnotation(Class<? extends java.lang.annotation.Annotation> generatedAnnotation) {
             config.generatedAnnotation = generatedAnnotation;
             return this;
         }

@@ -119,7 +119,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
 
     private void generateBuilderMethod(Segment segment, Class<?> klass, Class<?> configClass, Field field) {
         final var name = field.getName();
-        final var type = GeciReflectionTools.normalizeTypeName(field.getType().getName(), klass);
+        final var type = GeciReflectionTools.getGenericTypeName(field.getGenericType());
         final var setterName = "set" + CaseTools.ucase(name);
         segment.param("name", name,
             "setter", setterName,

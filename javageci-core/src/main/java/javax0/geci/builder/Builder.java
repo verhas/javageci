@@ -159,7 +159,7 @@ public class Builder extends AbstractFilteredFieldsGenerator {
             return this;
         }
 
-        public ConfBuilder generatedAnnotation(Class generatedAnnotation) {
+        public ConfBuilder generatedAnnotation(Class<? extends java.lang.annotation.Annotation> generatedAnnotation) {
             config.generatedAnnotation = generatedAnnotation;
             return this;
         }

@@ -118,17 +118,17 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
             return this;
         }
 
-        public Builder getterNameGenerator(java.util.function.Function getterNameGenerator) {
+        public Builder getterNameGenerator(java.util.function.Function<String,String> getterNameGenerator) {
             config.getterNameGenerator = getterNameGenerator;
             return this;
         }
 
-        public Builder getterReturnValueDecorator(java.util.function.Function getterReturnValueDecorator) {
+        public Builder getterReturnValueDecorator(java.util.function.Function<String,String> getterReturnValueDecorator) {
             config.getterReturnValueDecorator = getterReturnValueDecorator;
             return this;
         }
 
-        public Builder setterNameGenerator(java.util.function.Function setterNameGenerator) {
+        public Builder setterNameGenerator(java.util.function.Function<String,String> setterNameGenerator) {
             config.setterNameGenerator = setterNameGenerator;
             return this;
         }

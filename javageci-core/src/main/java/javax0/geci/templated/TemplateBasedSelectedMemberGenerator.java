@@ -16,8 +16,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class TemplateBasedSelectedMemberGenerator extends AbstractJavaGenerator {
+
+    public interface Consumer3<A,B,C> {
+        void accept(A a,B b, C c);
+    }
 
     private class Config {
         private Class<? extends Annotation> generatedAnnotation = Generated.class;
@@ -32,6 +37,7 @@ public class TemplateBasedSelectedMemberGenerator extends AbstractJavaGenerator 
         private String processFields = null;
         private String processMethods = null;
         private String postprocess = null;
+        private Consumer3<Source,Class,Segment> preprocessParams = null;
 
         private Templates templates() {
             if (!templatesMap.containsKey(selector)) {
@@ -116,6 +122,9 @@ public class TemplateBasedSelectedMemberGenerator extends AbstractJavaGenerator 
             "classTypeName", klass.getTypeName(),
             "classGenericString", klass.toGenericString()
         );
+        if( config.preprocessParams != null ){
+            config.preprocessParams.accept(source,klass,segment);
+        }
         for (final var key : global.keySet()) {
             segment.param(key, global.get(key));
             segment.param("global." + key, global.get(key));
@@ -188,7 +197,7 @@ public class TemplateBasedSelectedMemberGenerator extends AbstractJavaGenerator 
     public void processFields(Source source, Class<?> klass, CompoundParams global, List<Field> fields, Segment segment) {
         final var local = localConfig(global);
         segment.param(
-            "n", "" + fields.size()
+            "fields.n", "" + fields.size()
         );
         int i = 0;
         for (final var field : fields) {
@@ -220,7 +229,7 @@ public class TemplateBasedSelectedMemberGenerator extends AbstractJavaGenerator 
     public void processMethods(Source source, Class<?> klass, CompoundParams global, List<Method> methods, Segment segment) {
         final var local = localConfig(global);
         segment.param(
-            "n", "" + methods.size()
+            "methods.n", "" + methods.size()
         );
         int i = 0;
         for (final var method : methods) {
@@ -259,13 +268,29 @@ public class TemplateBasedSelectedMemberGenerator extends AbstractJavaGenerator 
         return "templated";
     }
 
-    //<editor-fold id="configBuilder" generateImplementedKeys="false">
+    //<editor-fold id="configBuilder">
     private final Config config = new Config();
-
     public static TemplateBasedSelectedMemberGenerator.Builder builder() {
         return new TemplateBasedSelectedMemberGenerator().new Builder();
     }
 
+    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+        "fieldFilter",
+        "methodFilter",
+        "postprocess",
+        "preprocess",
+        "processField",
+        "processFields",
+        "processMethod",
+        "processMethods",
+        "selector",
+        "id"
+    );
+
+    @Override
+    protected java.util.Set<String> implementedKeys() {
+        return implementedKeys;
+    }
     public class Builder {
         public Builder declaredOnly(boolean declaredOnly) {
             config.declaredOnly = declaredOnly;
@@ -277,7 +302,7 @@ public class TemplateBasedSelectedMemberGenerator extends AbstractJavaGenerator 
             return this;
         }
 
-        public Builder generatedAnnotation(Class generatedAnnotation) {
+        public Builder generatedAnnotation(Class<? extends java.lang.annotation.Annotation> generatedAnnotation) {
             config.generatedAnnotation = generatedAnnotation;
             return this;
         }
@@ -294,6 +319,11 @@ public class TemplateBasedSelectedMemberGenerator extends AbstractJavaGenerator 
 
         public Builder preprocess(String preprocess) {
             config.setPreprocess(preprocess);
+            return this;
+        }
+
+        public Builder preprocessParams(javax0.geci.templated.TemplateBasedSelectedMemberGenerator.Consumer3<javax0.geci.api.Source,Class,javax0.geci.api.Segment> preprocessParams) {
+            config.preprocessParams = preprocessParams;
             return this;
         }
 
@@ -326,20 +356,20 @@ public class TemplateBasedSelectedMemberGenerator extends AbstractJavaGenerator 
             return TemplateBasedSelectedMemberGenerator.this;
         }
     }
-
-    private Config localConfig(CompoundParams params) {
+    private Config localConfig(CompoundParams params){
         final var local = new Config();
         local.declaredOnly = config.declaredOnly;
-        local.fieldFilter = params.get("fieldFilter", config.fieldFilter);
+        local.fieldFilter = params.get("fieldFilter",config.fieldFilter);
         local.generatedAnnotation = config.generatedAnnotation;
-        local.methodFilter = params.get("methodFilter", config.methodFilter);
-        local.setPostprocess(params.get("postprocess", config.postprocess));
-        local.setPreprocess(params.get("preprocess", config.preprocess));
-        local.setProcessField(params.get("processField", config.processField));
-        local.setProcessFields(params.get("processFields", config.processFields));
-        local.setProcessMethod(params.get("processMethod", config.processMethod));
-        local.setProcessMethods(params.get("processMethods", config.processMethods));
-        local.selector = params.get("selector", config.selector);
+        local.methodFilter = params.get("methodFilter",config.methodFilter);
+        local.setPostprocess(params.get("postprocess",config.postprocess));
+        local.setPreprocess(params.get("preprocess",config.preprocess));
+        local.preprocessParams = config.preprocessParams;
+        local.setProcessField(params.get("processField",config.processField));
+        local.setProcessFields(params.get("processFields",config.processFields));
+        local.setProcessMethod(params.get("processMethod",config.processMethod));
+        local.setProcessMethods(params.get("processMethods",config.processMethods));
+        local.selector = params.get("selector",config.selector);
         return local;
     }
     //</editor-fold>

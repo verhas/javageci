@@ -134,7 +134,7 @@ public class GeciReflectionTools {
     }
 
     private static String removeJavaLang(String s) {
-        if (s.startsWith("java.lang.")) {
+        if (s.startsWith("java.lang.") && !s.substring("java.lang.".length()).contains(".") ) {
             return s.substring("java.lang.".length());
         } else {
             return s;

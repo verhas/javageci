@@ -25,6 +25,9 @@ public class TestTemplateBasedSelectedFieldsGenerator {
                         .postprocess(TEMPLATE_DIR + "postprocess.java")
                         .selector("needed")
                         .processField(TEMPLATE_DIR + "processFieldNeeded.java")
+                        .preprocessParams((so, kl, se) -> {
+                            se.param("wuff", "112");
+                        })
                         .build()
                 ).generate(),
             Geci.FAILED);
