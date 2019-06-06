@@ -62,7 +62,7 @@ public interface Segment extends AutoCloseable {
     /**
      * Write a line to the segment after the last line.
      *
-     * @param s          the content of the line
+     * @param s          the content of the line. Nothing is printed if {@code null}.
      * @param parameters parameters that are used as actual values in the {@code s} format string
      * @return {@code this}
      */
@@ -101,7 +101,7 @@ public interface Segment extends AutoCloseable {
      * Write a line into the segment after the last line and increase the indenting for the coming lines.
      * Usually you use this method when the line ends with a '{' character.
      *
-     * @param s          the content of the line
+     * @param s          the content of the line. Nothing is printed if {@code null}.
      * @param parameters parameters that are used as actual values in the {@code s} format string
      * @return {@code this}
      */
@@ -115,7 +115,7 @@ public interface Segment extends AutoCloseable {
      * Write a line into the segment after the last line and after decreasing the indenting. Usually you
      * use this method to put the '}' at the end of the code blocks.
      *
-     * @param s          the content of the line
+     * @param s          the content of the line. Nothing is printed if {@code null}.
      * @param parameters parameters that are used as actual values in the {@code s} format string
      * @return {@code this}
      */

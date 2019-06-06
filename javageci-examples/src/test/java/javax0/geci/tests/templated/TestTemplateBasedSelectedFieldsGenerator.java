@@ -18,11 +18,13 @@ public class TestTemplateBasedSelectedFieldsGenerator {
                 .register(
                     TemplateBasedSelectedMemberGenerator
                         .builder()
-                        .mnemonic("templatai")
+                        .selector("needs")
                         .preprocess(TEMPLATE_DIR + "preprocess.java")
                         .processField(TEMPLATE_DIR + "processField.java")
                         .processFields(TEMPLATE_DIR + "processFields.java")
                         .postprocess(TEMPLATE_DIR + "postprocess.java")
+                        .selector("needed")
+                        .processField(TEMPLATE_DIR + "processFieldNeeded.java")
                         .build()
                 ).generate(),
             Geci.FAILED);

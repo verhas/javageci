@@ -44,20 +44,20 @@ public class Segment implements javax0.geci.api.Segment {
     @Override
     public String getContent() {
         return String.join("\n", preface) +
-                String.join("\n", lines) +
-                String.join("\n", postface);
+            String.join("\n", lines) +
+            String.join("\n", postface);
     }
 
     @Override
     public void setPreface(String... preface) {
-        for( String s : preface) {
+        for (String s : preface) {
             this.preface.add((tabStop > 0 ? String.format("%" + tabStop + "s", " ") : "") + s);
         }
     }
 
     @Override
     public void setPostface(String... postface) {
-        for( String s : postface) {
+        for (String s : postface) {
             this.postface.add((tabStop > 0 ? String.format("%" + tabStop + "s", " ") : "") + s);
         }
     }
@@ -80,7 +80,7 @@ public class Segment implements javax0.geci.api.Segment {
                 other.lines.forEach(line -> write(line));
             } else {
                 throw new GeciException("Segment " + segment + " is not instance of " + Segment.class.getName() +
-                        ". It is " + segment.getClass().getName() + "which is not compatible with this implementation");
+                    ". It is " + segment.getClass().getName() + "which is not compatible with this implementation");
             }
         }
         return this;
@@ -88,19 +88,21 @@ public class Segment implements javax0.geci.api.Segment {
 
     @Override
     public Segment write(String s, Object... parameters) {
-        if (s.trim().length() == 0) {
-            newline();
-        } else {
-            final String formatted;
-            if (!params.isEmpty()) {
-                formatted = new Template(params).resolve(String.format(s, parameters));
+        if (s != null) {
+            if (s.trim().length() == 0) {
+                newline();
             } else {
-                formatted = String.format(s, parameters);
-            }
-            if (formatted.contains("\n")) {
-                Arrays.stream(formatted.split("\r?\n")).forEach(this::write);
-            } else {
-                lines.add((tabStop > 0 ? String.format("%" + tabStop + "s", " ") : "") + formatted);
+                final String formatted;
+                if (!params.isEmpty()) {
+                    formatted = new Template(params).resolve(String.format(s, parameters));
+                } else {
+                    formatted = String.format(s, parameters);
+                }
+                if (formatted.contains("\n")) {
+                    Arrays.stream(formatted.split("\r?\n")).forEach(this::write);
+                } else {
+                    lines.add((tabStop > 0 ? String.format("%" + tabStop + "s", " ") : "") + formatted);
+                }
             }
         }
         return this;

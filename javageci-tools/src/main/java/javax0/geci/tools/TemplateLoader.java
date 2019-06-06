@@ -11,7 +11,7 @@ public class TemplateLoader {
 
     public static String getTemplateContent(String template) {
         if (template == null) {
-            return "";
+            return null;
         }
 
         try {
