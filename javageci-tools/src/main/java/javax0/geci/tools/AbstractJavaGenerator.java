@@ -5,6 +5,8 @@ import javax0.geci.api.Source;
 import javax0.geci.tools.syntax.GeciAnnotationTools;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -69,21 +71,28 @@ import java.util.regex.Pattern;
 public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
     private static final Pattern CLASS_LINE = Pattern.compile("class\\s+[a-zA-Z_][\\w$]*\\s*.*\\{\\s*$");
 
+    protected int phase = 0;
+
     protected void writeGenerated(Segment segment, Class<? extends Annotation> annotation) {
         if (annotation != null) {
             segment.write("@" + annotation.getCanonicalName() + "(\"" + mnemonic() + "\")");
         }
     }
 
+    protected final List<Class<?>> classes = new ArrayList<>();
+
     public final void processEx(Source source) throws Exception {
         final var klass = source.getKlass();
         if (klass != null) {
+            if (phase == 0) {
+                classes.add(klass);
+            }
             var annotationParams = Optional.ofNullable(GeciReflectionTools.getParameters(klass, mnemonic())).orElseGet(() ->
-                    GeciAnnotationTools.getParameters(source, mnemonic(), "//", CLASS_LINE));
+                GeciAnnotationTools.getParameters(source, mnemonic(), "//", CLASS_LINE));
             var editorFoldParams = GeciAnnotationTools.getSegmentParameters(source, mnemonic());
             var global = new CompoundParams(annotationParams, editorFoldParams);
             global.setConstrains(source, mnemonic(), implementedKeys());
-            if( annotationParams != null ){
+            if (annotationParams != null) {
                 source.allowDefaultSegment();
             }
             if (annotationParams != null || editorFoldParams != null) {

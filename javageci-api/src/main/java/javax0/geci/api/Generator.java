@@ -65,7 +65,10 @@ public interface Generator {
      * The default behaviour implemented in the interface is to be
      * active in the phase {@code 0} only.
      *
-     * @param phase the current phase
+     * @param phase the current phase. This value can also be stored in
+     *              the generator instance to remember the actual phase
+     *              when {@link #process(Source)} is invoked the next time
+     *              after {@code activeIn()} returned {@code true}.
      * @return {@code true} if the generator needs to be invoked in
      * this phase.
      */
