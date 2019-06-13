@@ -25,7 +25,7 @@ public class Repeated extends AbstractJavaGenerator {
         private String end = ".*//\\s*END\\s*";
         private String values = null;
         private String selector = "";
-        private String template = null;
+        private String template;
         private Context ctx = new Triplet();
         private final Map<String, String> templatesMap = new HashMap<>();
         private BiFunction<Context, String, String> resolver;

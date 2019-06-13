@@ -15,16 +15,19 @@ public class TestRepeated {
         Assertions.assertFalse(
             new Geci().source("./javageci-core/src/main/java/", "../javageci-core/src/main/java/")
                 .register(Repeated.builder()
-
+                    //
                     .selector("configSetters")
                     .define((ctx, s) -> ctx.segment().param("setter", "set" + CaseTools.ucase(s)))
                     .template("```private void {{setter}}(String template) {\n" +
                         "    templates().{{value}} = template;\n" +
                         "}\n\n```")
+                    //
                     .selector("bifunctions")
                     .template("```private BiFunction<Context, String, String> {{value}}Resolv = BiFuNOOP;```")
+                    //
                     .selector("templates")
                     .template("```private String {{value}} = null;```")
+                    //
                     .selector("consumers")
                     .template("```private {{type}} {{value}}Params = {{const}};```")
                     .define((ctx, s) -> {
@@ -38,12 +41,11 @@ public class TestRepeated {
                             }
                         }
                     )
-                    .
-
-                        build())
-                .
-
-                    generate()
+                    //
+                    .selector("configTemplates")
+                    .template("```private String {{value}} = null;```")
+                    //
+                    .build()).generate()
             , Geci.FAILED
         );
     }
