@@ -19,7 +19,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-@Geci("repeated")
+@Geci("repeated matchLine='private\\sString\\s+(\\w+)'")
 public class Templated extends AbstractJavaGenerator {
 
     @Override
@@ -54,6 +54,7 @@ public class Templated extends AbstractJavaGenerator {
         private String processField = null;
         private String processMethod = null;
         private String processClass = null;
+        private String processMemberClass = null;
         private String processMethods = null;
         private String processClasses = null;
         private String processFields = null;
@@ -61,29 +62,34 @@ public class Templated extends AbstractJavaGenerator {
         private String preprocessClass = null;
         private String postprocessClass = null;
         //END
+
+        //<editor-fold id="consumers">
         private Consumer<Context> preprocessParams = NOOP;
         private BiConsumer<Context, Field> processFieldParams = BiNOOP;
         private BiConsumer<Context, Method> processMethodParams = BiNOOP;
-        private Consumer<Context> processFieldsParams = NOOP;
+        private BiConsumer<Context, Class> processClassParams = BiNOOP;
+        private BiConsumer<Context, Class> processMemberClassParams = BiNOOP;
         private Consumer<Context> processMethodsParams = NOOP;
+        private Consumer<Context> processClassesParams = NOOP;
+        private Consumer<Context> processFieldsParams = NOOP;
+        private Consumer<Context> postprocessParams = NOOP;
         private Consumer<Context> preprocessClassParams = NOOP;
         private Consumer<Context> postprocessClassParams = NOOP;
-        private BiConsumer<Context, Class> processClassParams = BiNOOP;
-        private Consumer<Context> processClassesParams = NOOP;
-        private BiConsumer<Context, Class> processMemberClassParams = BiNOOP;
-        private Consumer<Context> postprocessParams = NOOP;
+        //</editor-fold>
 
+        //<editor-fold id="bifunctions">
         private BiFunction<Context, String, String> preprocessResolv = BiFuNOOP;
         private BiFunction<Context, String, String> processFieldResolv = BiFuNOOP;
         private BiFunction<Context, String, String> processMethodResolv = BiFuNOOP;
-        private BiFunction<Context, String, String> processFieldsResolv = BiFuNOOP;
+        private BiFunction<Context, String, String> processClassResolv = BiFuNOOP;
+        private BiFunction<Context, String, String> processMemberClassResolv = BiFuNOOP;
         private BiFunction<Context, String, String> processMethodsResolv = BiFuNOOP;
+        private BiFunction<Context, String, String> processClassesResolv = BiFuNOOP;
+        private BiFunction<Context, String, String> processFieldsResolv = BiFuNOOP;
+        private BiFunction<Context, String, String> postprocessResolv = BiFuNOOP;
         private BiFunction<Context, String, String> preprocessClassResolv = BiFuNOOP;
         private BiFunction<Context, String, String> postprocessClassResolv = BiFuNOOP;
-        private BiFunction<Context, String, String> processClassResolv = BiFuNOOP;
-        private BiFunction<Context, String, String> processClassesResolv = BiFuNOOP;
-        private BiFunction<Context, String, String> processMemberClassResolv = BiFuNOOP;
-        private BiFunction<Context, String, String> postprocessResolv = BiFuNOOP;
+        //</editor-fold>
 
         private Templates templates() {
             if (!templatesMap.containsKey(selector)) {
@@ -92,64 +98,59 @@ public class Templated extends AbstractJavaGenerator {
             return templatesMap.get(selector);
         }
 
-        //<editor-fold id="configSetters" matchLine="private\sString\s+(\w+)">
-        //</editor-fold>
-
+        //<editor-fold id="configSetters">
         private void setPreprocess(String template) {
             templates().preprocess = template;
         }
-
         private void setProcessField(String template) {
             templates().processField = template;
         }
-
-        private void setProcessFields(String template) {
-            templates().processFields = template;
-        }
-
         private void setProcessMethod(String template) {
             templates().processMethod = template;
         }
-
-        private void setProcessMethods(String template) {
-            templates().processMethods = template;
-        }
-
-        private void setPostprocess(String template) {
-            templates().postprocess = template;
-        }
-
         private void setProcessClass(String template) {
             templates().processClass = template;
         }
-
-        private void setPostprocessClass(String template) {
-            templates().postprocessClass = template;
+        private void setProcessMemberClass(String template) {
+            templates().processMemberClass = template;
         }
-
-        private void setPreprocessClass(String template) {
-            templates().preprocessClass = template;
+        private void setProcessMethods(String template) {
+            templates().processMethods = template;
         }
-
         private void setProcessClasses(String template) {
             templates().processClasses = template;
         }
-
+        private void setProcessFields(String template) {
+            templates().processFields = template;
+        }
+        private void setPostprocess(String template) {
+            templates().postprocess = template;
+        }
+        private void setPreprocessClass(String template) {
+            templates().preprocessClass = template;
+        }
+        private void setPostprocessClass(String template) {
+            templates().postprocessClass = template;
+        }
+        //</editor-fold>
     }
 
     private static final Templates empty = new Templates();
 
     private static class Templates {
+        //<editor-fold id="templates">
         private String preprocess = null;
         private String processField = null;
-        private String processFields = null;
         private String processMethod = null;
-        private String processMethods = null;
-        private String postprocess = null;
         private String processClass = null;
+        private String processMemberClass = null;
+        private String processMethods = null;
         private String processClasses = null;
+        private String processFields = null;
+        private String postprocess = null;
         private String preprocessClass = null;
         private String postprocessClass = null;
+        //</editor-fold>
     }
 
     @Override
@@ -240,7 +241,8 @@ public class Templated extends AbstractJavaGenerator {
             "TypeName", listedClass.getTypeName(),
             "GenericString", listedClass.toGenericString()
         );
-        config.processClassParams.accept(config.ctx.triplet(source, klass, segment), listedClass);
+        setTripletInContext(source, klass, segment);
+        config.processClassParams.accept(config.ctx, listedClass);
         segment.write(
             config.processClassesResolv.apply(config.ctx,
                 getTemplateContent(local.processClass, templates(local).processClass)));
@@ -289,7 +291,8 @@ public class Templated extends AbstractJavaGenerator {
             "classTypeName", fieldType.getTypeName(),
             "classGenericString", fieldType.toGenericString()
         );
-        config.processFieldParams.accept(config.ctx.triplet(source, klass, segment), field);
+        setTripletInContext(source, klass, segment);
+        config.processFieldParams.accept(config.ctx, field);
         for (final var key : params.keySet()) {
             segment.param(key, params.get(key));
         }
@@ -314,13 +317,14 @@ public class Templated extends AbstractJavaGenerator {
             "TypeName", memberClass.getTypeName(),
             "GenericString", memberClass.toGenericString()
         );
-        config.processMemberClassParams.accept(config.ctx.triplet(source, klass, segment), memberClass);
+        setTripletInContext(source, klass, segment);
+        config.processMemberClassParams.accept(config.ctx, memberClass);
         for (final var key : params.keySet()) {
             segment.param(key, params.get(key));
         }
         segment.write(
-            config.processClassResolv.apply(config.ctx,
-                getTemplateContent(local.processClass, templates(local).processClass)));
+            config.processMemberClassResolv.apply(config.ctx,
+                getTemplateContent(local.processMemberClass, templates(local).processMemberClass)));
         for (final var key : segment.paramKeySet()) {
             if (key.startsWith("memberClass.")) {
                 segment.param(key, null);
@@ -341,7 +345,8 @@ public class Templated extends AbstractJavaGenerator {
             "returnClassTypeName", returnType.getTypeName(),
             "returnClassGenericString", returnType.toGenericString()
         );
-        config.processMethodParams.accept(config.ctx.triplet(source, klass, segment), method);
+        setTripletInContext(source, klass, segment);
+        config.processMethodParams.accept(config.ctx, method);
         for (final var key : params.keySet()) {
             segment.param(key, params.get(key));
         }
@@ -503,7 +508,6 @@ public class Templated extends AbstractJavaGenerator {
 
     //<editor-fold id="configBuilder">
     private final Config config = new Config();
-
     public static Templated.Builder builder() {
         return new Templated().new Builder();
     }
@@ -521,6 +525,7 @@ public class Templated extends AbstractJavaGenerator {
         "processClasses",
         "processField",
         "processFields",
+        "processMemberClass",
         "processMethod",
         "processMethods",
         "selector",
@@ -531,7 +536,6 @@ public class Templated extends AbstractJavaGenerator {
     protected java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
-
     public class Builder {
         public Builder classFilter(String classFilter) {
             config.classFilter = classFilter;
@@ -583,7 +587,7 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder postprocessClassResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> postprocessClassResolv) {
+        public Builder postprocessClassResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> postprocessClassResolv) {
             config.postprocessClassResolv = postprocessClassResolv;
             return this;
         }
@@ -593,7 +597,7 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder postprocessResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> postprocessResolv) {
+        public Builder postprocessResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> postprocessResolv) {
             config.postprocessResolv = postprocessResolv;
             return this;
         }
@@ -613,7 +617,7 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder preprocessClassResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> preprocessClassResolv) {
+        public Builder preprocessClassResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> preprocessClassResolv) {
             config.preprocessClassResolv = preprocessClassResolv;
             return this;
         }
@@ -623,7 +627,7 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder preprocessResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> preprocessResolv) {
+        public Builder preprocessResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> preprocessResolv) {
             config.preprocessResolv = preprocessResolv;
             return this;
         }
@@ -633,12 +637,12 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder processClassParams(java.util.function.BiConsumer<javax0.geci.templated.Context, Class> processClassParams) {
+        public Builder processClassParams(java.util.function.BiConsumer<javax0.geci.templated.Context,Class> processClassParams) {
             config.processClassParams = processClassParams;
             return this;
         }
 
-        public Builder processClassResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> processClassResolv) {
+        public Builder processClassResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> processClassResolv) {
             config.processClassResolv = processClassResolv;
             return this;
         }
@@ -653,7 +657,7 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder processClassesResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> processClassesResolv) {
+        public Builder processClassesResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> processClassesResolv) {
             config.processClassesResolv = processClassesResolv;
             return this;
         }
@@ -663,12 +667,12 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder processFieldParams(java.util.function.BiConsumer<javax0.geci.templated.Context, java.lang.reflect.Field> processFieldParams) {
+        public Builder processFieldParams(java.util.function.BiConsumer<javax0.geci.templated.Context,java.lang.reflect.Field> processFieldParams) {
             config.processFieldParams = processFieldParams;
             return this;
         }
 
-        public Builder processFieldResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> processFieldResolv) {
+        public Builder processFieldResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> processFieldResolv) {
             config.processFieldResolv = processFieldResolv;
             return this;
         }
@@ -683,17 +687,22 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder processFieldsResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> processFieldsResolv) {
+        public Builder processFieldsResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> processFieldsResolv) {
             config.processFieldsResolv = processFieldsResolv;
             return this;
         }
 
-        public Builder processMemberClassParams(java.util.function.BiConsumer<javax0.geci.templated.Context, Class> processMemberClassParams) {
+        public Builder processMemberClass(String processMemberClass) {
+            config.setProcessMemberClass(processMemberClass);
+            return this;
+        }
+
+        public Builder processMemberClassParams(java.util.function.BiConsumer<javax0.geci.templated.Context,Class> processMemberClassParams) {
             config.processMemberClassParams = processMemberClassParams;
             return this;
         }
 
-        public Builder processMemberClassResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> processMemberClassResolv) {
+        public Builder processMemberClassResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> processMemberClassResolv) {
             config.processMemberClassResolv = processMemberClassResolv;
             return this;
         }
@@ -703,12 +712,12 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder processMethodParams(java.util.function.BiConsumer<javax0.geci.templated.Context, java.lang.reflect.Method> processMethodParams) {
+        public Builder processMethodParams(java.util.function.BiConsumer<javax0.geci.templated.Context,java.lang.reflect.Method> processMethodParams) {
             config.processMethodParams = processMethodParams;
             return this;
         }
 
-        public Builder processMethodResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> processMethodResolv) {
+        public Builder processMethodResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> processMethodResolv) {
             config.processMethodResolv = processMethodResolv;
             return this;
         }
@@ -723,7 +732,7 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder processMethodsResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> processMethodsResolv) {
+        public Builder processMethodsResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> processMethodsResolv) {
             config.processMethodsResolv = processMethodsResolv;
             return this;
         }
@@ -737,49 +746,49 @@ public class Templated extends AbstractJavaGenerator {
             return Templated.this;
         }
     }
-
-    private Config localConfig(CompoundParams params) {
+    private Config localConfig(CompoundParams params){
         final var local = new Config();
-        local.classFilter = params.get("classFilter", config.classFilter);
+        local.classFilter = params.get("classFilter",config.classFilter);
         local.ctx = config.ctx;
         local.declaredOnly = config.declaredOnly;
-        local.fieldFilter = params.get("fieldFilter", config.fieldFilter);
+        local.fieldFilter = params.get("fieldFilter",config.fieldFilter);
         local.generatedAnnotation = config.generatedAnnotation;
-        local.memberClassFilter = params.get("memberClassFilter", config.memberClassFilter);
-        local.methodFilter = params.get("methodFilter", config.methodFilter);
-        local.setPostprocess(params.get("postprocess", config.postprocess));
-        local.setPostprocessClass(params.get("postprocessClass", config.postprocessClass));
+        local.memberClassFilter = params.get("memberClassFilter",config.memberClassFilter);
+        local.methodFilter = params.get("methodFilter",config.methodFilter);
+        local.setPostprocess(params.get("postprocess",config.postprocess));
+        local.setPostprocessClass(params.get("postprocessClass",config.postprocessClass));
         local.postprocessClassParams = config.postprocessClassParams;
         local.postprocessClassResolv = config.postprocessClassResolv;
         local.postprocessParams = config.postprocessParams;
         local.postprocessResolv = config.postprocessResolv;
-        local.setPreprocess(params.get("preprocess", config.preprocess));
-        local.setPreprocessClass(params.get("preprocessClass", config.preprocessClass));
+        local.setPreprocess(params.get("preprocess",config.preprocess));
+        local.setPreprocessClass(params.get("preprocessClass",config.preprocessClass));
         local.preprocessClassParams = config.preprocessClassParams;
         local.preprocessClassResolv = config.preprocessClassResolv;
         local.preprocessParams = config.preprocessParams;
         local.preprocessResolv = config.preprocessResolv;
-        local.setProcessClass(params.get("processClass", config.processClass));
+        local.setProcessClass(params.get("processClass",config.processClass));
         local.processClassParams = config.processClassParams;
         local.processClassResolv = config.processClassResolv;
-        local.setProcessClasses(params.get("processClasses", config.processClasses));
+        local.setProcessClasses(params.get("processClasses",config.processClasses));
         local.processClassesParams = config.processClassesParams;
         local.processClassesResolv = config.processClassesResolv;
-        local.setProcessField(params.get("processField", config.processField));
+        local.setProcessField(params.get("processField",config.processField));
         local.processFieldParams = config.processFieldParams;
         local.processFieldResolv = config.processFieldResolv;
-        local.setProcessFields(params.get("processFields", config.processFields));
+        local.setProcessFields(params.get("processFields",config.processFields));
         local.processFieldsParams = config.processFieldsParams;
         local.processFieldsResolv = config.processFieldsResolv;
+        local.setProcessMemberClass(params.get("processMemberClass",config.processMemberClass));
         local.processMemberClassParams = config.processMemberClassParams;
         local.processMemberClassResolv = config.processMemberClassResolv;
-        local.setProcessMethod(params.get("processMethod", config.processMethod));
+        local.setProcessMethod(params.get("processMethod",config.processMethod));
         local.processMethodParams = config.processMethodParams;
         local.processMethodResolv = config.processMethodResolv;
-        local.setProcessMethods(params.get("processMethods", config.processMethods));
+        local.setProcessMethods(params.get("processMethods",config.processMethods));
         local.processMethodsParams = config.processMethodsParams;
         local.processMethodsResolv = config.processMethodsResolv;
-        local.selector = params.get("selector", config.selector);
+        local.selector = params.get("selector",config.selector);
         return local;
     }
     //</editor-fold>

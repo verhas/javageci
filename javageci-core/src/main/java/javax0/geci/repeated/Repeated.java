@@ -4,6 +4,7 @@ import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.templated.Context;
+import javax0.geci.templated.Triplet;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.TemplateLoader;
@@ -25,7 +26,7 @@ public class Repeated extends AbstractJavaGenerator {
         private String values = null;
         private String selector = "";
         private String template = null;
-        private Context ctx;
+        private Context ctx = new Triplet();
         private final Map<String, String> templatesMap = new HashMap<>();
         private BiFunction<Context, String, String> resolver;
         private final Map<String, BiFunction<Context, String, String>> resolverMap = new HashMap<>();
