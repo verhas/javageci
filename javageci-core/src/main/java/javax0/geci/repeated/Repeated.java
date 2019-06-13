@@ -99,6 +99,7 @@ public class Repeated extends AbstractJavaGenerator {
                 for (final var loopVar : loopVars) {
                     final var templateContent = TemplateLoader.getTemplateContent(template);
                     final var resolvedTemplate = resolver == null ? templateContent : resolver.apply(config.ctx, templateContent);
+                    segment.param("value",loopVar);
                     if (define != null) {
                         define.accept(config.ctx, loopVar);
                     }

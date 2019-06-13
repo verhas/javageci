@@ -1,5 +1,6 @@
 package javax0.geci.templated;
 
+import javax0.geci.annotations.Geci;
 import javax0.geci.annotations.Generated;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
@@ -18,6 +19,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+@Geci("repeated")
 public class Templated extends AbstractJavaGenerator {
 
     @Override
@@ -47,6 +49,7 @@ public class Templated extends AbstractJavaGenerator {
         private boolean declaredOnly = true;
         private String selector = "";
         private final Map<String, Templates> templatesMap = new HashMap<>();
+        //START
         private String preprocess = null;
         private String processField = null;
         private String processMethod = null;
@@ -57,7 +60,7 @@ public class Templated extends AbstractJavaGenerator {
         private String postprocess = null;
         private String preprocessClass = null;
         private String postprocessClass = null;
-
+        //END
         private Consumer<Context> preprocessParams = NOOP;
         private BiConsumer<Context, Field> processFieldParams = BiNOOP;
         private BiConsumer<Context, Method> processMethodParams = BiNOOP;
@@ -88,6 +91,9 @@ public class Templated extends AbstractJavaGenerator {
             }
             return templatesMap.get(selector);
         }
+
+        //<editor-fold id="configSetters" matchLine="private\sString\s+(\w+)">
+        //</editor-fold>
 
         private void setPreprocess(String template) {
             templates().preprocess = template;
@@ -220,24 +226,24 @@ public class Templated extends AbstractJavaGenerator {
         setTripletInContext(source, klass, segment);
         config.preprocessClassParams.accept(config.ctx);
         segment.write(
-                config.preprocessClassResolv.apply(config.ctx,
-                        getTemplateContent(local.preprocessClass, templates(local).preprocessClass)));
+            config.preprocessClassResolv.apply(config.ctx,
+                getTemplateContent(local.preprocessClass, templates(local).preprocessClass)));
     }
 
     public void processClass(Source source, Class<?> klass, Class<?> listedClass, CompoundParams global, Segment segment) {
         final var local = localConfig(global);
         setParams(segment, "class.",
-                "SimpleName", listedClass.getSimpleName(),
-                "Name", listedClass.getName(),
-                "CanonicalName", listedClass.getCanonicalName(),
-                "Package", listedClass.getPackageName(),
-                "TypeName", listedClass.getTypeName(),
-                "GenericString", listedClass.toGenericString()
+            "SimpleName", listedClass.getSimpleName(),
+            "Name", listedClass.getName(),
+            "CanonicalName", listedClass.getCanonicalName(),
+            "Package", listedClass.getPackageName(),
+            "TypeName", listedClass.getTypeName(),
+            "GenericString", listedClass.toGenericString()
         );
         config.processClassParams.accept(config.ctx.triplet(source, klass, segment), listedClass);
         segment.write(
-                config.processClassesResolv.apply(config.ctx,
-                        getTemplateContent(local.processClass, templates(local).processClass)));
+            config.processClassesResolv.apply(config.ctx,
+                getTemplateContent(local.processClass, templates(local).processClass)));
     }
 
     private void postprocessClass(Source source, Class<?> klass, List<Class<?>> selectedClasses, CompoundParams global, Segment segment) {
@@ -245,19 +251,19 @@ public class Templated extends AbstractJavaGenerator {
         setTripletInContext(source, klass, segment);
         config.postprocessClassParams.accept(config.ctx);
         segment.write(
-                config.postprocessClassResolv.apply(config.ctx,
-                        getTemplateContent(local.postprocessClass, templates(local).postprocessClass)));
+            config.postprocessClassResolv.apply(config.ctx,
+                getTemplateContent(local.postprocessClass, templates(local).postprocessClass)));
     }
 
     public void preprocess(Source source, Class<?> klass, CompoundParams global, Segment segment) {
         final var local = localConfig(global);
         setParams(segment, "this.",
-                "SimpleName", klass.getSimpleName(),
-                "Name", klass.getName(),
-                "CanonicalName", klass.getCanonicalName(),
-                "Package", klass.getPackageName(),
-                "TypeName", klass.getTypeName(),
-                "GenericString", klass.toGenericString()
+            "SimpleName", klass.getSimpleName(),
+            "Name", klass.getName(),
+            "CanonicalName", klass.getCanonicalName(),
+            "Package", klass.getPackageName(),
+            "TypeName", klass.getTypeName(),
+            "GenericString", klass.toGenericString()
         );
         setTripletInContext(source, klass, segment);
         config.preprocessParams.accept(config.ctx);
@@ -266,30 +272,30 @@ public class Templated extends AbstractJavaGenerator {
             segment.param("global." + key, global.get(key));
         }
         segment.write(
-                config.preprocessResolv.apply(config.ctx,
-                        getTemplateContent(local.preprocess, templates(local).preprocess)));
+            config.preprocessResolv.apply(config.ctx,
+                getTemplateContent(local.preprocess, templates(local).preprocess)));
     }
 
     public void process(Source source, Class<?> klass, CompoundParams params, Field field, Segment segment) {
         final var local = localConfig(params);
         final var fieldType = field.getType();
         setParams(segment, "field.",
-                "name", field.getName(),
-                "genericString", field.toGenericString(),
-                "classSimpleName", fieldType.getSimpleName(),
-                "className", fieldType.getName(),
-                "classCanonicalName", fieldType.getCanonicalName(),
-                "classPackage", fieldType.getPackageName(),
-                "classTypeName", fieldType.getTypeName(),
-                "classGenericString", fieldType.toGenericString()
+            "name", field.getName(),
+            "genericString", field.toGenericString(),
+            "classSimpleName", fieldType.getSimpleName(),
+            "className", fieldType.getName(),
+            "classCanonicalName", fieldType.getCanonicalName(),
+            "classPackage", fieldType.getPackageName(),
+            "classTypeName", fieldType.getTypeName(),
+            "classGenericString", fieldType.toGenericString()
         );
         config.processFieldParams.accept(config.ctx.triplet(source, klass, segment), field);
         for (final var key : params.keySet()) {
             segment.param(key, params.get(key));
         }
         segment.write(
-                config.processFieldResolv.apply(config.ctx,
-                        getTemplateContent(local.processField, templates(local).processField)));
+            config.processFieldResolv.apply(config.ctx,
+                getTemplateContent(local.processField, templates(local).processField)));
         for (final var key : segment.paramKeySet()) {
             if (key.startsWith("field.")) {
                 segment.param(key, null);
@@ -301,20 +307,20 @@ public class Templated extends AbstractJavaGenerator {
     public void process(Source source, Class<?> klass, CompoundParams params, Class memberClass, Segment segment) {
         final var local = localConfig(params);
         setParams(segment, "memberClass.",
-                "SimpleName", memberClass.getSimpleName(),
-                "Name", memberClass.getName(),
-                "CanonicalName", memberClass.getCanonicalName(),
-                "Package", memberClass.getPackageName(),
-                "TypeName", memberClass.getTypeName(),
-                "GenericString", memberClass.toGenericString()
+            "SimpleName", memberClass.getSimpleName(),
+            "Name", memberClass.getName(),
+            "CanonicalName", memberClass.getCanonicalName(),
+            "Package", memberClass.getPackageName(),
+            "TypeName", memberClass.getTypeName(),
+            "GenericString", memberClass.toGenericString()
         );
         config.processMemberClassParams.accept(config.ctx.triplet(source, klass, segment), memberClass);
         for (final var key : params.keySet()) {
             segment.param(key, params.get(key));
         }
         segment.write(
-                config.processClassResolv.apply(config.ctx,
-                        getTemplateContent(local.processClass, templates(local).processClass)));
+            config.processClassResolv.apply(config.ctx,
+                getTemplateContent(local.processClass, templates(local).processClass)));
         for (final var key : segment.paramKeySet()) {
             if (key.startsWith("memberClass.")) {
                 segment.param(key, null);
@@ -326,22 +332,22 @@ public class Templated extends AbstractJavaGenerator {
         final var local = localConfig(params);
         final var returnType = method.getReturnType();
         setParams(segment, "method.",
-                "name", method.getName(),
-                "genericString", method.toGenericString(),
-                "returnClassSimpleName", returnType.getSimpleName(),
-                "returnClassName", returnType.getName(),
-                "returnClassCanonicalName", returnType.getCanonicalName(),
-                "returnClassPackage", returnType.getPackageName(),
-                "returnClassTypeName", returnType.getTypeName(),
-                "returnClassGenericString", returnType.toGenericString()
+            "name", method.getName(),
+            "genericString", method.toGenericString(),
+            "returnClassSimpleName", returnType.getSimpleName(),
+            "returnClassName", returnType.getName(),
+            "returnClassCanonicalName", returnType.getCanonicalName(),
+            "returnClassPackage", returnType.getPackageName(),
+            "returnClassTypeName", returnType.getTypeName(),
+            "returnClassGenericString", returnType.toGenericString()
         );
         config.processMethodParams.accept(config.ctx.triplet(source, klass, segment), method);
         for (final var key : params.keySet()) {
             segment.param(key, params.get(key));
         }
         segment.write(
-                config.processMethodResolv.apply(config.ctx,
-                        getTemplateContent(local.processMethod, templates(local).processMethod)));
+            config.processMethodResolv.apply(config.ctx,
+                getTemplateContent(local.processMethod, templates(local).processMethod)));
         for (final var key : segment.paramKeySet()) {
             if (key.startsWith("method.")) {
                 segment.param(key, null);
@@ -366,105 +372,105 @@ public class Templated extends AbstractJavaGenerator {
     public void processFields(Source source, Class<?> klass, CompoundParams global, List<Field> fields, Segment segment) {
         final var local = localConfig(global);
         segment.param(
-                "fields.n", "" + fields.size()
+            "fields.n", "" + fields.size()
         );
         int i = 0;
         for (final var field : fields) {
             final var fieldType = field.getType();
             final var name = field.getName();
             setParams(segment, "field." + i + ".",
-                    "GenericString", field.toGenericString(),
-                    "ClassSimpleName", fieldType.getSimpleName(),
-                    "ClassName", fieldType.getName(),
-                    "ClassCanonicalName", fieldType.getCanonicalName(),
-                    "ClassPackage", fieldType.getPackageName(),
-                    "ClassTypeName", fieldType.getTypeName(),
-                    "ClassGenericString", fieldType.toGenericString()
+                "GenericString", field.toGenericString(),
+                "ClassSimpleName", fieldType.getSimpleName(),
+                "ClassName", fieldType.getName(),
+                "ClassCanonicalName", fieldType.getCanonicalName(),
+                "ClassPackage", fieldType.getPackageName(),
+                "ClassTypeName", fieldType.getTypeName(),
+                "ClassGenericString", fieldType.toGenericString()
             );
             i++;
             setParams(segment, "field." + name + ".",
-                    "GenericString", field.toGenericString(),
-                    "ClassSimpleName", fieldType.getSimpleName(),
-                    "ClassName", fieldType.getName(),
-                    "ClassCanonicalName", fieldType.getCanonicalName(),
-                    "ClassPackage", fieldType.getPackageName(),
-                    "ClassTypeName", fieldType.getTypeName(),
-                    "ClassGenericString", fieldType.toGenericString()
+                "GenericString", field.toGenericString(),
+                "ClassSimpleName", fieldType.getSimpleName(),
+                "ClassName", fieldType.getName(),
+                "ClassCanonicalName", fieldType.getCanonicalName(),
+                "ClassPackage", fieldType.getPackageName(),
+                "ClassTypeName", fieldType.getTypeName(),
+                "ClassGenericString", fieldType.toGenericString()
             );
         }
         setTripletInContext(source, klass, segment);
         config.processFieldsParams.accept(config.ctx);
         segment.write(
-                config.processFieldResolv.apply(config.ctx,
-                        getTemplateContent(local.processFields, templates(local).processFields)));
+            config.processFieldResolv.apply(config.ctx,
+                getTemplateContent(local.processFields, templates(local).processFields)));
     }
 
     public void processMethods(Source source, Class<?> klass, CompoundParams global, List<Method> methods, Segment segment) {
         final var local = localConfig(global);
         segment.param(
-                "methods.n", "" + methods.size()
+            "methods.n", "" + methods.size()
         );
         int i = 0;
         for (final var method : methods) {
             final var returnType = method.getReturnType();
             final var name = method.getName();
             setParams(segment, "method." + i + ".",
-                    "GenericString", method.toGenericString(),
-                    "ReturnClassSimpleName", returnType.getSimpleName(),
-                    "ReturnClassName", returnType.getName(),
-                    "ReturnClassCanonicalName", returnType.getCanonicalName(),
-                    "ReturnClassPackage", returnType.getPackageName(),
-                    "ReturnClassTypeName", returnType.getTypeName(),
-                    "ReturnClassGenericString", returnType.toGenericString()
+                "GenericString", method.toGenericString(),
+                "ReturnClassSimpleName", returnType.getSimpleName(),
+                "ReturnClassName", returnType.getName(),
+                "ReturnClassCanonicalName", returnType.getCanonicalName(),
+                "ReturnClassPackage", returnType.getPackageName(),
+                "ReturnClassTypeName", returnType.getTypeName(),
+                "ReturnClassGenericString", returnType.toGenericString()
             );
             i++;
             setParams(segment, "method." + name + ".",
-                    "GenericString", method.toGenericString(),
-                    "ReturnClassSimpleName", returnType.getSimpleName(),
-                    "ReturnClassName", returnType.getName(),
-                    "ReturnClassCanonicalName", returnType.getCanonicalName(),
-                    "ReturnClassPackage", returnType.getPackageName(),
-                    "ReturnClassTypeName", returnType.getTypeName(),
-                    "ReturnClassGenericString", returnType.toGenericString()
+                "GenericString", method.toGenericString(),
+                "ReturnClassSimpleName", returnType.getSimpleName(),
+                "ReturnClassName", returnType.getName(),
+                "ReturnClassCanonicalName", returnType.getCanonicalName(),
+                "ReturnClassPackage", returnType.getPackageName(),
+                "ReturnClassTypeName", returnType.getTypeName(),
+                "ReturnClassGenericString", returnType.toGenericString()
             );
         }
         setTripletInContext(source, klass, segment);
         config.processMethodsParams.accept(config.ctx);
         segment.write(
-                config.processMethodsResolv.apply(config.ctx,
-                        getTemplateContent(local.processMethods, templates(local).processMethods)));
+            config.processMethodsResolv.apply(config.ctx,
+                getTemplateContent(local.processMethods, templates(local).processMethods)));
     }
 
     public void processClasses(Source source, Class<?> klass, CompoundParams global, List<Class> classes, Segment segment) {
         final var local = localConfig(global);
         segment.param(
-                "memberClasses.n", "" + classes.size()
+            "memberClasses.n", "" + classes.size()
         );
         int i = 0;
         for (final var memberClass : classes) {
             setParams(segment, "memberClass." + i + ".",
-                    "SimpleName", memberClass.getSimpleName(),
-                    "Name", memberClass.getName(),
-                    "CanonicalName", memberClass.getCanonicalName(),
-                    "Package", memberClass.getPackageName(),
-                    "TypeName", memberClass.getTypeName(),
-                    "GenericString", memberClass.toGenericString()
+                "SimpleName", memberClass.getSimpleName(),
+                "Name", memberClass.getName(),
+                "CanonicalName", memberClass.getCanonicalName(),
+                "Package", memberClass.getPackageName(),
+                "TypeName", memberClass.getTypeName(),
+                "GenericString", memberClass.toGenericString()
             );
             i++;
             setParams(segment, "memberClass." + memberClass.getName() + ".",
-                    "SimpleName", memberClass.getSimpleName(),
-                    "Name", memberClass.getName(),
-                    "CanonicalName", memberClass.getCanonicalName(),
-                    "Package", memberClass.getPackageName(),
-                    "TypeName", memberClass.getTypeName(),
-                    "GenericString", memberClass.toGenericString()
+                "SimpleName", memberClass.getSimpleName(),
+                "Name", memberClass.getName(),
+                "CanonicalName", memberClass.getCanonicalName(),
+                "Package", memberClass.getPackageName(),
+                "TypeName", memberClass.getTypeName(),
+                "GenericString", memberClass.toGenericString()
             );
         }
         setTripletInContext(source, klass, segment);
         config.processClassesParams.accept(config.ctx);
         segment.write(
-                config.processClassesResolv.apply(config.ctx,
-                        getTemplateContent(local.processClasses, templates(local).processClasses)));
+            config.processClassesResolv.apply(config.ctx,
+                getTemplateContent(local.processClasses, templates(local).processClasses)));
     }
 
     public void postprocess(Source source, Class<?> klass, CompoundParams global, Segment segment) {
@@ -473,8 +479,8 @@ public class Templated extends AbstractJavaGenerator {
         setTripletInContext(source, klass, segment);
         config.postprocessParams.accept(config.ctx);
         segment.write(
-                config.postprocessResolv.apply(config.ctx,
-                        getTemplateContent(local.postprocess, templates(local).postprocess)));
+            config.postprocessResolv.apply(config.ctx,
+                getTemplateContent(local.postprocess, templates(local).postprocess)));
     }
 
     private void setTripletInContext(Source source, Class<?> klass, Segment segment) {
@@ -497,6 +503,7 @@ public class Templated extends AbstractJavaGenerator {
 
     //<editor-fold id="configBuilder">
     private final Config config = new Config();
+
     public static Templated.Builder builder() {
         return new Templated().new Builder();
     }
@@ -524,6 +531,7 @@ public class Templated extends AbstractJavaGenerator {
     protected java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
+
     public class Builder {
         public Builder classFilter(String classFilter) {
             config.classFilter = classFilter;
@@ -575,7 +583,7 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder postprocessClassResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> postprocessClassResolv) {
+        public Builder postprocessClassResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> postprocessClassResolv) {
             config.postprocessClassResolv = postprocessClassResolv;
             return this;
         }
@@ -585,7 +593,7 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder postprocessResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> postprocessResolv) {
+        public Builder postprocessResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> postprocessResolv) {
             config.postprocessResolv = postprocessResolv;
             return this;
         }
@@ -605,7 +613,7 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder preprocessClassResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> preprocessClassResolv) {
+        public Builder preprocessClassResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> preprocessClassResolv) {
             config.preprocessClassResolv = preprocessClassResolv;
             return this;
         }
@@ -615,7 +623,7 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder preprocessResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> preprocessResolv) {
+        public Builder preprocessResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> preprocessResolv) {
             config.preprocessResolv = preprocessResolv;
             return this;
         }
@@ -625,12 +633,12 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder processClassParams(java.util.function.BiConsumer<javax0.geci.templated.Context,Class> processClassParams) {
+        public Builder processClassParams(java.util.function.BiConsumer<javax0.geci.templated.Context, Class> processClassParams) {
             config.processClassParams = processClassParams;
             return this;
         }
 
-        public Builder processClassResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> processClassResolv) {
+        public Builder processClassResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> processClassResolv) {
             config.processClassResolv = processClassResolv;
             return this;
         }
@@ -645,7 +653,7 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder processClassesResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> processClassesResolv) {
+        public Builder processClassesResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> processClassesResolv) {
             config.processClassesResolv = processClassesResolv;
             return this;
         }
@@ -655,12 +663,12 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder processFieldParams(java.util.function.BiConsumer<javax0.geci.templated.Context,java.lang.reflect.Field> processFieldParams) {
+        public Builder processFieldParams(java.util.function.BiConsumer<javax0.geci.templated.Context, java.lang.reflect.Field> processFieldParams) {
             config.processFieldParams = processFieldParams;
             return this;
         }
 
-        public Builder processFieldResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> processFieldResolv) {
+        public Builder processFieldResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> processFieldResolv) {
             config.processFieldResolv = processFieldResolv;
             return this;
         }
@@ -675,17 +683,17 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder processFieldsResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> processFieldsResolv) {
+        public Builder processFieldsResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> processFieldsResolv) {
             config.processFieldsResolv = processFieldsResolv;
             return this;
         }
 
-        public Builder processMemberClassParams(java.util.function.BiConsumer<javax0.geci.templated.Context,Class> processMemberClassParams) {
+        public Builder processMemberClassParams(java.util.function.BiConsumer<javax0.geci.templated.Context, Class> processMemberClassParams) {
             config.processMemberClassParams = processMemberClassParams;
             return this;
         }
 
-        public Builder processMemberClassResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> processMemberClassResolv) {
+        public Builder processMemberClassResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> processMemberClassResolv) {
             config.processMemberClassResolv = processMemberClassResolv;
             return this;
         }
@@ -695,12 +703,12 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder processMethodParams(java.util.function.BiConsumer<javax0.geci.templated.Context,java.lang.reflect.Method> processMethodParams) {
+        public Builder processMethodParams(java.util.function.BiConsumer<javax0.geci.templated.Context, java.lang.reflect.Method> processMethodParams) {
             config.processMethodParams = processMethodParams;
             return this;
         }
 
-        public Builder processMethodResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> processMethodResolv) {
+        public Builder processMethodResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> processMethodResolv) {
             config.processMethodResolv = processMethodResolv;
             return this;
         }
@@ -715,7 +723,7 @@ public class Templated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder processMethodsResolv(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> processMethodsResolv) {
+        public Builder processMethodsResolv(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> processMethodsResolv) {
             config.processMethodsResolv = processMethodsResolv;
             return this;
         }
@@ -729,48 +737,49 @@ public class Templated extends AbstractJavaGenerator {
             return Templated.this;
         }
     }
-    private Config localConfig(CompoundParams params){
+
+    private Config localConfig(CompoundParams params) {
         final var local = new Config();
-        local.classFilter = params.get("classFilter",config.classFilter);
+        local.classFilter = params.get("classFilter", config.classFilter);
         local.ctx = config.ctx;
         local.declaredOnly = config.declaredOnly;
-        local.fieldFilter = params.get("fieldFilter",config.fieldFilter);
+        local.fieldFilter = params.get("fieldFilter", config.fieldFilter);
         local.generatedAnnotation = config.generatedAnnotation;
-        local.memberClassFilter = params.get("memberClassFilter",config.memberClassFilter);
-        local.methodFilter = params.get("methodFilter",config.methodFilter);
-        local.setPostprocess(params.get("postprocess",config.postprocess));
-        local.setPostprocessClass(params.get("postprocessClass",config.postprocessClass));
+        local.memberClassFilter = params.get("memberClassFilter", config.memberClassFilter);
+        local.methodFilter = params.get("methodFilter", config.methodFilter);
+        local.setPostprocess(params.get("postprocess", config.postprocess));
+        local.setPostprocessClass(params.get("postprocessClass", config.postprocessClass));
         local.postprocessClassParams = config.postprocessClassParams;
         local.postprocessClassResolv = config.postprocessClassResolv;
         local.postprocessParams = config.postprocessParams;
         local.postprocessResolv = config.postprocessResolv;
-        local.setPreprocess(params.get("preprocess",config.preprocess));
-        local.setPreprocessClass(params.get("preprocessClass",config.preprocessClass));
+        local.setPreprocess(params.get("preprocess", config.preprocess));
+        local.setPreprocessClass(params.get("preprocessClass", config.preprocessClass));
         local.preprocessClassParams = config.preprocessClassParams;
         local.preprocessClassResolv = config.preprocessClassResolv;
         local.preprocessParams = config.preprocessParams;
         local.preprocessResolv = config.preprocessResolv;
-        local.setProcessClass(params.get("processClass",config.processClass));
+        local.setProcessClass(params.get("processClass", config.processClass));
         local.processClassParams = config.processClassParams;
         local.processClassResolv = config.processClassResolv;
-        local.setProcessClasses(params.get("processClasses",config.processClasses));
+        local.setProcessClasses(params.get("processClasses", config.processClasses));
         local.processClassesParams = config.processClassesParams;
         local.processClassesResolv = config.processClassesResolv;
-        local.setProcessField(params.get("processField",config.processField));
+        local.setProcessField(params.get("processField", config.processField));
         local.processFieldParams = config.processFieldParams;
         local.processFieldResolv = config.processFieldResolv;
-        local.setProcessFields(params.get("processFields",config.processFields));
+        local.setProcessFields(params.get("processFields", config.processFields));
         local.processFieldsParams = config.processFieldsParams;
         local.processFieldsResolv = config.processFieldsResolv;
         local.processMemberClassParams = config.processMemberClassParams;
         local.processMemberClassResolv = config.processMemberClassResolv;
-        local.setProcessMethod(params.get("processMethod",config.processMethod));
+        local.setProcessMethod(params.get("processMethod", config.processMethod));
         local.processMethodParams = config.processMethodParams;
         local.processMethodResolv = config.processMethodResolv;
-        local.setProcessMethods(params.get("processMethods",config.processMethods));
+        local.setProcessMethods(params.get("processMethods", config.processMethods));
         local.processMethodsParams = config.processMethodsParams;
         local.processMethodsResolv = config.processMethodsResolv;
-        local.selector = params.get("selector",config.selector);
+        local.selector = params.get("selector", config.selector);
         return local;
     }
     //</editor-fold>
