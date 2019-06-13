@@ -134,7 +134,7 @@ public class GeciReflectionTools {
     }
 
     private static String removeJavaLang(String s) {
-        if (s.startsWith("java.lang.") && !s.substring("java.lang.".length()).contains(".") ) {
+        if (s.startsWith("java.lang.") && !s.substring("java.lang.".length()).contains(".")) {
             return s.substring("java.lang.".length());
         } else {
             return s;
@@ -353,8 +353,10 @@ public class GeciReflectionTools {
     }
 
     /**
-     * The same as {@link #getDeclaredMethodsSorted(Class)} except it returns the methods and not the declared methods.
-     * It means that only the methods that are available from outside but including the inherited methods are returned.
+     * The same as {@link #getDeclaredMethodsSorted(Class)} except it
+     * returns the methods and not the declared methods. It means that
+     * only the methods that are available from outside but including
+     * the inherited methods are returned.
      *
      * @param klass the class of which we need the methods
      * @return the array of the methods of the class
@@ -380,6 +382,58 @@ public class GeciReflectionTools {
         final Method[] methodArray = allMethods.toArray(new Method[0]);
         Arrays.sort(methodArray, Comparator.comparing(MethodTool::methodSignature));
         return methodArray;
+    }
+
+    /**
+     * Get all the member classes sorted either declared in the
+     * class or inherited.
+     *
+     * @param klass that we want the inner and nested classes
+     * @return the array of {@code Class} objects representing the public
+     * members of this class in a sorted order. The soring order is not
+     * guaranteed. Sorting only guarantees that the returned array
+     * contains the classes in the same order even if the code runs on
+     * different JVMs.
+     */
+    public static Class[] getAllClassesSorted(Class<?> klass) {
+        final var classes = Arrays.stream(klass.getClasses()).collect(Collectors.toSet());
+        final var declaredClasses = Arrays.stream(klass.getDeclaredClasses()).collect(Collectors.toSet());
+        final var allClasses = new HashSet<>();
+        allClasses.addAll(classes);
+        allClasses.addAll(declaredClasses);
+        final Class[] classArray = allClasses.toArray(new Class[0]);
+        Arrays.sort(classArray, Comparator.comparing(Class::getName));
+        return classArray;
+    }
+
+    /**
+     * Get the declared classes of the class sorted.
+     *
+     * <p> See the notes at the javadoc of the method {@link
+     * #getDeclaredFieldsSorted(Class)}
+     *
+     * @param klass class of which the member classes are returned
+     * @return the sorted array of the classes
+     */
+    public static Class[] getDeclaredClassesSorted(Class<?> klass) {
+        final var classes = klass.getDeclaredClasses();
+        Arrays.sort(classes, Comparator.comparing(Class::getName));
+        return classes;
+    }
+
+    /**
+     * The same as {@link #getDeclaredClassesSorted(Class)}} except it
+     * returns the classes and not the declared classes. It means that
+     * only the classes that are available from outside but including
+     * the inherited classes are returned.
+     *
+     * @param klass the class of which we need the classes
+     * @return the array of the classes of the class
+     */
+    public static Class[] getClassesSorted(Class<?> klass) {
+        final var classes = klass.getClasses();
+        Arrays.sort(classes, Comparator.comparing(Class::getName));
+        return classes;
     }
 
     public static Method getMethod(Class<?> klass, String methodName, Class<?>... classes) throws NoSuchMethodException {

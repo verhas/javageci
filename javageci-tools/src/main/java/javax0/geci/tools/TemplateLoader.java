@@ -9,9 +9,28 @@ import java.nio.file.Paths;
 public class TemplateLoader {
     private static final ClassLoader loader = TemplateLoader.class.getClassLoader();
 
+    /**
+     * Get the content of a template either from the name of the Java
+     * resource loading the resource or extracting it from the string in
+     * case the argument string contains the template itself.
+     *
+     * @param template the name of the resource that contains the
+     *                 template, or the template itself if is starts and
+     *                 ends with three back-ticks (like code segment in
+     *                 markdown). In this case the back-ticks are removed
+     *                 from the returned string.
+     * @return the content of the template. In case the template cannot
+     * be loaded then a Java comment formatted error message is
+     * returned. If the argument is {@code null} then the return value
+     * is also {@code null}.
+     */
     public static String getTemplateContent(String template) {
         if (template == null) {
             return null;
+        }
+
+        if (template.startsWith("```") && template.endsWith("```")) {
+            return template.substring(3, template.length() - 3);
         }
 
         try {
