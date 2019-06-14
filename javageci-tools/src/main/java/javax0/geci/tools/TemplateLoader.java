@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 
 public class TemplateLoader {
     private static final ClassLoader loader = TemplateLoader.class.getClassLoader();
+    private static final String QUOTE = "```";
 
     /**
      * Get the content of a template either from the name of the Java
@@ -29,7 +30,7 @@ public class TemplateLoader {
             return null;
         }
 
-        if (template.startsWith("```") && template.endsWith("```")) {
+        if (template.startsWith(QUOTE) && template.endsWith(QUOTE)) {
             return template.substring(3, template.length() - 3);
         }
 
@@ -49,6 +50,18 @@ public class TemplateLoader {
                     + sw.toString()
                     + "*/";
         }
+    }
+
+    /**
+     * Quote a string so that this will be interpreted by {@link
+     * #getTemplateContent(String)} as the template itself and not the
+     * name of te resource that contains the template.
+     *
+     * @param s the string that contains the template
+     * @return the string preceeded and appended with three backticks.
+     */
+    public static String quote(String s) {
+        return QUOTE + s + QUOTE;
     }
 
     /**

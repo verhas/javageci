@@ -157,6 +157,7 @@ Generators provided with Java::Geci out of the box
 * [equals() and hashCode()](EQUALS.md)
 * [toMap() and fromMap()](MAPPER.md)
 * [template based generator](TEMPLATED.md)
+* [repeated code generator](REPEATED.md)
 * [object cloner](CLONER.md) (planned)
 * [static dependency injection](INJECT.md) (planned)
 * [proxy class](PROXY.md) (planned)

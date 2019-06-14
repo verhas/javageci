@@ -23,6 +23,8 @@ public class Repeated extends AbstractJavaGenerator {
         private String start = ".*//\\s*START\\s*";
         private String matchLine = "(.*)";
         private String end = ".*//\\s*END\\s*";
+        private String templateStart = "\\s*/\\*\\s*TEMPLATE\\s+(\\w*)\\s*";
+        private String templateEnd = "\\s*\\*/\\s*";
         private String values = null;
         private String selector = "";
         private String template;
@@ -61,17 +63,46 @@ public class Repeated extends AbstractJavaGenerator {
         final var startPattern = Pattern.compile(local.start);
         final var matchLinePattern = Pattern.compile(local.matchLine);
         final var endPattern = Pattern.compile(local.end);
+        final var templateStartPattern = Pattern.compile(local.templateStart);
+        final var templateEndPattern = Pattern.compile(local.templateEnd);
         boolean switchOn = false;
+        boolean templateOn = false;
         final var loopVars = new ArrayList<String>();
+        final var parsed = new StringBuilder();
+        var selector = "";
+        int templateTabbing = 0;
         for (final var line : source.getLines()) {
-            if (startPattern.matcher(line).matches()) {
-                switchOn = true;
-                continue;
+            if (!templateOn && !switchOn) {
+                if (startPattern.matcher(line).matches()) {
+                    switchOn = true;
+                    continue;
+                }
+                final var templateStartMatcher = templateStartPattern.matcher(line);
+                if (templateStartMatcher.matches()) {
+                    templateOn = true;
+                    selector = templateStartMatcher.group(1);
+                    templateTabbing = countSpacesAtStart(line);
+                    continue;
+                }
             }
-            if (endPattern.matcher(line).matches()) {
+
+            if (switchOn && !templateOn && endPattern.matcher(line).matches()) {
                 switchOn = false;
                 continue;
             }
+
+            if (!switchOn && templateOn && templateEndPattern.matcher(line).matches()) {
+                templateOn = false;
+                config.templatesMap.put(selector, TemplateLoader.quote(parsed.toString()));
+                parsed.delete(0, parsed.length());
+                continue;
+            }
+
+            if (templateOn) {
+                parsed.append(line.substring(templateTabbing));
+                continue;
+            }
+
             if (switchOn) {
                 final Matcher matcher = matchLinePattern.matcher(line);
                 if (matcher.find()) {
@@ -80,6 +111,7 @@ public class Repeated extends AbstractJavaGenerator {
                     }
                     loopVars.add(matcher.group(1));
                 }
+                continue;
             }
         }
         if (local.values != null) {
@@ -100,7 +132,7 @@ public class Repeated extends AbstractJavaGenerator {
                 for (final var loopVar : loopVars) {
                     final var templateContent = TemplateLoader.getTemplateContent(template);
                     final var resolvedTemplate = resolver == null ? templateContent : resolver.apply(config.ctx, templateContent);
-                    segment.param("value",loopVar);
+                    segment.param("value", loopVar);
                     if (define != null) {
                         define.accept(config.ctx, loopVar);
                     }
@@ -110,34 +142,49 @@ public class Repeated extends AbstractJavaGenerator {
         }
     }
 
+    private static int countSpacesAtStart(String line) {
+        int i = 0;
+        while (i < line.length() ) {
+            if( line.charAt(i) != ' '){
+                return i;
+            }
+            i++;
+        }
+        return 0;
+    }
+
 
     //<editor-fold id="configBuilder">
     private final Config config = new Config();
+
     public static Repeated.Builder builder() {
         return new Repeated().new Builder();
     }
 
     private static final java.util.Set<String> implementedKeys = java.util.Set.of(
-        "end",
-        "matchLine",
-        "selector",
-        "start",
-        "template",
-        "values",
-        "id"
+            "end",
+            "matchLine",
+            "selector",
+            "start",
+            "template",
+            "templateEnd",
+            "templateStart",
+            "values",
+            "id"
     );
 
     @Override
     protected java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
+
     public class Builder {
         public Builder ctx(javax0.geci.templated.Context ctx) {
             config.ctx = ctx;
             return this;
         }
 
-        public Builder define(java.util.function.BiConsumer<javax0.geci.templated.Context,String> define) {
+        public Builder define(java.util.function.BiConsumer<javax0.geci.templated.Context, String> define) {
             config.setDefine(define);
             return this;
         }
@@ -152,7 +199,7 @@ public class Repeated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder resolver(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> resolver) {
+        public Builder resolver(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> resolver) {
             config.setResolver(resolver);
             return this;
         }
@@ -172,6 +219,16 @@ public class Repeated extends AbstractJavaGenerator {
             return this;
         }
 
+        public Builder templateEnd(String templateEnd) {
+            config.templateEnd = templateEnd;
+            return this;
+        }
+
+        public Builder templateStart(String templateStart) {
+            config.templateStart = templateStart;
+            return this;
+        }
+
         public Builder values(String values) {
             config.values = values;
             return this;
@@ -181,17 +238,20 @@ public class Repeated extends AbstractJavaGenerator {
             return Repeated.this;
         }
     }
-    private Config localConfig(CompoundParams params){
+
+    private Config localConfig(CompoundParams params) {
         final var local = new Config();
         local.ctx = config.ctx;
         local.setDefine(config.define);
-        local.end = params.get("end",config.end);
-        local.matchLine = params.get("matchLine",config.matchLine);
+        local.end = params.get("end", config.end);
+        local.matchLine = params.get("matchLine", config.matchLine);
         local.setResolver(config.resolver);
-        local.selector = params.get("selector",config.selector);
-        local.start = params.get("start",config.start);
-        local.setTemplate(params.get("template",config.template));
-        local.values = params.get("values",config.values);
+        local.selector = params.get("selector", config.selector);
+        local.start = params.get("start", config.start);
+        local.setTemplate(params.get("template", config.template));
+        local.templateEnd = params.get("templateEnd", config.templateEnd);
+        local.templateStart = params.get("templateStart", config.templateStart);
+        local.values = params.get("values", config.values);
         return local;
     }
     //</editor-fold>

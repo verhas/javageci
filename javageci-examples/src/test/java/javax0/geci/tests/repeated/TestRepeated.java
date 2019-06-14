@@ -22,14 +22,7 @@ public class TestRepeated {
                         "    templates().{{value}} = template;\n" +
                         "}\n\n```")
                     //
-                    .selector("bifunctions")
-                    .template("```private BiFunction<Context, String, String> {{value}}Resolv = BiFuNOOP;```")
-                    //
-                    .selector("templates")
-                    .template("```private String {{value}} = null;```")
-                    //
                     .selector("consumers")
-                    .template("```private {{type}} {{value}}Params = {{const}};```")
                     .define((ctx, s) -> {
                             String subtype;
                             if (s.startsWith("process") && (s.endsWith(subtype = "Field") || s.endsWith(subtype = "Method") || s.endsWith(subtype = "Class"))) {
@@ -41,9 +34,6 @@ public class TestRepeated {
                             }
                         }
                     )
-                    //
-                    .selector("configTemplates")
-                    .template("```private String {{value}} = null;```")
                     //
                     .build()).generate()
             , Geci.FAILED
