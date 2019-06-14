@@ -18,6 +18,7 @@ public class NeedsTemplated {
     //<editor-fold id="templated">
     // this is preprocess 112 for NeedsTemplated
     // the field private static volatile java.util.List<java.util.Map<java.lang.String, java.util.Set<java.lang.Integer>>> javax0.geci.tests.templated.NeedsTemplated.h; is needed
+
     // this is process for k
     // field.name k
     // field.genericString private static volatile int javax0.geci.tests.templated.NeedsTemplated.k

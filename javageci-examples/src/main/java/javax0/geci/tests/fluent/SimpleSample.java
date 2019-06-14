@@ -103,6 +103,7 @@ public class SimpleSample {
     }
     public interface Ecac extends Abok,Ofob{
     }
+
     //</editor-fold>
 
 }

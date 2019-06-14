@@ -81,6 +81,7 @@ public class SimpleGrammar {
     }
     public interface Uhab extends Ukeg,Abok,Ogoj,Acuh,Ohug{
     }
+
     //</editor-fold>
 
     public void singleWord() {

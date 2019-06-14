@@ -129,5 +129,6 @@ public class XmlBuilder {
     public interface Edak {
         Ogoj tag(String arg1);
     }
+
     //</editor-fold>
 }

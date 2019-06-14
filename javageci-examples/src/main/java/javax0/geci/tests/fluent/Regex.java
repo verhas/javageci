@@ -111,6 +111,7 @@ public class Regex {
         Ukeg terminal(String arg1);
         Ukeg zeroOrMore(WrapperInterface arg1);
     }
+
     //</editor-fold>
 
 }

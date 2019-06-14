@@ -93,13 +93,17 @@ public class Repeated extends AbstractJavaGenerator {
 
             if (!switchOn && templateOn && templateEndPattern.matcher(line).matches()) {
                 templateOn = false;
+                deleteTrailingNewLine(parsed);
                 config.templatesMap.put(selector, TemplateLoader.quote(parsed.toString()));
                 parsed.delete(0, parsed.length());
                 continue;
             }
 
             if (templateOn) {
-                parsed.append(line.substring(templateTabbing));
+                if (line.length() > templateTabbing) {
+                    parsed.append(line.substring(templateTabbing));
+                }
+                parsed.append("\n");
                 continue;
             }
 
@@ -142,10 +146,19 @@ public class Repeated extends AbstractJavaGenerator {
         }
     }
 
+    private void deleteTrailingNewLine(StringBuilder parsed) {
+        if (parsed.length() > 0 && parsed.charAt(parsed.length() - 1) == '\n') {
+            parsed.deleteCharAt(parsed.length() - 1);
+            if (parsed.length() > 0 && parsed.charAt(parsed.length() - 1) == '\r') {
+                parsed.deleteCharAt(parsed.length() - 1);
+            }
+        }
+    }
+
     private static int countSpacesAtStart(String line) {
         int i = 0;
-        while (i < line.length() ) {
-            if( line.charAt(i) != ' '){
+        while (i < line.length()) {
+            if (line.charAt(i) != ' ') {
                 return i;
             }
             i++;
@@ -156,35 +169,33 @@ public class Repeated extends AbstractJavaGenerator {
 
     //<editor-fold id="configBuilder">
     private final Config config = new Config();
-
     public static Repeated.Builder builder() {
         return new Repeated().new Builder();
     }
 
     private static final java.util.Set<String> implementedKeys = java.util.Set.of(
-            "end",
-            "matchLine",
-            "selector",
-            "start",
-            "template",
-            "templateEnd",
-            "templateStart",
-            "values",
-            "id"
+        "end",
+        "matchLine",
+        "selector",
+        "start",
+        "template",
+        "templateEnd",
+        "templateStart",
+        "values",
+        "id"
     );
 
     @Override
     protected java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
-
     public class Builder {
         public Builder ctx(javax0.geci.templated.Context ctx) {
             config.ctx = ctx;
             return this;
         }
 
-        public Builder define(java.util.function.BiConsumer<javax0.geci.templated.Context, String> define) {
+        public Builder define(java.util.function.BiConsumer<javax0.geci.templated.Context,String> define) {
             config.setDefine(define);
             return this;
         }
@@ -199,7 +210,7 @@ public class Repeated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder resolver(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> resolver) {
+        public Builder resolver(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> resolver) {
             config.setResolver(resolver);
             return this;
         }
@@ -238,20 +249,19 @@ public class Repeated extends AbstractJavaGenerator {
             return Repeated.this;
         }
     }
-
-    private Config localConfig(CompoundParams params) {
+    private Config localConfig(CompoundParams params){
         final var local = new Config();
         local.ctx = config.ctx;
         local.setDefine(config.define);
-        local.end = params.get("end", config.end);
-        local.matchLine = params.get("matchLine", config.matchLine);
+        local.end = params.get("end",config.end);
+        local.matchLine = params.get("matchLine",config.matchLine);
         local.setResolver(config.resolver);
-        local.selector = params.get("selector", config.selector);
-        local.start = params.get("start", config.start);
-        local.setTemplate(params.get("template", config.template));
-        local.templateEnd = params.get("templateEnd", config.templateEnd);
-        local.templateStart = params.get("templateStart", config.templateStart);
-        local.values = params.get("values", config.values);
+        local.selector = params.get("selector",config.selector);
+        local.start = params.get("start",config.start);
+        local.setTemplate(params.get("template",config.template));
+        local.templateEnd = params.get("templateEnd",config.templateEnd);
+        local.templateStart = params.get("templateStart",config.templateStart);
+        local.values = params.get("values",config.values);
         return local;
     }
     //</editor-fold>

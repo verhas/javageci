@@ -56,6 +56,8 @@ public class PreprocessedFile {
        } 
 
 
+
+
     //__END__
     public void dummy() {
 
@@ -68,6 +70,7 @@ public class PreprocessedFile {
         //<editor-fold desc="the generated code">
         var j = 13;
         //</editor-fold>
+
         //__END__
 
         /*!jamal
@@ -78,6 +81,7 @@ public class PreprocessedFile {
         //<editor-fold desc="the generated code">
         var k = 666;
         //</editor-fold>
+
         //__END__
     }
 }

@@ -89,7 +89,7 @@ public class Segment implements javax0.geci.api.Segment {
     @Override
     public Segment write(String s, Object... parameters) {
         if (s != null) {
-            if (s.trim().length() == 0) {
+            if (!s.contains("\n") && s.trim().length() == 0) {
                 newline();
             } else {
                 final String formatted;
@@ -99,7 +99,7 @@ public class Segment implements javax0.geci.api.Segment {
                     formatted = String.format(s, parameters);
                 }
                 if (formatted.contains("\n")) {
-                    Arrays.stream(formatted.split("\r?\n")).forEach(this::write);
+                    Arrays.stream(formatted.split("\r?\n",-1)).forEach(this::write);
                 } else {
                     lines.add((tabStop > 0 ? String.format("%" + tabStop + "s", " ") : "") + formatted);
                 }

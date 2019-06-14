@@ -234,7 +234,7 @@ public class JavaSource implements AutoCloseable {
         } else {
             var formatted = String.format(s, parameters);
             if (formatted.contains("\n")) {
-                Arrays.stream(formatted.split("\n")).forEach(this::write);
+                Arrays.stream(formatted.split("\r?\n")).forEach(this::write);
             } else {
                 formatted = formatted.replaceAll("\n+$", "");
                 code.append(tabStop > 0 ? String.format("%" + tabStop + "s", " ") : "").append(formatted).append("\n");

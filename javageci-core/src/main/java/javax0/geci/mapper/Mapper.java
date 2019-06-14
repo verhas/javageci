@@ -119,7 +119,7 @@ public class Mapper extends AbstractJavaGenerator {
             }
         }
         segment.write("return map;")
-                ._l("}\n\n");
+                ._l("}");
     }
 
     private String getResourceString(String resource) throws IOException {
@@ -177,6 +177,6 @@ public class Mapper extends AbstractJavaGenerator {
                 }
             }
         }
-        segment.write("return it;\n")._l("}\n\n");
+        segment.write("return it;")._l("}");
     }
 }

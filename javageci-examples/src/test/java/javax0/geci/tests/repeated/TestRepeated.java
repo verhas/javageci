@@ -18,9 +18,6 @@ public class TestRepeated {
                     //
                     .selector("configSetters")
                     .define((ctx, s) -> ctx.segment().param("setter", "set" + CaseTools.ucase(s)))
-                    .template("```private void {{setter}}(String template) {\n" +
-                        "    templates().{{value}} = template;\n" +
-                        "}\n\n```")
                     //
                     .selector("consumers")
                     .define((ctx, s) -> {
