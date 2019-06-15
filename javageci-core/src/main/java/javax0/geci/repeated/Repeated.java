@@ -26,8 +26,9 @@ public class Repeated extends AbstractJavaGenerator {
         private String templateStart = "\\s*/\\*\\s*TEMPLATE\\s+(\\w*)\\s*";
         private String templateEnd = "\\s*\\*/\\s*";
         private String values = null;
-        private String selector = "";
-        private String template;
+        private CharSequence selector = "";
+        private CharSequence template = null;
+        private CharSequence mnemonic = "repeated";
         private Context ctx = new Triplet();
         private final Map<String, String> templatesMap = new HashMap<>();
         private BiFunction<Context, String, String> resolver;
@@ -39,22 +40,27 @@ public class Repeated extends AbstractJavaGenerator {
             if (templatesMap.containsKey(selector)) {
                 throw new GeciException("Selector '" + selector + "' already has a template");
             }
-            templatesMap.put(selector, template);
+            templatesMap.put(selector.toString(), template);
         }
 
         private void setResolver(BiFunction<Context, String, String> resolver) {
             if (resolverMap.containsKey(selector)) {
                 throw new GeciException("Selector '" + selector + "' already has a resolver");
             }
-            resolverMap.put(selector, resolver);
+            resolverMap.put(selector.toString(), resolver);
         }
 
         private void setDefine(BiConsumer<Context, String> define) {
             if (defineMap.containsKey(selector)) {
                 throw new GeciException("Selector '" + selector + "' already has a define");
             }
-            defineMap.put(selector, define);
+            defineMap.put(selector.toString(), define);
         }
+    }
+
+    @Override
+    public String mnemonic(){
+        return config.mnemonic.toString();
     }
 
     @Override
@@ -176,9 +182,7 @@ public class Repeated extends AbstractJavaGenerator {
     private static final java.util.Set<String> implementedKeys = java.util.Set.of(
         "end",
         "matchLine",
-        "selector",
         "start",
-        "template",
         "templateEnd",
         "templateStart",
         "values",
@@ -210,12 +214,17 @@ public class Repeated extends AbstractJavaGenerator {
             return this;
         }
 
+        public Builder mnemonic(CharSequence mnemonic) {
+            config.mnemonic = mnemonic;
+            return this;
+        }
+
         public Builder resolver(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> resolver) {
             config.setResolver(resolver);
             return this;
         }
 
-        public Builder selector(String selector) {
+        public Builder selector(CharSequence selector) {
             config.selector = selector;
             return this;
         }
@@ -225,8 +234,8 @@ public class Repeated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder template(String template) {
-            config.setTemplate(template);
+        public Builder template(CharSequence template) {
+            config.template = template;
             return this;
         }
 
@@ -255,10 +264,11 @@ public class Repeated extends AbstractJavaGenerator {
         local.setDefine(config.define);
         local.end = params.get("end",config.end);
         local.matchLine = params.get("matchLine",config.matchLine);
+        local.mnemonic = config.mnemonic;
         local.setResolver(config.resolver);
-        local.selector = params.get("selector",config.selector);
+        local.selector = config.selector;
         local.start = params.get("start",config.start);
-        local.setTemplate(params.get("template",config.template));
+        local.template = config.template;
         local.templateEnd = params.get("templateEnd",config.templateEnd);
         local.templateStart = params.get("templateStart",config.templateStart);
         local.values = params.get("values",config.values);

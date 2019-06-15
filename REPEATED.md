@@ -139,8 +139,64 @@ used to extract the value. After the matching (using `find()` on the
 matcher) the first group will be used as value.
 
 ### `values`
+
+Values can also be defined as configuration parameter in addition to
+being collected from the source code. This configuration parameter can
+contains the strings of values comma separated. These values will be
+used together to those that were collected from the source code. Usually
+programs either collect the values from the source or use this
+configuration.
+
 ### `selector`
-### `template;`
+
+This configuration parameter can only be used in the builder of the
+generator to specify the key to the template and defines that follow.
+The templates as well as define and resolver lambdas are stored in maps
+indexed by the selector and they are used to generate code into editor
+fold segments that have the specific selector as id.
+
+### `template`
+
+This configuration can only be used in the builder following a selector
+to specify the name of a Java resource text file that contains the
+template text or the template text itself when the text starts and ends
+with three back-tick characters (like code sections in markdown)
+
+### `define`
+
+This configuration can only be used in the builder following a selector
+to specify a `BiConsumer<Context, String>` that can add segment
+parameters for the processing of the template. The consumer gets the
+context as a first argument and it can call `ctx.segment()` to get
+access to the segment and through that it can add parameters to the
+segment. These parameters are (`xxx`,`yyy`) pairs that are used when the
+code generation is performed. Every occurence of `{{xxx}}` is replaced
+with `yyy`. The second argument to the consumer is the actual value that
+the template is used for. The argument passed to the `define()` method
+in the builder is usually a lambda expression. This lambda is invoked
+for every value in the `values` list.
+
+### `resolver`
+
+This configuration can only be used in the builder following a selector
+to specify a `BiFunction<Context, String, String>` that can convert the
+string as a last step after the parameters were resolved just before the
+text is inserted into the generated segment.
+
 ### `ctx`
-### `resolver;`
-### `define;`
+
+This configuration can only be used in the builder to pass an object
+that implements the `Context` interface. In case there is no such object
+configured 
+
+A context passed as a first argument to the lambda expressions when
+invoked that are used to define segment parameters referenced in the
+template using the `{{xxx}}` format, as well as to resolvers that can
+convert the text of the inserted code.
+
+### `mnemonic`
+
+This configuration can only be used in the builder to specify the
+mnemonic of the generator. The default value is `repeated`. This can be
+redefined in case one class needs multiple value lists into different
+segments. 
