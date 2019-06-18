@@ -11,4 +11,13 @@ public class LexicalElement {
     };
     public final String lexeme;
     public final Type type;
+
+    public static class Comment extends LexicalElement {
+
+
+        public Comment(String lexeme, Type type) {
+            super(lexeme, type);
+        }
+    }
+
 }

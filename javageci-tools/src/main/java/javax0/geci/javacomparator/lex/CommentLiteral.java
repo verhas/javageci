@@ -16,7 +16,7 @@ public class CommentLiteral {
             return null;
         }
         sb.delete(0, 2);
-        while (sb.length() >= 2 && sb.charAt(0) != '*' && sb.charAt(1) != '/') {
+        while (sb.length() >= 2 && (sb.charAt(0) != '*' || sb.charAt(1) != '/')) {
             sb.deleteCharAt(0);
         }
         if (sb.length() >= 2) {
