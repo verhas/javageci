@@ -20,12 +20,12 @@ public class Comparator implements BiPredicate<List<String>, List<String>> {
         Lexer lexer = new Lexer();
         LexicalElement[] elements1 = lexer.apply(strings1);
         LexicalElement[] elements2 = lexer.apply(strings2);
-        if( elements1.length != elements2.length ){return false;}
+        if( elements1.length != elements2.length ){return true;}
         for( int i = 0 ; i < elements1.length ; i ++){
             if( !elements1[i].equals(elements2[i])){
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 }

@@ -8,7 +8,7 @@ public class StringLiteral implements LexEater {
 
     @Override
     public LexicalElement.STring consume(StringBuilder sb) {
-        if (sb.charAt(0) != '\"') {
+        if (sb.length() == 0 || sb.charAt(0) != '\"') {
             return null;
         }
         final StringBuilder output = createOutput(sb, STRING);

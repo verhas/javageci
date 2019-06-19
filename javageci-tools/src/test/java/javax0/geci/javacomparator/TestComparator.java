@@ -13,7 +13,7 @@ public class TestComparator {
     void testEmpty(){
         final var s1 = "";
         final var s2 = "";
-        Assertions.assertTrue( new Comparator().test(List.of(s1.split("\n",-1)),List.of(s2.split("\n",-1))));
+        Assertions.assertFalse( new Comparator().test(List.of(s1.split("\n",-1)),List.of(s2.split("\n",-1))));
     }
 
     @Test
@@ -30,7 +30,7 @@ public class TestComparator {
                 "                s2 = \"\";\n" +
                 "        Assertions.assertTrue( new Comparator().test(List.of(s1.split(\"\\n\",-1)),List.of(s2.split(\"\\n\",-1))));\n" +
                 "    }";
-        Assertions.assertTrue( new Comparator().test(List.of(s1.split("\n",-1)),List.of(s2.split("\n",-1))));
+        Assertions.assertFalse( new Comparator().test(List.of(s1.split("\n",-1)),List.of(s2.split("\n",-1))));
     }
 
 
@@ -45,6 +45,6 @@ public class TestComparator {
                 "    void method(){\n" +
                 "        var x = 0xd;\n" +
                 "    }";
-        Assertions.assertTrue( new Comparator().test(List.of(s1.split("\n",-1)),List.of(s2.split("\n",-1))));
+        Assertions.assertFalse( new Comparator().test(List.of(s1.split("\n",-1)),List.of(s2.split("\n",-1))));
     }
 }

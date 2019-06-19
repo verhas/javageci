@@ -7,7 +7,7 @@ public class CharacterLiteral implements LexEater{
 
     @Override
     public LexicalElement.CHaracter consume(StringBuilder sb) {
-        if( sb.charAt(0) != '\'' ){
+        if( sb.length() == 0 || sb.charAt(0) != '\'' ){
             return null;
         }
         final StringBuilder output = createOutput(sb, CHARACTER);

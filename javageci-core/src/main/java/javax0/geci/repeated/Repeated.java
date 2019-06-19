@@ -59,7 +59,7 @@ public class Repeated extends AbstractJavaGenerator {
     }
 
     @Override
-    public String mnemonic(){
+    public String mnemonic() {
         return config.mnemonic.toString();
     }
 
@@ -175,6 +175,7 @@ public class Repeated extends AbstractJavaGenerator {
 
     //<editor-fold id="configBuilder">
     private final Config config = new Config();
+
     public static Repeated.Builder builder() {
         return new Repeated().new Builder();
     }
@@ -193,13 +194,14 @@ public class Repeated extends AbstractJavaGenerator {
     protected java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
+
     public class Builder {
         public Builder ctx(javax0.geci.templated.Context ctx) {
             config.ctx = ctx;
             return this;
         }
 
-        public Builder define(java.util.function.BiConsumer<javax0.geci.templated.Context,String> define) {
+        public Builder define(java.util.function.BiConsumer<javax0.geci.templated.Context, String> define) {
             config.setDefine(define);
             return this;
         }
@@ -219,7 +221,7 @@ public class Repeated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder resolver(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> resolver) {
+        public Builder resolver(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> resolver) {
             config.setResolver(resolver);
             return this;
         }
@@ -258,20 +260,21 @@ public class Repeated extends AbstractJavaGenerator {
             return Repeated.this;
         }
     }
-    private Config localConfig(CompoundParams params){
+
+    private Config localConfig(CompoundParams params) {
         final var local = new Config();
         local.ctx = config.ctx;
         local.setDefine(config.define);
-        local.end = params.get("end",config.end);
-        local.matchLine = params.get("matchLine",config.matchLine);
+        local.end = params.get("end", config.end);
+        local.matchLine = params.get("matchLine", config.matchLine);
         local.mnemonic = config.mnemonic;
         local.setResolver(config.resolver);
         local.selector = config.selector;
-        local.start = params.get("start",config.start);
+        local.start = params.get("start", config.start);
         local.template = config.template;
-        local.templateEnd = params.get("templateEnd",config.templateEnd);
-        local.templateStart = params.get("templateStart",config.templateStart);
-        local.values = params.get("values",config.values);
+        local.templateEnd = params.get("templateEnd", config.templateEnd);
+        local.templateStart = params.get("templateStart", config.templateStart);
+        local.values = params.get("values", config.values);
         return local;
     }
     //</editor-fold>

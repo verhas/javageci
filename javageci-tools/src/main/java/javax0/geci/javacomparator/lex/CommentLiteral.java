@@ -6,10 +6,7 @@ public class CommentLiteral implements LexEater {
 
     @Override
     public LexicalElement consume(StringBuilder sb) {
-        if (sb.length() < 2) {
-            throw new IllegalArgumentException("Comment has to be at least two characters long... how did it start?");
-        }
-        if (sb.charAt(0) != '/' || (sb.charAt(1) != '/' && sb.charAt(1) != '*')) {
+        if (sb.length() < 2 || sb.charAt(0) != '/' || (sb.charAt(1) != '/' && sb.charAt(1) != '*')) {
             return null;
         }
         if (sb.charAt(1) == '/') {

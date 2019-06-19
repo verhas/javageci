@@ -19,12 +19,12 @@ public class Lexer implements Function<List<String>, LexicalElement[]> {
     }
 
     private static final LexEater[] lexEaters = {
+            new SpaceLiteral(),
             new CharacterLiteral(),
             new StringLiteral(),
             new CommentLiteral(),
             new IdentifierLiteral(),
             new NumberLiteral(),
-            new SpaceLiteral(),
             new SymbolLiteral(),
     };
 
@@ -41,7 +41,7 @@ public class Lexer implements Function<List<String>, LexicalElement[]> {
             lenAfter = sb.length();
         } while (lenAfter < lenBefore);
         if (sb.length() > 0) {
-            throw new IllegalArgumentException("Cannot analyze Java source code as " + sb.toString());
+            throw new IllegalArgumentException("Cannot analyze Java source code at " + sb.toString());
         }
         return null;
     }

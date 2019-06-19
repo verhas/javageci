@@ -4,6 +4,7 @@ import javax0.geci.api.Context;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Generator;
 import javax0.geci.api.Source;
+import javax0.geci.javacomparator.Comparator;
 import javax0.geci.util.FileCollector;
 
 import java.io.IOException;
@@ -46,10 +47,10 @@ public class Geci implements javax0.geci.api.Geci {
     @Override
     public javax0.geci.api.Geci only(String... patterns) {
         Collections.addAll(this.predicates,
-                Arrays.stream(patterns)
-                        .map(Pattern::compile)
-                        .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
-                        .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
+            Arrays.stream(patterns)
+                .map(Pattern::compile)
+                .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
+                .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
     }
 
@@ -57,13 +58,27 @@ public class Geci implements javax0.geci.api.Geci {
     @SafeVarargs
     public final javax0.geci.api.Geci only(Predicate<Path>... predicates) {
         Collections.addAll(this.predicates, Arrays.stream(predicates)
-                .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
+            .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
     }
 
-    private BiPredicate<List<String>, List<String>> sourceComparator =
-            (orig, gen) -> orig.size() != gen.size() ||
-                    IntStream.range(0, gen.size()).anyMatch(i -> !gen.get(i).equals(orig.get(i)));
+    private BiPredicate<List<String>, List<String>> sourceComparator = null;
+    private BiPredicate<List<String>, List<String>> EQUALITY_COMPARATOR =
+        (orig, gen) -> orig.size() != gen.size() ||
+            IntStream.range(0, gen.size()).anyMatch(i -> !gen.get(i).equals(orig.get(i)));
+    private BiPredicate<List<String>, List<String>> JAVA_COMPARATOR = new Comparator();
+
+    private BiPredicate<List<String>, List<String>> getSourceComparator(Source source) {
+        if (sourceComparator == null) {
+            if( source.getAbsoluteFile().endsWith(".java")){
+                return JAVA_COMPARATOR;
+            }else{
+                return EQUALITY_COMPARATOR;
+            }
+        } else {
+            return sourceComparator;
+        }
+    }
 
 
     @Override
@@ -82,9 +97,9 @@ public class Geci implements javax0.geci.api.Geci {
         injectContextIntoGenerators();
 
         final var phases = generators.stream()
-                .mapToInt(Generator::phases)
-                .max()
-                .orElse(1);
+            .mapToInt(Generator::phases)
+            .max()
+            .orElse(1);
         final FileCollector collector;
         if (directories.isEmpty()) {
             setDefaultDirectories();
@@ -118,13 +133,13 @@ public class Geci implements javax0.geci.api.Geci {
             throw new GeciException("The generators did not touch any source");
         }
         for (var source : collector.sources) {
-            if (source.isModified(sourceComparator)) {
+            if (source.isModified(getSourceComparator(source))) {
                 source.save();
                 generated = true;
             }
         }
         for (var source : collector.newSources) {
-            if (source.isModified(sourceComparator)) {
+            if (source.isModified(getSourceComparator(source))) {
                 source.save();
                 generated = true;
             }
