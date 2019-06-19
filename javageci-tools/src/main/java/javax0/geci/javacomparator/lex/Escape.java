@@ -1,7 +1,5 @@
 package javax0.geci.javacomparator.lex;
 
-import javax0.geci.api.GeciException;
-
 public class Escape {
     static char octal(StringBuilder sb, int maxLen) {
         int i = maxLen;
@@ -31,7 +29,7 @@ public class Escape {
             } else if (nextCh >= '4' && nextCh <= '7') {
                 output.append(octal(sb, 2));
             } else {
-                throw new GeciException("Invalid escape sequence in string");
+                throw new IllegalArgumentException("Invalid escape sequence in string");
             }
         } else {
             output.append(escaped.charAt(esindex));
@@ -41,7 +39,7 @@ public class Escape {
 
     static void handleNormalCharacter(StringBuilder sb, StringBuilder output, char ch) {
         if (ch == '\n' || ch == '\r') {
-            throw new GeciException("String not terminated before eol.");
+            throw new IllegalArgumentException("String not terminated before eol.");
         }
         output.append(ch);
         sb.deleteCharAt(0);
@@ -51,7 +49,6 @@ public class Escape {
         if (sb.length() < 2) {
             throw new IllegalArgumentException(string + " has to be at least two characters long.");
         }
-        sb.deleteCharAt(0);
         return new StringBuilder();
     }
 }

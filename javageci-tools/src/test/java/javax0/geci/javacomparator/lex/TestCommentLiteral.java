@@ -1,4 +1,4 @@
-package javax0.geci.javacomparator;
+package javax0.geci.javacomparator.lex;
 
 import javax0.geci.javacomparator.lex.CommentLiteral;
 import org.junit.jupiter.api.Assertions;

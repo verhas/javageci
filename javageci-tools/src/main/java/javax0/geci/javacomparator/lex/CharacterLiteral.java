@@ -2,11 +2,16 @@ package javax0.geci.javacomparator.lex;
 
 import static javax0.geci.javacomparator.lex.Escape.*;
 
-public class CharacterLiteral {
+public class CharacterLiteral implements LexEater{
     private static final String CHARACTER = "Character";
 
-    public LexicalElement consume(StringBuilder sb) {
+    @Override
+    public LexicalElement.CHaracter consume(StringBuilder sb) {
+        if( sb.charAt(0) != '\'' ){
+            return null;
+        }
         final StringBuilder output = createOutput(sb, CHARACTER);
+        sb.deleteCharAt(0);
         while (sb.length() > 0 && sb.charAt(0) != '\'') {
             final char ch = sb.charAt(0);
             if (ch == '\\') {
@@ -22,7 +27,7 @@ public class CharacterLiteral {
             throw new IllegalArgumentException(CHARACTER + " is not terminated before eol");
         }
         sb.deleteCharAt(0);
-        return new LexicalElement(output.toString(), LexicalElement.Type.CHARACTER);
+        return new LexicalElement.CHaracter(output.toString());
     }
 
 }

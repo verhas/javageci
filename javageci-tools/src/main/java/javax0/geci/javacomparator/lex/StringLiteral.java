@@ -1,15 +1,18 @@
 package javax0.geci.javacomparator.lex;
 
-import javax0.geci.api.GeciException;
-
 import static javax0.geci.javacomparator.lex.Escape.*;
 
-public class StringLiteral {
+public class StringLiteral implements LexEater {
 
     private static final String STRING = "String";
 
-    public LexicalElement consume(StringBuilder sb) {
-        final StringBuilder output = createOutput(sb,STRING);
+    @Override
+    public LexicalElement.STring consume(StringBuilder sb) {
+        if (sb.charAt(0) != '\"') {
+            return null;
+        }
+        final StringBuilder output = createOutput(sb, STRING);
+        sb.deleteCharAt(0);
         while (sb.length() > 0 && sb.charAt(0) != '"') {
             final char ch = sb.charAt(0);
             if (ch == '\\') {
@@ -18,10 +21,10 @@ public class StringLiteral {
                 handleNormalCharacter(sb, output, ch);
             }
         }
-        if( sb.length() == 0 ){
+        if (sb.length() == 0) {
             throw new IllegalArgumentException("String is not terminated before eol");
         }
         sb.deleteCharAt(0);
-        return new LexicalElement(output.toString(), LexicalElement.Type.STRING);
+        return new LexicalElement.STring(output.toString());
     }
 }

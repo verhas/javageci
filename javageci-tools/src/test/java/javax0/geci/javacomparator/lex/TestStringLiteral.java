@@ -1,4 +1,4 @@
-package javax0.geci.javacomparator;
+package javax0.geci.javacomparator.lex;
 
 import javax0.geci.api.GeciException;
 import javax0.geci.javacomparator.lex.StringLiteral;
@@ -34,9 +34,9 @@ public class TestStringLiteral {
     @DisplayName("Test string literals that are syntactically incorrect")
     void testBadStringLiterals(){
         final var sut = new StringLiteral();
-        Assertions.assertThrows(GeciException.class, () -> sut.consume(string("\n")));
-        Assertions.assertThrows(GeciException.class, () -> sut.consume(string("\r")));
-        Assertions.assertThrows(GeciException.class, () -> sut.consume(string("\\z")));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> sut.consume(string("\n")));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> sut.consume(string("\r")));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> sut.consume(string("\\z")));
         Assertions.assertThrows(IllegalArgumentException.class, () -> sut.consume(string("\\")));
         Assertions.assertThrows(IllegalArgumentException.class, () -> sut.consume(new StringBuilder("\"")));
         Assertions.assertThrows(IllegalArgumentException.class, () -> sut.consume(new StringBuilder("\"\\")));
