@@ -1,5 +1,6 @@
 package javax0.geci.tools;
 
+import javax0.geci.api.Logger;
 import javax0.geci.api.Source;
 import javax0.geci.tools.syntax.GeciAnnotationTools;
 import org.junit.jupiter.api.Assertions;
@@ -117,6 +118,10 @@ public class GeciReflectionToolsTest {
                         "    // @Geci(\"xxx x='x' y='y' z='z'\")",
                         "    private static Object something;",
                         "    private HashMap<Map<String, Integer>, Object> b;");
+            }
+            @Override
+            public Logger getLogger() {
+                return null;
             }
         };
 

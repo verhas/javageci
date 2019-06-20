@@ -2,6 +2,8 @@ package javax0.geci.engine;
 
 
 import javax0.geci.api.GeciException;
+import javax0.geci.api.Generator;
+import javax0.geci.api.Logger;
 import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.util.FileCollector;
@@ -31,6 +33,8 @@ public class Source implements javax0.geci.api.Source {
     private Segment globalSegment = null;
     private boolean touched = false;
     boolean allowDefaultSegment = false;
+
+    Generator currentGenerator = null;
 
     /**
      * The constructor is not supposed to be used from outside, only through the {@link FileCollector} which
@@ -227,6 +231,15 @@ public class Source implements javax0.geci.api.Source {
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
             return null;
         }
+    }
+
+    final List<SourceLogger.LogEntry> logEntries = new ArrayList<>();
+
+    private final Logger logger = new SourceLogger(this);
+
+    @Override
+    public Logger getLogger() {
+        return logger;
     }
 
     @Override

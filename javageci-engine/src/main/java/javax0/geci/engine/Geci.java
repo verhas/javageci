@@ -7,6 +7,7 @@ import javax0.geci.api.Source;
 import javax0.geci.javacomparator.Comparator;
 import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
+import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.util.FileCollector;
 
 import java.io.IOException;
@@ -201,6 +202,7 @@ public class Geci implements javax0.geci.api.Geci {
                 for (var generator : generators) {
                     if (generator.activeIn(phase)) {
                         source.allowDefaultSegment = false;
+                        source.currentGenerator = generator;
                         generator.process(source);
                     }
                 }
@@ -229,20 +231,35 @@ public class Geci implements javax0.geci.api.Geci {
             if (modifiedSources.contains(source)) {
                 if ((whatToLog & ~MODIFIED) == 0) {
                     LOG.info("MODIFIED  '%s'", source.getAbsoluteFile());
+                    logSourceMessages(source);
                 }
             } else {
                 if (source.isTouched()) {
                     if ((whatToLog & ~TOUCHED) == 0) {
                         LOG.info("TOUCHED   '%s'", source.getAbsoluteFile());
+                        logSourceMessages(source);
                     }
                 } else {
                     if ((whatToLog & ~UNTOUCHED) == 0) {
                         LOG.info("UNTOUCHED '%s'", source.getAbsoluteFile());
+                        logSourceMessages(source);
                     }
                 }
             }
         }
         return generated;
+    }
+
+    private void logSourceMessages(javax0.geci.engine.Source source) {
+        for (var entry : source.logEntries) {
+            final String generatorId;
+            if (entry.generator instanceof AbstractJavaGenerator) {
+                generatorId = ((AbstractJavaGenerator) entry.generator).mnemonic();
+            } else {
+                generatorId = entry.generator.getClass().getSimpleName();
+            }
+            LOG.log(entry.level, generatorId + ":" + entry.message);
+        }
     }
 
     private boolean sourcesConsolidate(FileCollector collector) {

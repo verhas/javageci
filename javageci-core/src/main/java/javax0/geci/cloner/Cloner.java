@@ -57,6 +57,7 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
 
     @Override
     public void preprocess(Source source, Class<?> klass, CompoundParams global, Segment segment) {
+        final var log = source.getLogger();
         final var local = localConfig(global);
         Field[] fields = Arrays.stream(GeciReflectionTools.getAllFieldsSorted(klass))
             .filter(field -> !Modifier.isFinal(field.getModifiers()))
@@ -64,12 +65,14 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
             .toArray(Field[]::new);
         writeGenerated(segment, config.generatedAnnotation);
         final var fullyQualified = GeciReflectionTools.getSimpleGenericClassName(klass);
+        log.info("Creating %s %s %s()",local.cloneMethodProtection, fullyQualified, local.cloneMethod);
         segment.write_r("%s %s %s() {", local.cloneMethodProtection, fullyQualified, local.cloneMethod);
         segment.write("final var it = new %s();", klass.getSimpleName())
-            .write("copy(it);")
+            .write("%s(it);",local.copyMethod)
             .write("return it;")
             .write_l("}");
 
+        log.info("Creating %s void %s(%s it)",local.copyMethodProtection, local.copyMethod, fullyQualified);
         segment.write_r("%s void %s(%s it) {", local.copyMethodProtection, local.copyMethod, fullyQualified);
         if (CompoundParams.toBoolean(local.copyCallsSuper)) {
             segment.write("super.%s(it);", local.getSuperCopyMethod());

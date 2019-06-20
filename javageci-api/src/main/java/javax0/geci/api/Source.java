@@ -214,6 +214,19 @@ public interface Source {
     Class<?> getKlass();
 
     /**
+     * Get a logger that the generator can use to send messages to the
+     * logging system. It is recommended to use this logger in the
+     * generator and not the system or other loggers as this logger may
+     * be implemented in a way that it collects the messages of the
+     * different generators and send it to the log target together
+     * putting the messages that are related to the same source
+     * together.
+     *
+     * @return the logger for the generator
+     */
+    Logger getLogger();
+
+    /**
      * Set serves as an identifier class for a source set. This is used when a source is asked to open a new
      * source that does not exist yet in another source set. When a source set is not identified
      * calling {@link Geci#source(String...)} it will have a {@code new Set("")} object as identifier. When a

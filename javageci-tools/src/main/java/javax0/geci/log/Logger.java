@@ -1,13 +1,13 @@
 package javax0.geci.log;
 
-public class Logger {
+public class Logger implements javax0.geci.api.Logger {
     public Logger(Class<?> forClass) {
         this.LOGGER = System.getLogger(forClass.getName());
     }
 
     private final System.Logger LOGGER;
 
-    private void log(System.Logger.Level level, String format, Object[] params) {
+    public void log(System.Logger.Level level, String format, Object... params) {
         if (LOGGER.isLoggable(level)) {
             var s = String.format(format, params);
             LOGGER.log(level, s);
