@@ -9,9 +9,14 @@ public class TestConfigBuilder {
 
     @Test
     void buildGenerators() throws Exception {
+        final var geci = new Geci();
         Assertions.assertFalse(
-            new Geci().source("./javageci-core/src/main/java/", "../javageci-core/src/main/java/").register(ConfigBuilder.builder().build()).generate(),
-            Geci.FAILED
+                geci.source(
+                        "./javageci-core/src/main/java/",
+                        "../javageci-core/src/main/java/")
+                        .register(ConfigBuilder.builder().build())
+                        .generate(),
+                geci.failed()
         );
     }
 }

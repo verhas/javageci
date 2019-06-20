@@ -13,22 +13,23 @@ public class ReplCommandBuilderFluenterTest {
     @Test
     @DisplayName("Fluent API for the CommandDefinitionBuilder is up-to-date")
     void generateFluendAPI4CommandDefinitionBuilder() throws Exception {
-        Assertions.assertFalse(new Geci()
-                .source("../javageci-examples/src/main/java", "./javageci-examples/src/main/java")
-                .register(new Fluent())
-                .only("ReplCommandBuilder.java")
-                .generate(),
-            Geci.FAILED);
+        final var geci = new Geci();
+        Assertions.assertFalse(geci
+                        .source("../javageci-examples/src/main/java", "./javageci-examples/src/main/java")
+                        .register(new Fluent())
+                        .only("ReplCommandBuilder.java")
+                        .generate(),
+                geci.failed());
     }
 
     public static FluentBuilder sourceBuilderGrammar() {
         var klass = FluentBuilder.from(ReplCommandBuilder.class);
         return klass
-            .syntax("kw(String) ( noParameters | parameters | parameter+ )?")
-            .zeroOrMore("regex")
-            .syntax("usage help executor")
-            .name("CommandDefinitionBuilderReady")
-            .syntax("build")
-            ;
+                .syntax("kw(String) ( noParameters | parameters | parameter+ )?")
+                .zeroOrMore("regex")
+                .syntax("usage help executor")
+                .name("CommandDefinitionBuilderReady")
+                .syntax("build")
+                ;
     }
 }

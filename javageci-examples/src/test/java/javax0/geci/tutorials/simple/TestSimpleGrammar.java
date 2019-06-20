@@ -31,11 +31,17 @@ public class TestSimpleGrammar {
 
     @Test
     void createGrammar() throws Exception {
-        if (new Geci().source(maven().module("javageci-examples").mainSource())
-                .source(Source.Set.set("java"), "./src/test/java", "./javageci-examples/src/test/java")
-                .register(new Fluent()).generate()) {
-            Assertions.fail(Geci.FAILED);
-        }
+        final var geci = new Geci();
+        Assertions.assertFalse(geci
+                        .source(
+                                maven().module("javageci-examples").mainSource())
+                        .source(
+                                Source.Set.set("java"),
+                                "./src/test/java",
+                                "./javageci-examples/src/test/java")
+                        .register(new Fluent())
+                        .generate(),
+                geci.failed());
     }
 
     @Test

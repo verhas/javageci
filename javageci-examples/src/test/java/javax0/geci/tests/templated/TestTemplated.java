@@ -13,8 +13,9 @@ public class TestTemplated {
 
     @Test
     void testTemplated() throws Exception {
+        final var geci = new Geci();
         Assertions.assertFalse(
-                new Geci().source(maven().module("javageci-examples").mainSource())
+                geci.source(maven().module("javageci-examples").mainSource())
                         .register(
                                 Templated
                                         .builder()
@@ -30,6 +31,6 @@ public class TestTemplated {
                                         })
                                         .build()
                         ).generate(),
-                Geci.FAILED);
+                geci.failed());
     }
 }

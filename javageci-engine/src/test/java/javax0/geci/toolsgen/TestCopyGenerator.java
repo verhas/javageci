@@ -37,9 +37,10 @@ public class TestCopyGenerator extends AbstractJavaGenerator {
 
     @Test
     void generateCopies() throws Exception {
+        Geci geci = new Geci();
         Assertions.assertFalse(
-            new Geci().source(maven("..").module("javageci-tools").mainSource()).register(new TestCopyGenerator()).generate()
-            , Geci.FAILED
+            geci.source(maven("..").module("javageci-tools").mainSource()).register(new TestCopyGenerator()).generate()
+            , geci.failed()
         );
     }
 }

@@ -30,7 +30,10 @@
                     </executions>
                 }
                 {plugin|
-                    {GAV :org.apache.maven.plugins:maven-javadoc-plugin:3.0.1}
+                    {GAV :org.apache.maven.plugins:maven-javadoc-plugin:3.1.0}
+                    <configuration>
+                        <detectLinks>false</detectLinks>
+                    </configuration>
                     {dependencies|{dependency :org.ow2.asm:asm:7.0}}
                     {executions|{execution|
                             {id|attach-javadocs}

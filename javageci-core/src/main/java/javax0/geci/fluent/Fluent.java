@@ -38,10 +38,10 @@ public class Fluent extends AbstractJavaGenerator {
                 throw new GeciException("Either 'syntax' or 'definedBy' has to be used to define fluent API.");
             }
             builder.optimize();
-            LOG.info("Node structure before optimization.");
-            LOG.info("" + new Tree(Node.ONCE, builder.getNodes()));
-            LOG.info("Node structure after optimization.");
-            LOG.info("" + new Tree(Node.ONCE, builder.getNodes()));
+            LOG.debug("Node structure before optimization.");
+            LOG.debug("" + new Tree(Node.ONCE, builder.getNodes()));
+            LOG.debug("Node structure after optimization.");
+            LOG.debug("" + new Tree(Node.ONCE, builder.getNodes()));
             var generatedCode = new ClassBuilder(builder).build();
             try (var segment = source.open(global.get("id"))) {
                 segment.write(generatedCode);

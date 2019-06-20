@@ -11,22 +11,27 @@ public class TestBuilder {
 
     @Test
     void buildGenerators() throws Exception {
+        final var geci = new Geci();
         Assertions.assertFalse(
-                new Geci().source("./javageci-core/src/main/java/", "../javageci-core/src/main/java/").register(Builder.builder().generatedAnnotation(null).build()).generate(),
-                Geci.FAILED
+                geci.source(
+                        "./javageci-core/src/main/java/",
+                        "../javageci-core/src/main/java/")
+                        .register(Builder.builder().generatedAnnotation(null).build())
+                        .generate(),
+                geci.failed()
         );
     }
 
     @Test
     void testBuilder() throws Exception {
+        final var geci = new Geci();
         Assertions.assertFalse(
-                new Geci()
-                        .source(
-                                maven().module("javageci-examples")
-                                        .mainSource())
+                geci.source(
+                        maven().module("javageci-examples")
+                                .mainSource())
                         .register(Builder.builder().build())
                         .generate(),
-                Geci.FAILED
+                geci.failed()
         );
     }
 }

@@ -10,8 +10,9 @@ public class TestJamalGenerator {
 
     @Test
     public void testJamalGenerator() throws Exception {
+        final var geci = new Geci();
         Assertions.assertFalse(
-                new Geci().source(maven().module("javageci-jamal").testSource())
+                geci.source(maven().module("javageci-jamal").testSource())
                         .register(new JamalGenerator())
                         .generate(),
                 Geci.FAILED);

@@ -52,16 +52,16 @@ public class ClassBuilder {
      * @throws Exception when there is an error in the grammar
      */
     public String build() throws Exception {
-        LOG.info("Class building started for the class %s", fluent.getKlass().getSimpleName());
+        LOG.debug("Class building started for the class %s", fluent.getKlass().getSimpleName());
         var list = fluent.getNodes();
         if (list.size() == 0) {
             throw new GeciException("There are no actual calls in the fluent structure.");
         }
-        LOG.info("There are %d nodes on the top level", list.size());
+        LOG.debug("There are %d nodes on the top level", list.size());
         final var tree = new Tree(Node.ONCE, list);
         final var exitType = NodeTypeCalculator.from(methods).getReturnType(getLastNode(list));
         final var lastInterface = GeciReflectionTools.normalizeTypeName(exitType);
-        LOG.info("The last type is %s", lastInterface);
+        LOG.debug("The last type is %s", lastInterface);
         final var interfaces = build(tree, lastInterface);
         final var code = JavaSource.builder();
         writeStartMethod(code);
@@ -93,7 +93,7 @@ public class ClassBuilder {
      */
     private void writeStartMethod(JavaSource.Builder code) throws Exception {
         final var startMethod = fluent.getStartMethod() == null ? "start" : fluent.getStartMethod();
-        LOG.info("Creating start method %s()", startMethod);
+        LOG.debug("Creating start method %s()", startMethod);
         final String lastType;
         if (fluent.getLastType() != null) {
             lastType = fluent.getLastType();

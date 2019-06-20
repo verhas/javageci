@@ -13,9 +13,9 @@ public class BuildFluentForSourceBuilder {
     @Test
     @DisplayName("Generate the fluent API for the JavaSource writer code generating API")
     public void testSourceBuilderGeneratedApiIsGood() throws Exception {
-        if (new Geci().source("../javageci-tools/src/main/java", "./javageci-tools/src/main/java").register(new Fluent()).generate()) {
-            Assertions.fail(Geci.FAILED);
-        }
+        var geci = new Geci();
+        Assertions.assertFalse(geci.source("../javageci-tools/src/main/java", "./javageci-tools/src/main/java").register(new Fluent()).generate(),
+                geci.failed());
     }
 
     public static FluentBuilder sourceBuilderGrammar() {

@@ -11,14 +11,14 @@ public class TestCloner {
 
     @Test
     void testCloner() throws Exception {
+        final var geci = new Geci();
         Assertions.assertFalse(
-                new Geci()
-                        .source(
-                                maven().module("javageci-examples")
-                                        .mainSource())
+                geci.source(
+                        maven().module("javageci-examples")
+                                .mainSource())
                         .register(Cloner.builder().build())
                         .generate(),
-                Geci.FAILED
+                geci.failed()
         );
     }
 }

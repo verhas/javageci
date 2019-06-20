@@ -99,7 +99,6 @@ public class FileCollector {
      * resources.
      *
      * <p>
-     * <p>
      * In this case these source sets are not configured explicitly and
      * therefore the user should not be notified throwing an exception
      * and aborting the code generation if some of the source sets are
@@ -108,7 +107,6 @@ public class FileCollector {
      * has to be notified. Not in case of setting just the default
      * directories.
      *
-     * <p>
      * <p>
      * Calling this method the file collection will throw an exception
      * only in case there is no any defined source sets available. If

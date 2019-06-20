@@ -20,9 +20,23 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
     private String[] segmentPreface = new String[]{""};
     private String[] segmentPostface = new String[]{""};
 
+    /**
+     * Set the preface of a segment. These lines will be used as segment
+     * preface in a {@link javax0.geci.api.Segment} when a segment is
+     * inserted as a default.
+     *
+     * @param segmentPreface the lines that contain the preface
+     */
     protected void setSegmentPreface(String ... segmentPreface) {
         this.segmentPreface = segmentPreface;
     }
+    /**
+     * Set the postface of a segment. These lines will be used as
+     * segment postface in a {@link javax0.geci.api.Segment} when a
+     * segment is inserted as a default.
+     *
+     * @param segmentPostface the lines that contain the postface
+     */
     protected void setSegmentPostface(String ... segmentPostface) {
         this.segmentPostface = segmentPostface;
     }
@@ -36,7 +50,7 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
     }
 
     /**
-     * Create a SegmentSplitHelper using two regular expressions.
+     * Create a SegmentSplitHelper using three regular expressions.
      *
      * @param startPattern   should match the start line of a segment.
      *                       The regular expression MUST define two
@@ -48,7 +62,16 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
      *                       should capture the attributes.
      * @param endPattern     should match the end line of a segment.
      *                       No capture groups need to be defined int this
-     * @param defaultPattern
+     *
+     * @param defaultPattern pattern to find the default location of a
+     *                       segment. When a segment cannot be found
+     *                       using the start and the end pattern then
+     *                       this pattern is used. When a line matches
+     *                       this pattern then the segment will be
+     *                       inserted before this line. The insertion
+     *                       will include the segment start and end line
+     *                       so any consecutive execution will already
+     *                       find the segment.
      */
     public RegexBasedSegmentSplitHelper(Pattern startPattern, Pattern endPattern, Pattern defaultPattern) {
         this.startPattern = startPattern;

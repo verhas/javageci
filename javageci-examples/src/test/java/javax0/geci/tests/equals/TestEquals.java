@@ -11,8 +11,14 @@ public class TestEquals {
 
     @Test
     public void testEquals() throws Exception {
+        final var geci = new Geci();
         Assertions.assertFalse(
-            new Geci().source(maven().module("javageci-examples").mainSource()).register(new Equals()).generate(),
-            Geci.FAILED);
+                geci.source(
+                        maven()
+                                .module("javageci-examples")
+                                .mainSource())
+                        .register(Equals.builder().build())
+                        .generate(),
+                geci.failed());
     }
 }

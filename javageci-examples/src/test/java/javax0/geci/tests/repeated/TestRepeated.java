@@ -12,28 +12,29 @@ public class TestRepeated {
     @Test
     @DisplayName("Execute the repeated code generation for the core generators source code")
     void coreGeneratorsRepeated() throws Exception {
+        final var geci = new Geci();
         Assertions.assertFalse(
-            new Geci().source("./javageci-core/src/main/java/", "../javageci-core/src/main/java/")
-                .register(Repeated.builder()
-                    //
-                    .selector("configSetters")
-                    .define((ctx, s) -> ctx.segment().param("setter", "set" + CaseTools.ucase(s)))
-                    //
-                    .selector("consumers")
-                    .define((ctx, s) -> {
-                            String subtype;
-                            if (s.startsWith("process") && (s.endsWith(subtype = "Field") || s.endsWith(subtype = "Method") || s.endsWith(subtype = "Class"))) {
-                                ctx.segment().param("type", "BiConsumer<Context, " + subtype + ">",
-                                    "const", "BiNOOP");
-                            } else {
-                                ctx.segment().param("type", "Consumer<Context>",
-                                    "const", "NOOP");
-                            }
-                        }
-                    )
-                    //
-                    .build()).generate()
-            , Geci.FAILED
+                geci.source("./javageci-core/src/main/java/", "../javageci-core/src/main/java/")
+                        .register(Repeated.builder()
+                                //
+                                .selector("configSetters")
+                                .define((ctx, s) -> ctx.segment().param("setter", "set" + CaseTools.ucase(s)))
+                                //
+                                .selector("consumers")
+                                .define((ctx, s) -> {
+                                            String subtype;
+                                            if (s.startsWith("process") && (s.endsWith(subtype = "Field") || s.endsWith(subtype = "Method") || s.endsWith(subtype = "Class"))) {
+                                                ctx.segment().param("type", "BiConsumer<Context, " + subtype + ">",
+                                                        "const", "BiNOOP");
+                                            } else {
+                                                ctx.segment().param("type", "Consumer<Context>",
+                                                        "const", "NOOP");
+                                            }
+                                        }
+                                )
+                                //
+                                .build()).generate()
+                , geci.failed()
         );
     }
 }

@@ -12,10 +12,11 @@ public class TestChainedAccessor {
 
     @Test
     public void testAccessor() throws Exception {
-        Assertions.assertFalse(new Geci().source(maven()
+        final var geci = new Geci();
+        Assertions.assertFalse(geci.source(maven()
                         .module("javageci-examples").mainSource())
                         .register(ChainedAccessor.builder().build()).generate(),
-                Geci.FAILED);
+                geci.failed());
     }
 }
 //END SNIPPET
