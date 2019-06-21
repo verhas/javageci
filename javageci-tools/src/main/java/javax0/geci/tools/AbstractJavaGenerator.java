@@ -2,7 +2,6 @@ package javax0.geci.tools;
 
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
-import javax0.geci.tools.syntax.GeciAnnotationTools;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;

@@ -7,7 +7,7 @@ import javax0.geci.tools.AbstractFilteredFieldsGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.reflection.Selector;
-import javax0.geci.tools.syntax.GeciAnnotationTools;
+import javax0.geci.tools.GeciAnnotationTools;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;

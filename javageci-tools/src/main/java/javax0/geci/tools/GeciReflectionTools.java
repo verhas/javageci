@@ -4,7 +4,6 @@ import javax0.geci.annotations.Geci;
 import javax0.geci.api.GeciException;
 import javax0.geci.tools.reflection.ModifiersBuilder;
 import javax0.geci.tools.reflection.Selector;
-import javax0.geci.tools.syntax.GeciAnnotationTools;
 
 import java.lang.reflect.*;
 import java.util.*;

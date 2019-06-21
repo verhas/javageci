@@ -2,7 +2,6 @@ package javax0.geci.tools;
 
 import javax0.geci.api.Logger;
 import javax0.geci.api.Source;
-import javax0.geci.tools.syntax.GeciAnnotationTools;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
