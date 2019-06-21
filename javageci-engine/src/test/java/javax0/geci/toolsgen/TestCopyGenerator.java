@@ -27,7 +27,9 @@ public class TestCopyGenerator extends AbstractJavaGenerator {
                 .replaceAll("field", "method")
                 // we have to remove the annotation otherwise the next run would copy the content of the files to
                 // themselves and they would grow infinitely and also they would not compile.
-                .replaceAll("@Geci\\(\"copyClass.*?\"\\)", ""));
+                .replaceAll("@Geci\\(\"copyClass.*?\"\\)", "")
+                .replaceAll("import\\s+javax0\\.geci\\.annotations\\.Geci;","")
+        );
     }
 
     @Override

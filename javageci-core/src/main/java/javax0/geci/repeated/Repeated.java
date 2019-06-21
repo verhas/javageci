@@ -92,7 +92,7 @@ public class Repeated extends AbstractJavaGenerator {
                 }
             }
 
-            if (switchOn && !templateOn && endPattern.matcher(line).matches()) {
+            if (switchOn && endPattern.matcher(line).matches()) {
                 switchOn = false;
                 continue;
             }
@@ -121,7 +121,6 @@ public class Repeated extends AbstractJavaGenerator {
                     }
                     loopVars.add(matcher.group(1));
                 }
-                continue;
             }
         }
         if (local.values != null) {

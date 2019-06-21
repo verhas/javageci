@@ -1,6 +1,5 @@
 package javax0.geci.javacomparator.lex;
 
-import javax0.geci.api.GeciException;
 import javax0.geci.javacomparator.lex.CharacterLiteral;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

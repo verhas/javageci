@@ -18,7 +18,6 @@ import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static javax0.geci.api.Source.Set.set;
@@ -151,9 +150,7 @@ public class Geci implements javax0.geci.api.Geci {
     }
 
     private BiPredicate<List<String>, List<String>> sourceComparator = null;
-    private BiPredicate<List<String>, List<String>> EQUALITY_COMPARATOR =
-            (orig, gen) -> orig.size() != gen.size() ||
-                    IntStream.range(0, gen.size()).anyMatch(i -> !gen.get(i).equals(orig.get(i)));
+    private BiPredicate<List<String>, List<String>> EQUALS_COMPARATOR = (orig, gen) -> !orig.equals(gen);
     private BiPredicate<List<String>, List<String>> JAVA_COMPARATOR = new Comparator();
 
     private BiPredicate<List<String>, List<String>> getSourceComparator(Source source) {
@@ -161,7 +158,7 @@ public class Geci implements javax0.geci.api.Geci {
             if (source.getAbsoluteFile().endsWith(".java")) {
                 return JAVA_COMPARATOR;
             } else {
-                return EQUALITY_COMPARATOR;
+                return EQUALS_COMPARATOR;
             }
         } else {
             return sourceComparator;
@@ -221,7 +218,7 @@ public class Geci implements javax0.geci.api.Geci {
                 collector.newSources.stream()
         ).collect(Collectors.toSet());
         for (var source : allSources) {
-            if (source.isModified(getSourceComparator(source))) {
+            if (source.isTouched() && source.isModified(getSourceComparator(source))) {
                 source.save();
                 modifiedSources.add(source);
                 generated = true;

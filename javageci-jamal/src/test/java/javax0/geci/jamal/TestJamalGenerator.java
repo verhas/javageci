@@ -15,6 +15,6 @@ public class TestJamalGenerator {
                 geci.source(maven().module("javageci-jamal").testSource())
                         .register(new JamalGenerator())
                         .generate(),
-                Geci.FAILED);
+                geci.failed());
     }
 }

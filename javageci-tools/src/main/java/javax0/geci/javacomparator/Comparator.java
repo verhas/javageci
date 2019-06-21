@@ -5,20 +5,19 @@ import javax0.geci.javacomparator.lex.LexicalElement;
 
 import java.util.List;
 import java.util.function.BiPredicate;
-import java.util.stream.IntStream;
 
 public class Comparator implements BiPredicate<List<String>, List<String>> {
     /**
      * Evaluates this predicate on the given arguments.
      *
-     * @param strings1 the first input argument
-     * @param strings2 the second input argument
-     * @return {@code true} if the input arguments match the predicate,
-     * otherwise {@code false}
+     * @param strings1 the lines of the original code
+     * @param strings2 the lines of the generated code
+     * @return {@code true} if the inputs are not the same, otherwise
+     * {@code false}
      */
     @Override
     public boolean test(List<String> strings1, List<String> strings2) {
-        if (fastCheck(strings1, strings2)) return false;
+        if (strings1.equals(strings2)) return false;
         Lexer lexer = new Lexer();
         LexicalElement[] elements1 = lexer.apply(strings1);
         LexicalElement[] elements2 = lexer.apply(strings2);
@@ -31,11 +30,5 @@ public class Comparator implements BiPredicate<List<String>, List<String>> {
             }
         }
         return false;
-    }
-
-    private boolean fastCheck(List<String> strings1, List<String> strings2) {
-        return strings1.size() == strings2.size() &&
-                !IntStream.range(0, strings2.size())
-                        .anyMatch(i -> !strings2.get(i).equals(strings1.get(i)));
     }
 }

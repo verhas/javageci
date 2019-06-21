@@ -51,7 +51,6 @@ public class Deunicode implements Function<String, String> {
                     output.append(s.charAt(index + 1));
                     index++;
                 }
-                continue;
             }
         }
         return output.toString();
