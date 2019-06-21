@@ -197,8 +197,7 @@ public class GeciAnnotationTools {
         try {
             final String rawValue = getRawValue(annotation);
             final var annotationName = getAnnotationGeciName(annotation);
-            final var value = getValue(annotationName.substring(0, 1)
-                .toLowerCase() + annotationName.substring(1), rawValue.trim());
+            final var value = getValue( CaseTools.lcase(annotationName), rawValue.trim());
             for (final var method : annotation.getClass().getDeclaredMethods()) {
                 if (method.getReturnType().equals(String.class) &&
                     !method.getName().equals("value") &&
