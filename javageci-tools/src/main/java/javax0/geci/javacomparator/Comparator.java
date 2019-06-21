@@ -6,6 +6,24 @@ import javax0.geci.javacomparator.lex.LexicalElement;
 import java.util.List;
 import java.util.function.BiPredicate;
 
+/**
+ * Compare two Java source code, bot given as list of strings. If the
+ * strings are equal then then it is okay (return {@code false}).
+ *
+ * <p>If the strings in the lists are not the same then the two source
+ * code can still be the same if they only differ in formatting. To
+ * check that the comparator performs a lexical analysis and if the
+ * resulting lists of lexical elements are the same then the two source
+ * codes, the original and the generated are the same.
+ *
+ * <p> Note that the lexical analysis is limited.
+ *
+ * <p>The two files are the same if there is difference only in spacing
+ * and/or difference is only in content of comments, or comments are
+ * missing or new comments are added, and/or numbers are expressed
+ * differently but they still have the same value.
+ *
+ */
 public class Comparator implements BiPredicate<List<String>, List<String>> {
     /**
      * Evaluates this predicate on the given arguments.

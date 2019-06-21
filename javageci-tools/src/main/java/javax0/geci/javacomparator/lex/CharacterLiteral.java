@@ -2,11 +2,15 @@ package javax0.geci.javacomparator.lex;
 
 import static javax0.geci.javacomparator.lex.Escape.*;
 
+/**
+ * A character literal eating lexer as defined in the Java Language
+ * Standard.
+ */
 public class CharacterLiteral implements LexEater{
     private static final String CHARACTER = "Character";
 
     @Override
-    public LexicalElement.CHaracter consume(StringBuilder sb) {
+    public LexicalElement.CHaracter apply(StringBuilder sb) {
         if( sb.length() == 0 || sb.charAt(0) != '\'' ){
             return null;
         }

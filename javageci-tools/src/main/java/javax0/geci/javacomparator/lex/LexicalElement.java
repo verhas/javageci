@@ -3,6 +3,8 @@ package javax0.geci.javacomparator.lex;
 import java.util.Objects;
 
 public class LexicalElement {
+    public static final LexicalElement IGNORED = new LexicalElement("",Type.COMMENT);
+
     LexicalElement(String lexeme, Type type) {
         this.lexeme = lexeme;
         this.type = type;

@@ -2,6 +2,11 @@ package javax0.geci.javacomparator.lex;
 
 import java.util.regex.Pattern;
 
+/**
+ * Number consuming lexical analyser. It will recognize a number at the
+ * start of the input and return either an integer or a float lexical
+ * element.
+ */
 public class NumberLiteral implements LexEater {
 
     private static final Pattern patterns[] = new Pattern[]{
@@ -16,7 +21,7 @@ public class NumberLiteral implements LexEater {
     };
 
     @Override
-    public LexicalElement consume(StringBuilder sb) {
+    public LexicalElement apply(StringBuilder sb) {
         final var literals = new String[patterns.length];
         for (int i = 0; i < patterns.length; i++) {
             final var matcher = patterns[i].matcher(sb.toString());
