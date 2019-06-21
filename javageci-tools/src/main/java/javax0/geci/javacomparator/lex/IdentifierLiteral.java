@@ -2,7 +2,7 @@ package javax0.geci.javacomparator.lex;
 
 public class IdentifierLiteral implements LexEater {
     @Override
-    public LexicalElement.Identifier consume(StringBuilder sb) {
+    public LexicalElement.Identifier apply(StringBuilder sb) {
         if (sb.length() == 0 || !Character.isJavaIdentifierStart(sb.charAt(0))) {
             return null;
         }

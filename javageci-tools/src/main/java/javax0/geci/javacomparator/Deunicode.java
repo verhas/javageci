@@ -8,6 +8,13 @@ import java.util.function.Function;
  * Convert a string that contains \u000d format unicode escape sequences
  * to contain the characters without the escape containing the raw
  * references.
+ *
+ * <p> This class is used when the original and generated Java source
+ * code is compared and they are not character-by-character equal. In
+ * that case the comparator resolves the unicode sequences and then
+ * makes a limited lexical analysis and compares the lexical elements
+ * instead of the characters.
+ *
  */
 public class Deunicode implements Function<String, String> {
     /**
@@ -51,7 +58,6 @@ public class Deunicode implements Function<String, String> {
                     output.append(s.charAt(index + 1));
                     index++;
                 }
-                continue;
             }
         }
         return output.toString();

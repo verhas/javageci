@@ -3,7 +3,6 @@ package javax0.geci.tutorials.beangenerator;
 
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractGeneratorEx;
-import javax0.geci.tools.CaseTools;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

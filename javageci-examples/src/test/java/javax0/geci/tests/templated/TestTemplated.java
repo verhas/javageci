@@ -26,9 +26,7 @@ public class TestTemplated {
                                         .postprocess(TEMPLATE_DIR + "postprocess.java")
                                         .selector("needed")
                                         .processField(TEMPLATE_DIR + "processFieldNeeded.java")
-                                        .preprocessParams((ctx) -> {
-                                            ctx.segment().param("wuff", "112");
-                                        })
+                                        .preprocessParams((ctx) -> ctx.segment().param("wuff", "112"))
                                         .build()
                         ).generate(),
                 geci.failed());

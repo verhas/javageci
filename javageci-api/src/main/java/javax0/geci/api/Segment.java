@@ -1,6 +1,5 @@
 package javax0.geci.api;
 
-import java.util.List;
 import java.util.Set;
 
 /**

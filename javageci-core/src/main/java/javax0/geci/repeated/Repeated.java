@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,6 +27,7 @@ public class Repeated extends AbstractJavaGenerator {
         private String templateStart = "\\s*/\\*\\s*TEMPLATE\\s+(\\w*)\\s*";
         private String templateEnd = "\\s*\\*/\\s*";
         private String values = null;
+        private Function<Class, List<String>> valuesSupplier = null;
         private CharSequence selector = "";
         private CharSequence template = null;
         private CharSequence mnemonic = "repeated";
@@ -92,7 +94,7 @@ public class Repeated extends AbstractJavaGenerator {
                 }
             }
 
-            if (switchOn && !templateOn && endPattern.matcher(line).matches()) {
+            if (switchOn && endPattern.matcher(line).matches()) {
                 switchOn = false;
                 continue;
             }
@@ -121,11 +123,13 @@ public class Repeated extends AbstractJavaGenerator {
                     }
                     loopVars.add(matcher.group(1));
                 }
-                continue;
             }
         }
         if (local.values != null) {
             loopVars.addAll(List.of(local.values.split(",")));
+        }
+        if (local.valuesSupplier != null) {
+            loopVars.addAll(local.valuesSupplier.apply(klass));
         }
         for (final var key : config.templatesMap.keySet()) {
             final Segment segment;
@@ -175,7 +179,6 @@ public class Repeated extends AbstractJavaGenerator {
 
     //<editor-fold id="configBuilder">
     private final Config config = new Config();
-
     public static Repeated.Builder builder() {
         return new Repeated().new Builder();
     }
@@ -194,14 +197,13 @@ public class Repeated extends AbstractJavaGenerator {
     protected java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
-
     public class Builder {
         public Builder ctx(javax0.geci.templated.Context ctx) {
             config.ctx = ctx;
             return this;
         }
 
-        public Builder define(java.util.function.BiConsumer<javax0.geci.templated.Context, String> define) {
+        public Builder define(java.util.function.BiConsumer<javax0.geci.templated.Context,String> define) {
             config.setDefine(define);
             return this;
         }
@@ -221,7 +223,7 @@ public class Repeated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder resolver(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> resolver) {
+        public Builder resolver(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> resolver) {
             config.setResolver(resolver);
             return this;
         }
@@ -256,25 +258,30 @@ public class Repeated extends AbstractJavaGenerator {
             return this;
         }
 
+        public Builder valuesSupplier(java.util.function.Function<Class,java.util.List<String>> valuesSupplier) {
+            config.valuesSupplier = valuesSupplier;
+            return this;
+        }
+
         public Repeated build() {
             return Repeated.this;
         }
     }
-
-    private Config localConfig(CompoundParams params) {
+    private Config localConfig(CompoundParams params){
         final var local = new Config();
         local.ctx = config.ctx;
         local.setDefine(config.define);
-        local.end = params.get("end", config.end);
-        local.matchLine = params.get("matchLine", config.matchLine);
+        local.end = params.get("end",config.end);
+        local.matchLine = params.get("matchLine",config.matchLine);
         local.mnemonic = config.mnemonic;
         local.setResolver(config.resolver);
         local.selector = config.selector;
-        local.start = params.get("start", config.start);
+        local.start = params.get("start",config.start);
         local.template = config.template;
-        local.templateEnd = params.get("templateEnd", config.templateEnd);
-        local.templateStart = params.get("templateStart", config.templateStart);
-        local.values = params.get("values", config.values);
+        local.templateEnd = params.get("templateEnd",config.templateEnd);
+        local.templateStart = params.get("templateStart",config.templateStart);
+        local.values = params.get("values",config.values);
+        local.valuesSupplier = config.valuesSupplier;
         return local;
     }
     //</editor-fold>

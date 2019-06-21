@@ -147,6 +147,13 @@ used together to those that were collected from the source code. Usually
 programs either collect the values from the source or use this
 configuration.
 
+### `valuesSupplier`
+
+Values can also be defined in the builder call chain via a
+`Function<Class,List<String>>` that may return the list of values that
+it calculates from the class object. This function will probably use
+reflection to get fields, methods and whatnot from the class.
+
 ### `selector`
 
 This configuration parameter can only be used in the builder of the

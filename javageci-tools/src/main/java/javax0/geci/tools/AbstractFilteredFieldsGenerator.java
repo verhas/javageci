@@ -57,7 +57,7 @@ public abstract class AbstractFilteredFieldsGenerator extends AbstractFieldsGene
 
     @Override
     protected final void processFieldHook(Source source, Class<?> klass, CompoundParams global, Field[] fields)
-        throws Exception {
+            throws Exception {
         processSelectedFieldHook(source, klass, global, this.fields.toArray(Field[]::new));
     }
 
@@ -84,7 +84,7 @@ public abstract class AbstractFilteredFieldsGenerator extends AbstractFieldsGene
      * @throws Exception any exception that the is thrown by the generator
      */
     protected void processSelectedFieldHook(Source source, Class<?> klass, CompoundParams global, Field[] fields)
-        throws Exception {
+            throws Exception {
         process(source, klass, global, fields);
     }
 
@@ -102,7 +102,7 @@ public abstract class AbstractFilteredFieldsGenerator extends AbstractFieldsGene
      * @throws Exception any exception that the is thrown by the generator     *
      */
     protected void processSelectedFieldHook(Source source, Class<?> klass, CompoundParams params, Field field)
-        throws Exception {
+            throws Exception {
         process(source, klass, params, field);
     }
 }

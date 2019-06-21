@@ -12,8 +12,8 @@ public interface Context {
 
     /**
      * Get the object associated with the key. In case there is no
-     * object associated with the key then the {@code
-     * initialObjectSupplier} should provide an instance of the object.
+     * object associated with the key then the {@code ini}, initial
+     * object supplier should provide an instance of the object.
      *
      * @param key to which the associated object is requested. Currently
      *            I believe that generators using this feature will use

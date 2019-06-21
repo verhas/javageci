@@ -1,7 +1,6 @@
 package javax0.geci.accessor;
 
 import javax0.geci.api.Segment;
-import javax0.geci.tools.CaseTools;
 import javax0.geci.tools.GeciReflectionTools;
 
 import java.lang.reflect.Field;

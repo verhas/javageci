@@ -9,7 +9,7 @@ public class TestNumberLiteral {
     void testNumber(String input, String expected, LexicalElement.Type expectedType, String remaining) {
         final var sut = new NumberLiteral();
         var sb = new StringBuilder(input);
-        var lex = sut.consume(sb);
+        var lex = sut.apply(sb);
         Assertions.assertEquals(expected, lex.lexeme);
         Assertions.assertEquals(expectedType, lex.type);
         Assertions.assertEquals(remaining, sb.toString());
