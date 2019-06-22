@@ -80,6 +80,29 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
 
     protected final List<Class<?>> classes = new ArrayList<>();
 
+    /**
+     * Chlid classes can override this method to return {@code true} in case they want to process a source class and
+     * source code even if the class is not annotated, there is no annotation before the class line in a comment and
+     * there is no editor-fold segment with the mnemonic of the generator.
+     *
+     * <p>In situations like that the generator may scan the class and look at the methods, fields and other members to
+     * decide if it wants to work and generate some code. When there is no editor-fold segment, Geci will insert it
+     * before closing brace of the class using regular expression pattern matching. That way the generator only needs
+     * perhaps a simple annotation on a field and nothing else to be typed by the programmer. This makes the usage of
+     * the generator extremely simple.
+     *
+     * <p> The concrete generators are supposed to define a configuration parameter with {@code boolean} value (so that
+     * it can only be used in the builder) with the name {@code processAllClasses} so that the user can decide if they
+     * want to use this feature. Note that scanning through all the classes via reflection may need significant time and
+     * in case of large projects this may increase the build time. Considering that implementing this method
+     * non-configurable and returning a {@code true} value all the time seems to be a non-optimal choice.
+     *
+     * @return {@code false} as a default.
+     */
+    protected boolean processAllClasses() {
+        return false;
+    }
+
     public final void processEx(Source source) throws Exception {
         final var klass = source.getKlass();
         if (klass != null) {
@@ -94,7 +117,7 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
             if (annotationParams != null) {
                 source.allowDefaultSegment();
             }
-            if (annotationParams != null || editorFoldParams != null) {
+            if (annotationParams != null || editorFoldParams != null || processAllClasses()) {
                 process(source, klass, global);
             }
         }
