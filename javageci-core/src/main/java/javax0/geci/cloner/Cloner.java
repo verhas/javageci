@@ -51,11 +51,6 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
     }
 
     @Override
-    public String mnemonic() {
-        return "cloner";
-    }
-
-    @Override
     public void preprocess(Source source, Class<?> klass, CompoundParams global, Segment segment) {
         final var log = source.getLogger();
         final var local = localConfig(global);
@@ -104,7 +99,14 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
             .newline();
     }
 
-    //<editor-fold id="configBuilder">
+    //<editor-fold id="configBuilder" configurableMnemonic="cloner">
+    private String configuredMnemonic = "cloner";
+
+    @Override
+    public String mnemonic(){
+        return configuredMnemonic;
+    }
+
     private final Config config = new Config();
     public static Cloner.Builder builder() {
         return new Cloner().new Builder();
@@ -174,6 +176,11 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
 
         public Builder superCopyMethod(String superCopyMethod) {
             config.superCopyMethod = superCopyMethod;
+            return this;
+        }
+
+        public Builder mnemonic(String mnemonic) {
+            configuredMnemonic = mnemonic;
             return this;
         }
 
