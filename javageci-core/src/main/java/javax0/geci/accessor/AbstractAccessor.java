@@ -20,6 +20,7 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
         protected String access = "public";
         protected String filter = "true";
         protected String getter = null;
+        protected String setter = null;
         protected String only = "";
         protected boolean processAllClasses = false;
         protected Function<String,String> getterNameGenerator = AbstractAccessor::getterName;
