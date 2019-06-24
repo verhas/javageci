@@ -15,6 +15,7 @@ public class ChainedAccessor extends AbstractAccessor {
 
     public ChainedAccessor(){
         config.setterNameGenerator = name -> "with" + ucase(name);
+        config.mnemonic = "caccessor";
     }
 
     @Override
@@ -35,6 +36,6 @@ public class ChainedAccessor extends AbstractAccessor {
     }
     @Override
     public String mnemonic() {
-        return "caccessor";
+        return config.mnemonic;
     }
 }

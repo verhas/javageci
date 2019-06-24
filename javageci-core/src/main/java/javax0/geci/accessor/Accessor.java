@@ -6,6 +6,10 @@ import java.lang.reflect.Field;
 
 public class Accessor extends AbstractAccessor {
 
+    public Accessor(){
+        config.mnemonic = "accessor";
+    }
+
 
     @Override
     protected void writeSetter(Field field, String name, String setterName,
@@ -20,7 +24,7 @@ public class Accessor extends AbstractAccessor {
 
     @Override
     public String mnemonic() {
-        return "accessor";
+        return config.mnemonic;
     }
 
 

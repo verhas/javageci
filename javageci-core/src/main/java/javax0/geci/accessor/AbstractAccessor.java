@@ -17,6 +17,7 @@ import static javax0.geci.tools.CaseTools.ucase;
 public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
 
     protected static class Config {
+        protected String mnemonic = "";
         protected String access = "public";
         protected String filter = "true";
         protected String getter = null;
@@ -110,6 +111,7 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
         "access",
         "filter",
         "getter",
+        "mnemonic",
         "only",
         "setter",
         "id"
@@ -145,6 +147,11 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
             return this;
         }
 
+        public Builder mnemonic(String mnemonic) {
+            config.mnemonic = mnemonic;
+            return this;
+        }
+
         public Builder only(String only) {
             config.only = only;
             return this;
@@ -176,6 +183,7 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
         local.getter = params.get("getter",config.getter);
         local.getterNameGenerator = config.getterNameGenerator;
         local.getterReturnValueDecorator = config.getterReturnValueDecorator;
+        local.mnemonic = params.get("mnemonic",config.mnemonic);
         local.only = params.get("only",config.only);
         local.processAllClasses = config.processAllClasses;
         local.setter = params.get("setter",config.setter);

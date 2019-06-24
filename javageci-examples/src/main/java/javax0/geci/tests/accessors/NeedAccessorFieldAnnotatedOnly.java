@@ -1,12 +1,6 @@
 package javax0.geci.tests.accessors;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 public class NeedAccessorFieldAnnotatedOnly {
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface Getter {
-    }
 
     @Getter
     private final String apple = "";
@@ -16,9 +10,7 @@ public class NeedAccessorFieldAnnotatedOnly {
 
     protected boolean truth;
     protected int not_this;
-
-
-    //<editor-fold id="accessor">
+    //<editor-fold id="SettersGetters">
     public String getApple(){
         return apple;
     }
