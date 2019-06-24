@@ -73,22 +73,21 @@ public class CompoundParams {
      * will be checked and in case the constraints are violated then it
      * will throw {@link GeciException}.
      *
-     *
      * @param cparams the compound parameters array.
      */
     public CompoundParams(CompoundParams... cparams) {
         this.params = null;
         this.cparams = cparams;
-        this.id = find(cparams,c -> c.id);
-        this.source = find(cparams,c -> c.source);
-        this.mnemonic = find(cparams,c -> c.mnemonic);
-        this.allowedKeys = find(cparams,c -> c.allowedKeys);
-        if( source != null &&  mnemonic != null && allowedKeys != null ){
+        this.id = find(cparams, c -> c.id);
+        this.source = find(cparams, c -> c.source);
+        this.mnemonic = find(cparams, c -> c.mnemonic);
+        this.allowedKeys = find(cparams, c -> c.allowedKeys);
+        if (source != null && mnemonic != null && allowedKeys != null) {
             checkAllowedKeys();
         }
     }
 
-    private <T> T find(CompoundParams[] cparams, Function<CompoundParams,T> mapper){
+    private <T> T find(CompoundParams[] cparams, Function<CompoundParams, T> mapper) {
         return Arrays.stream(cparams)
                 .filter(Objects::nonNull)
                 .map(mapper)
@@ -106,8 +105,8 @@ public class CompoundParams {
      * <p> After the constraints are set a check is also performed and a
      * {@link GeciException} may be thrown.
      *
-     * @param source the source object from which the keys come from
-     * @param mnemonic the mnemonic of the generator
+     * @param source      the source object from which the keys come from
+     * @param mnemonic    the mnemonic of the generator
      * @param allowedKeys the set of the allowed keys
      */
     public void setConstraints(Source source, String mnemonic, Set<String> allowedKeys) {
@@ -183,8 +182,8 @@ public class CompoundParams {
      * returned.
      */
     public String get(String key) {
-        if( allowedKeys != null && ! allowedKeys.contains(key)){
-            throw new GeciException("Generator is accessing key '"+key+"' which is not allowed. This is a generator bug.");
+        if (allowedKeys != null && !allowedKeys.contains(key)) {
+            throw new GeciException("Generator is accessing key '" + key + "' which is not allowed. This is a generator bug.");
         }
         return Objects.requireNonNullElse(get0(key), "");
     }
@@ -196,6 +195,21 @@ public class CompoundParams {
      */
     public String id() {
         return get("id");
+    }
+
+    /**
+     * Get the id from the parameters or the default value, which is the
+     * argument {@code mnemonic} in case there is no id defined.
+     *
+     * @param mnemonic the default value for the id in case it is not
+     *                 defined in the parameters. This is usually the
+     *                 mnemonic of the generator that is currently
+     *                 running.
+     * @return the id
+     */
+    public String id(String mnemonic) {
+        var id = get("id");
+        return id.length() == 0 ? mnemonic : id;
     }
 
     private String get0(String key) {
@@ -222,12 +236,12 @@ public class CompoundParams {
     }
 
 
-    public static boolean toBoolean(String s){
+    public static boolean toBoolean(String s) {
         return s != null && (
-            s.equalsIgnoreCase("yes") ||
-                s.equalsIgnoreCase("ok") ||
-                s.equalsIgnoreCase("1") ||
-                s.equalsIgnoreCase("true")
+                s.equalsIgnoreCase("yes") ||
+                        s.equalsIgnoreCase("ok") ||
+                        s.equalsIgnoreCase("1") ||
+                        s.equalsIgnoreCase("true")
         );
     }
 

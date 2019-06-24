@@ -52,10 +52,8 @@ public abstract class AbstractFieldsGenerator extends AbstractJavaGenerator {
      */
     @SuppressWarnings("unused")
     public void preprocess(Source source, Class<?> klass, CompoundParams global) throws Exception {
-        if (global.id().length() > 0) {
-            try (final var segment = source.safeOpen(global.id())) {
-                preprocess(source, klass, global, segment);
-            }
+        try (final var segment = source.safeOpen(global.id(mnemonic()))) {
+            preprocess(source, klass, global, segment);
         }
     }
 
@@ -90,9 +88,7 @@ public abstract class AbstractFieldsGenerator extends AbstractJavaGenerator {
      */
     @SuppressWarnings("unused")
     public void postprocess(Source source, Class<?> klass, CompoundParams global) throws Exception {
-        if (global.id().length() > 0) {
-            postprocess(source, klass, global, source.safeOpen(global.id()));
-        }
+        postprocess(source, klass, global, source.safeOpen(global.id(mnemonic())));
     }
 
     public void postprocess(Source source, Class<?> klass, CompoundParams global, Segment segment) throws Exception {
@@ -167,10 +163,8 @@ public abstract class AbstractFieldsGenerator extends AbstractJavaGenerator {
      * @throws Exception any exception that the is thrown by the generator
      */
     public void process(Source source, Class<?> klass, CompoundParams params, Field field) throws Exception {
-        if (params.id().length() > 0) {
-            try (final var segment = source.safeOpen(params.id())) {
-                process(source, klass, params, field, segment);
-            }
+        try (final var segment = source.safeOpen(params.id(mnemonic()))) {
+            process(source, klass, params, field, segment);
         }
     }
 
@@ -205,10 +199,8 @@ public abstract class AbstractFieldsGenerator extends AbstractJavaGenerator {
      * @throws Exception any exception that the is thrown by the generator
      */
     public void process(Source source, Class<?> klass, CompoundParams global, Field[] fields) throws Exception {
-        if (global.id().length() > 0) {
-            try (final var segment = source.safeOpen(global.id())) {
-                process(source, klass, global, fields, segment);
-            }
+        try (final var segment = source.safeOpen(global.id(mnemonic()))) {
+            process(source, klass, global, fields, segment);
         }
     }
 
