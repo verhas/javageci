@@ -18,6 +18,7 @@
 <module>javageci-annotation</module>
 <module>javageci-examples</module>
 <module>javageci-jamal</module>
+<module> javageci-core-annotations</module>
 </modules>
     <licenses>
 <license>

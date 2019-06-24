@@ -2,32 +2,32 @@
 
 Java Generate Code Inline
 
-Java::Geci is a library to generate Java code. Code generation programs
+Java::Geci is a library for generating Java code. Code generation programs
 implemented using Java::Geci can be executed to generate new source code
 or modify existing Java source files. This way the programmer can use
 meta programming to express code in a shorter and more expressive way
 than it would be possible in pure Java.
 
 The framework discovers the files that need generated code, provides
-easy to use API to generate code and takes care to write the generated
+easy to use API to generate code and takes care of writing the generated
 code into the source code. The code generating program should focus on
 the actual code structure it wants to generate.
 
 ## When do you need Java::Geci?
 
 There are several occasions when we need generated code. The simplest
-such scenarios are also supported by the IDEs (Eclipse, NetBeans,
+such scenarios are also supported by IDEs (Eclipse, NetBeans,
 IntelliJ). They can create setters, getters, constructors, `equals()`
 and `hashCode()` methods in different ways. There are two major problems
 with that solution.
 
 * One is that the code generation is manual, and in case the developer
-  forgets to regenerate the code after an influencing change the code
+  forgets to re-generate the code after an influencing change the code
   becomes outdated.
 
 * The other problem is that the code generation possibilities are not
   extendable. There is a limited set of code that the tools can generate
-  and the developer cannot easily extend these possibilities, or the 
+  and the developer cannot easily extend these possibilities. 
 
 Java::Geci eliminates these two problems. It has an execution mode to
 check if all code generation is up-to-date and this can be used as a
@@ -52,12 +52,12 @@ These are packaged with the core package and can generate
 
 ## How to use Java::Geci
 
-Include the Java::Geci modules that you want to use into your project.
-To do that using maven use the following dependencies:
+Include the Java::Geci modules that you want to use in your project.
+To do that with maven use the following dependencies:
 
 ```xml
 <dependency>
-    <!-- This is optional, you can use own annotations or comment config -->
+    <!-- This is optional, you can use your own annotations or comment config -->
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-annotation</artifactId>
     <version>1.1.2-SNAPSHOT</version>
@@ -70,7 +70,7 @@ To do that using maven use the following dependencies:
 </dependency>
 ```
 
-This documentation contains the last development version. For release
+This documentation contains the latest development version. For release
 versions you can use see the latest non-SNAPSHOT version in the [release
 history documentation](RELEASE.md).
 
@@ -136,7 +136,7 @@ the files.
 The method `register()` can register one or more source code generators.
 Each of them will be invoked on the code.
  
-Finally the method invocation `generate()` wil do the work, read the
+Finally the method invocation `generate()` will do the work, read the
 source files and generate the code.
 
 For further information visit the following documentations
