@@ -31,7 +31,7 @@ public class ClassNeedingEquals {
     @javax0.geci.annotations.Generated("equals")
     @Override
     public int hashCode() {
-        return Objects.hash(aBoolean, aByte, aDouble, aFloat, aLong, aShort, anInt, h, x);
+        return java.util.Objects.hash(aBoolean, aByte, aDouble, aFloat, aLong, aShort, anInt, h, x);
     }
     @javax0.geci.annotations.Generated("equals")
     @Override
@@ -48,8 +48,8 @@ public class ClassNeedingEquals {
         if (aLong != that.aLong) return false;
         if (aShort != that.aShort) return false;
         if (anInt != that.anInt) return false;
-        if (!Objects.equals(h, that.h)) return false;
-        return Objects.equals(x, that.x);
+        if (!java.util.Objects.equals(h, that.h)) return false;
+        return java.util.Objects.equals(x, that.x);
     }
 
     //</editor-fold>
