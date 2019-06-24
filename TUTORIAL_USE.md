@@ -31,26 +31,21 @@ the files.<br/>
 This means:
 * Call `source("foo").source("bar")` if you have sources in **both** foo **and** bar.
 * Call `source("foo", "bar")` if you have sources in **either** foo **or** bar.
-*maven().module("javageci-examples").mainSource()* is just "javageci-examples/src"
 
 The method `register()` can register one or more source code generators. 
-You can also chain `register()` calls and register your generators one-by-one. 
+You can also chain `register()` calls and register your generator objects one-by-one. 
 It's up to you. Each registered generator will be invoked on the sources.
- 
+
 Finally the method invocation `generate()` will do the work, read the
 source files and generate the code.
 
 Every generator has a mnemonic which identifies the generator. For example the Accessor
-generator (that generates getters and setters) has the mnemonic "accessor":
-
-```java
-public String mnemonic() { return "accessor" }
-```
+generator (that generates getters and setters) has the mnemonic "accessor".
 
 After you assigned the source to the generator this mnemonic is used to identify 
 which classes need code generation. This can be done in two ways:
 
-* Adding the mnemonic of the generator in a @Geci annotation. <br/>
+* Adding the mnemonic of the generator in a `@Geci` annotation. <br/>
 Example (using the Accessor generator):
 
 ```java
@@ -87,10 +82,10 @@ That's it! To summarize:
     - Register the generators you want to use on those source files with `register()`
     - Start the code generation process by calling `generate()`
 2. In your sources: <br/>
-    - Use the @Geci annotation with the mnemonic of the generator you want to use.
+    - Use the `@Geci` annotation with the mnemonic of the generator you want to use.
     - Or add an editor-fold segment with the mnemonic as the id.
 
-If we run out unit test now, it will say:
+If we run our unit test now, it will say:
 <br/>
 *Geci modified source code. Please compile and test again.*
 <br/>
