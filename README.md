@@ -111,7 +111,7 @@ public class TestAccessor {
     public void testAccessor() throws Exception {
         Assertions.assertFalse(new Geci().source(maven()
                         .module("javageci-examples").mainSource())
-                        .register(new Accessor()).generate(),
+                        .register(Accessor.builder().build()).generate(),
                 Geci.FAILED);
     }
 }
@@ -124,21 +124,6 @@ date and a new compilation has to be done. In this case the
 process again. Second time the code generation will recognize that the
 code it could generate is already there and the process will not fail.
 
-`Geci` has a fluent interface.
-
-The method `source()` can be used to specify the directories where
-source files are. If you have the source files in different places you
-have to chain several `source()` invocations one after the other. Every
-single call to `source()` can specify several directories. These count
-as one single directory and the first that exists is used to discover
-the files.
-
-The method `register()` can register one or more source code generators.
-Each of them will be invoked on the code.
- 
-Finally the method invocation `generate()` will do the work, read the
-source files and generate the code.
-
 For further information visit the following documentations
 
 * [Tutorials](TUTORIAL.md)
@@ -149,17 +134,4 @@ For further information visit the following documentations
 * [Module Structure of Java::Geci](MODULES.md)
 * [Configuring Generators](CONFIGURATION.md)
 * [Logging support for generators](LOGGING.md)
-
-Generators provided with Java::Geci out of the box
-
-* [Setter and getter](ACCESSOR.md)
-* [Delegation](DELEGATOR.md)
-* [Fluent API](FLUENT.md)
-* [equals() and hashCode()](EQUALS.md)
-* [toMap() and fromMap()](MAPPER.md)
-* [template based generator](TEMPLATED.md)
-* [repeated code generator](REPEATED.md)
-* [object cloner](CLONER.md) (planned)
-* [static dependency injection](INJECT.md) (planned)
-* [proxy class](PROXY.md) (planned)
-* [immutable proxy](IMMUTATOR.md) (planned)
+* [Generators provided with Java::Geci out of the box](GENERATORS.md)

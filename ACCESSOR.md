@@ -84,14 +84,6 @@ public class ExampleClass {
     @Geci("accessor getter='isTrue'")
     private boolean truth;
 }
-
-or
-
-@Accessor
-public class ExampleClass { 
-    @Accessor(getter = "isTrue")
-    private boolean truth;
-}
 ```
 The following parameters can be used on the field level:
 
