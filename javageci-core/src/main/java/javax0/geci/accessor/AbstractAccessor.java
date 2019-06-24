@@ -20,6 +20,7 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
         protected String access = "public";
         protected String filter = "true";
         protected String getter = null;
+        protected String only = "";
         protected boolean processAllClasses = false;
         protected Function<String,String> getterNameGenerator = AbstractAccessor::getterName;
         protected Function<String,String> setterNameGenerator = AbstractAccessor::setterName;
@@ -102,6 +103,7 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
         "access",
         "filter",
         "getter",
+        "only",
         "id"
     );
 
@@ -135,6 +137,11 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
             return this;
         }
 
+        public Builder only(String only) {
+            config.only = only;
+            return this;
+        }
+
         public Builder processAllClasses(boolean processAllClasses) {
             config.processAllClasses = processAllClasses;
             return this;
@@ -156,6 +163,7 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
         local.getter = params.get("getter",config.getter);
         local.getterNameGenerator = config.getterNameGenerator;
         local.getterReturnValueDecorator = config.getterReturnValueDecorator;
+        local.only = params.get("only",config.only);
         local.processAllClasses = config.processAllClasses;
         local.setterNameGenerator = config.setterNameGenerator;
         return local;

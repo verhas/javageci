@@ -260,22 +260,28 @@ public class Source implements javax0.geci.api.Source {
                 touched = true;
                 var id = entry.getKey();
                 var segment = entry.getValue();
-                var segDesc = findSegment(id);
-                if (segDesc == null) {
-                    segDesc = findDefaultSegment();
-                    if (segDesc == null) {
+                var segmentLocation = findSegment(id);
+                if (segmentLocation == null) {
+                    segmentLocation = findDefaultSegment();
+                    if (segmentLocation == null) {
                         throw new GeciException("Segment " + id + " disappeared from source" + absoluteFile);
                     }
                 }
-                lines.subList(segDesc.startLine + 1, segDesc.endLine).clear();
-                lines.addAll(segDesc.startLine + 1, segment.postface);
-                lines.addAll(segDesc.startLine + 1, segment.lines);
-                lines.addAll(segDesc.startLine + 1, segment.preface);
+                mergeSegment(segment, segmentLocation);
             }
         } else {
             touched = true;
             lines.clear();
             lines.addAll(globalSegment.lines);
+        }
+    }
+
+    private void mergeSegment(Segment segment, SegmentDescriptor segmentLocation) {
+        if (segmentLocation.startLine + 1 < segmentLocation.endLine) {
+            lines.subList(segmentLocation.startLine + 1, segmentLocation.endLine).clear();
+            lines.addAll(segmentLocation.startLine + 1, segment.postface);
+            lines.addAll(segmentLocation.startLine + 1, segment.lines);
+            lines.addAll(segmentLocation.startLine + 1, segment.preface);
         }
     }
 

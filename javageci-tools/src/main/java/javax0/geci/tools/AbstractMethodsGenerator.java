@@ -53,6 +53,7 @@ public abstract class AbstractMethodsGenerator extends AbstractJavaGenerator {
      */
     @SuppressWarnings("unused")
     public void preprocess(Source source, Class<?> klass, CompoundParams global) throws Exception {
+        if( global.id().length()> 0 )
         try (final var segment = source.safeOpen(global.id())) {
             preprocess(source, klass, global, segment);
         }
@@ -164,6 +165,7 @@ public abstract class AbstractMethodsGenerator extends AbstractJavaGenerator {
      * @throws Exception any exception that the is thrown by the generator
      */
     public void process(Source source, Class<?> klass, CompoundParams params, Method method) throws Exception {
+        if( params.id().length() > 0 )
         try (final var segment = source.safeOpen(params.id())) {
             process(source, klass, params, method, segment);
         }
