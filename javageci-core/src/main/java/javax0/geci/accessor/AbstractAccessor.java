@@ -33,7 +33,13 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
     protected boolean processAllClasses() {
         return config.processAllClasses;
     }
-    
+
+
+    @Override
+    protected String defaultFilterExpression() {
+        return config.filter;
+    }
+
     private static final Set<String> accessModifiers =
             Set.of("public", "private", "protected", "package");
 

@@ -19,5 +19,17 @@ public class TestAccessor {
                 ).register(Accessor.builder().build()).generate(),
                 geci.failed());
     }
+
+
+    @Test
+    public void testAllSourcesAccessor() throws Exception {
+        Geci geci;
+        Assertions.assertFalse(
+                (geci = new Geci()).source(
+                        maven().module("javageci-examples").mainSource()
+                ).register(Accessor.builder().filter("annotation ~ /Getter|Setter/").processAllClasses(true).build()).generate(),
+                geci.failed());
+    }
+
 }
 //END SNIPPET
