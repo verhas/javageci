@@ -419,11 +419,30 @@ configured
     value is `private`, but this may need to be `protected` in case the
     generator is created in part of some inheritance. An example is the
     accessor generator that uses this feature.
+
 * `generateImplementedKeys` can be set to `false` to avoid the
-    generation of the `implementedKeys()` method. You should set this
-    configuration parameter to `false` is you want to allow any
-    configuration key to be used by the code generation. The usual
-    behaviour is that this method returns the set of the configuration
-    keys that can be used for the given generator and in case there is a
-    typo in the configuration in the source code then it results an
-    error message.
+  generation of the `implementedKeys()` method. You should set this
+  configuration parameter to `false` is you want to allow any
+  configuration key to be used by the code generation. The usual
+  behaviour is that this method returns the set of the configuration
+  keys that can be used for the given generator and in case there is a
+  typo in the configuration in the source code then it results an error
+  message.
+    
+* `configurableMnemonic` an specify the string for the mnemonic of the
+  generator. When this is specified and not empty string then the method
+  `mnemonic()` will be created and a builder function of the same name
+  will also be created so the actual mnemonic of the instance created
+  using the builder can be configured to be different from the default.
+  The default behaviour is not to create the configuration for this
+  extra value and not to create the `mnemonic()` method overriding the
+  one in the super class. Note that the value for the builder configured
+  value is stored in a field in the generator class and not inside the
+  `Configuration` inner class and thus it cannot be configured in an
+  annotation. It can be configured only in the builder.
+  
+  Making the mnemonic configurable lets the user of the generator to use
+  the generator if there are multiple generators with the same mnemonic
+  and to avoid collision of the mnemonics. It is also possible to use
+  multiple instances of the same generator on one specific source. An
+  example can be the `repeated` generator.

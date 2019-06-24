@@ -114,7 +114,7 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
             var editorFoldParams = GeciAnnotationTools.getSegmentParameters(source, mnemonic());
             var global = new CompoundParams(annotationParams, editorFoldParams);
             global.setConstraints(source, mnemonic(), implementedKeys());
-            if (annotationParams != null) {
+            if (annotationParams != null || processAllClasses() ) {
                 source.allowDefaultSegment();
             }
             if (annotationParams != null || editorFoldParams != null || processAllClasses()) {

@@ -16,7 +16,7 @@ public class TestAccessor {
         Assertions.assertFalse(
                 (geci = new Geci()).source(
                 maven().module("javageci-examples").mainSource()
-                ).register(Accessor.builder().build()).generate(),
+                ).register(Accessor.builder().processAllClasses(true).build()).generate(),
                 geci.failed());
     }
 }

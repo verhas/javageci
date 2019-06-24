@@ -30,7 +30,6 @@ public class Repeated extends AbstractJavaGenerator {
         private Function<Class, List<String>> valuesSupplier = null;
         private CharSequence selector = "";
         private CharSequence template = null;
-        private CharSequence mnemonic = "repeated";
         private Context ctx = new Triplet();
         private final Map<String, String> templatesMap = new HashMap<>();
         private BiFunction<Context, String, String> resolver;
@@ -58,11 +57,6 @@ public class Repeated extends AbstractJavaGenerator {
             }
             defineMap.put(selector.toString(), define);
         }
-    }
-
-    @Override
-    public String mnemonic() {
-        return config.mnemonic.toString();
     }
 
     @Override
@@ -176,8 +170,14 @@ public class Repeated extends AbstractJavaGenerator {
         return 0;
     }
 
+    //<editor-fold id="configBuilder" configurableMnemonic="repeated">
+    private String configuredMnemonic = "repeated";
 
-    //<editor-fold id="configBuilder">
+    @Override
+    public String mnemonic(){
+        return configuredMnemonic;
+    }
+
     private final Config config = new Config();
     public static Repeated.Builder builder() {
         return new Repeated().new Builder();
@@ -215,11 +215,6 @@ public class Repeated extends AbstractJavaGenerator {
 
         public Builder matchLine(String matchLine) {
             config.matchLine = matchLine;
-            return this;
-        }
-
-        public Builder mnemonic(CharSequence mnemonic) {
-            config.mnemonic = mnemonic;
             return this;
         }
 
@@ -263,6 +258,11 @@ public class Repeated extends AbstractJavaGenerator {
             return this;
         }
 
+        public Builder mnemonic(String mnemonic) {
+            configuredMnemonic = mnemonic;
+            return this;
+        }
+
         public Repeated build() {
             return Repeated.this;
         }
@@ -273,7 +273,6 @@ public class Repeated extends AbstractJavaGenerator {
         local.setDefine(config.define);
         local.end = params.get("end",config.end);
         local.matchLine = params.get("matchLine",config.matchLine);
-        local.mnemonic = config.mnemonic;
         local.setResolver(config.resolver);
         local.selector = config.selector;
         local.start = params.get("start",config.start);
