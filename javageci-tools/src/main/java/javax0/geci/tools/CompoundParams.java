@@ -110,7 +110,7 @@ public class CompoundParams {
      * @param mnemonic the mnemonic of the generator
      * @param allowedKeys the set of the allowed keys
      */
-    public void setConstrains(Source source, String mnemonic, Set<String> allowedKeys) {
+    public void setConstraints(Source source, String mnemonic, Set<String> allowedKeys) {
         this.source = source;
         this.mnemonic = mnemonic;
         this.allowedKeys = allowedKeys;
