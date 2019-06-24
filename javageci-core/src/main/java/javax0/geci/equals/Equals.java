@@ -127,7 +127,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
             }
         } else {
             if (params.is("useObjects", config.useObjects)) {
-                segment.write(convert.apply("Objects.equals(" + name + ", that." + name + ")"));
+                segment.write(convert.apply("java.util.Objects.equals(" + name + ", that." + name + ")"));
             } else {
                 if (params.is("notNull")) {
                     segment.write(convert.apply(name + ".equals(that." + name + ")"));
@@ -284,7 +284,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
     }
 
     private void generateHashCodeBodyUsingObjects(Segment segment, Field[] fields) {
-        segment.write("return Objects.hash(%s);",
+        segment.write("return java.util.Objects.hash(%s);",
                 Arrays.stream(fields).map(Field::getName).collect(Collectors.joining(", ")));
     }
 
