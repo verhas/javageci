@@ -13,7 +13,7 @@ To invoke the generator we will use the following test:
     @Test
     public void testBeanGenerator() throws Exception {
         if (new Geci()
-            .source(maven().testResources(), maven().module("javageci-examples").testResources())
+            .source("./src/test/resources", "./javageci-examples/src/test/resources")
             .source(set("java"),"./src/test/java", "./javageci-examples/src/test/java")
             .register(new BeanGenerator()).generate()) {
             Assertions.fail("Code was changed during test phase.");
