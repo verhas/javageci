@@ -14,7 +14,7 @@ public class TestFileCollector {
     @Test
     @DisplayName("Collect the file in this test directory and find the class for it.")
     void collectAllFiles() {
-        final var sources = Map.of(set(""),new String[]{"src/test/java/javax0/geci/util"});
+        final var sources = Map.of(set(),new String[]{"src/test/java/javax0/geci/util"});
         var collector = new FileCollector(sources);
         collector.collect(null);
         assertEquals(1, collector.sources.size());

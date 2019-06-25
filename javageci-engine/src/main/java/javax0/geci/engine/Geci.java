@@ -37,7 +37,7 @@ public class Geci implements javax0.geci.api.Geci {
 
     @Override
     public Geci source(String... directory) {
-        directories.put(set(""), directory);
+        directories.put(set(), directory);
         return this;
     }
 
@@ -121,6 +121,9 @@ public class Geci implements javax0.geci.api.Geci {
 
     @Override
     public Geci source(Source.Set set, String... directory) {
+        if (directories.containsKey(set)) {
+            throw new GeciException("The set '" + set + "' is defined more than once.");
+        }
         directories.put(set, directory);
         return this;
     }

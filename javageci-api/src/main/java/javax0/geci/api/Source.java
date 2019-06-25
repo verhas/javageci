@@ -19,7 +19,7 @@ import java.util.Objects;
  *     //</editor-fold>
  *     }
  * </pre>
- *
+ * <p>
  * contain a segment (excluding the surrounding lines that signal the
  * start and the end of the segment. The {@code Source} object can be
  * asked to provide a {@link Segment} object that represents those
@@ -41,11 +41,11 @@ public interface Source {
      *
      * @param root the directory to the root module where the top level
      *             {@code pom.xml} containing the
-     *   <pre>
-     *   {@code <modules>
-     *       <module>...</module>
-     *     </modules>}
-     *   </pre>
+     *             <pre>
+     *               {@code <modules>
+     *                   <module>...</module>
+     *                 </modules>}
+     *               </pre>
      *             declaration is.
      * @return a new Maven source directory configuration object.
      */
@@ -227,20 +227,29 @@ public interface Source {
     Logger getLogger();
 
     /**
-     * Set serves as an identifier class for a source set. This is used when a source is asked to open a new
-     * source that does not exist yet in another source set. When a source set is not identified
-     * calling {@link Geci#source(String...)} it will have a {@code new Set("")} object as identifier. When a
-     * generator needs to name a set it has to be identified and a specific first argument has to be passed to the
-     * {@link Geci#source(Set, String...)} usually naming the source set typically as {@code set("java")} or
-     * {@code set("resources")}.
+     * Set serves as an identifier class for a source set. This is used
+     * when a source is asked to open a new source that does not exist
+     * yet in another source set. When a source set is not identified
+     * calling {@link Geci#source(String...)} it will have a {@code new
+     * Set("xxx")} object as identifier. The identifier in this case is
+     * a decimal number and it is randomly created. When a generator
+     * needs to name a set it has to be identified and a specific first
+     * argument has to be passed to the {@link Geci#source(Set,
+     * String...)} usually naming the source set typically as {@code
+     * set("java")} or {@code set("resources")}.
      */
     class Set {
         private final String name;
 
         private Set(String name) {
-            if (name == null)
-                throw new IllegalArgumentException("Name can not be null");
+            if (name == null) {
+                name = randomUniqueName();
+            }
             this.name = name;
+        }
+
+        private String randomUniqueName() {
+            return "" + super.hashCode();
         }
 
         /**
@@ -252,6 +261,10 @@ public interface Source {
          */
         public static Set set(String name) {
             return new Set(name);
+        }
+
+        public static Set set() {
+            return set(null);
         }
 
         @Override
@@ -398,7 +411,7 @@ public interface Source {
          * @return the array of directories where the test resource files could be found.
          */
         public NamedSourceSet testResources() {
-            return source(Geci.TEST_RESOURCES,"test", "resources");
+            return source(Geci.TEST_RESOURCES, "test", "resources");
         }
 
         /**
