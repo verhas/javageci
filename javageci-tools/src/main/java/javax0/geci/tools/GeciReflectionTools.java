@@ -439,7 +439,15 @@ public class GeciReflectionTools {
         try {
             return klass.getDeclaredMethod(methodName, classes);
         } catch (NoSuchMethodException ignored) {
-            return klass.getMethod(methodName, classes);
+            try {
+                return klass.getMethod(methodName, classes);
+            } catch (NoSuchMethodException exception) {
+                if(!klass.getSuperclass().getName().equals(Object.class.getName())) {
+                    return getMethod(klass.getSuperclass(), methodName, classes);
+                } else {
+                    throw exception;
+                }
+            }
         }
     }
 
