@@ -77,6 +77,14 @@ individual fields can also be annotated with
 @Geci("accessor ... parameters ...")
 ```
 
+Example:
+```java
+@Geci("accessor")
+public class ExampleClass {
+    @Geci("accessor getter='isTrue'")
+    private boolean truth;
+}
+```
 The following parameters can be used on the field level:
 
 * `filter` can signal that the field does not need setter and getter.

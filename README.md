@@ -2,32 +2,32 @@
 
 Java Generate Code Inline
 
-Java::Geci is a library to generate Java code. Code generation programs
+Java::Geci is a library for generating Java code. Code generation programs
 implemented using Java::Geci can be executed to generate new source code
 or modify existing Java source files. This way the programmer can use
 meta programming to express code in a shorter and more expressive way
 than it would be possible in pure Java.
 
 The framework discovers the files that need generated code, provides
-easy to use API to generate code and takes care to write the generated
+easy to use API to generate code and takes care of writing the generated
 code into the source code. The code generating program should focus on
 the actual code structure it wants to generate.
 
 ## When do you need Java::Geci?
 
 There are several occasions when we need generated code. The simplest
-such scenarios are also supported by the IDEs (Eclipse, NetBeans,
+such scenarios are also supported by IDEs (Eclipse, NetBeans,
 IntelliJ). They can create setters, getters, constructors, `equals()`
 and `hashCode()` methods in different ways. There are two major problems
 with that solution.
 
 * One is that the code generation is manual, and in case the developer
-  forgets to regenerate the code after an influencing change the code
+  forgets to re-generate the code after an influencing change the code
   becomes outdated.
 
 * The other problem is that the code generation possibilities are not
   extendable. There is a limited set of code that the tools can generate
-  and the developer cannot easily extend these possibilities, or the 
+  and the developer cannot easily extend these possibilities. 
 
 Java::Geci eliminates these two problems. It has an execution mode to
 check if all code generation is up-to-date and this can be used as a
@@ -52,12 +52,12 @@ These are packaged with the core package and can generate
 
 ## How to use Java::Geci
 
-Include the Java::Geci modules that you want to use into your project.
-To do that using maven use the following dependencies:
+Include the Java::Geci modules that you want to use in your project.
+To do that with maven use the following dependencies:
 
 ```xml
 <dependency>
-    <!-- This is optional, you can use own annotations or comment config -->
+    <!-- This is optional, you can use your own annotations or comment config -->
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-annotation</artifactId>
     <version>1.1.2-SNAPSHOT</version>
@@ -70,7 +70,7 @@ To do that using maven use the following dependencies:
 </dependency>
 ```
 
-This documentation contains the last development version. For release
+This documentation contains the latest development version. For release
 versions you can use see the latest non-SNAPSHOT version in the [release
 history documentation](RELEASE.md).
 
@@ -111,7 +111,7 @@ public class TestAccessor {
     public void testAccessor() throws Exception {
         Assertions.assertFalse(new Geci().source(maven()
                         .module("javageci-examples").mainSource())
-                        .register(new Accessor()).generate(),
+                        .register(Accessor.builder().build()).generate(),
                 Geci.FAILED);
     }
 }
@@ -124,21 +124,6 @@ date and a new compilation has to be done. In this case the
 process again. Second time the code generation will recognize that the
 code it could generate is already there and the process will not fail.
 
-`Geci` has a fluent interface.
-
-The method `source()` can be used to specify the directories where
-source files are. If you have the source files in different places you
-have to chain several `source()` invocations one after the other. Every
-single call to `source()` can specify several directories. These count
-as one single directory and the first that exists is used to discover
-the files.
-
-The method `register()` can register one or more source code generators.
-Each of them will be invoked on the code.
- 
-Finally the method invocation `generate()` wil do the work, read the
-source files and generate the code.
-
 For further information visit the following documentations
 
 * [Tutorials](TUTORIAL.md)
@@ -149,17 +134,4 @@ For further information visit the following documentations
 * [Module Structure of Java::Geci](MODULES.md)
 * [Configuring Generators](CONFIGURATION.md)
 * [Logging support for generators](LOGGING.md)
-
-Generators provided with Java::Geci out of the box
-
-* [Setter and getter](ACCESSOR.md)
-* [Delegation](DELEGATOR.md)
-* [Fluent API](FLUENT.md)
-* [equals() and hashCode()](EQUALS.md)
-* [toMap() and fromMap()](MAPPER.md)
-* [template based generator](TEMPLATED.md)
-* [repeated code generator](REPEATED.md)
-* [object cloner](CLONER.md) (planned)
-* [static dependency injection](INJECT.md) (planned)
-* [proxy class](PROXY.md) (planned)
-* [immutable proxy](IMMUTATOR.md) (planned)
+* [Generators provided with Java::Geci out of the box](GENERATORS.md)
