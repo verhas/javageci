@@ -35,9 +35,11 @@ public class Geci implements javax0.geci.api.Geci {
     private Set<Predicate<Path>> predicates = new HashSet<>();
     private final Set<Source> modifiedSources = new HashSet<>();
 
+    private int sourceId = 0;
+
     @Override
     public Geci source(String... directory) {
-        directories.put(set(""), directory);
+        directories.put(set("" + sourceId++), directory);
         return this;
     }
 

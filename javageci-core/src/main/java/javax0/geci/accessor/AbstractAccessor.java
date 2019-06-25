@@ -97,6 +97,8 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
         "access",
         "filter",
         "getter",
+        "only",
+        "setter",
         "id"
     );
 
@@ -130,6 +132,16 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
             return this;
         }
 
+        public Builder only(String only) {
+            config.only = only;
+            return this;
+        }
+
+        public Builder setter(String setter) {
+            config.setter = setter;
+            return this;
+        }
+
         public Builder setterNameGenerator(java.util.function.Function<String,String> setterNameGenerator) {
             config.setterNameGenerator = setterNameGenerator;
             return this;
@@ -146,6 +158,8 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
         local.getter = params.get("getter",config.getter);
         local.getterNameGenerator = config.getterNameGenerator;
         local.getterReturnValueDecorator = config.getterReturnValueDecorator;
+        local.only = params.get("only",config.only);
+        local.setter = params.get("setter",config.setter);
         local.setterNameGenerator = config.setterNameGenerator;
         return local;
     }

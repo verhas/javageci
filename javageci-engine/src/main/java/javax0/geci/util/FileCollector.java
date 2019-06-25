@@ -147,6 +147,9 @@ public class FileCollector {
         var processedSome = false;
         for (var entry : directories.entrySet()) {
             var processed = false;
+            for(final var directory : entry.getValue()) {
+                System.out.println(directory);
+            }
             for (final var directory : entry.getValue()) {
                 var dir = normalized(directory);
                 try {
@@ -180,6 +183,10 @@ public class FileCollector {
                         + "]")
                     .collect(Collectors.joining(",\n"))
                 + "} are found.");
+        } else {
+            for (Source source : this.sources) {
+                System.out.println(source.getAbsoluteFile());
+            }
         }
     }
 
