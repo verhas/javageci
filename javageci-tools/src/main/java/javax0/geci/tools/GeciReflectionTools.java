@@ -443,6 +443,37 @@ public class GeciReflectionTools {
         }
     }
 
+    public static Method getMethodRecursive(Class<?> klass, String methodName, Class<?>... classes) throws NoSuchMethodException {
+        return getMethodRecursive0(klass, methodName, true, classes);
+    }
+
+    private static Method getMethodRecursive0(Class<?> klass, String methodName, boolean isBase, Class<?>... classes) throws NoSuchMethodException {
+        Method method;
+        try {
+            method = klass.getDeclaredMethod(methodName, classes);
+            if(Modifier.isProtected(method.getModifiers()) || Modifier.isPublic(method.getModifiers()) || isBase) {
+                return method;
+            } else {
+                throw new NoSuchMethodException();
+            }
+        } catch (NoSuchMethodException ignored) {
+            try {
+                method = klass.getMethod(methodName, classes);
+                if(Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers()) || isBase) {
+                    return method;
+                } else {
+                    throw new NoSuchMethodException();
+                }
+            } catch (NoSuchMethodException notFound) {
+                if(!klass.getSuperclass().getName().equals(Object.class.getName())) {
+                    return getMethodRecursive0(klass.getSuperclass(), methodName, false, classes);
+                } else {
+                    throw notFound;
+                }
+            }
+        }
+    }
+
     public static Field getField(Class<?> klass, String fieldName) throws NoSuchFieldException {
         try {
             return klass.getDeclaredField(fieldName);
