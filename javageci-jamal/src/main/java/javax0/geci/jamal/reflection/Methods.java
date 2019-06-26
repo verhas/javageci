@@ -20,8 +20,8 @@ public class Methods implements Macro {
     @Override
     public String evaluate(Input in, Processor processor) {
         final var parser = FieldsMethodsParser.parse(in.toString(), "methods");
-        var declaredMethods = GeciReflectionTools.getAllMethodsSorted(parser.klass);
-        return Arrays.stream(declaredMethods).filter(parser.selector::match)
+        var allMethods = GeciReflectionTools.getAllMethodsSorted(parser.klass);
+        return Arrays.stream(allMethods).filter(parser.selector::match)
                 .map(EntityStringer::method2Fingerprint)
                 .collect(Collectors.joining(","));
     }

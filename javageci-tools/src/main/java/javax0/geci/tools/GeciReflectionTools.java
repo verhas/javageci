@@ -7,9 +7,12 @@ import javax0.geci.tools.reflection.Selector;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static java.lang.reflect.Modifier.*;
 
 public class GeciReflectionTools {
 
@@ -17,14 +20,14 @@ public class GeciReflectionTools {
     private static final Selector inheritedField = Selector.compile("!static & !private");
     private static final Selector inheritedFieldDifferentPackage = Selector.compile("!static & !private & !package");
     private static final Map<String, Class<?>> PRIMITIVES = Map.of(
-            "byte", byte.class,
-            "char", char.class,
-            "short", short.class,
-            "int", int.class,
-            "long", long.class,
-            "float", float.class,
-            "double", double.class,
-            "boolean", boolean.class);
+        "byte", byte.class,
+        "char", char.class,
+        "short", short.class,
+        "int", int.class,
+        "long", long.class,
+        "float", float.class,
+        "double", double.class,
+        "boolean", boolean.class);
 
 
     /**
@@ -66,7 +69,7 @@ public class GeciReflectionTools {
      */
     public static String modifiersStringNoAccess(Method method) {
         return new ModifiersBuilder(method.getModifiers()
-                & ~Modifier.PROTECTED & Modifier.PRIVATE & Modifier.PUBLIC).toString();
+            & ~Modifier.PROTECTED & Modifier.PRIVATE & Modifier.PUBLIC).toString();
     }
 
     /**
@@ -77,9 +80,9 @@ public class GeciReflectionTools {
      */
     public static String typeAsString(Member member) {
         return getGenericTypeName(member instanceof Field ?
-                ((Field) member).getGenericType()
-                :
-                ((Method) member).getGenericReturnType());
+            ((Field) member).getGenericType()
+            :
+            ((Method) member).getGenericReturnType());
     }
 
     /**
@@ -102,10 +105,10 @@ public class GeciReflectionTools {
      */
     public static String normalizeTypeName(String s) {
         s = s.replaceAll("\\s*<\\s*", "<")
-                .replaceAll("\\s*>\\s*", ">")
-                .replaceAll("\\s*\\.\\s*", ".")
-                .replaceAll("\\s*,\\s*", ",")
-                .replaceAll("\\s+", " ");
+            .replaceAll("\\s*>\\s*", ">")
+            .replaceAll("\\s*\\.\\s*", ".")
+            .replaceAll("\\s*,\\s*", ",")
+            .replaceAll("\\s+", " ");
         if (s.startsWith("java.lang.")) {
             s = s.substring("java.lang.".length());
         }
@@ -166,8 +169,8 @@ public class GeciReflectionTools {
             normalizedName = t.getTypeName();
         } else {
             throw new GeciException(
-                    "Type is something not handled. It is '%s' for the type '%s'",
-                    t.getClass(), t.getTypeName());
+                "Type is something not handled. It is '%s' for the type '%s'",
+                t.getClass(), t.getTypeName());
         }
         return normalizedName;
     }
@@ -217,14 +220,14 @@ public class GeciReflectionTools {
      */
     public static String getLocalGenericClassName(Class<?> t) {
         return normalizeTypeName(t.getCanonicalName()
-                .substring(t.getPackageName().length() + 1))
-                + getGenericParametersString(t);
+            .substring(t.getPackageName().length() + 1))
+            + getGenericParametersString(t);
     }
 
     private static String getGenericParametersString(Class<?> t) {
         final var generics = Arrays.stream(t.getTypeParameters())
-                .map(GeciReflectionTools::getGenericTypeName)
-                .collect(Collectors.joining(","));
+            .map(GeciReflectionTools::getGenericTypeName)
+            .collect(Collectors.joining(","));
         if (generics.length() == 0) {
             return "";
         } else {
@@ -237,8 +240,8 @@ public class GeciReflectionTools {
         var ub = joinTypes(t.getUpperBounds());
         var lb = joinTypes(t.getLowerBounds());
         normalizedName = "?" +
-                (lb.length() > 0 && !lb.equals("Object") ? " super " + lb : "") +
-                (ub.length() > 0 && !ub.equals("Object") ? " extends " + ub : "");
+            (lb.length() > 0 && !lb.equals("Object") ? " super " + lb : "") +
+            (ub.length() > 0 && !ub.equals("Object") ? " extends " + ub : "");
         return normalizedName;
     }
 
@@ -252,8 +255,8 @@ public class GeciReflectionTools {
         final String klassName = removeJavaLang(klass.getCanonicalName());
         if (types.length > 0) {
             normalizedName = klassName + "<" +
-                    joinTypes(types) +
-                    ">";
+                joinTypes(types) +
+                ">";
         } else {
             normalizedName = klassName;
         }
@@ -268,8 +271,8 @@ public class GeciReflectionTools {
      */
     private static String joinTypes(Type[] types) {
         return Arrays.stream(types)
-                .map(GeciReflectionTools::getGenericTypeName)
-                .collect(Collectors.joining(","));
+            .map(GeciReflectionTools::getGenericTypeName)
+            .collect(Collectors.joining(","));
     }
 
     /**
@@ -326,7 +329,7 @@ public class GeciReflectionTools {
     private static void collectFields(Class<?> baseClass, Class<?> actualClass, Set<Field> fields) {
         final var declaredFields = actualClass.getDeclaredFields();
         final var selector = baseClass.getPackage() == actualClass.getPackage()
-                ? inheritedField : inheritedFieldDifferentPackage;
+            ? inheritedField : inheritedFieldDifferentPackage;
         for (final var field : declaredFields) {
             if (selector.match(field)) {
                 fields.add(field);
@@ -367,17 +370,42 @@ public class GeciReflectionTools {
     }
 
     /**
-     * Get all the methods sorted: declared and inherited.
+     * Get all the methods of the class sorted. This includes all the methods that are declared in the class and
+     * also all the inherited methods even the protected or package private methods. Note that package private methods
+     * are only inherited if the parent class is in the same package as the inheriting class and it is not possible
+     * to inherit via an intermediate package that is in a different package.
      *
      * @param klass the class of which we need the methods
      * @return the array of the methods of the class
      */
-    public static Method[] getAllMethodsSorted(Class<?> klass) {
-        final var methods = Arrays.stream(klass.getMethods()).collect(Collectors.toSet());
-        final var declaredMethods = Arrays.stream(klass.getDeclaredMethods()).collect(Collectors.toSet());
-        final var allMethods = new HashSet<>();
-        allMethods.addAll(methods);
-        allMethods.addAll(declaredMethods);
+    public static Method[] getAllMethodsSorted(final Class<?> klass) {
+        final var allMethods = new ArrayList<Method>();
+        var samePackage = true;
+        for (var currentClass = klass; currentClass != null; currentClass = currentClass.getSuperclass()) {
+            samePackage =  samePackage && klass.getPackage() == currentClass.getPackage() ;
+            for (final var currentMethod : currentClass.getDeclaredMethods()) {
+                if (klass == currentClass) {
+                    allMethods.add(currentMethod);
+                } else {
+                    final var modifier = currentMethod.getModifiers();
+                    if (isProtected(modifier) || isPublic(modifier) ||
+                        (samePackage && !isPublic(modifier) && ! isProtected(modifier) && !isPrivate(modifier))) {
+                        final var overridden = new AtomicBoolean(false);
+                        for (Method collectedMethod : allMethods) {
+                            if (collectedMethod.getName().equals(currentMethod.getName())
+                                && Arrays.deepEquals(currentMethod.getParameterTypes(), collectedMethod
+                                .getParameterTypes())) {
+                                overridden.set(true);
+                                break;
+                            }
+                        }
+
+                        if (!overridden.get())
+                            allMethods.add(currentMethod);
+                    }
+                }
+            }
+        }
         final Method[] methodArray = allMethods.toArray(new Method[0]);
         Arrays.sort(methodArray, Comparator.comparing(MethodTool::methodSignature));
         return methodArray;
