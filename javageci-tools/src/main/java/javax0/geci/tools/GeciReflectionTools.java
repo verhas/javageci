@@ -464,14 +464,6 @@ public class GeciReflectionTools {
     }
 
     public static Method getMethod(Class<?> klass, String methodName, Class<?>... classes) throws NoSuchMethodException {
-        try {
-            return klass.getDeclaredMethod(methodName, classes);
-        } catch (NoSuchMethodException ignored) {
-            return klass.getMethod(methodName, classes);
-        }
-    }
-
-    public static Method getMethodRecursive(Class<?> klass, String methodName, Class<?>... classes) throws NoSuchMethodException {
         Method method;
         var samePackage = true;
         for (var currentClass = klass; currentClass != null; currentClass = currentClass.getSuperclass()) {
