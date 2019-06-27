@@ -472,34 +472,27 @@ public class GeciReflectionTools {
     }
 
     public static Method getMethodRecursive(Class<?> klass, String methodName, Class<?>... classes) throws NoSuchMethodException {
-        return getMethodRecursive0(klass, methodName, true, classes);
-    }
-
-    private static Method getMethodRecursive0(Class<?> klass, String methodName, boolean isBase, Class<?>... classes) throws NoSuchMethodException {
         Method method;
-        try {
-            method = klass.getDeclaredMethod(methodName, classes);
-            if(Modifier.isProtected(method.getModifiers()) || Modifier.isPublic(method.getModifiers()) || isBase) {
-                return method;
-            } else {
-                throw new NoSuchMethodException();
-            }
-        } catch (NoSuchMethodException ignored) {
+        var samePackage = true;
+        for (var currentClass = klass; currentClass != null; currentClass = currentClass.getSuperclass()) {
+            samePackage =  samePackage && klass.getPackage() == currentClass.getPackage() ;
             try {
-                method = klass.getMethod(methodName, classes);
-                if(Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers()) || isBase) {
+                method = currentClass.getDeclaredMethod(methodName, classes);
+                if (klass == currentClass) {
                     return method;
                 } else {
-                    throw new NoSuchMethodException();
+                    final var modifier = method.getModifiers();
+                    if (isProtected(modifier) || isPublic(modifier) ||
+                        (samePackage && !isPublic(modifier) && ! isProtected(modifier) && !isPrivate(modifier))) {
+                        return method;
+                    } else {
+                        throw new NoSuchMethodException("No method " + methodName + " was found in " + klass.getName());
+                    }
                 }
-            } catch (NoSuchMethodException notFound) {
-                if(!klass.getSuperclass().getName().equals(Object.class.getName())) {
-                    return getMethodRecursive0(klass.getSuperclass(), methodName, false, classes);
-                } else {
-                    throw notFound;
-                }
+            } catch (NoSuchMethodException ignored) {
             }
         }
+        throw new NoSuchMethodException("No method " + methodName + " was found in " + klass.getName());
     }
 
     public static Field getField(Class<?> klass, String fieldName) throws NoSuchFieldException {
