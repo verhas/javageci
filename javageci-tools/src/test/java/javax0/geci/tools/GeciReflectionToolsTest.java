@@ -1,10 +1,7 @@
 package javax0.geci.tools;
 
-import javax0.geci.api.Logger;
-import javax0.geci.api.Source;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
@@ -14,9 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import javax0.geci.api.Logger;
+import javax0.geci.api.Source;
+import javax0.geci.tools.basepackage.childpackage.ChildClass;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 public class GeciReflectionToolsTest {
     @javax0.geci.annotations.Geci("aaa a='b' b='c' c='d' a$='dollared' b3='bthree' _='-'")
@@ -132,9 +132,79 @@ public class GeciReflectionToolsTest {
         assertEquals(map.get("a$"), "dollared");
         assertEquals(map.get("b3"), "bthree");
         assertEquals(map.get("_"), "-");
-
     }
 
+    @Test
+    @DisplayName("Get private method from base class.")
+    public void getOwnMethod() {
+        Assertions.assertDoesNotThrow(() -> GeciReflectionTools.getMethod(ChildClass.class, "ownMethod"));
+    }
+
+    @Test
+    @DisplayName("Get inherited method from superclass")
+    public void getInheritedMethod() {
+        Assertions.assertDoesNotThrow(() -> GeciReflectionTools.getMethod(ChildClass.class, "inheritedMethod"));
+    }
+
+    @Test
+    @DisplayName("Throw exception if method does not exists.")
+    public void throwExceptionForNoMethod() {
+        Assertions.assertThrows(NoSuchMethodException.class, () -> GeciReflectionTools.getMethod(ChildClass.class, "noSuchMethod"));
+    }
+
+    @Test
+    @DisplayName("Throw exception if method exists in superclass but is not inherited.")
+    public void throwExceptionForNotInheritedMethod() {
+        Assertions.assertThrows(NoSuchMethodException.class, () -> GeciReflectionTools.getMethod(ChildClass.class, "notInheritedMethod"));
+    }
+
+    @Test
+    @DisplayName("Throw exception if a package-private method is not inherited, even if the base class and the declaring superclass is in the same package")
+    public void throwExceptionForMethodIfPackageInheritanceIsBroken() {
+        Assertions.assertThrows(NoSuchMethodException.class, () -> GeciReflectionTools.getMethod(ChildClass.class, "packagePrivateMethod"));
+    }
+
+    @Test
+    @DisplayName("Get method from superclass even if packages are not the same in the inheritance line.")
+    public void findInheritedMethodEvenIfPackageInheritanceIsBroken() {
+        Assertions.assertDoesNotThrow(() -> GeciReflectionTools.getMethod(ChildClass.class, "inheritedFromGrandparentMethod"));
+    }
+
+    @Test
+    @DisplayName("Get private field from base class.")
+    public void getOwnField() {
+        Assertions.assertDoesNotThrow(() -> GeciReflectionTools.getField(ChildClass.class, "ownField"));
+    }
+
+    @Test
+    @DisplayName("Get inherited field from superclass")
+    public void getInheritedField() {
+        Assertions.assertDoesNotThrow(() -> GeciReflectionTools.getField(ChildClass.class, "inheritedField"));
+    }
+
+    @Test
+    @DisplayName("Throw exception if field does not exists.")
+    public void throwExceptionForNoField() {
+        Assertions.assertThrows(NoSuchFieldException.class, () -> GeciReflectionTools.getField(ChildClass.class, "noSuchField"));
+    }
+
+    @Test
+    @DisplayName("Throw exception if method exists in superclass but is not inherited.")
+    public void throwExceptionForNotInheritedField() {
+        Assertions.assertThrows(NoSuchFieldException.class, () -> GeciReflectionTools.getField(ChildClass.class, "notInheritedField"));
+    }
+
+    @Test
+    @DisplayName("Throw exception if a package-private field is not inherited, even if the base class and the declaring superclass is in the same package")
+    public void throwExceptionForFieldIfPackageInheritanceIsBroken() {
+        Assertions.assertThrows(NoSuchFieldException.class, () -> GeciReflectionTools.getField(ChildClass.class, "packagePrivateField"));
+    }
+
+    @Test
+    @DisplayName("Get field from superclass even if packages are not the same in the inheritance line.")
+    public void findInheritedFieldEvenIfPackageInheritanceIsBroken() {
+        Assertions.assertDoesNotThrow(() -> GeciReflectionTools.getField(ChildClass.class, "inheritedFromGrandparentField"));
+    }
 
     @Test
     @DisplayName("Get the gecis from the standard annotations")

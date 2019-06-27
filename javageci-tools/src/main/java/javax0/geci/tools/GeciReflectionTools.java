@@ -1,5 +1,6 @@
 package javax0.geci.tools;
 
+import java.util.stream.Stream;
 import javax0.geci.annotations.Geci;
 import javax0.geci.api.GeciException;
 import javax0.geci.tools.reflection.ModifiersBuilder;
@@ -309,9 +310,11 @@ public class GeciReflectionTools {
     public static Field[] getAllFieldsSorted(Class<?> klass) {
         Set<Field> fields = new HashSet<>(Arrays.asList(klass.getDeclaredFields()));
         var superClass = klass.getSuperclass();
+        var samePackage = klass.getPackage() == superClass.getPackage();
         while (superClass != null) {
-            collectFields(klass, superClass, fields);
+            collectFields(samePackage, superClass, fields);
             superClass = superClass.getSuperclass();
+            samePackage = samePackage && klass.getPackage() == superClass.getPackage();
         }
         final var allFields = fields.toArray(new Field[0]);
         Arrays.sort(allFields, Comparator.comparing(Field::getName));
@@ -322,14 +325,13 @@ public class GeciReflectionTools {
      * Collect all the fields from the actual class that are inherited by the base class assuming that the
      * base class extends directly or through other classes transitively the actual class.
      *
-     * @param baseClass   the base class that we need the fields collected for
-     * @param actualClass the class in which we look for the fields
-     * @param fields      the collection of the fields where to put the fields
+     * @param isSamePackage a boolean flag for deciding whether add package-private fields.
+     * @param actualClass   the class in which we look for the fields
+     * @param fields        the collection of the fields where to put the fields
      */
-    private static void collectFields(Class<?> baseClass, Class<?> actualClass, Set<Field> fields) {
+    private static void collectFields(boolean isSamePackage, Class<?> actualClass, Set<Field> fields) {
         final var declaredFields = actualClass.getDeclaredFields();
-        final var selector = baseClass.getPackage() == actualClass.getPackage()
-            ? inheritedField : inheritedFieldDifferentPackage;
+        final var selector = isSamePackage ? inheritedField : inheritedFieldDifferentPackage;
         for (final var field : declaredFields) {
             if (selector.match(field)) {
                 fields.add(field);
@@ -464,35 +466,15 @@ public class GeciReflectionTools {
     }
 
     public static Method getMethod(Class<?> klass, String methodName, Class<?>... classes) throws NoSuchMethodException {
-        Method method;
-        var samePackage = true;
-        for (var currentClass = klass; currentClass != null; currentClass = currentClass.getSuperclass()) {
-            samePackage =  samePackage && klass.getPackage() == currentClass.getPackage() ;
-            try {
-                method = currentClass.getDeclaredMethod(methodName, classes);
-                if (klass == currentClass) {
-                    return method;
-                } else {
-                    final var modifier = method.getModifiers();
-                    if (isProtected(modifier) || isPublic(modifier) ||
-                        (samePackage && !isPublic(modifier) && ! isProtected(modifier) && !isPrivate(modifier))) {
-                        return method;
-                    } else {
-                        throw new NoSuchMethodException("No method " + methodName + " was found in " + klass.getName());
-                    }
-                }
-            } catch (NoSuchMethodException ignored) {
-            }
-        }
-        throw new NoSuchMethodException("No method " + methodName + " was found in " + klass.getName());
+        return Stream.of(getAllMethodsSorted(klass))
+            .filter(method -> method.getName().equals(methodName) && Arrays.deepEquals(method.getParameterTypes(), classes)).findAny()
+            .orElseThrow(() -> new NoSuchMethodException("No method " + methodName + " was found in " + klass.getName()));
     }
 
     public static Field getField(Class<?> klass, String fieldName) throws NoSuchFieldException {
-        try {
-            return klass.getDeclaredField(fieldName);
-        } catch (NoSuchFieldException ignored) {
-            return klass.getField(fieldName);
-        }
+        return Stream.of(getAllFieldsSorted(klass))
+            .filter(field -> field.getName().equals(fieldName)).findAny()
+            .orElseThrow(() -> new NoSuchFieldException("No field " + fieldName + " was found in " + klass.getName()));
     }
 
     private static Class<?> classForNoArray(String className) throws ClassNotFoundException {
