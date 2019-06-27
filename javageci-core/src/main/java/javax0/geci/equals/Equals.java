@@ -93,6 +93,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         segment.write("@Override")
                 .write_r("public %sboolean equals(Object o) {", subclassingAllowed ? "final " : "")
                 .write("if (this == o) return true;");
+        segment.write("if (!super.equals(o)) return false;");
         if (subclassingAllowed) {
             segment.write("if (!(o instanceof %s)) return false;", klass.getSimpleName());
         } else {
@@ -243,7 +244,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
     }
 
     private void generateHashCodeBody(Segment segment, CompoundParams global, Field[] fields) {
-        segment.write("int result = 0;");
+        segment.write("int result = super.hashCode();");
         if (thereIsAtLeastOneDoubleField(fields)) {
             segment.write("long temp;");
         }
