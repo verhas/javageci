@@ -308,7 +308,7 @@ public class GeciReflectionTools {
      * @return the sorted array of fields
      */
     public static Field[] getAllFieldsSorted(Class<?> klass) {
-        Set<Field> fields = new HashSet<>(Arrays.asList(klass.getDeclaredFields()));
+        Set<Field> fields = new HashSet<>(List.of(klass.getDeclaredFields()));
         var superClass = klass.getSuperclass();
         var samePackage = klass.getPackage() == superClass.getPackage();
         while (superClass != null) {

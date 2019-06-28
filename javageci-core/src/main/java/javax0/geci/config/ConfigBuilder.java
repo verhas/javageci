@@ -41,7 +41,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
             throw new GeciException("There is no class 'Config' in " + klass.getName(), cnfe);
         }
         final var segment = source.open(global.id());
-        final var allDeclaredFields = Arrays.asList(GeciReflectionTools.getDeclaredFieldsSorted(configClass));
+        final var allDeclaredFields = List.of(GeciReflectionTools.getDeclaredFieldsSorted(configClass));
         final var fields = configurableFields(global, allDeclaredFields);
 
         final var local = localConfig(global);

@@ -29,7 +29,7 @@ public class Repeated extends AbstractJavaGenerator {
         private String values = null;
         private Function<Class, List<String>> valuesSupplier = null;
         private CharSequence selector = "";
-        private CharSequence template = null;
+        private final CharSequence template = "";
         private Context ctx = new Triplet();
         private final Map<String, String> templatesMap = new HashMap<>();
         private BiFunction<Context, String, String> resolver;
@@ -37,11 +37,11 @@ public class Repeated extends AbstractJavaGenerator {
         private BiConsumer<Context, String> define;
         private final Map<String, BiConsumer<Context, String>> defineMap = new HashMap<>();
 
-        private void setTemplate(String template) {
-            if (templatesMap.containsKey(selector)) {
+        private void setTemplate(CharSequence template) {
+            if (templatesMap.containsKey(selector.toString())) {
                 throw new GeciException("Selector '" + selector + "' already has a template");
             }
-            templatesMap.put(selector.toString(), template);
+            templatesMap.put(selector.toString(), template.toString());
         }
 
         private void setResolver(BiFunction<Context, String, String> resolver) {
@@ -234,7 +234,7 @@ public class Repeated extends AbstractJavaGenerator {
         }
 
         public Builder template(CharSequence template) {
-            config.template = template;
+            config.setTemplate(template);
             return this;
         }
 
@@ -276,7 +276,7 @@ public class Repeated extends AbstractJavaGenerator {
         local.setResolver(config.resolver);
         local.selector = config.selector;
         local.start = params.get("start",config.start);
-        local.template = config.template;
+        local.setTemplate(config.template);
         local.templateEnd = params.get("templateEnd",config.templateEnd);
         local.templateStart = params.get("templateStart",config.templateStart);
         local.values = params.get("values",config.values);

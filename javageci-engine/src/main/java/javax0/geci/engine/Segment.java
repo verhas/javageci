@@ -65,7 +65,7 @@ public class Segment implements javax0.geci.api.Segment {
     @Override
     public void setContent(String content) {
         lines.clear();
-        lines.addAll(Arrays.asList(content.split("\n", -1)));
+        lines.addAll(List.of(content.split("\n", -1)));
     }
 
     @Override
