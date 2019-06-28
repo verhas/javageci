@@ -112,7 +112,6 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         segment.write_r("private Config localConfig(CompoundParams params){")
                 .write("final var local = new Config();");
         for (final var field : allDeclaredFields) {
-            field.setAccessible(true);
             final var name = field.getName();
             final var setterName = "set" + CaseTools.ucase(name);
             segment.param("name", name,
