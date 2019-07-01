@@ -12,7 +12,7 @@
     }
     {build|{pluginManagement|{plugins|
                 {plugin|
-                    {GAV :org.apache.maven.plugins:maven-surefire-plugin:2.19.1}
+                    {GAV :org.apache.maven.plugins:maven-surefire-plugin:2.22.1}
                     {dependencies|
                         {dependency :org.junit.platform:junit-platform-surefire-provider:1.0.3}
                         {dependency :org.junit.jupiter:junit-jupiter-engine:5.2.0}
