@@ -140,6 +140,9 @@ public class CompoundParams {
      * @return the value of the parameter
      */
     public String get(String key, String defaults) {
+        if (allowedKeys != null && !allowedKeys.contains(key)) {
+            throw new GeciException("Generator is accessing key '" + key + "' which is not allowed. This is a generator bug.");
+        }
         return Optional.ofNullable(get0(key)).orElse(defaults);
     }
 
@@ -154,6 +157,9 @@ public class CompoundParams {
      * @return the value of the parameter
      */
     public String get(String key, Supplier<String> defaultSupplier) {
+        if (allowedKeys != null && !allowedKeys.contains(key)) {
+            throw new GeciException("Generator is accessing key '" + key + "' which is not allowed. This is a generator bug.");
+        }
         return Optional.ofNullable(get0(key)).orElse(defaultSupplier.get());
     }
 
