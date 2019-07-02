@@ -3,7 +3,7 @@
     {GAV :{GROUPID}:javageci-parent:{VERSION}}
     {name/javageci-parent}
     {description/Java GEnerate Code Inline source code generation framework}
-    {modules|javageci-engine,javageci-api,javageci-tools,javageci-core,javageci-annotation,javageci-examples,javageci-jamal}
+    {modules|javageci-engine,javageci-api,javageci-tools,javageci-core,javageci-annotation,javageci-examples,javageci-jamal,javageci-docugen}
     {license|The Apache License, Version 2.0|http://www.apache.org/licenses/LICENSE-2.0.txt}
     {developer|Peter Verhas|peter@verhas.com}
     {github|verhas|javageci}

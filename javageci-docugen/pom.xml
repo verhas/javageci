@@ -5,7 +5,7 @@
 <packaging>jar</packaging>
     
     
-    <artifactId>javageci-core</artifactId>
+    <artifactId>javageci-docugen</artifactId>
     <version>1.1.2-SNAPSHOT</version>
 
     <parent>
@@ -14,8 +14,8 @@
     <version>1.1.2-SNAPSHOT</version>
 
 </parent>
-    <name>javageci core</name>
-    <description>Javageci generator library core code generators</description>
+    <name>javageci docugen</name>
+    <description>Javageci generator library documentation generators</description>
 
     <build><plugins>
         <plugin>
@@ -59,6 +59,12 @@
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-engine</artifactId>
+    
+</dependency>
+            
+<dependency>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-core</artifactId>
     
 </dependency>
         

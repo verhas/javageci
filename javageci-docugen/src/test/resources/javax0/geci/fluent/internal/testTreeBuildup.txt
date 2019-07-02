@@ -1,0 +1,35 @@
+public static Efeh start(){
+    return new Wrapper();
+}
+public static class Wrapper implements Ukeg,Efeh,Aduf,Ohug{
+    private final javax0.geci.fluent.internal.TestClassBuilder.TestClass that;
+    public Wrapper(){
+        this.that = new javax0.geci.fluent.internal.TestClassBuilder.TestClass();
+    }
+    public void b(){
+        that.b();
+    }
+    public void a(){
+        that.a();
+    }
+    public void d(){
+        that.d();
+    }
+    public void c(){
+        that.c();
+    }
+}
+public interface Aduf{
+    void a();
+    void b();
+    void c();
+    void d();
+}
+public interface Ohug{
+    Aduf a();
+    Aduf b();
+}
+public interface Ukeg extends Aduf,Ohug {}
+public interface Efeh {
+    Ukeg a();
+}

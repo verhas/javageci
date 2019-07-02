@@ -23,16 +23,16 @@ public class LexicalElement {
         return Objects.hash(lexeme);
     }
 
-    enum Type {
+    public enum Type {
         COMMENT, STRING, CHARACTER, IDENTIFIER, INTEGER, FLOAT, SYMBOL
     }
 
     ;
-    final String lexeme;
-    final Type type;
+    public final String lexeme;
+    public final Type type;
 
-    static class INteger extends LexicalElement {
-        final int value;
+    public static class INteger extends LexicalElement {
+        public final int value;
 
         INteger(String lexeme) {
             super(lexeme, Type.INTEGER);
@@ -57,8 +57,8 @@ public class LexicalElement {
         }
     }
 
-    static class FLoat extends LexicalElement {
-        final double value;
+    public static class FLoat extends LexicalElement {
+        public final double value;
 
         FLoat(String lexeme) {
             super(lexeme, Type.FLOAT);
@@ -79,25 +79,25 @@ public class LexicalElement {
         }
     }
 
-    static class Symbol extends LexicalElement {
+    public static class Symbol extends LexicalElement {
         Symbol(String lexeme) {
             super(lexeme, Type.SYMBOL);
         }
     }
 
-    static class STring extends LexicalElement {
+    public static class STring extends LexicalElement {
         STring(String lexeme) {
             super(lexeme, Type.STRING);
         }
     }
 
-    static class CHaracter extends LexicalElement {
+    public static class CHaracter extends LexicalElement {
         CHaracter(String lexeme) {
             super(lexeme, Type.CHARACTER);
         }
     }
 
-    static class Identifier extends LexicalElement {
+    public static class Identifier extends LexicalElement {
         Identifier(String lexeme) {
             super(lexeme, Type.IDENTIFIER);
         }

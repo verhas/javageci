@@ -506,7 +506,7 @@ public class GeciAnnotationTools {
      *
      * <p> The key can be anything that is more or less an identifier
      * (contains only alphanumeric characters, underscore and {@code $}
-     * charater, but can also start with any of those, thus it could be
+     * character, but can also start with any of those, thus it could be
      * '{@code 1966}').
      *
      * <p>The value is enclosed between single quotes, that makes it

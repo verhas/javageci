@@ -1,14 +1,14 @@
 {@import ../pom.jim}
 {project |jar|
-    {GAV ::javageci-core:{VERSION}}
+    {GAV ::javageci-docugen:{VERSION}}
     {parent :javageci-parent}
-    {name|javageci core}
-    {description|Javageci generator library core code generators}
+    {name|javageci docugen}
+    {description|Javageci generator library documentation generators}
 
     {@include ../plugins.jim}
 
     {dependencies#
-        {@for MODULE in (api,tools,annotation,engine)=
+        {@for MODULE in (api,tools,annotation,engine,core)=
             {dependency :{GROUPID}:javageci-MODULE:}}
         {@for MODULE in (api,engine)=
             {dependency :org.junit.jupiter:junit-jupiter-MODULE:}}
