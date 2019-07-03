@@ -241,29 +241,19 @@ public class Equals extends AbstractFilteredFieldsGenerator {
                         return Selector.compile(hashFilter).match(field);
                     }
             ).toArray(Field[]::new);
+            var usingSuper = shouldUseSuper(klass, global);
             if (global.is("useObjects", config.useObjects)) {
-                generateHashCodeBodyUsingObjects(segment, hashFields);
+                generateHashCodeBodyUsingObjects(segment, hashFields, usingSuper);
             } else {
-                generateHashCodeBody(segment, klass, global, hashFields);
+                generateHashCodeBody(segment, global, hashFields, usingSuper);
             }
             segment.write_l("}");
         }
     }
 
-    private void generateHashCodeBody(Segment segment, Class<?> klass, CompoundParams global, Field[] fields) {
-        var usingSuper = global.is("useSuper", config.useSuper);
-        if(usingSuper) {
-            try {
-                var superWithHash = GeciReflectionTools.getMethod(klass.getSuperclass(), "hashCode").getDeclaringClass();
-                var superWithEquals = GeciReflectionTools.getMethod(klass.getSuperclass(), "equals", Object.class).getDeclaringClass();
-                if(superWithEquals == superWithHash && superWithEquals != Object.class) {
-                    segment.write("int result = super.hashCode();");
-                } else {
-                    segment.write("int result = 0;");
-                }
-            } catch (NoSuchMethodException ignored) {
-                segment.write("int result = 0;");
-            }
+    private void generateHashCodeBody(Segment segment, CompoundParams global, Field[] fields, boolean usingSuper) {
+        if (usingSuper) {
+            segment.write("int result = super.hashCode();");
         } else {
             segment.write("int result = 0;");
         }
@@ -302,12 +292,26 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         segment.write("return result;");
     }
 
+    private boolean shouldUseSuper(Class<?> klass, CompoundParams global) {
+        var usingSuper = global.is("useSuper", config.useSuper);
+        if(usingSuper) {
+            try {
+                var superWithHash = GeciReflectionTools.getMethod(klass.getSuperclass(), "hashCode").getDeclaringClass();
+                var superWithEquals = GeciReflectionTools.getMethod(klass.getSuperclass(), "equals", Object.class).getDeclaringClass();
+                return superWithEquals == superWithHash && superWithEquals != Object.class;
+            } catch (NoSuchMethodException ignored) {
+            }
+        }
+        return false;
+    }
+
     private boolean thereIsAtLeastOneDoubleField(Field[] fields) {
         return Arrays.stream(fields).map(Field::getType).anyMatch(c -> c.equals(double.class));
     }
 
-    private void generateHashCodeBodyUsingObjects(Segment segment, Field[] fields) {
-        segment.write("return java.util.Objects.hash(%s);",
+    private void generateHashCodeBodyUsingObjects(Segment segment, Field[] fields, boolean usingSuper) {
+        var andSuperHash = usingSuper ? ", super.hashCode()" : "";
+        segment.write("return java.util.Objects.hash(%s" + andSuperHash + ");",
                 Arrays.stream(fields).map(Field::getName).collect(Collectors.joining(", ")));
     }
 
