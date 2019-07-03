@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class GeciAnnotationTools {
-    private static final Pattern SEGMENT_HEADER_PATTERN = Pattern.compile("//\\s*<\\s*editor-(fold.*)>");
+    private static final Pattern SEGMENT_HEADER_PATTERN = Pattern.compile("//\\s*<\\s*editor-fold(.*)>");
     private static final Pattern ANNOTATION_PATTERN = Pattern.compile("@Geci\\(\"(.*)\"\\)");
     private static final Pattern pattern = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*'(.*?)'");
 

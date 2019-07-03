@@ -52,11 +52,18 @@ public class CompoundParamsBuilder {
         final Map<String, String> params = new HashMap<>();
         final var lexer = new Lexer();
         final var elements = lexer.apply(List.of(line));
-        if (elements.length < 1 || elements[0].type != IDENTIFIER) {
+        if (elements.length < 1) {
             throwMalformed(line);
         }
-        String name = elements[0].lexeme;
-        for (int i = 1; i < elements.length; i++) {
+        String name = "";
+        final int startAt;
+        if (elements[0].type == IDENTIFIER && elements.length > 1 && elements[1].type != SYMBOL) {
+            name = elements[0].lexeme;
+            startAt = 1;
+        }else{
+            startAt = 0;
+        }
+        for (int i = startAt; i < elements.length; i++) {
             if (elements[i].type != IDENTIFIER) {
                 throwMalformed(line);
             }

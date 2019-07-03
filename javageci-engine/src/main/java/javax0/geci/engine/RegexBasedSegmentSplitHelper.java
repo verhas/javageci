@@ -12,8 +12,6 @@ import java.util.regex.Pattern;
  * segment using regular expressions.
  */
 public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
-
-    private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*\"(.*?)\"");
     final Pattern startPattern;
     final Pattern endPattern;
     final Pattern defaultPattern;
@@ -60,7 +58,8 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
      *                       first one has to match the spaces at the
      *                       start of the line. The length of it will
      *                       define the tabbing of the segment. The second
-     *                       should capture the attributes.
+     *                       should capture the name of the segment and
+     *                       the attributes.
      * @param endPattern     should match the end line of a segment.
      *                       No capture groups need to be defined int this
      *
