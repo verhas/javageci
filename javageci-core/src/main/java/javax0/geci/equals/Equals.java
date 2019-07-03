@@ -49,6 +49,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         private String useObjects = "no";
         private String notNull = "true";
         private String hashFilter = "true";
+        private String useSuper = "no";
     }
 
     private boolean generateEquals;
@@ -88,11 +89,18 @@ public class Equals extends AbstractFilteredFieldsGenerator {
     private void generateEqualsHeader(Segment segment, Class<?> klass, CompoundParams global) {
         var equalsMethod = getMethodOrNull(klass, "equals", Object.class);
         var subclassingAllowed = global.is("subclass", config.subclass);
+        var usingSuper = global.is("useSuper", config.useSuper);
         generateEquals = equalsMethod == null || GeciAnnotationTools.isGenerated(equalsMethod);
         writeGenerated(segment, config.generatedAnnotation);
         segment.write("@Override")
                 .write_r("public %sboolean equals(Object o) {", subclassingAllowed ? "final " : "")
                 .write("if (this == o) return true;");
+        try {
+            if(usingSuper && !GeciReflectionTools.getMethod(klass.getSuperclass(), "equals", Object.class).getDeclaringClass().equals(Object.class)) {
+                segment.write("if (!super.equals(o)) return false;");
+            }
+        } catch (NoSuchMethodException ignored) {
+        }
         if (subclassingAllowed) {
             segment.write("if (!(o instanceof %s)) return false;", klass.getSimpleName());
         } else {
@@ -233,17 +241,22 @@ public class Equals extends AbstractFilteredFieldsGenerator {
                         return Selector.compile(hashFilter).match(field);
                     }
             ).toArray(Field[]::new);
+            var usingSuper = shouldUseSuper(klass, global);
             if (global.is("useObjects", config.useObjects)) {
-                generateHashCodeBodyUsingObjects(segment, hashFields);
+                generateHashCodeBodyUsingObjects(segment, hashFields, usingSuper);
             } else {
-                generateHashCodeBody(segment, global, hashFields);
+                generateHashCodeBody(segment, global, hashFields, usingSuper);
             }
             segment.write_l("}");
         }
     }
 
-    private void generateHashCodeBody(Segment segment, CompoundParams global, Field[] fields) {
-        segment.write("int result = 0;");
+    private void generateHashCodeBody(Segment segment, CompoundParams global, Field[] fields, boolean usingSuper) {
+        if (usingSuper) {
+            segment.write("int result = super.hashCode();");
+        } else {
+            segment.write("int result = 0;");
+        }
         if (thereIsAtLeastOneDoubleField(fields)) {
             segment.write("long temp;");
         }
@@ -279,12 +292,26 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         segment.write("return result;");
     }
 
+    private boolean shouldUseSuper(Class<?> klass, CompoundParams global) {
+        var usingSuper = global.is("useSuper", config.useSuper);
+        if(usingSuper) {
+            try {
+                var superWithHash = GeciReflectionTools.getMethod(klass.getSuperclass(), "hashCode").getDeclaringClass();
+                var superWithEquals = GeciReflectionTools.getMethod(klass.getSuperclass(), "equals", Object.class).getDeclaringClass();
+                return superWithEquals == superWithHash && superWithEquals != Object.class;
+            } catch (NoSuchMethodException ignored) {
+            }
+        }
+        return false;
+    }
+
     private boolean thereIsAtLeastOneDoubleField(Field[] fields) {
         return Arrays.stream(fields).map(Field::getType).anyMatch(c -> c.equals(double.class));
     }
 
-    private void generateHashCodeBodyUsingObjects(Segment segment, Field[] fields) {
-        segment.write("return java.util.Objects.hash(%s);",
+    private void generateHashCodeBodyUsingObjects(Segment segment, Field[] fields, boolean usingSuper) {
+        var andSuperHash = usingSuper ? ", super.hashCode()" : "";
+        segment.write("return java.util.Objects.hash(%s" + andSuperHash + ");",
                 Arrays.stream(fields).map(Field::getName).collect(Collectors.joining(", ")));
     }
 
@@ -305,6 +332,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         "notNull",
         "subclass",
         "useObjects",
+        "useSuper",
         "id"
     );
 
@@ -343,6 +371,11 @@ public class Equals extends AbstractFilteredFieldsGenerator {
             return this;
         }
 
+        public Builder useSuper(String useSuper) {
+            config.useSuper = useSuper;
+            return this;
+        }
+
         public Equals build() {
             return Equals.this;
         }
@@ -355,6 +388,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         local.notNull = params.get("notNull",config.notNull);
         local.subclass = params.get("subclass",config.subclass);
         local.useObjects = params.get("useObjects",config.useObjects);
+        local.useSuper = params.get("useSuper",config.useSuper);
         return local;
     }
     //</editor-fold>

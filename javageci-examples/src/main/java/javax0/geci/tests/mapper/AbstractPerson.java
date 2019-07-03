@@ -6,4 +6,14 @@ public class AbstractPerson {
     float willMapDefaultInherited;
     private String willNotMap;
 
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) return true;
+        if (!(o instanceof AbstractPerson)) return false;
+
+        AbstractPerson other = (AbstractPerson) o;
+        if(willMapPublicInherited != other.willMapPublicInherited) return false;
+        if(willMapProtectedInherited != other.willMapProtectedInherited) return false;
+        return (willMapDefaultInherited == other.willMapDefaultInherited);
+    }
 }

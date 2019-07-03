@@ -27,7 +27,7 @@ public class ClassNeedingEquals {
         return aFloat;
     }
 
-    //<editor-fold id="equals" subclass="ok" useObjects="true">
+    //<editor-fold id="equals" subclass="ok" useObjects="true" useSuper="true">
     @javax0.geci.annotations.Generated("equals")
     @Override
     public int hashCode() {
