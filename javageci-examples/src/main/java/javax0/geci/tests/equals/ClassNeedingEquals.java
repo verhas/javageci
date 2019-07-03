@@ -37,6 +37,7 @@ public class ClassNeedingEquals {
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
+        if (!super.equals(o)) return false;
         if (!(o instanceof ClassNeedingEquals)) return false;
 
         ClassNeedingEquals that = (ClassNeedingEquals) o;

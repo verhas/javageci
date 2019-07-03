@@ -22,7 +22,7 @@ public class Person extends AbstractPerson {
     @javax0.geci.annotations.Generated("equals")
     @Override
     public int hashCode() {
-        int result = 0;
+        int result = super.hashCode();
 
         result = 31 * result + (father != null ? father.hashCode() : 0);
         result = 31 * result + (mother != null ? mother.hashCode() : 0);
@@ -33,6 +33,7 @@ public class Person extends AbstractPerson {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
+        if (!super.equals(o)) return false;
         if (o == null || getClass() != o.getClass()) return false;
 
         Person that = (Person) o;

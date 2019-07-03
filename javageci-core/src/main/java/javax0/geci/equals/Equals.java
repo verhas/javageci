@@ -49,6 +49,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         private String useObjects = "no";
         private String notNull = "true";
         private String hashFilter = "true";
+        private String useSuper = "no";
     }
 
     private boolean generateEquals;
@@ -88,12 +89,15 @@ public class Equals extends AbstractFilteredFieldsGenerator {
     private void generateEqualsHeader(Segment segment, Class<?> klass, CompoundParams global) {
         var equalsMethod = getMethodOrNull(klass, "equals", Object.class);
         var subclassingAllowed = global.is("subclass", config.subclass);
+        var usingSuper = global.is("useSuper", config.useSuper);
         generateEquals = equalsMethod == null || GeciAnnotationTools.isGenerated(equalsMethod);
         writeGenerated(segment, config.generatedAnnotation);
         segment.write("@Override")
                 .write_r("public %sboolean equals(Object o) {", subclassingAllowed ? "final " : "")
                 .write("if (this == o) return true;");
-        segment.write("if (!super.equals(o)) return false;");
+        if(usingSuper && hasNonDefaultImplementation(klass, "equals", Object.class)) {
+            segment.write("if (!super.equals(o)) return false;");
+        }
         if (subclassingAllowed) {
             segment.write("if (!(o instanceof %s)) return false;", klass.getSimpleName());
         } else {
@@ -237,14 +241,19 @@ public class Equals extends AbstractFilteredFieldsGenerator {
             if (global.is("useObjects", config.useObjects)) {
                 generateHashCodeBodyUsingObjects(segment, hashFields);
             } else {
-                generateHashCodeBody(segment, global, hashFields);
+                generateHashCodeBody(segment, klass, global, hashFields);
             }
             segment.write_l("}");
         }
     }
 
-    private void generateHashCodeBody(Segment segment, CompoundParams global, Field[] fields) {
-        segment.write("int result = super.hashCode();");
+    private void generateHashCodeBody(Segment segment, Class<?> klass, CompoundParams global, Field[] fields) {
+        var usingSuper = global.is("useSuper", config.useSuper);
+        if(usingSuper && hasNonDefaultImplementation(klass, "hashCode")) {
+            segment.write("int result = super.hashCode();");
+        } else {
+            segment.write("int result = 0;");
+        }
         if (thereIsAtLeastOneDoubleField(fields)) {
             segment.write("long temp;");
         }
@@ -280,6 +289,10 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         segment.write("return result;");
     }
 
+    private boolean hasNonDefaultImplementation(Class<?> klass, String method, Class<?>... params) {
+        return false;
+    }
+
     private boolean thereIsAtLeastOneDoubleField(Field[] fields) {
         return Arrays.stream(fields).map(Field::getType).anyMatch(c -> c.equals(double.class));
     }
@@ -306,6 +319,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         "notNull",
         "subclass",
         "useObjects",
+        "useSuper",
         "id"
     );
 
@@ -344,6 +358,11 @@ public class Equals extends AbstractFilteredFieldsGenerator {
             return this;
         }
 
+        public Builder useSuper(String useSuper) {
+            config.useSuper = useSuper;
+            return this;
+        }
+
         public Equals build() {
             return Equals.this;
         }
@@ -356,6 +375,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         local.notNull = params.get("notNull",config.notNull);
         local.subclass = params.get("subclass",config.subclass);
         local.useObjects = params.get("useObjects",config.useObjects);
+        local.useSuper = params.get("useSuper",config.useSuper);
         return local;
     }
     //</editor-fold>
