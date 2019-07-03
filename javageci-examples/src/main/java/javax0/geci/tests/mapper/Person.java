@@ -18,11 +18,11 @@ public class Person extends AbstractPerson {
         return new Person();
     }
 
-    //<editor-fold id="equals">
+    //<editor-fold id="equals" useSuper="ok">
     @javax0.geci.annotations.Generated("equals")
     @Override
     public int hashCode() {
-        int result = super.hashCode();
+        int result = 0;
 
         result = 31 * result + (father != null ? father.hashCode() : 0);
         result = 31 * result + (mother != null ? mother.hashCode() : 0);

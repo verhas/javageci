@@ -289,8 +289,14 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         segment.write("return result;");
     }
 
-    private boolean hasNonDefaultImplementation(Class<?> klass, String method, Class<?>... params) {
-        return false;
+    private boolean hasNonDefaultImplementation(Class<?> klass, String methodName, Class<?>... params) {
+        var superClass = klass.getSuperclass();
+        try {
+            final Method method = GeciReflectionTools.getMethod(superClass, methodName, params);
+            return !method.getDeclaringClass().getSimpleName().equals(Object.class.getSimpleName());
+        } catch (NoSuchMethodException ignored) {
+            return false;
+        }
     }
 
     private boolean thereIsAtLeastOneDoubleField(Field[] fields) {
