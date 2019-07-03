@@ -293,7 +293,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         var superClass = klass.getSuperclass();
         try {
             final Method method = GeciReflectionTools.getMethod(superClass, methodName, params);
-            return !method.getDeclaringClass().getSimpleName().equals(Object.class.getSimpleName());
+            return !method.getDeclaringClass().equals(java.lang.Object.class);
         } catch (NoSuchMethodException ignored) {
             return false;
         }
