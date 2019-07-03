@@ -27,6 +27,10 @@ public class FileCollector {
         this.directories = new HashMap<>(directories);
     }
 
+    public void registerSplitHelpers(Map<String, SegmentSplitHelper> splitHelpers) {
+        this.splitHelpers.putAll(splitHelpers);
+    }
+
     /**
      * Normalize a file name. Convert all {@code \} separator to {@code
      * /} and remove all '{@code /./}' path parts.
@@ -36,7 +40,7 @@ public class FileCollector {
      */
     public static String normalize(String s) {
         return s.replace("\\", "/")
-            .replace("/./", "/");
+                .replace("/./", "/");
     }
 
     /**
@@ -63,8 +67,8 @@ public class FileCollector {
      */
     public static String calculateClassName(String directory, Path path) {
         return calculateRelativeName(directory, path)
-            .replaceAll("/", ".")
-            .replaceAll("\\.\\w+$", "");
+                .replaceAll("/", ".")
+                .replaceAll("\\.\\w+$", "");
     }
 
     /**
@@ -77,7 +81,7 @@ public class FileCollector {
      */
     public static String calculateRelativeName(String directory, Path path) {
         return normalize(path.toString())
-            .substring(directory.length());
+                .substring(directory.length());
     }
 
     /**
@@ -121,10 +125,30 @@ public class FileCollector {
         lenient = true;
     }
 
+    private final static SegmentSplitHelper nullSegmentSplitHelper = new NullSegmentSplitHelper();
+    private final Map<String, SegmentSplitHelper> splitHelpers = new HashMap<>();
     private static final SegmentSplitHelper javaSegmentSplitHelper = new JavaSegmentSplitHelper();
 
+    /**
+     * Get the segment split helper that is to be used for this source.
+     *
+     * @param source
+     * @return
+     */
     public SegmentSplitHelper getSegmentSplitHelper(Source source) {
-        return javaSegmentSplitHelper;
+        final var absFn = source.getAbsoluteFile();
+        final var extStartPos = absFn.lastIndexOf('.');
+        if (extStartPos == -1) {
+            return nullSegmentSplitHelper;
+        }
+        final var ext = absFn.substring(extStartPos + 1);
+        if (splitHelpers.containsKey(ext)) {
+            return splitHelpers.get(ext);
+        } else if ("java".equals(ext)) {
+            return javaSegmentSplitHelper;
+        } else {
+            return nullSegmentSplitHelper;
+        }
     }
 
     private static final int MAX_DEPTH_UNLIMITED = Integer.MAX_VALUE;
@@ -151,13 +175,13 @@ public class FileCollector {
                 var dir = normalized(directory);
                 try {
                     Files.find(Paths.get(dir), MAX_DEPTH_UNLIMITED,
-                        (filePath, fileAttr) -> fileAttr.isRegularFile())
-                        .filter(path -> (predicates == null || predicates.isEmpty())
-                            || predicates.stream().anyMatch(predicate -> predicate.test(path)))
-                        .forEach(path -> sources.add(
-                            new Source(this,
-                                dir,
-                                path)));
+                            (filePath, fileAttr) -> fileAttr.isRegularFile())
+                            .filter(path -> (predicates == null || predicates.isEmpty())
+                                    || predicates.stream().anyMatch(predicate -> predicate.test(path)))
+                            .forEach(path -> sources.add(
+                                    new Source(this,
+                                            dir,
+                                            path)));
                     processed = true;
                     processedSome = true;
                     entry.setValue(new String[]{dir});
@@ -167,19 +191,19 @@ public class FileCollector {
             }
             if (!processed && !lenient) {
                 throw new GeciException("Source directory [" +
-                    String.join(",", entry.getValue()) + "] is not found");
+                        String.join(",", entry.getValue()) + "] is not found");
             }
         }
         if (!processedSome) {
             throw new GeciException("None of the configured directories {" +
-                directories.entrySet().stream()
-                    .map(entry -> "\"" +
-                        entry.getKey() +
-                        " : " + "[" +
-                        String.join(",", entry.getValue())
-                        + "]")
-                    .collect(Collectors.joining(",\n"))
-                + "} are found.");
+                    directories.entrySet().stream()
+                            .map(entry -> "\"" +
+                                    entry.getKey() +
+                                    " : " + "[" +
+                                    String.join(",", entry.getValue())
+                                    + "]")
+                            .collect(Collectors.joining(",\n"))
+                    + "} are found.");
         }
     }
 

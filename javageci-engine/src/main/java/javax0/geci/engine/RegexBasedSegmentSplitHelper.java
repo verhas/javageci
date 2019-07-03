@@ -1,6 +1,7 @@
 package javax0.geci.engine;
 
 import javax0.geci.api.SegmentSplitHelper;
+import javax0.geci.tools.CompoundParamsBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -121,17 +122,16 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
      * @return the attributes map
      */
     public static Map<String, String> parseParametersString(String attributes) {
-        var attributeMatcher = ATTRIBUTE_PATTERN.matcher(attributes);
+        var params = new CompoundParamsBuilder(attributes).redefineId().build();
         var attr = new HashMap<String, String>();
-        while (attributeMatcher.find()) {
-            var key = attributeMatcher.group(1);
-            var value = attributeMatcher.group(2);
+        for ( final var key : params.keySet()) {
+            var value = params.get(key);
             attr.put(key, value);
         }
         return attr;
     }
 
-    class Matcher implements SegmentSplitHelper.Matcher {
+    protected class Matcher implements SegmentSplitHelper.Matcher {
 
         private final boolean segmentStart;
         private final boolean segmentEnd;
@@ -139,7 +139,7 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
         private final Map<String, String> attrs;
         private final int tabs;
 
-        Matcher(boolean segmentStart, boolean segmentEnd, boolean segmentDefault, Map<String, String> attrs, int tabs) {
+        protected Matcher(boolean segmentStart, boolean segmentEnd, boolean segmentDefault, Map<String, String> attrs, int tabs) {
             this.segmentStart = segmentStart;
             this.segmentEnd = segmentEnd;
             this.segmentDefault = segmentDefault;

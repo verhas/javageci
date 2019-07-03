@@ -1,9 +1,8 @@
 package javax0.geci.engine;
 
 import javax0.geci.api.Context;
-import javax0.geci.api.GeciException;
-import javax0.geci.api.Generator;
 import javax0.geci.api.Source;
+import javax0.geci.api.*;
 import javax0.geci.javacomparator.Comparator;
 import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
@@ -23,29 +22,31 @@ import java.util.stream.Stream;
 import static javax0.geci.api.Source.Set.set;
 
 public class Geci implements javax0.geci.api.Geci {
-    private static final Logger LOG = LoggerFactory.getLogger();
     /**
      * A simple constant text that can be used in the unit tests to
      * report that the code was changed.
      */
     public static final String FAILED = "Geci modified source code. Please compile and test again.";
-
+    public static final int MODIFIED = ~0x01;
+    public static final int TOUCHED = ~0x02;
+    public static final int UNTOUCHED = ~0x04;
+    public static final int NONE = 0xFF;
+    private static final Logger LOG = LoggerFactory.getLogger();
     private final Map<Source.Set, String[]> directories = new HashMap<>();
     private final List<Generator> generators = new ArrayList<>();
-    private Set<Predicate<Path>> predicates = new HashSet<>();
     private final Set<Source> modifiedSources = new HashSet<>();
+    private final Map<String, SegmentSplitHelper> splitHelpers = new HashMap<>();
+    private Set<Predicate<Path>> predicates = new HashSet<>();
+    private int whatToLog = MODIFIED & TOUCHED;
+    private BiPredicate<List<String>, List<String>> sourceComparator = null;
+    private BiPredicate<List<String>, List<String>> EQUALS_COMPARATOR = (orig, gen) -> !orig.equals(gen);
+    private BiPredicate<List<String>, List<String>> JAVA_COMPARATOR = new Comparator();
 
     @Override
     public Geci source(String... directory) {
         directories.put(set(), directory);
         return this;
     }
-
-    private int whatToLog = MODIFIED & TOUCHED;
-    public static final int MODIFIED = ~0x01;
-    public static final int TOUCHED = ~0x02;
-    public static final int UNTOUCHED = ~0x04;
-    public static final int NONE = 0xFF;
 
     /**
      * Java::Geci logs the absolute file names of the files it processes
@@ -129,6 +130,18 @@ public class Geci implements javax0.geci.api.Geci {
     }
 
     @Override
+    public Geci splitHelper(String fileNameExtension, SegmentSplitHelper helper) {
+        if (fileNameExtension.startsWith(".")) {
+            fileNameExtension = fileNameExtension.substring(1);
+        }
+        if (splitHelpers.containsKey(fileNameExtension)) {
+            throw new GeciException(fileNameExtension + " already has an associated SegmentSplitHelper.");
+        }
+        splitHelpers.put(fileNameExtension, helper);
+        return this;
+    }
+
+    @Override
     public Geci register(Generator... generatorArr) {
         Collections.addAll(generators, generatorArr);
         return this;
@@ -151,10 +164,6 @@ public class Geci implements javax0.geci.api.Geci {
                 .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
     }
-
-    private BiPredicate<List<String>, List<String>> sourceComparator = null;
-    private BiPredicate<List<String>, List<String>> EQUALS_COMPARATOR = (orig, gen) -> !orig.equals(gen);
-    private BiPredicate<List<String>, List<String>> JAVA_COMPARATOR = new Comparator();
 
     private BiPredicate<List<String>, List<String>> getSourceComparator(Source source) {
         if (sourceComparator == null) {
@@ -196,6 +205,7 @@ public class Geci implements javax0.geci.api.Geci {
         } else {
             collector = new FileCollector(directories);
         }
+        collector.registerSplitHelpers(splitHelpers);
         collector.collect(predicates);
         for (int phase = 0; phase < phases; phase++) {
             for (final var source : collector.sources) {

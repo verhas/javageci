@@ -172,6 +172,14 @@ public class Source implements javax0.geci.api.Source {
         return segment;
     }
 
+    /**
+     * Replace every {@code {{menmonic}}} with {@code id} in the strings
+     * {@code s}
+     *
+     * @param id the identifier to replace the mnemonic placeholders
+     * @param s the strings to replace the mnemonics in
+     * @return the modified string array
+     */
     private String[] mnemonize(String id, String... s) {
         final String[] res = new String[s.length];
         for (int i = 0; i < s.length; i++) {

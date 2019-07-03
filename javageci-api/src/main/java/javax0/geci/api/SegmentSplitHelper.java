@@ -6,6 +6,36 @@ import java.util.Map;
  * A SegmentSplitHelper helps to identify the start and end of the
  * segments in a source file and that way it helps to split up the
  * source code.
+ *
+ * <p>Different files need different splitting. The way how to split a
+ * file is dependent on the format. For example Java files contains
+ *
+ * <pre>
+ *     {@code
+ *     //<editor-fold ... >
+ *         ...
+ *     //</editor-fold>
+ *     }
+ * </pre>
+ *
+ * segments. Markdown documents contain
+ *
+ * <pre>
+ *     {@code
+ *     ```java
+ *      .... snippet content ...
+ *     ```
+ *     }
+ * </pre>
+ *
+ * segments.
+ *
+ * An instance of a class, which is the implementation of this interface
+ * can be associated with a file name extension and the file collector
+ * ({@code javax0.geci.util.FileCollector}) leColl}will provide the
+ * source object (doing the actual splitting of the source into
+ * segments) with the appropriate helper.
+ *
  */
 public interface SegmentSplitHelper {
 
@@ -15,12 +45,55 @@ public interface SegmentSplitHelper {
      *
      * @param line which is to be checked if it is a segment start or
      *             end line
-     * @return a new matcher (not a Regex matcher!)
+     * @return a new matcher (not a Regex matcher!) It is a {@code
+     * SegmentSplitHelper.Matcher}
      */
     Matcher match(String line);
 
+    /**
+     * In case of default segment creation the strings returned by this
+     * method will be inserted before the default segment. These lines
+     * usually contain some string(s) that will be recognized by the
+     * later executions as a segment start. Also the strings may contain
+     * the string {{mnemonic}}, which will be replaced by the actual
+     * generator mnemonic.
+     *
+     * <p>For example the Java segments have a one line preface that is
+     *
+     * <pre>
+     *     {@code
+     *     //<editor-fold id="{{mnemonic}}">
+     *     }
+     * </pre>
+     * <p>
+     * and another one line
+     *
+     * <pre>
+     *     {@code
+     *     "//</editor-fold>"
+     *     }
+     * </pre>
+     * <p>
+     * as post face (see {@link #getSegmentPostface()}.
+     *
+     * @return the array of strings that contain the lines that will be
+     * inserted before the generated default segment.
+     */
     String[] getSegmentPreface();
 
+    /**
+     * In case of default segment creation the strings returned by this
+     * method will be inserted after the default segment. These lines
+     * usually contain some string(s) that will be recognized by the
+     * later executions as a segment end. Also the strings may contain
+     * the string {{mnemonic}}, which will be replaced by the actual
+     * generator mnemonic.
+     *
+     * <p>See also {@link #getSegmentPreface()}.
+     *
+     * @return the array of strings that contain the lines that will be
+     * inserted after the generated default segment.
+     */
     String[] getSegmentPostface();
 
     /**

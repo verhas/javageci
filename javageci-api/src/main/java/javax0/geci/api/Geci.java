@@ -35,6 +35,30 @@ public interface Geci {
     Geci source(Source.Set set, String... directory);
 
     /**
+     * Register a new {@link SegmentSplitHelper} associated with the
+     * file name extension. When a source file is split up into segments
+     * it is done by the class {@link javax0.geci.api.Source} using
+     * segment split helpers. Different files may have different
+     * helpers. The file collector keeps track of the different helpers
+     * and provide it to the source to help the splitting process.
+     *
+     * <p> It is an error to register a helper for an extension that is
+     * already registered.
+     *
+     * <p>Note that the {@code java} extension has a default segment
+     * split helper. It is not an error to register a different helper
+     * for the {@code java} extension, but it is still an error to
+     * register another one after that.
+     *
+     * @param fileNameExtension the file name extension to which the
+     *                          helper will be registered.
+     *
+     * @param helper            the helper associated to the
+     *                          fileNameExtension
+     */
+    Geci splitHelper(String fileNameExtension, SegmentSplitHelper helper);
+
+    /**
      * Set the source set with the given name specified in the {@code nameAndSet} parameter that has the name as
      * well as the array of directory names.
      *

@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  *     }
  * </pre>
  *
- *  <p> and
+ * <p> and
  *
  * <pre>
  *     {@code
@@ -40,6 +40,7 @@ public class SnippetCollector extends AbstractGeneratorEx {
     private Map<String, Snippet> snippets;
 
     private static class Config {
+        private int phase = 0;
         private Pattern snippetStart = Pattern.compile("//\\s*snipp?et\\s+(.*)$");
         private Pattern snippetEnd = Pattern.compile("//\\s*end\\s+snipp?et");
     }
@@ -66,8 +67,13 @@ public class SnippetCollector extends AbstractGeneratorEx {
     //end snippet
 
     @Override
+    public int phases() {
+        return config.phase + 1;
+    }
+
+    @Override
     public boolean activeIn(int phase) {
-        return phase == 0;
+        return phase == config.phase;
     }
 
     @Override
@@ -79,17 +85,21 @@ public class SnippetCollector extends AbstractGeneratorEx {
     //<editor-fold id="configBuilder">
     private String configuredMnemonic = "snippetCollector";
 
-    public String mnemonic() {
+    public String mnemonic(){
         return configuredMnemonic;
     }
 
     private final Config config = new Config();
-
     public static SnippetCollector.Builder builder() {
         return new SnippetCollector().new Builder();
     }
 
     public class Builder {
+        public Builder phase(int phase) {
+            config.phase = phase;
+            return this;
+        }
+
         public Builder snippetEnd(java.util.regex.Pattern snippetEnd) {
             config.snippetEnd = snippetEnd;
             return this;
