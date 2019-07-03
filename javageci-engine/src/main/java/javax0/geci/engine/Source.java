@@ -174,7 +174,7 @@ public class Source implements javax0.geci.api.Source {
      * {@code s}
      *
      * @param id the identifier to replace the mnemonic placeholders
-     * @param s the strings to replace the mnemonics in
+     * @param s  the strings to replace the mnemonics in
      * @return the modified string array
      */
     private String[] mnemonize(String id, String... s) {
@@ -208,7 +208,7 @@ public class Source implements javax0.geci.api.Source {
                 }
                 defaultSegment = true;
             }
-            var segment = new Segment(segDesc.tab);
+            var segment = new Segment(segDesc.tab, segDesc.attr);
             if (defaultSegment) {
                 segment.setPreface(mnemonize(id, splitHelper.getSegmentPreface()));
                 segment.setPostface(mnemonize(id, splitHelper.getSegmentPostface()));
@@ -362,10 +362,11 @@ public class Source implements javax0.geci.api.Source {
                 var attr = matcher.attributes();
                 if (id.equals(attr.get("id"))) {
                     var seg = new SegmentDescriptor();
+                    seg.originals = new ArrayList<>();
                     seg.attr = attr;
                     seg.tab = matcher.tabbing();
                     seg.startLine = i;
-                    seg.endLine = findSegmentEnd(i, id);
+                    findSegmentEnd(seg);
                     return seg;
                 }
             }
@@ -376,18 +377,20 @@ public class Source implements javax0.geci.api.Source {
     /**
      * Find the end of the segment that starts at line {@code start}.
      *
-     * @param start the start of the segment of which we seek the end
+     * @param seg the segment description that needs it's end
      * @return the index of the line that contains the segment ending
      */
-    private int findSegmentEnd(int start, String id) {
-        for (int i = start + 1; i < lines.size(); i++) {
+    private void findSegmentEnd(SegmentDescriptor seg) {
+        for (int i = seg.startLine + 1; i < lines.size(); i++) {
             final var line = lines.get(i);
             final var matcher = splitHelper.match(line);
             if (matcher.isSegmentEnd()) {
-                return i;
+                seg.endLine = i;
+                return;
             }
+            seg.originals.add(line);
         }
-        throw new GeciException("Segment '" + id + "'does not end in file " + getAbsoluteFile());
+        throw new GeciException("Segment '" + seg.attr.id() + "'does not end in file " + getAbsoluteFile());
     }
 
     /**
@@ -400,6 +403,7 @@ public class Source implements javax0.geci.api.Source {
      * will change.
      */
     private class SegmentDescriptor {
+        List<String> originals;
         int startLine;
         int endLine;
         CompoundParams attr;

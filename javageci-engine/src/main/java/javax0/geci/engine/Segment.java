@@ -1,5 +1,6 @@
 package javax0.geci.engine;
 
+import javax0.geci.api.CompoundParams;
 import javax0.geci.api.GeciException;
 import javax0.geci.tools.Template;
 
@@ -13,12 +14,27 @@ public class Segment implements javax0.geci.api.Segment {
     final private int openingTabStop;
     private int tabStop;
     private final Map<String, String> params = new HashMap<>();
+    private final CompoundParams cparams;
+    private final List<String> originals;
 
     public Segment(int tabStop) {
         this.openingTabStop = tabStop;
         this.tabStop = tabStop;
+        this.cparams = new javax0.geci.tools.CompoundParams();
+        this.originals = List.of();
     }
 
+    public Segment(int tabStop, CompoundParams cparams, List<String> originals) {
+        this.openingTabStop = tabStop;
+        this.tabStop = tabStop;
+        this.cparams = cparams;
+        this.originals = originals;
+    }
+
+    @Override
+    public CompoundParams sourceParams() {
+        return cparams;
+    }
 
     @Override
     public void resetParams() {
@@ -42,10 +58,15 @@ public class Segment implements javax0.geci.api.Segment {
     }
 
     @Override
+    public List<String> originalLines() {
+        return originals;
+    }
+
+    @Override
     public String getContent() {
         return String.join("\n", preface) +
-            String.join("\n", lines) +
-            String.join("\n", postface);
+                String.join("\n", lines) +
+                String.join("\n", postface);
     }
 
     @Override
@@ -80,7 +101,7 @@ public class Segment implements javax0.geci.api.Segment {
                 other.lines.forEach(line -> write(line));
             } else {
                 throw new GeciException("Segment " + segment + " is not instance of " + Segment.class.getName() +
-                    ". It is " + segment.getClass().getName() + "which is not compatible with this implementation");
+                        ". It is " + segment.getClass().getName() + "which is not compatible with this implementation");
             }
         }
         return this;
@@ -99,7 +120,7 @@ public class Segment implements javax0.geci.api.Segment {
                     formatted = String.format(s, parameters);
                 }
                 if (formatted.contains("\n")) {
-                    Arrays.stream(formatted.split("\r?\n",-1)).forEach(this::write);
+                    Arrays.stream(formatted.split("\r?\n", -1)).forEach(this::write);
                 } else {
                     lines.add((tabStop > 0 ? String.format("%" + tabStop + "s", " ") : "") + formatted);
                 }
