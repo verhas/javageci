@@ -12,10 +12,9 @@ public class TestSnippet {
     @Test
     void buildGenerators() throws Exception {
         final var geci = new Geci();
-        final var generator = SnippetCollector.builder().build();
         Assertions.assertThrows(GeciException.class, () ->
                 geci.source(maven().module("javageci-docugen"))
-                        .register(generator)
+                        .register(SnippetCollector.builder().build())
                         .register(MarkdownSnippetInserter.builder().build())
                         .splitHelper("md",new MarkdownSegmentSplitHelper())
                         .generate());

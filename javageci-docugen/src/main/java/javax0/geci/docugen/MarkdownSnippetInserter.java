@@ -6,6 +6,7 @@ import javax0.geci.api.GeciException;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractGeneratorEx;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Geci("configBuilder configurableMnemonic='snippetCollector' localConfigMethod=\"\"")
@@ -38,16 +39,13 @@ public class MarkdownSnippetInserter extends AbstractGeneratorEx {
 
     @Override
     public int phases() {
-        return 0;
+        return config.phase+1;
     }
 
     @Override
     public void context(Context context) {
         ctx = context;
-        snippets = ctx.get(SnippetCollector.CONTEXT_SNIPPET_KEY);
-        if (snippets == null || snippets.size() == 0) {
-            throw new GeciException("There are no snippets collected");
-        }
+        snippets = ctx.get(SnippetCollector.CONTEXT_SNIPPET_KEY, HashMap::new);
     }
 
     //<editor-fold id="configBuilder">
