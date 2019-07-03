@@ -37,7 +37,7 @@ import java.util.stream.Stream;
  * that editor-fold segment is named {@code "accessor"} then there is no
  * need to specify this separately in the annotation.
  */
-public class CompoundParams {
+public class CompoundParams implements javax0.geci.api.CompoundParams {
 
     private static final String Q = "\"";
     private final Map<String, String>[] params;

@@ -1,10 +1,7 @@
 package javax0.geci.engine;
 
 
-import javax0.geci.api.GeciException;
-import javax0.geci.api.Generator;
-import javax0.geci.api.Logger;
-import javax0.geci.api.SegmentSplitHelper;
+import javax0.geci.api.*;
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.util.FileCollector;
 
@@ -405,7 +402,7 @@ public class Source implements javax0.geci.api.Source {
     private class SegmentDescriptor {
         int startLine;
         int endLine;
-        Map<String, String> attr;
+        CompoundParams attr;
         int tab;
     }
 }

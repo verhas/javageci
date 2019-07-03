@@ -1,5 +1,6 @@
 package javax0.geci.docugen;
 
+import javax0.geci.api.CompoundParams;
 import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.engine.RegexBasedSegmentSplitHelper;
 
@@ -50,7 +51,7 @@ public class MarkdownSegmentSplitHelper  extends RegexBasedSegmentSplitHelper {
         }
 
         @Override
-        public Map<String, String> attributes() {
+        public CompoundParams attributes() {
             return delegate.attributes();
         }
     }

@@ -144,6 +144,6 @@ public interface SegmentSplitHelper {
          * is meaningless. Implementing classes may throw
          * {@link IllegalArgumentException} in such situations.
          */
-        Map<String, String> attributes();
+        CompoundParams attributes();
     }
 }

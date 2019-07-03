@@ -1,5 +1,6 @@
 package javax0.geci.engine;
 
+import javax0.geci.api.CompoundParams;
 import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.tools.CompoundParamsBuilder;
 
@@ -83,10 +84,10 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
     public SegmentSplitHelper.Matcher match(String line) {
         final var startMatcher = startPattern.matcher(line);
         final var segmentStart = startMatcher.matches();
-        final Map<String, String> attrs;
+        final CompoundParams attrs;
         int tabs = 0;
         if (segmentStart) {
-            attrs = parseParametersString(startMatcher.group(2));
+            attrs = new CompoundParamsBuilder(startMatcher.group(2)).redefineId().build();
             tabs = startMatcher.group(1).length();
         } else {
             attrs = null;
@@ -100,46 +101,15 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
         return new Matcher(segmentStart, segmentEnd, segmentDefault, attrs, tabs);
     }
 
-    /**
-     * Parses the parameters on the line that contains the
-     * {@code // <editor-fold...>} line. For example if the line is
-     * <pre>{@code
-     *     // <editor-fold id="aa" desc="sample description" other_param="other">
-     *  }
-     * </pre>
-     * <p>
-     * then the map will contain the values:
-     * <pre>{@code
-     *     "id" -> "aa"
-     *     "desc" -> "sample description"
-     *     "other_param" -> "other"
-     * }
-     * </pre>
-     *
-     * @param attributes the string containing the part of the line that is after the {@code editor-fold} and
-     *                   before the closing {@code >}
-     * @return the attributes map
-     */
-    public static Map<String, String> parseParametersString(String attributes) {
-        var params = new CompoundParamsBuilder(attributes).redefineId().build();
-        var attr = new HashMap<String, String>();
-        for ( final var key : params.keySet()) {
-            var value = params.get(key);
-            attr.put(key, value);
-        }
-        attr.put("id",params.id());
-        return attr;
-    }
-
     protected class Matcher implements SegmentSplitHelper.Matcher {
 
         private final boolean segmentStart;
         private final boolean segmentEnd;
         private final boolean segmentDefault;
-        private final Map<String, String> attrs;
+        private final CompoundParams attrs;
         private final int tabs;
 
-        protected Matcher(boolean segmentStart, boolean segmentEnd, boolean segmentDefault, Map<String, String> attrs, int tabs) {
+        protected Matcher(boolean segmentStart, boolean segmentEnd, boolean segmentDefault, CompoundParams attrs, int tabs) {
             this.segmentStart = segmentStart;
             this.segmentEnd = segmentEnd;
             this.segmentDefault = segmentDefault;
@@ -169,7 +139,7 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
         }
 
         @Override
-        public Map<String, String> attributes() {
+        public CompoundParams attributes() {
             if (!segmentStart) {
                 throw new IllegalArgumentException("attributes on " +
                         SegmentSplitHelper.class.getSimpleName() + "." +

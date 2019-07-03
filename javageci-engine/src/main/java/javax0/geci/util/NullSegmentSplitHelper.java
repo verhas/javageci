@@ -1,5 +1,6 @@
 package javax0.geci.util;
 
+import javax0.geci.api.CompoundParams;
 import javax0.geci.api.SegmentSplitHelper;
 
 import java.util.Map;
@@ -32,8 +33,8 @@ public class NullSegmentSplitHelper implements SegmentSplitHelper {
             }
 
             @Override
-            public Map<String, String> attributes() {
-                return Map.of();
+            public CompoundParams attributes() {
+                return new javax0.geci.tools.CompoundParams();
             }
         };
     }
