@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static javax0.geci.api.Source.maven;
 
-public class TestSnippetCollector {
+public class TestSnippet {
 
     @Test
     void buildGenerators() throws Exception {
@@ -16,6 +16,8 @@ public class TestSnippetCollector {
         Assertions.assertThrows(GeciException.class, () ->
                 geci.source(maven().module("javageci-docugen"))
                         .register(generator)
+                        .register(MarkdownSnippetInserter.builder().build())
+                        .splitHelper("md",new MarkdownSegmentSplitHelper())
                         .generate());
     }
 }
