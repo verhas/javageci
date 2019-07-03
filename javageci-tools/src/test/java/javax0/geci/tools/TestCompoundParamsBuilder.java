@@ -77,4 +77,22 @@ public class TestCompoundParamsBuilder {
         Assertions.assertEquals("0x55P3", cp.get("hexFloat"));
     }
 
+    @Test
+    @DisplayName("Test that it can build params without id")
+    void testNoId() {
+        final var sut = new CompoundParamsBuilder("abrakadabra=13");
+        final var cp = sut.build();
+        Assertions.assertEquals("", cp.id());
+        Assertions.assertEquals(1, cp.keySet().size());
+        Assertions.assertEquals("13", cp.get("abrakadabra"));
+    }
+
+    @Test
+    @DisplayName("Test that it can build an id only param set")
+    void testNoParams() {
+        final var sut = new CompoundParamsBuilder("abrakadabra");
+        final var cp = sut.build();
+        Assertions.assertEquals("abrakadabra", cp.id());
+        Assertions.assertEquals(0, cp.keySet().size());
+    }
 }

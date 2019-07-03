@@ -57,7 +57,7 @@ public class CompoundParamsBuilder {
         }
         String name = "";
         final int startAt;
-        if (elements[0].type == IDENTIFIER && elements.length > 1 && elements[1].type != SYMBOL) {
+        if (elements[0].type == IDENTIFIER && elements.length < 2 || elements.length > 1 && elements[1].type != SYMBOL) {
             name = elements[0].lexeme;
             startAt = 1;
         }else{
