@@ -95,8 +95,11 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         segment.write("@Override")
                 .write_r("public %sboolean equals(Object o) {", subclassingAllowed ? "final " : "")
                 .write("if (this == o) return true;");
-        if(usingSuper && hasNonDefaultImplementation(klass, "equals", Object.class)) {
-            segment.write("if (!super.equals(o)) return false;");
+        try {
+            if(usingSuper && !GeciReflectionTools.getMethod(klass.getSuperclass(), "equals", Object.class).getDeclaringClass().equals(Object.class)) {
+                segment.write("if (!super.equals(o)) return false;");
+            }
+        } catch (NoSuchMethodException ignored) {
         }
         if (subclassingAllowed) {
             segment.write("if (!(o instanceof %s)) return false;", klass.getSimpleName());
@@ -249,8 +252,18 @@ public class Equals extends AbstractFilteredFieldsGenerator {
 
     private void generateHashCodeBody(Segment segment, Class<?> klass, CompoundParams global, Field[] fields) {
         var usingSuper = global.is("useSuper", config.useSuper);
-        if(usingSuper && hasNonDefaultImplementation(klass, "hashCode")) {
-            segment.write("int result = super.hashCode();");
+        if(usingSuper) {
+            try {
+                var superWithHash = GeciReflectionTools.getMethod(klass.getSuperclass(), "hashCode").getDeclaringClass();
+                var superWithEquals = GeciReflectionTools.getMethod(klass.getSuperclass(), "equals", Object.class).getDeclaringClass();
+                if(superWithEquals == superWithHash && superWithEquals != Object.class) {
+                    segment.write("int result = super.hashCode();");
+                } else {
+                    segment.write("int result = 0;");
+                }
+            } catch (NoSuchMethodException ignored) {
+                segment.write("int result = 0;");
+            }
         } else {
             segment.write("int result = 0;");
         }
@@ -287,16 +300,6 @@ public class Equals extends AbstractFilteredFieldsGenerator {
             }
         }
         segment.write("return result;");
-    }
-
-    private boolean hasNonDefaultImplementation(Class<?> klass, String methodName, Class<?>... params) {
-        var superClass = klass.getSuperclass();
-        try {
-            final Method method = GeciReflectionTools.getMethod(superClass, methodName, params);
-            return !method.getDeclaringClass().equals(java.lang.Object.class);
-        } catch (NoSuchMethodException ignored) {
-            return false;
-        }
     }
 
     private boolean thereIsAtLeastOneDoubleField(Field[] fields) {
