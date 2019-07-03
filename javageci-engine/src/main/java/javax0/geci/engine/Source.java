@@ -208,7 +208,7 @@ public class Source implements javax0.geci.api.Source {
                 }
                 defaultSegment = true;
             }
-            var segment = new Segment(segDesc.tab, segDesc.attr);
+            var segment = new Segment(segDesc.tab, segDesc.attr,segDesc.originals);
             if (defaultSegment) {
                 segment.setPreface(mnemonize(id, splitHelper.getSegmentPreface()));
                 segment.setPostface(mnemonize(id, splitHelper.getSegmentPostface()));
@@ -356,7 +356,7 @@ public class Source implements javax0.geci.api.Source {
      */
     private SegmentDescriptor findSegment(String id) {
         for (int i = 0; i < lines.size(); i++) {
-            final var line = lines.get(i);
+            var line = lines.get(i);
             final var matcher = splitHelper.match(line);
             if (matcher.isSegmentStart()) {
                 var attr = matcher.attributes();
@@ -366,8 +366,16 @@ public class Source implements javax0.geci.api.Source {
                     seg.attr = attr;
                     seg.tab = matcher.tabbing();
                     seg.startLine = i;
-                    findSegmentEnd(seg);
-                    return seg;
+                    for (int j = seg.startLine + 1; j < lines.size(); j++) {
+                        line = lines.get(j);
+                        final var endMatcher = splitHelper.match(line);
+                        if (endMatcher.isSegmentEnd()) {
+                            seg.endLine = j;
+                            return seg;
+                        }
+                        seg.originals.add(line);
+                    }
+                    throw new GeciException("Segment '" + seg.attr.id() + "'does not end in file " + getAbsoluteFile());
                 }
             }
         }
