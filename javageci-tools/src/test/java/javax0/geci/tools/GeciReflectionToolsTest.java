@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import javax0.geci.api.Logger;
 import javax0.geci.api.Source;
@@ -102,6 +103,11 @@ public class GeciReflectionToolsTest {
     @Test
     void getParametersFromSource() {
         Source testSource = new AbstractTestSource() {
+            @Override
+            public java.util.Set<String> segmentNames() {
+                return null;
+            }
+
             @Override
             public List<String> getLines() {
                 return List.of("    // @Geci(\"aaa a='b' b='c' c='d' a$='dollared' b3='bthree' _='-'\")",

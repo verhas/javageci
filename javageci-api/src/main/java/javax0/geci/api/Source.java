@@ -3,6 +3,7 @@ package javax0.geci.api;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A {@code Source} represents a source file in the project that the
@@ -126,6 +127,13 @@ public interface Source {
      * @return the new segment object.
      */
     Segment open();
+
+    /**
+     * Get all the segment names that are defined in the source
+     *
+     * @return the set of the names of the segments
+     */
+    java.util.Set<String> segmentNames();
 
     /**
      * Generators can use this method to read the whole content of a file. The content of the list should not be

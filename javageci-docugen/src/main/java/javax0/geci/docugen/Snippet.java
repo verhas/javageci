@@ -21,4 +21,8 @@ public class Snippet {
     public Set<String> keys() {
         return params.keySet();
     }
+
+    public List<String> lines(){
+        return lines;
+    }
 }
