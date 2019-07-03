@@ -128,6 +128,7 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
             var value = params.get(key);
             attr.put(key, value);
         }
+        attr.put("id",params.id());
         return attr;
     }
 
