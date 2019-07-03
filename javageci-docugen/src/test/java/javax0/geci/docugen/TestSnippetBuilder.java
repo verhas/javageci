@@ -1,6 +1,7 @@
 package javax0.geci.docugen;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class TestSnippetBuilder {
@@ -8,9 +9,11 @@ public class TestSnippetBuilder {
 
 
     @Test
-    void test(){
-        final var sut = new SnippetBuilder();
-        sut.startLine("abrakadabra alma=\"Hungarian\" apple='English' manzana='Espa\\'nol'");
+    @DisplayName("Test that ")
+    void testStringValues(){
+        final var sut = new SnippetBuilder("abrakadabra alma=\"Hungarian\" apple='English' manzana='Espa\\'nol'");
+        sut.add("first line");
+        sut.add("second line");
         Assertions.assertEquals("abrakadabra",sut.snippetName());
         final var snippet = sut.build();
         Assertions.assertEquals(3,snippet.keys().size());

@@ -4,7 +4,7 @@ import javax0.geci.annotations.Geci;
 
 import java.util.regex.Pattern;
 
-@Geci("fluent definedBy='javax0.geci.tests.fluent.TestFluent::regex'\")")
+@Geci("fluent definedBy='javax0.geci.tests.fluent.TestFluent::regex'")
 public class Regex {
 
     private final StringBuilder sb = new StringBuilder();

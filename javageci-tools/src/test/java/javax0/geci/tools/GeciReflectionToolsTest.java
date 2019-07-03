@@ -33,15 +33,6 @@ public class GeciReflectionToolsTest {
     }
 
     @Test
-    void testParameterParser() {
-        var map = GeciAnnotationTools.getParameters("a='b' b='c' c='d'");
-        assertEquals(map.size(), 3);
-        assertEquals(map.get("a"), "b");
-        assertEquals(map.get("b"), "c");
-        assertEquals(map.get("c"), "d");
-    }
-
-    @Test
     void testParameterFetcher() throws NoSuchFieldException {
         Field f = this.getClass().getDeclaredField("something");
         var map = GeciReflectionTools.getParameters(f, "aaa");

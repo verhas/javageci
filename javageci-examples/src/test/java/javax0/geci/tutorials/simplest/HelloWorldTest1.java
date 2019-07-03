@@ -12,6 +12,9 @@ public class HelloWorldTest1 {
     }
 
     //<editor-fold id="HelloWorldTest">
+    private static String greeting(){
+        return "greetings";
+        }
     //</editor-fold>
 }
 // END SNIPPET

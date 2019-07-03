@@ -173,7 +173,6 @@ public class Repeated extends AbstractJavaGenerator {
     //<editor-fold id="configBuilder" configurableMnemonic="repeated">
     private String configuredMnemonic = "repeated";
 
-    @Override
     public String mnemonic(){
         return configuredMnemonic;
     }

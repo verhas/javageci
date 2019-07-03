@@ -3,7 +3,7 @@ package javax0.geci.javacomparator.lex;
 import java.util.Objects;
 
 public class LexicalElement {
-    public static final LexicalElement IGNORED = new LexicalElement("",Type.COMMENT);
+    public static final LexicalElement IGNORED = new LexicalElement("", Type.COMMENT);
 
     LexicalElement(String lexeme, Type type) {
         this.lexeme = lexeme;
@@ -24,7 +24,14 @@ public class LexicalElement {
     }
 
     public enum Type {
-        COMMENT, STRING, CHARACTER, IDENTIFIER, INTEGER, FLOAT, SYMBOL
+        COMMENT, STRING, CHARACTER, IDENTIFIER, INTEGER, FLOAT, SYMBOL;
+
+        public boolean is(Type... types) {
+            for (final var t : types) {
+                if (t == this) return true;
+            }
+            return false;
+        }
     }
 
     ;
@@ -32,14 +39,18 @@ public class LexicalElement {
     public final Type type;
 
     public static class INteger extends LexicalElement {
-        public final int value;
+        public final long value;
 
         INteger(String lexeme) {
             super(lexeme, Type.INTEGER);
             if (lexeme.startsWith("0x") || lexeme.startsWith("0X")) {
-                value = Integer.parseInt(lexeme.substring(2), 16);
+                value = Long.parseLong(lexeme.substring(2), 16);
             } else {
-                value = Integer.parseInt(lexeme);
+                if (lexeme.toUpperCase().endsWith("L")) {
+                    value = Long.parseLong(lexeme.substring(0,lexeme.length()-1));
+                } else {
+                    value = Long.parseLong(lexeme);
+                }
             }
         }
 
