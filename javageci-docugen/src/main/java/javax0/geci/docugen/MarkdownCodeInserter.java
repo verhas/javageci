@@ -33,8 +33,9 @@ public class MarkdownCodeInserter extends AbstractGeneratorEx {
                     segment.write(originalLines.get(0));
                 }
                 final var params =  segment.sourceParams();
-                final String snippetName = params.get("snippet",name);
-                final var snippet = snippets.get(snippetName);
+                final var snippetName = params.get("snippet",name);
+                final var modifiedSnippetName = name + "#" + snippetName;
+                final var snippet = snippets.get(snippets.containsKey(modifiedSnippetName) ? modifiedSnippetName : snippetName);
                 if (snippet == null) {
                     throw new GeciException("The snippet '" + snippetName + "' is not defined but referenced in file '" + source.getAbsoluteFile() + "' in snippet");
                 }

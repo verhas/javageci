@@ -9,6 +9,10 @@ public class Snippet {
     final private CompoundParams params;
     final private List<String> lines;
 
+    public Snippet copy(){
+        return new Snippet(params, lines);
+    }
+
     public Snippet(CompoundParams params, List<String> lines) {
         this.params = params;
         this.lines = lines;
