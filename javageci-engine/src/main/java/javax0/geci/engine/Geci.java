@@ -111,8 +111,8 @@ public class Geci implements javax0.geci.api.Geci {
         sb.append(FAILED).append('\n');
         sb.append('\n');
         sb.append(String.format("The file%s that %s modified:",
-                modifiedSources.size() > 1 ? "s" : "",
-                modifiedSources.size() > 1 ? "were" : "was")).append('\n');
+            modifiedSources.size() > 1 ? "s" : "",
+            modifiedSources.size() > 1 ? "were" : "was")).append('\n');
         for (final var source : modifiedSources) {
             sb.append(source.getAbsoluteFile()).append('\n');
         }
@@ -141,6 +141,18 @@ public class Geci implements javax0.geci.api.Geci {
         return this;
     }
 
+    private boolean lenient = false;
+
+    @Override
+    public Geci source(Source.Maven maven) {
+        source(maven.mainSource());
+        source(maven.mainResources());
+        source(maven.testSource());
+        source(maven.testResources());
+        lenient = true;
+        return this;
+    }
+
     @Override
     public Geci register(Generator... generatorArr) {
         Collections.addAll(generators, generatorArr);
@@ -150,10 +162,10 @@ public class Geci implements javax0.geci.api.Geci {
     @Override
     public Geci only(String... patterns) {
         Collections.addAll(this.predicates,
-                Arrays.stream(patterns)
-                        .map(Pattern::compile)
-                        .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
-                        .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
+            Arrays.stream(patterns)
+                .map(Pattern::compile)
+                .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
+                .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
     }
 
@@ -161,7 +173,7 @@ public class Geci implements javax0.geci.api.Geci {
     @SafeVarargs
     public final javax0.geci.api.Geci only(Predicate<Path>... predicates) {
         Collections.addAll(this.predicates, Arrays.stream(predicates)
-                .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
+            .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
     }
 
@@ -194,9 +206,9 @@ public class Geci implements javax0.geci.api.Geci {
         injectContextIntoGenerators();
 
         final var phases = generators.stream()
-                .mapToInt(Generator::phases)
-                .max()
-                .orElse(1);
+            .mapToInt(Generator::phases)
+            .max()
+            .orElse(1);
         final FileCollector collector;
         if (directories.isEmpty()) {
             setDefaultDirectories();
@@ -204,6 +216,9 @@ public class Geci implements javax0.geci.api.Geci {
             collector.lenient();
         } else {
             collector = new FileCollector(directories);
+            if( lenient ){
+                collector.lenient();
+            }
         }
         collector.registerSplitHelpers(splitHelpers);
         collector.collect(predicates);
@@ -227,8 +242,8 @@ public class Geci implements javax0.geci.api.Geci {
     private boolean sourcesModifiedAndSave(FileCollector collector) throws IOException {
         var generated = false;
         var allSources = Stream.concat(
-                collector.sources.stream(),
-                collector.newSources.stream()
+            collector.sources.stream(),
+            collector.newSources.stream()
         ).collect(Collectors.toSet());
         for (var source : allSources) {
             if (source.isTouched() && source.isModified(getSourceComparator(source))) {

@@ -91,13 +91,7 @@ public interface Geci {
      *              project.
      * @return {@code this}
      */
-    default Geci source(Source.Maven maven) {
-        source(maven.mainSource());
-        source(maven.mainResources());
-        source(maven.testSource());
-        source(maven.testResources());
-        return this;
-    }
+    Geci source(Source.Maven maven);
 
 
 
