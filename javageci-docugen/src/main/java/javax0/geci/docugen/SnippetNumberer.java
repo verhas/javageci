@@ -1,0 +1,115 @@
+package javax0.geci.docugen;
+
+import javax0.geci.annotations.Geci;
+import javax0.geci.api.Context;
+import javax0.geci.api.Source;
+import javax0.geci.tools.AbstractGeneratorEx;
+import javax0.geci.tools.CompoundParamsBuilder;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+@Geci("configBuilder configurableMnemonic='snippetCollector' localConfigMethod=\"\"")
+public class SnippetNumberer extends AbstractGeneratorEx {
+    private Context ctx = null;
+    private Map<String, Snippet> snippets;
+
+    private static class Config {
+        private int phase = 1;
+    }
+
+    @Override
+    public void processEx(Source source) throws Exception {
+    }
+
+    @Override
+    public boolean activeIn(int phase) {
+        if (phase == config.phase) {
+            for (final var snipEntry : snippets.entrySet()) {
+                final var snippet = snipEntry.getValue();
+                final var number = snippet.param("number");
+                if (number.length() > 0) {
+                    numberSnippet(snippet, number);
+                }
+            }
+        }
+        return false;
+    }
+
+    private void numberSnippet(Snippet original, String options) {
+        final var params = new CompoundParamsBuilder(options).build();
+        final var start = Long.parseLong(params.get("start", "1"));
+        final var step = Long.parseLong(params.get("step", "1"));
+        final var format = params.get("format","%d. ");
+        final var lines = params.get("lines", ":");
+        long startLine = 0;
+        long endLine = original.lines().size();
+        var linesSplit = lines.split(":",-1);
+        if( linesSplit[0].length() > 0 ){
+            startLine = Long.parseLong(linesSplit[0]);
+        }
+        if( linesSplit[1].length() > 0 ){
+            endLine = Long.parseLong(linesSplit[1]);
+        }
+        if( startLine < 0 ){
+            startLine = original.lines().size() - startLine;
+        }
+        if( endLine < 0 ){
+            endLine = original.lines().size() - endLine;
+        }
+        final var modifiedLines = new ArrayList<String>();
+        int index = 0;
+        long number = start;
+        for( final var line : original.lines()){
+            if( index >= startLine && index < endLine ){
+                modifiedLines.add(String.format(format,number)+line);
+                number += step;
+            }
+        }
+        original.lines().clear();
+        original.lines().addAll(modifiedLines);
+    }
+
+    @Override
+    public int phases() {
+        return config.phase + 1;
+    }
+
+    @Override
+    public void context(Context context) {
+        ctx = context;
+        snippets = ctx.get(SnippetCollector.CONTEXT_SNIPPET_KEY, HashMap::new);
+    }
+
+    //<editor-fold id="configBuilder">
+    private String configuredMnemonic = "snippetCollector";
+
+    public String mnemonic() {
+        return configuredMnemonic;
+    }
+
+    private final Config config = new Config();
+
+    public static SnippetNumberer.Builder builder() {
+        return new SnippetNumberer().new Builder();
+    }
+
+    public class Builder {
+        public Builder phase(int phase) {
+            config.phase = phase;
+            return this;
+        }
+
+        public Builder mnemonic(String mnemonic) {
+            configuredMnemonic = mnemonic;
+            return this;
+        }
+
+        public SnippetNumberer build() {
+            return SnippetNumberer.this;
+        }
+    }
+    //</editor-fold>
+}
+

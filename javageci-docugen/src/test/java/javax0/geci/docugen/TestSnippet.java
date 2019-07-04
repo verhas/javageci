@@ -1,6 +1,5 @@
 package javax0.geci.docugen;
 
-import javax0.geci.api.GeciException;
 import javax0.geci.engine.Geci;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,11 +11,12 @@ public class TestSnippet {
     @Test
     void buildGenerators() throws Exception {
         final var geci = new Geci();
-        Assertions.assertThrows(GeciException.class, () ->
+        Assertions.assertFalse(
                 geci.source(maven().module("javageci-docugen"))
-                        .register(SnippetCollector.builder().build())
-                        .register(MarkdownSnippetInserter.builder().build())
-                        .splitHelper("md",new MarkdownSegmentSplitHelper())
+                        .register(SnippetCollector.builder().phase(0).build())
+                        .register(SnippetNumberer.builder().phase(1).build())
+                        .register(MarkdownCodeInserter.builder().phase(2).build())
+                        .splitHelper("md", new MarkdownSegmentSplitHelper())
                         .generate());
     }
 }

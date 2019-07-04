@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class MarkdownSegmentSplitHelper  extends RegexBasedSegmentSplitHelper {
     public MarkdownSegmentSplitHelper() {
         super(Pattern.compile(
-                "^(\\s*)\\[//\\]:s*\\(\\s*snipp?et\\s+(.*)\\)\\s*$"),
+                "^(\\s*)\\[//]:\\s*\\(\\s*code\\s+(.*)\\)\\s*$"),
                 Pattern.compile("^\\s*```\\s*$"),
                 Pattern.compile("it will not be used ever"));
         setSegmentPreface("");
