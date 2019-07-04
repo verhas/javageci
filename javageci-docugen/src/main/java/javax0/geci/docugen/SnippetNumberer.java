@@ -8,14 +8,12 @@ import javax0.geci.tools.AbstractGeneratorEx;
 import javax0.geci.tools.CompoundParamsBuilder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
-@Geci("configBuilder configurableMnemonic='snippetCollector' localConfigMethod=\"\"")
+@Geci("configBuilder localConfigMethod=\"\"")
 public class SnippetNumberer extends AbstractGeneratorEx {
     private Context ctx = null;
-    private Map<String, Snippet> snippets;
+    private SnippetStore snippets;
 
     private static class Config {
         private int phase = 1;
@@ -34,16 +32,11 @@ public class SnippetNumberer extends AbstractGeneratorEx {
                 final var number = params.get("number");
                 if (number.length() > 0) {
                     final var snippetName = params.get("snippet", name);
-                    final var localSnippetName = name + "#" + snippetName;
-                    final var originalSnippet = snippets.get(snippetName);
-                    if (originalSnippet == null) {
+                    final var snippet = snippets.get(name, snippetName);
+                    if (snippet == null) {
                         throw new GeciException("The snippet '" + snippetName + "' is not defined but referenced in file '" + source.getAbsoluteFile() + "' in snippet");
                     }
-                    if (!snippets.containsKey(localSnippetName)) {
-                        snippets.put(localSnippetName, originalSnippet.copy());
-                    }
-                    final var localSnippet = snippets.get(localSnippetName);
-                    numberSnippet(localSnippet, number);
+                    numberSnippet(snippet, number);
                 }
             }
         }
@@ -54,41 +47,38 @@ public class SnippetNumberer extends AbstractGeneratorEx {
         return phase == config.phase;
     }
 
-    private void numberSnippet(Snippet original, String options) {
+    private void numberSnippet(Snippet snippet, String options) {
         final var params = new CompoundParamsBuilder(options).build();
         final var start = Long.parseLong(params.get("start", "1"));
         final var step = Long.parseLong(params.get("step", "1"));
         final var format = params.get("format", "%d. ");
-        final var lines = params.get("lines", ":");
-        long startLine = 0;
-        long endLine = original.lines().size();
-        var linesSplit = lines.split(":", -1);
-        if (linesSplit[0].length() > 0) {
-            startLine = Long.parseLong(linesSplit[0]);
-        }
-        if (linesSplit[1].length() > 0) {
-            endLine = Long.parseLong(linesSplit[1]);
-        }
-        if (startLine < 0) {
-            startLine = original.lines().size() + startLine;
-        }
-        if (endLine < 0) {
-            endLine = original.lines().size() + endLine;
-        }
+        final var startLine = calculateLineNumber(params.get("from", "0"), snippet.lines().size());
+        final var endLine = calculateLineNumber(params.get("to", "" + snippet.lines().size()), snippet.lines().size());
+
         final var modifiedLines = new ArrayList<String>();
         int index = 0;
         long number = start;
-        for (final var line : original.lines()) {
+        for (final var line : snippet.lines()) {
+            final var formattedNumber = String.format(format, number);
             if (index >= startLine && index < endLine) {
-                modifiedLines.add(String.format(format, number) + line);
+                modifiedLines.add(formattedNumber + line);
                 number += step;
-            }else{
-                modifiedLines.add(line);
+            } else {
+                modifiedLines.add(" ".repeat(formattedNumber.length()) + line);
             }
             index++;
         }
-        original.lines().clear();
-        original.lines().addAll(modifiedLines);
+        snippet.lines().clear();
+        snippet.lines().addAll(modifiedLines);
+    }
+
+    private long calculateLineNumber(String number, int max) {
+        final var z = Long.parseLong(number);
+        if (z < 0) {
+            return max + z;
+        } else {
+            return z;
+        }
     }
 
     @Override
@@ -99,19 +89,12 @@ public class SnippetNumberer extends AbstractGeneratorEx {
     @Override
     public void context(Context context) {
         ctx = context;
-        snippets = ctx.get(SnippetCollector.CONTEXT_SNIPPET_KEY, HashMap::new);
+        snippets = ctx.get(SnippetCollector.CONTEXT_SNIPPET_KEY, SnippetStore::new);
         fileNamePattern = Pattern.compile(config.files);
     }
 
     //<editor-fold id="configBuilder">
-    private String configuredMnemonic = "snippetCollector";
-
-    public String mnemonic() {
-        return configuredMnemonic;
-    }
-
     private final Config config = new Config();
-
     public static SnippetNumberer.Builder builder() {
         return new SnippetNumberer().new Builder();
     }
@@ -124,11 +107,6 @@ public class SnippetNumberer extends AbstractGeneratorEx {
 
         public Builder phase(int phase) {
             config.phase = phase;
-            return this;
-        }
-
-        public Builder mnemonic(String mnemonic) {
-            configuredMnemonic = mnemonic;
             return this;
         }
 

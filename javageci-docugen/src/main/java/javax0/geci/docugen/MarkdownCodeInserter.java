@@ -10,10 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-@Geci("configBuilder configurableMnemonic='snippetCollector' localConfigMethod=\"\"")
+@Geci("configBuilder localConfigMethod=\"\"")
 public class MarkdownCodeInserter extends AbstractGeneratorEx {
     private Context ctx = null;
-    private Map<String, Snippet> snippets;
+    private SnippetStore snippets;
 
     private static class Config {
         private int phase = 1;
@@ -34,8 +34,7 @@ public class MarkdownCodeInserter extends AbstractGeneratorEx {
                 }
                 final var params =  segment.sourceParams();
                 final var snippetName = params.get("snippet",name);
-                final var modifiedSnippetName = name + "#" + snippetName;
-                final var snippet = snippets.get(snippets.containsKey(modifiedSnippetName) ? modifiedSnippetName : snippetName);
+                final var snippet = snippets.get(name, snippetName);
                 if (snippet == null) {
                     throw new GeciException("The snippet '" + snippetName + "' is not defined but referenced in file '" + source.getAbsoluteFile() + "' in snippet");
                 }
@@ -57,19 +56,12 @@ public class MarkdownCodeInserter extends AbstractGeneratorEx {
     @Override
     public void context(Context context) {
         ctx = context;
-        snippets = ctx.get(SnippetCollector.CONTEXT_SNIPPET_KEY, HashMap::new);
+        snippets = ctx.get(SnippetCollector.CONTEXT_SNIPPET_KEY, SnippetStore::new);
         fileNamePattern = Pattern.compile(config.files);
     }
 
     //<editor-fold id="configBuilder">
-    private String configuredMnemonic = "snippetCollector";
-
-    public String mnemonic() {
-        return configuredMnemonic;
-    }
-
     private final Config config = new Config();
-
     public static MarkdownCodeInserter.Builder builder() {
         return new MarkdownCodeInserter().new Builder();
     }
@@ -82,11 +74,6 @@ public class MarkdownCodeInserter extends AbstractGeneratorEx {
 
         public Builder phase(int phase) {
             config.phase = phase;
-            return this;
-        }
-
-        public Builder mnemonic(String mnemonic) {
-            configuredMnemonic = mnemonic;
             return this;
         }
 

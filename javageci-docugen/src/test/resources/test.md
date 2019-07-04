@@ -1,6 +1,6 @@
 # This is a test file that Markdown Snippet Inserter and Snippet collector will modify
 
-[//]: (code brrra snippet="SnippetCollectorProcessExCode" number="start=1 step=1 format='%02d. ' lines=':-1'")
+[//]: (code brrra snippet="SnippetCollectorProcessExCode" number="start=1 step=1 format='%02d. ' from=0 to=-1")
 ```java
 01.     @Override
 02.     public void processEx(Source source) throws Exception {
@@ -19,5 +19,5 @@
 15.                 }
 16.             }
 17.         }
-    }
+        }
 ```

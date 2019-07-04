@@ -12,7 +12,6 @@ public interface Geci {
     String MAIN_RESOURCES = "mainResources";
     String TEST_SOURCE = "testSource";
     String TEST_RESOURCES = "testResources";
-
     /**
      * Add a new directory to the list of source directories that Geci should process.
      *
@@ -99,6 +98,8 @@ public interface Geci {
         source(maven.testResources());
         return this;
     }
+
+
 
     /**
      * Register one or more generator instances. (Probably instances of different generators.)

@@ -33,11 +33,11 @@ import java.util.regex.Pattern;
  * generator does not touch any source therefore it should not and
  * cannot be used alone.
  */
-@Geci("configBuilder configurableMnemonic='snippetCollector' localConfigMethod=\"\"")
+@Geci("configBuilder localConfigMethod=\"\"")
 public class SnippetCollector extends AbstractGeneratorEx {
     public static final String CONTEXT_SNIPPET_KEY = "snippets";
     private Context ctx = null;
-    private Map<String, Snippet> snippets;
+    private SnippetStore snippets;
 
     private static class Config {
         private int phase = 0;
@@ -79,16 +79,10 @@ public class SnippetCollector extends AbstractGeneratorEx {
     @Override
     public void context(Context context) {
         ctx = context;
-        snippets = ctx.get(CONTEXT_SNIPPET_KEY, HashMap::new);
+        snippets = ctx.get(CONTEXT_SNIPPET_KEY, SnippetStore::new);
     }
 
     //<editor-fold id="configBuilder">
-    private String configuredMnemonic = "snippetCollector";
-
-    public String mnemonic(){
-        return configuredMnemonic;
-    }
-
     private final Config config = new Config();
     public static SnippetCollector.Builder builder() {
         return new SnippetCollector().new Builder();
@@ -107,11 +101,6 @@ public class SnippetCollector extends AbstractGeneratorEx {
 
         public Builder snippetStart(java.util.regex.Pattern snippetStart) {
             config.snippetStart = snippetStart;
-            return this;
-        }
-
-        public Builder mnemonic(String mnemonic) {
-            configuredMnemonic = mnemonic;
             return this;
         }
 
