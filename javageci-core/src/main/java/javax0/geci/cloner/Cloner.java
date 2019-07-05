@@ -102,6 +102,7 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
     //<editor-fold id="configBuilder" configurableMnemonic="cloner">
     private String configuredMnemonic = "cloner";
 
+    @Override
     public String mnemonic(){
         return configuredMnemonic;
     }
