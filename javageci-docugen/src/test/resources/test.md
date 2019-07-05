@@ -21,3 +21,27 @@
 17.         }
         }
 ```
+
+[//]: (code brrb snippet="epsilon" append="snippets='SnippetAppender_.*,SnippetStore_name'")
+```java
+    @Override
+    public void context(Context context) {
+        super.context(context);
+        fileNamePattern = Pattern.compile(config.files);
+    }
+    @Override
+    protected void modify(Source source, Segment segment, Snippet snippet, CompoundParams params) {
+        final var ph = new AtomicReference<Predicate<String>>(s -> false);
+        Arrays.stream(params.get("snippets").split(","))
+                .map(Pattern::compile)
+                .map(Pattern::asMatchPredicate).forEach(
+                       p -> ph.set(ph.get().or(p))
+                );
+
+        snippets.names().stream()
+                .filter(ph.get())
+                .sorted(String::compareTo)
+                .map(n -> snippets.get(segment.sourceParams().id(), n))
+                .forEach(s -> snippet.lines().addAll(s.lines()));
+    }
+```

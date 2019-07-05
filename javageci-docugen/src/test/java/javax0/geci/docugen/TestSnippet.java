@@ -14,8 +14,9 @@ public class TestSnippet {
         Assertions.assertFalse(
                 geci.source(maven().module("javageci-docugen"))
                         .register(SnippetCollector.builder().phase(0).build())
-                        .register(SnippetNumberer.builder().phase(1).build())
-                        .register(MarkdownCodeInserter.builder().phase(2).build())
+                        .register(SnippetAppender.builder().phase(1).build())
+                        .register(SnippetNumberer.builder().phase(2).build())
+                        .register(MarkdownCodeInserter.builder().phase(3).build())
                         .splitHelper("md", new MarkdownSegmentSplitHelper())
                         .generate());
     }

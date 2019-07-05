@@ -15,7 +15,7 @@ public class SnippetBuilder extends CompoundParams {
     }
 
     public Snippet build() {
-        return new Snippet(params, lines);
+        return new Snippet(params.id(),params, lines);
     }
 
     SnippetBuilder(String s) {

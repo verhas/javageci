@@ -5,8 +5,6 @@ import javax0.geci.api.Context;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractGeneratorEx;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -36,7 +34,6 @@ import java.util.regex.Pattern;
 @Geci("configBuilder localConfigMethod=\"\"")
 public class SnippetCollector extends AbstractGeneratorEx {
     public static final String CONTEXT_SNIPPET_KEY = "snippets";
-    private Context ctx = null;
     private SnippetStore snippets;
 
     private static class Config {
@@ -78,12 +75,12 @@ public class SnippetCollector extends AbstractGeneratorEx {
 
     @Override
     public void context(Context context) {
-        ctx = context;
-        snippets = ctx.get(CONTEXT_SNIPPET_KEY, SnippetStore::new);
+        snippets = context.get(CONTEXT_SNIPPET_KEY, SnippetStore::new);
     }
 
     //<editor-fold id="configBuilder">
     private final Config config = new Config();
+
     public static SnippetCollector.Builder builder() {
         return new SnippetCollector().new Builder();
     }

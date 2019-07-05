@@ -2,58 +2,37 @@ package javax0.geci.docugen;
 
 import javax0.geci.annotations.Geci;
 import javax0.geci.api.Context;
-import javax0.geci.api.GeciException;
+import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
-import javax0.geci.tools.AbstractGeneratorEx;
-import javax0.geci.tools.CompoundParamsBuilder;
+import javax0.geci.tools.CompoundParams;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-@Geci("configBuilder localConfigMethod=\"\"")
-public class SnippetNumberer extends AbstractGeneratorEx {
-    private Context ctx = null;
-    private SnippetStore snippets;
+@Geci("configBuilder localConfigMethod='' configurableMnemonic='number'")
+public class SnippetNumberer extends AbstractSnippeter {
 
-    private static class Config {
-        private int phase = 1;
-        private String files = "\\.md$";
-    }
-
-    private Pattern fileNamePattern;
-
-    @Override
-    public void processEx(Source source) throws Exception {
-        if (fileNamePattern.matcher(source.getAbsoluteFile()).find()) {
-            final var names = source.segmentNames();
-            for (final var name : names) {
-                final var segment = source.safeOpen(name);
-                final var params = segment.sourceParams();
-                final var number = params.get("number");
-                if (number.length() > 0) {
-                    final var snippetName = params.get("snippet", name);
-                    final var snippet = snippets.get(name, snippetName);
-                    if (snippet == null) {
-                        throw new GeciException("The snippet '" + snippetName + "' is not defined but referenced in file '" + source.getAbsoluteFile() + "' in snippet");
-                    }
-                    numberSnippet(snippet, number);
-                }
-            }
-        }
+    private static class Config extends AbstractSnippeter.Config {
+        private String start = "1";
+        private String step = "1";
+        private String format = "%d. ";
+        private String from = "0";
+        private String to = "";
     }
 
     @Override
-    public boolean activeIn(int phase) {
-        return phase == config.phase;
-    }
-
-    private void numberSnippet(Snippet snippet, String options) {
-        final var params = new CompoundParamsBuilder(options).build();
-        final var start = Long.parseLong(params.get("start", "1"));
-        final var step = Long.parseLong(params.get("step", "1"));
-        final var format = params.get("format", "%d. ");
-        final var startLine = calculateLineNumber(params.get("from", "0"), snippet.lines().size());
-        final var endLine = calculateLineNumber(params.get("to", "" + snippet.lines().size()), snippet.lines().size());
+    protected void modify(Source source, Segment segment, Snippet snippet, CompoundParams params) {
+        final var start = Long.parseLong(params.get("start", config.start));
+        final var step = Long.parseLong(params.get("step", config.step));
+        final var format = params.get("format", config.format);
+        final var startLine = calculateLineNumber(
+                params.get("from", config.from),
+                snippet.lines().size()
+        );
+        final var endLine = calculateLineNumber(
+                params.get("to", config.to.length() > 0 ? config.to : "" + snippet.lines().size())
+                , snippet.lines().size()
+        );
 
         final var modifiedLines = new ArrayList<String>();
         int index = 0;
@@ -81,32 +60,54 @@ public class SnippetNumberer extends AbstractGeneratorEx {
         }
     }
 
-    @Override
-    public int phases() {
-        return config.phase + 1;
-    }
 
     @Override
     public void context(Context context) {
-        ctx = context;
-        snippets = ctx.get(SnippetCollector.CONTEXT_SNIPPET_KEY, SnippetStore::new);
+        super.context(context);
         fileNamePattern = Pattern.compile(config.files);
     }
 
     //<editor-fold id="configBuilder">
+    private String configuredMnemonic = "number";
+
+    @Override
+    public String mnemonic(){
+        return configuredMnemonic;
+    }
+
     private final Config config = new Config();
     public static SnippetNumberer.Builder builder() {
         return new SnippetNumberer().new Builder();
     }
 
-    public class Builder {
-        public Builder files(String files) {
-            config.files = files;
+    public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder {
+        public Builder format(String format) {
+            config.format = format;
             return this;
         }
 
-        public Builder phase(int phase) {
-            config.phase = phase;
+        public Builder from(String from) {
+            config.from = from;
+            return this;
+        }
+
+        public Builder start(String start) {
+            config.start = start;
+            return this;
+        }
+
+        public Builder step(String step) {
+            config.step = step;
+            return this;
+        }
+
+        public Builder to(String to) {
+            config.to = to;
+            return this;
+        }
+
+        public Builder mnemonic(String mnemonic) {
+            configuredMnemonic = mnemonic;
             return this;
         }
 

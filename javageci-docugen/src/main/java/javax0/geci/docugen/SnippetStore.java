@@ -1,11 +1,27 @@
 package javax0.geci.docugen;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax0.geci.tools.CompoundParams;
 
-public class SnippetStore {
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+class SnippetStore {
     final Map<String, Snippet> originals = new HashMap<>();
     final Map<String, Map<String, Snippet>> locals = new HashMap<>();
+
+    private static final String EPSILON = "epsilon";
+
+    SnippetStore() {
+        originals.put(EPSILON, new Snippet(EPSILON, new CompoundParams(EPSILON, Map.of()), List.of()));
+    }
+
+    //snippet SnippetStore_name
+    Set<String> names() {
+        return originals.keySet();
+    }
+    //snippet end
 
     void put(String name, Snippet snippet) {
         originals.put(name, snippet);
