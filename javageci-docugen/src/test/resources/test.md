@@ -26,7 +26,7 @@
 ```
 
 <!-- snip bizerba snippet="SnippetStore_name" -->
-    Set<String> names() {
+Set<String> names() {
         return originals.keySet();
     }
 <!-- end snip -->
