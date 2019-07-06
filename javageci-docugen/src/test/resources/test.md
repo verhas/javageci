@@ -25,11 +25,11 @@
         }
 ```
 
-[//]: # (snip bizerba snippet="SnippetStore_name")
+<!-- snip bizerba snippet="SnippetStore_name" -->
     Set<String> names() {
         return originals.keySet();
     }
-[//]: # (end snip)
+<!-- end snip -->
 
 [//]: # (snip brrb snippet="epsilon" append="snippets='SnippetAppender_.*,SnippetStore_name'")
 ```java
