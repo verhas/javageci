@@ -6,49 +6,35 @@ import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.CompoundParams;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Geci("configBuilder localConfigMethod='' configurableMnemonic='append'")
 public class SnippetAppender extends AbstractSnippeter {
 
     private static class Config extends AbstractSnippeter.Config {
-        private int phase = 1;
-        private String files = "\\.md$";
     }
 
     //snippet SnippetAppender_modify
     @Override
     protected void modify(Source source, Segment segment, Snippet snippet, CompoundParams params) {
-        final var ph = new AtomicReference<Predicate<String>>(s -> false);
-        Arrays.stream(params.get("snippets").split(","))
-                .map(Pattern::compile)
-                .map(Pattern::asMatchPredicate).forEach(
-                       p -> ph.set(ph.get().or(p))
-                );
+        final var segmentName = segment.sourceParams().id();
+        final var namePatterns = Arrays.stream(params.get("snippets").split(","))
+            .map(Pattern::compile)
+            .map(Pattern::asMatchPredicate).collect(Collectors.toList());
 
-        snippets.names().stream()
-                .filter(ph.get())
+        for (final var pattern : namePatterns) {
+            snippets.names().stream()
+                .filter(pattern)
                 .sorted(String::compareTo)
-                .map(n -> snippets.get(segment.sourceParams().id(), n))
-                .forEach(s -> snippet.lines().addAll(s.lines()));
+                .map(name -> snippets.get(segmentName, name))
+                .forEach(snip -> snippet.lines().addAll(snip.lines()));
+        }
     }
     //end snippet
-
-    @Override
-    public boolean activeIn(int phase) {
-        return phase == config.phase;
-    }
-
-    @Override
-    public int phases() {
-        return config.phase + 1;
-    }
 
     //snippet SnippetAppender_context
     @Override

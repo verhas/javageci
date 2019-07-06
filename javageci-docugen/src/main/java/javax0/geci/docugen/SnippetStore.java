@@ -21,7 +21,7 @@ class SnippetStore {
     Set<String> names() {
         return originals.keySet();
     }
-    //snippet end
+    // end snippet
 
     void put(String name, Snippet snippet) {
         originals.put(name, snippet);

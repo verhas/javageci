@@ -1,9 +1,10 @@
 package javax0.geci.docugen;
 
 import javax0.geci.annotations.Geci;
-import javax0.geci.api.Context;
+import javax0.geci.api.GeciException;
+import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
-import javax0.geci.tools.AbstractGeneratorEx;
+import javax0.geci.tools.CompoundParams;
 
 import java.util.regex.Pattern;
 
@@ -31,15 +32,23 @@ import java.util.regex.Pattern;
  * generator does not touch any source therefore it should not and
  * cannot be used alone.
  */
-@Geci("configBuilder localConfigMethod=\"\"")
-public class SnippetCollector extends AbstractGeneratorEx {
+@Geci("configBuilder localConfigMethod=''")
+public class SnippetCollector extends AbstractSnippeter {
     public static final String CONTEXT_SNIPPET_KEY = "snippets";
-    private SnippetStore snippets;
 
-    private static class Config {
-        private int phase = 0;
+    private static class Config extends AbstractSnippeter.Config {
         private Pattern snippetStart = Pattern.compile("//\\s*snipp?et\\s+(.*)$");
         private Pattern snippetEnd = Pattern.compile("//\\s*end\\s+snipp?et");
+    }
+
+    @Override
+    protected void modify(Source source, Segment segment, Snippet snippet, CompoundParams params) throws Exception {
+        throw new IllegalArgumentException("This method should never be invoked");
+    }
+
+    @Override
+    public String mnemonic() {
+        throw new IllegalArgumentException("This method should never be invoked");
     }
 
     //snippet SnippetCollectorProcessExCode
@@ -60,23 +69,11 @@ public class SnippetCollector extends AbstractGeneratorEx {
                 }
             }
         }
+        if (builder != null) {
+            throw new GeciException(builder.snippetName() + " was not finished before end of the file " + source.getAbsoluteFile());
+        }
     }
     //end snippet
-
-    @Override
-    public int phases() {
-        return config.phase + 1;
-    }
-
-    @Override
-    public boolean activeIn(int phase) {
-        return phase == config.phase;
-    }
-
-    @Override
-    public void context(Context context) {
-        snippets = context.get(CONTEXT_SNIPPET_KEY, SnippetStore::new);
-    }
 
     //<editor-fold id="configBuilder">
     private final Config config = new Config();
@@ -85,12 +82,7 @@ public class SnippetCollector extends AbstractGeneratorEx {
         return new SnippetCollector().new Builder();
     }
 
-    public class Builder {
-        public Builder phase(int phase) {
-            config.phase = phase;
-            return this;
-        }
-
+    public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder {
         public Builder snippetEnd(java.util.regex.Pattern snippetEnd) {
             config.snippetEnd = snippetEnd;
             return this;

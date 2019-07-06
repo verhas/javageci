@@ -1,6 +1,6 @@
 # This is a test file that Markdown Snippet Inserter and Snippet collector will modify
 
-[//]: (code brrra snippet="SnippetCollectorProcessExCode" number="start=1 step=1 format='%02d. ' from=0 to=-1")
+[//]: (snip brrra snippet="SnippetCollectorProcessExCode" number="start=1 step=1 format='%02d. ' from=0 to=-1")
 ```java
 01.     @Override
 02.     public void processEx(Source source) throws Exception {
@@ -19,10 +19,19 @@
 15.                 }
 16.             }
 17.         }
+18.         if (builder != null) {
+19.             throw new GeciException(builder.snippetName() + " was not finished before end of the file " + source.getAbsoluteFile());
+20.         }
         }
 ```
 
-[//]: (code brrb snippet="epsilon" append="snippets='SnippetAppender_.*,SnippetStore_name'")
+[//]: (snip bizerba snippet="SnippetStore_name")
+    Set<String> names() {
+        return originals.keySet();
+    }
+[//]: (end snip)
+
+[//]: (snip brrb snippet="epsilon" append="snippets='SnippetAppender_.*,SnippetStore_name'")
 ```java
     @Override
     public void context(Context context) {
@@ -31,17 +40,20 @@
     }
     @Override
     protected void modify(Source source, Segment segment, Snippet snippet, CompoundParams params) {
-        final var ph = new AtomicReference<Predicate<String>>(s -> false);
-        Arrays.stream(params.get("snippets").split(","))
-                .map(Pattern::compile)
-                .map(Pattern::asMatchPredicate).forEach(
-                       p -> ph.set(ph.get().or(p))
-                );
+        final var segmentName = segment.sourceParams().id();
+        final var namePatterns = Arrays.stream(params.get("snippets").split(","))
+            .map(Pattern::compile)
+            .map(Pattern::asMatchPredicate).collect(Collectors.toList());
 
-        snippets.names().stream()
-                .filter(ph.get())
+        for (final var pattern : namePatterns) {
+            snippets.names().stream()
+                .filter(pattern)
                 .sorted(String::compareTo)
-                .map(n -> snippets.get(segment.sourceParams().id(), n))
-                .forEach(s -> snippet.lines().addAll(s.lines()));
+                .map(name -> snippets.get(segmentName, name))
+                .forEach(snip -> snippet.lines().addAll(snip.lines()));
+        }
+    }
+    Set<String> names() {
+        return originals.keySet();
     }
 ```
