@@ -1,6 +1,6 @@
 # This is a test file that Markdown Snippet Inserter and Snippet collector will modify
 
-[//]: (snip brrra snippet="SnippetCollectorProcessExCode" number="start=1 step=1 format='%02d. ' from=0 to=-1")
+[//]: # (snip brrra snippet="SnippetCollectorProcessExCode" number="start=1 step=1 format='%02d. ' from=0 to=-1")
 ```java
 01.     @Override
 02.     public void processEx(Source source) throws Exception {
@@ -25,13 +25,13 @@
         }
 ```
 
-[//]: (snip bizerba snippet="SnippetStore_name")
+[//]: # (snip bizerba snippet="SnippetStore_name")
     Set<String> names() {
         return originals.keySet();
     }
-[//]: (end snip)
+[//]: # (end snip)
 
-[//]: (snip brrb snippet="epsilon" append="snippets='SnippetAppender_.*,SnippetStore_name'")
+[//]: # (snip brrb snippet="epsilon" append="snippets='SnippetAppender_.*,SnippetStore_name'")
 ```java
     @Override
     public void context(Context context) {
