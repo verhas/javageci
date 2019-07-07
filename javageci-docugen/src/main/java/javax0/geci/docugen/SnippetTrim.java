@@ -27,7 +27,7 @@ public class SnippetTrim extends AbstractSnippeter {
 
         final var modifiedLines = new ArrayList<String>();
         for (final var line : snippet.lines()) {
-            modifiedLines.add(" ".repeat(to) + line.substring(untab));
+            modifiedLines.add(" ".repeat(to) + (line.length() >= untab ? line.substring(untab) : ""));
         }
         snippet.lines().clear();
         snippet.lines().addAll(modifiedLines);
@@ -36,9 +36,12 @@ public class SnippetTrim extends AbstractSnippeter {
     private int calculateTabbing(Snippet snippet) {
         var min = Integer.MAX_VALUE;
         for (final var line : snippet.lines()) {
-            final var spaces = line.length() - line.stripLeading().length();
-            if (spaces < min) {
-                min = spaces;
+            final var stripped = line.stripLeading().length();
+            if (stripped > 0) {
+                final var spaces = line.length() - stripped;
+                if (spaces < min) {
+                    min = spaces;
+                }
             }
         }
         return min;
@@ -58,20 +61,20 @@ public class SnippetTrim extends AbstractSnippeter {
         return new SnippetTrim().new Builder();
     }
 
-public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder {
-    public Builder to(String to) {
-        config.to = to;
-        return this;
-    }
+    public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder {
+        public Builder to(String to) {
+            config.to = to;
+            return this;
+        }
 
-    public Builder mnemonic(String mnemonic) {
-        configuredMnemonic = mnemonic;
-        return this;
-    }
+        public Builder mnemonic(String mnemonic) {
+            configuredMnemonic = mnemonic;
+            return this;
+        }
 
-    public SnippetTrim build() {
-        return SnippetTrim.this;
+        public SnippetTrim build() {
+            return SnippetTrim.this;
+        }
     }
-}
 //</editor-fold>
 }

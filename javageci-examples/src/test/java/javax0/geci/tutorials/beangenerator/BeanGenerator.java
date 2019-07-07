@@ -16,20 +16,20 @@ import static javax0.geci.api.Source.Set.set;
 import static javax0.geci.tools.CaseTools.ucase;
 
 public class BeanGenerator extends AbstractGeneratorEx {
-// END SNIPPET
+// end snippet
 
     // START SNIPPET BeanGenerator_main1
     @Override
     public void processEx(Source source) throws Exception {
         if (source.getAbsoluteFile().endsWith(".xml")) {
 //          ...
-// END SNIPPET
+// end snippet
 // START SNIPPET BeanGenerator_main2
             final var newKlass = source.getKlassSimpleName();
             final var pckage = source.getPackageName();
             final var target = source.newSource(set("java"), newKlass + ".java");
             final var doc = getDocument(source);
-// END SNIPPET
+// end snippet
 // START SNIPPET BeanGenerator_main3
             try (final var segment = target.open()) {
                 segment.write("package " + pckage + ";");
@@ -53,11 +53,11 @@ public class BeanGenerator extends AbstractGeneratorEx {
                 }
                 segment.write_l("}");
             }
-// END SNIPPET
+// end snippet
 // START SNIPPET BeanGenerator_main1
         }
     }
-// END SNIPPET
+// end snippet
 
     // START SNIPPET BeanGenerator_aux
     private Document getDocument(Source source) throws ParserConfigurationException, SAXException, IOException {
@@ -65,7 +65,7 @@ public class BeanGenerator extends AbstractGeneratorEx {
         final var dBuilder = dbFactory.newDocumentBuilder();
         return dBuilder.parse(new InputSource(new StringReader(source.toString())));
     }
-    //END SNIPPET
+    //end snippet
 // START SNIPPET BeanGenerator_head
 }
-// END SNIPPET
+// end snippet

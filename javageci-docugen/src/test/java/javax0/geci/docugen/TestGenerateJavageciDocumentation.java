@@ -11,19 +11,12 @@ public class TestGenerateJavageciDocumentation {
 
     @Test
     @DisplayName("Run the different snippets and generate test.md")
-    void testSnippet() throws Exception {
+    void generateJavaGeciDocumenation() throws Exception {
         final var geci = new Geci();
         Assertions.assertFalse(
             geci
-                .source("..",".").ignore("\\.git","\\.(png|zip|class|jar|asc|graffle)$","target")/*
-                .source(maven().module("javageci-annotation"))
-                .source(maven().module("javageci-api"))
-                .source(maven().module("javageci-core"))
-                .source(maven().module("javageci-docugen"))
-                .source(maven().module("javageci-engine"))
-                .source(maven().module("javageci-examples"))
-                .source(maven().module("javageci-jamal"))
-                .source(maven().module("javageci-tools"))*/
+                .source("..",".").ignore("\\.git","\\.(png|zip|class|jar|asc|graffle)$","target")
+                .log(Geci.MODIFIED)
                 .register(SnippetCollector.builder().phase(0).build())
                 .register(SnippetAppender.builder().phase(1).build())
                 .register(SnippetRegex.builder().phase(2).build())

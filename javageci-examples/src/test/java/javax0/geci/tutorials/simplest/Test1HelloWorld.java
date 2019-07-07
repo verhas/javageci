@@ -17,4 +17,4 @@ public class Test1HelloWorld {
         }
     //</editor-fold>
 }
-// END SNIPPET
+// end snippet

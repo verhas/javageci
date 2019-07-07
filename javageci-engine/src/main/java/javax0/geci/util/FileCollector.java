@@ -9,10 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -39,8 +36,22 @@ public class FileCollector {
      * @return the file directory name
      */
     public static String normalize(String s) {
-        return s.replace("\\", "/")
+        final var unixStyle = s.replace("\\", "/")
             .replace("/./", "/");
+        final var pathElements = new ArrayList<>(Arrays.asList(unixStyle.split("/", -1)));
+        boolean changed;
+        do {
+            changed = false;
+            for (int i = 0; i < pathElements.size() - 1; i++) {
+                if (!pathElements.get(i).equals("..") && pathElements.get(i + 1).equals("..")) {
+                    pathElements.remove(i+1);
+                    pathElements.remove(i);
+                    changed = true;
+                    break;
+                }
+            }
+        } while (changed);
+        return String.join("/",pathElements);
     }
 
     /**

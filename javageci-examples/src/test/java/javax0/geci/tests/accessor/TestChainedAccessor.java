@@ -1,4 +1,4 @@
-//START SNIPPET TestAccessor
+//snippet TestAccessor
 package javax0.geci.tests.accessor;
 
 import javax0.geci.accessor.ChainedAccessor;
@@ -19,4 +19,4 @@ public class TestChainedAccessor {
                 geci.failed());
     }
 }
-//END SNIPPET
+//end snippet

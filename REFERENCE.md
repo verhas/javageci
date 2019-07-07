@@ -246,7 +246,7 @@ the call:
 
 * Example:
 
-<!-- USE SNIPPET */TestAccessor -->
+<!-- snipTestAccessor -->
 ```java
 package javax0.geci.tests.accessor;
 

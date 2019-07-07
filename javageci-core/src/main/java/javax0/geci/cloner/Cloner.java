@@ -14,6 +14,14 @@ import java.util.Arrays;
 
 import static javax0.geci.tools.CaseTools.ucase;
 
+//snippet Cloner_head
+/**
+ * This code generator will generate a `copy()` method that returns the
+ * clone of the object referenced by `this` in the class body and also
+ * methods named `withXyzAbc()` for every `xyzAbc` field. For example the
+ * sample class `NeedCloner` has the fields
+ */
+//end snippet
 public class Cloner extends AbstractFilteredFieldsGenerator {
 
     public Cloner() {

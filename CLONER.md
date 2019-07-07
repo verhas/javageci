@@ -1,10 +1,14 @@
 # Cloner Code Generator
 
+<!-- snip Cloner_head regex="replace='|^~s~*~s||' replace='|~s*~*/||' replace='|/~*~*||' tilde='yes'"-->
+
 This code generator will generate a `copy()` method that returns the
 clone of the object referenced by `this` in the class body and also
 methods named `withXyzAbc()` for every `xyzAbc` field. For example the
 sample class `NeedCloner` has the fields
 
+<!-- end snip --> 
+<!-- snip NeedCloner_fields trim="to=0"-->
 ```java
 private final int aInt = 10;
 protected int bINt = 55;
@@ -12,6 +16,7 @@ protected int bINt = 55;
 
 and it also inherits two fields
 
+<!-- snip AbstractNeedCloner_fields trim="to=0"-->
 ```java
 public String inheritedField;
 @Geci("cloner filter='false'")
@@ -20,6 +25,7 @@ public String inheritedExcludedField;
 
 and based on that the generator produces the code
 
+<!-- snip NeedCloner_generated_code trim="to=0"-->
 ```java
 //<editor-fold id="cloner">
 @javax0.geci.annotations.Generated("cloner")
@@ -46,6 +52,7 @@ NeedCloner withInheritedField(String inheritedField) {
     it.inheritedField = inheritedField;
     return it;
 }
+
 //</editor-fold>
 ```
 

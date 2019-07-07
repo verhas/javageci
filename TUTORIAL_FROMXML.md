@@ -8,7 +8,7 @@ generated Java file are in different directory structures (a.k.a. source sets).
 ## Test Code
 
 To invoke the generator we will use the following test:
-<!-- USE SNIPPET */testBeanGenerator-->
+<!-- sniptestBeanGenerator-->
 ```java
     @Test
     public void testBeanGenerator() throws Exception {
@@ -35,7 +35,7 @@ To create a new Java class that does not exist yet needs the use of special part
 there is no source code that we could just extend writing some of the `editor-fold` segments. Because of that
 the generator needs to extend the class `AbstractGeneratorEx` abstract class.
 
-<!-- USE SNIPPET */BeanGenerator_head  KILL "import" "^$"-->
+<!-- snipBeanGenerator_head  KILL "import" "^$"-->
 ```java
 package javax0.geci.tutorials.beangenerator;
 public class BeanGenerator extends AbstractGeneratorEx {
@@ -52,7 +52,7 @@ care about the XML files that have `.xml` extension. A real life generator would
 file to check that it is really a description of some code that the generator has to create, but for this tutorial
 we assume that all XML files that are in the configured directories are bean definitions.
 
-<!-- USE SNIPPET */BeanGenerator_main1-->
+<!-- snipBeanGenerator_main1-->
 ```java
     @Override
     public void processEx(Source source) throws Exception {
@@ -77,7 +77,7 @@ in the test that invokes the generator. To identify the different directories th
 The new file will be created in the same "relative" directory as the actual source (the XML file) except in a
 different top directory.
  
-<!-- USE SNIPPET */BeanGenerator_main2-->
+<!-- snipBeanGenerator_main2-->
 ```java
             final var newKlass = source.getKlassSimpleName();
             final var pckage = source.getPackageName();
@@ -96,7 +96,7 @@ source is saved at the end of the code generations the directory will be created
 The `getDocument()` method is a simple `static private` method that parses the XML from the source. The method `cap()`
 capitalizes the first character of a string:
 
-<!-- USE SNIPPET */BeanGenerator_aux-->
+<!-- snipBeanGenerator_aux-->
 ```java
     private Document getDocument(Source source) throws ParserConfigurationException, SAXException, IOException {
         final var dbFactory = DocumentBuilderFactory.newInstance();
@@ -118,7 +118,7 @@ and writing into it will overwrite the whole file. This is the global segment of
 the `open()` method without argument. This is what we do in the `try-with-resources` command. After this we simply
 analyze the data in the XML and based on this we write the class we wanted to generate.
 
-<!-- USE SNIPPET */BeanGenerator_main3-->
+<!-- snipBeanGenerator_main3-->
 ```java
             try (final var segment = target.open()) {
                 segment.write("package " + pckage + ";");

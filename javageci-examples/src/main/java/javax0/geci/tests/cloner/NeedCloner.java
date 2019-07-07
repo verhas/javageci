@@ -1,9 +1,12 @@
 package javax0.geci.tests.cloner;
 
 public class NeedCloner extends AbstractNeedCloner {
+    // snippet NeedCloner_fields
     private final int aInt = 10;
     protected int bINt = 55;
+    // end snippet
 
+    // snippet NeedCloner_generated_code
     //<editor-fold id="cloner">
     @javax0.geci.annotations.Generated("cloner")
     public NeedCloner copy() {
@@ -31,4 +34,5 @@ public class NeedCloner extends AbstractNeedCloner {
     }
 
     //</editor-fold>
+    // end snippet
 }

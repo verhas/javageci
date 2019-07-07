@@ -4,7 +4,7 @@ The simplest example will contain a unit test class and a code generator that ge
 The generated method will just return a constant string. The test code will check that this generated code works
 as expected. The very first version of the unit test class will be
 
-<!-- USE SNIPPET */HelloWorldTest1 REPLACE "HelloWorldTest\d" -> "HelloWorldTest" -->
+<!-- snipHelloWorldTest1 REPLACE "HelloWorldTest\d" -> "HelloWorldTest" -->
 ```java
 package javax0.geci.tutorials.simplest;
 
@@ -30,7 +30,7 @@ generator.
 The simplest way to write a generator is to extend the `AbstractGenerator`, which is defined in the `geci.tools`
 module.
 
-<!-- USE SNIPPET */HelloWorldTestGenerator1 REPLACE "HelloWorldTestGenerator\d" -> "HelloWorldTestGenerator"-->
+<!-- snipHelloWorldTestGenerator1 REPLACE "HelloWorldTestGenerator\d" -> "HelloWorldTestGenerator"-->
 ```java
 package javax0.geci.tutorials.simplest;
 
@@ -78,7 +78,7 @@ automatically indent the lines. `_r` at the end of the method means that the nex
 
 Now we can write the test that generates the code.   
  
-<!-- USE SNIPPET */HelloWorldTest2 REPLACE "HelloWorldTest\d" -> "HelloWorldTest" "HelloWorldTestGenerator\d" -> "HelloWorldTestGenerator" -->
+<!-- snipHelloWorldTest2 REPLACE "HelloWorldTest\d" -> "HelloWorldTest" "HelloWorldTestGenerator\d" -> "HelloWorldTestGenerator" -->
 ```java
 package javax0.geci.tutorials.simplest;
 
@@ -136,7 +136,7 @@ same time it will insert the lines into the test file. Run the test again and it
 
 After this we can finally write the test itself:
 
-<!-- USE SNIPPET */HelloWorldTest3 TRIM -->
+<!-- snipHelloWorldTest3 TRIM -->
 ```java
 @Test
 public void generatedMethodReturnsGreetings() {

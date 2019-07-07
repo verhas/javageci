@@ -4,7 +4,7 @@ The accessor (setter/getter) generator is part of Java::Geci core. It is
 implemented in the class `javax0.geci.accessor.Accessor` and can be used
 to generate setters and getters. To use it you should create a test
 
-<!-- USE SNIPPET */TestAccessor -->
+<!-- snip TestAccessor -->
 ```java
 package javax0.geci.tests.accessor;
 
@@ -19,11 +19,25 @@ public class TestAccessor {
 
     @Test
     public void testAccessor() throws Exception {
-        Assertions.assertFalse(new Geci().source(maven()
-                        .module("javageci-examples").mainSource())
-                        .register(new Accessor()).generate(),
-                Geci.FAILED);
+        Geci geci;
+        Assertions.assertFalse(
+                (geci = new Geci()).source(
+                maven().module("javageci-examples").mainSource()
+                ).register(Accessor.builder().build()).generate(),
+                geci.failed());
     }
+
+
+    @Test
+    public void testAllSourcesAccessor() throws Exception {
+        Geci geci;
+        Assertions.assertFalse(
+                (geci = new Geci()).source(
+                        maven().module("javageci-examples").mainSource()
+                ).register(Accessor.builder().mnemonic("SettersGetters").filter("annotation ~ /Getter|Setter/").processAllClasses(true).build()).generate(),
+                geci.failed());
+    }
+
 }
 ```
 

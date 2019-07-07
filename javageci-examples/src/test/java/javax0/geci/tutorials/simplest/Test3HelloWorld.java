@@ -20,7 +20,7 @@ public class Test3HelloWorld {
     public void generatedMethodReturnsGreetings() {
         Assertions.assertEquals("greetings", greeting());
     }
-// END SNIPPET
+// end snippet
 
     //<editor-fold id="HelloWorldTest">
     private static String greeting(){
