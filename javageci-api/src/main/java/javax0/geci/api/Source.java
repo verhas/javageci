@@ -42,10 +42,10 @@ public interface Source {
      * @param root the directory to the root module where the top level
      *             {@code pom.xml} containing the
      *             <pre>
-     *               {@code <modules>
-     *                   <module>...</module>
-     *                 </modules>}
-     *               </pre>
+     *                                       {@code <modules>
+     *                                           <module>...</module>
+     *                                         </modules>}
+     *                                       </pre>
      *             declaration is.
      * @return a new Maven source directory configuration object.
      */
@@ -245,18 +245,33 @@ public interface Source {
      * String...)} usually naming the source set typically as {@code
      * set("java")} or {@code set("resources")}.
      */
-    class Set {
-        private final String name;
+    public class Set {
+        private String name;
+        private final boolean autoName;
 
-        private Set(String name) {
+        private Set(String name, boolean autoName) {
             if (name == null) {
                 name = randomUniqueName();
             }
             this.name = name;
+            this.autoName = autoName;
         }
 
         private String randomUniqueName() {
             return "" + super.hashCode();
+        }
+
+        /**
+         * When a set was automatically named, like {@code mainSource} then it may happen that there are more than
+         * one sets with that name. It will cause collision in the directory map. In that case we try to rename the
+         * set. If the name was specified by the user, from top level and not automatically named then it is an error.
+         * The programmer using the package must not name two different sets with the same name. On the other hand when
+         * the sets were getting their default name, then it is a safe routine to rename them.
+         */
+        public void tryRename() {
+            if (autoName) {
+                name = randomUniqueName();
+            }
         }
 
         /**
@@ -267,7 +282,11 @@ public interface Source {
          * @return identifier object.
          */
         public static Set set(String name) {
-            return new Set(name);
+            return new Set(name, false);
+        }
+
+        public static Set set(String name, boolean autoName) {
+            return new Set(name, autoName);
         }
 
         public static Set set() {
@@ -377,17 +396,17 @@ public interface Source {
          */
         private NamedSourceSet source(String name, String mainOrTest, String javaOrResources) {
             if (module == null) {
-                return new NamedSourceSet(Set.set(name), new String[]{"./src/" + mainOrTest + "/" + javaOrResources});
+                return new NamedSourceSet(Set.set(name, true), new String[]{"./src/" + mainOrTest + "/" + javaOrResources});
             } else {
                 if (rootModuleDir == null) {
-                    return new NamedSourceSet(Set.set(name), new String[]{
-                            "./" + module + "/src/" + mainOrTest + "/" + javaOrResources,
-                            "./src/" + mainOrTest + "/" + javaOrResources
+                    return new NamedSourceSet(Set.set(name, true), new String[]{
+                        "./" + module + "/src/" + mainOrTest + "/" + javaOrResources,
+                        "./src/" + mainOrTest + "/" + javaOrResources
                     });
                 } else {
-                    return new NamedSourceSet(Set.set(name), new String[]{
-                            rootModuleDir + "/" + module + "/src/" + mainOrTest + "/" + javaOrResources,
-                            "./" + module + "/src/" + mainOrTest + "/" + javaOrResources
+                    return new NamedSourceSet(Set.set(name, true), new String[]{
+                        rootModuleDir + "/" + module + "/src/" + mainOrTest + "/" + javaOrResources,
+                        "./" + module + "/src/" + mainOrTest + "/" + javaOrResources
                     });
                 }
             }
