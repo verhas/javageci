@@ -36,7 +36,8 @@ public class Geci implements javax0.geci.api.Geci {
     private final List<Generator> generators = new ArrayList<>();
     private final Set<Source> modifiedSources = new HashSet<>();
     private final Map<String, SegmentSplitHelper> splitHelpers = new HashMap<>();
-    private Set<Predicate<Path>> predicates = new HashSet<>();
+    private Set<Predicate<Path>> onlys = new HashSet<>();
+    private Set<Predicate<Path>> ignores = new HashSet<>();
     private int whatToLog = MODIFIED & TOUCHED;
     private BiPredicate<List<String>, List<String>> sourceComparator = null;
     private BiPredicate<List<String>, List<String>> EQUALS_COMPARATOR = (orig, gen) -> !orig.equals(gen);
@@ -164,7 +165,17 @@ public class Geci implements javax0.geci.api.Geci {
 
     @Override
     public Geci only(String... patterns) {
-        Collections.addAll(this.predicates,
+        Collections.addAll(this.onlys,
+            Arrays.stream(patterns)
+                .map(Pattern::compile)
+                .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
+                .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
+        return this;
+    }
+
+    @Override
+    public Geci ignore(String... patterns) {
+        Collections.addAll(this.ignores,
             Arrays.stream(patterns)
                 .map(Pattern::compile)
                 .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
@@ -174,9 +185,15 @@ public class Geci implements javax0.geci.api.Geci {
 
     @Override
     @SafeVarargs
-    public final javax0.geci.api.Geci only(Predicate<Path>... predicates) {
-        Collections.addAll(this.predicates, Arrays.stream(predicates)
-            .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
+    public final javax0.geci.api.Geci only(Predicate<Path>... onlys) {
+        Collections.addAll(this.onlys, onlys);
+        return this;
+    }
+
+    @Override
+    @SafeVarargs
+    public final javax0.geci.api.Geci ignore(Predicate<Path>... ignores) {
+        Collections.addAll(this.ignores, ignores);
         return this;
     }
 
@@ -224,7 +241,7 @@ public class Geci implements javax0.geci.api.Geci {
             }
         }
         collector.registerSplitHelpers(splitHelpers);
-        collector.collect(predicates);
+        collector.collect(onlys, ignores);
         for (int phase = 0; phase < phases; phase++) {
             for (final var source : collector.sources) {
                 for (var generator : generators) {

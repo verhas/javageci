@@ -40,7 +40,7 @@ public class FileCollector {
      */
     public static String normalize(String s) {
         return s.replace("\\", "/")
-                .replace("/./", "/");
+            .replace("/./", "/");
     }
 
     /**
@@ -67,8 +67,8 @@ public class FileCollector {
      */
     public static String calculateClassName(String directory, Path path) {
         return calculateRelativeName(directory, path)
-                .replaceAll("/", ".")
-                .replaceAll("\\.\\w+$", "");
+            .replaceAll("/", ".")
+            .replaceAll("\\.\\w+$", "");
     }
 
     /**
@@ -81,7 +81,7 @@ public class FileCollector {
      */
     public static String calculateRelativeName(String directory, Path path) {
         return normalize(path.toString())
-                .substring(directory.length());
+            .substring(directory.length());
     }
 
     /**
@@ -160,14 +160,20 @@ public class FileCollector {
      * only a one element array containing the name of the directory
      * that was used to collect the files.
      *
-     * @param predicates limits the collected files to a subset that
-     *                   matches at least one of the predicates. If the
-     *                   set is empty or the parameter is {@code null}
-     *                   then there is no filtering, all files are
-     *                   collected that are otherwise collected from the
-     *                   directory.
+     * @param onlys   limits the collected files to a subset that
+     *                matches at least one of the predicates. If the
+     *                set is empty or the parameter is {@code null}
+     *                then there is no filtering, all files are
+     *                collected that are otherwise collected from the
+     *                directory.
+     * @param ignores limits the collected files to a subset that
+     *                does not match any of the predicates. If the
+     *                set is empty or the parameter is {@code null}
+     *                then there is no filtering, all files are
+     *                collected that are otherwise collected from the
+     *                directory.
      */
-    public void collect(Set<Predicate<Path>> predicates) {
+    public void collect(Set<Predicate<Path>> onlys, Set<Predicate<Path>> ignores) {
         var processedSome = false;
         for (var entry : directories.entrySet()) {
             var processed = false;
@@ -175,13 +181,15 @@ public class FileCollector {
                 var dir = normalized(directory);
                 try {
                     Files.find(Paths.get(dir), MAX_DEPTH_UNLIMITED,
-                            (filePath, fileAttr) -> fileAttr.isRegularFile())
-                            .filter(path -> (predicates == null || predicates.isEmpty())
-                                    || predicates.stream().anyMatch(predicate -> predicate.test(path)))
-                            .forEach(path -> sources.add(
-                                    new Source(this,
-                                            dir,
-                                            path)));
+                        (filePath, fileAttr) -> fileAttr.isRegularFile())
+                        .filter(path -> (onlys == null || onlys.isEmpty())
+                            || onlys.stream().anyMatch(predicate -> predicate.test(path)))
+                        .filter(path -> (ignores == null || ignores.isEmpty())
+                            || ignores.stream().noneMatch(negicate -> negicate.test(path)))
+                        .forEach(path -> sources.add(
+                            new Source(this,
+                                dir,
+                                path)));
                     processed = true;
                     processedSome = true;
                     entry.setValue(new String[]{dir});
@@ -191,19 +199,19 @@ public class FileCollector {
             }
             if (!processed && !lenient) {
                 throw new GeciException("Source directory [" +
-                        String.join(",", entry.getValue()) + "] is not found");
+                    String.join(",", entry.getValue()) + "] is not found");
             }
         }
         if (!processedSome) {
             throw new GeciException("None of the configured directories {" +
-                    directories.entrySet().stream()
-                            .map(entry -> "\"" +
-                                    entry.getKey() +
-                                    " : " + "[" +
-                                    String.join(",", entry.getValue())
-                                    + "]")
-                            .collect(Collectors.joining(",\n"))
-                    + "} are found.");
+                directories.entrySet().stream()
+                    .map(entry -> "\"" +
+                        entry.getKey() +
+                        " : " + "[" +
+                        String.join(",", entry.getValue())
+                        + "]")
+                    .collect(Collectors.joining(",\n"))
+                + "} are found.");
         }
     }
 

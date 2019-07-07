@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import static javax0.geci.api.Source.Set.set;
 
-public class BeanGeneratorTest {
-    // START SNIPPET testBeanGenerator
+public class TestBeanGenerator {
+    // snippet testBeanGenerator
     @Test
     public void testBeanGenerator() throws Exception {
         if (new Geci()
@@ -17,5 +17,5 @@ public class BeanGeneratorTest {
             Assertions.fail("Code was changed during test phase.");
         }
     }
-    // END SNIPPET
+    // end snippet
 }

@@ -94,7 +94,7 @@ generator.
 If you look at the test code `TestAccessor.java` in the test module you
 can see that this is a proof of concept demonstration sample code:
 
-<!-- USE SNIPPET */TestAccessor -->
+<!-- snip TestAccessor -->
 ```java
 package javax0.geci.tests.accessor;
 
@@ -109,11 +109,25 @@ public class TestAccessor {
 
     @Test
     public void testAccessor() throws Exception {
-        Assertions.assertFalse(new Geci().source(maven()
-                        .module("javageci-examples").mainSource())
-                        .register(Accessor.builder().build()).generate(),
-                Geci.FAILED);
+        Geci geci;
+        Assertions.assertFalse(
+                (geci = new Geci()).source(
+                maven().module("javageci-examples").mainSource()
+                ).register(Accessor.builder().build()).generate(),
+                geci.failed());
     }
+
+
+    @Test
+    public void testAllSourcesAccessor() throws Exception {
+        Geci geci;
+        Assertions.assertFalse(
+                (geci = new Geci()).source(
+                        maven().module("javageci-examples").mainSource()
+                ).register(Accessor.builder().mnemonic("SettersGetters").filter("annotation ~ /Getter|Setter/").processAllClasses(true).build()).generate(),
+                geci.failed());
+    }
+
 }
 ```
 

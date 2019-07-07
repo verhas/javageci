@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  * A simple tool to write code into a string.
  */
-@Geci("fluent definedBy='javax0.geci.buildfluent.BuildFluentForSourceBuilder::sourceBuilderGrammar'")
+@Geci("fluent definedBy='javax0.geci.buildfluent.TestBuildFluentForSourceBuilder::sourceBuilderGrammar'")
 public class JavaSource implements AutoCloseable {
     private static final int TAB = 4;
     private final StringBuilder code = new StringBuilder();

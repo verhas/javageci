@@ -61,14 +61,14 @@ public class SnippetCollector extends AbstractSnippeter {
                 builder = new SnippetBuilder(starter.group(1));
             } else if (builder != null) {
                 final var stopper = config.snippetEnd.matcher(line);
-                // snippet skip
+                // skip
                 if (stopper.find()) {
                     snippets.put(builder.snippetName(), builder.build());
                     builder = null;
                 } else {
                     builder.add(line);
                 }
-                // snippet skip end
+                // skip end
             }
         }
         if (builder != null) {

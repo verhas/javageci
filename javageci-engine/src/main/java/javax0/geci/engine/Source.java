@@ -10,10 +10,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 public class Source implements javax0.geci.api.Source {
@@ -103,12 +100,12 @@ public class Source implements javax0.geci.api.Source {
 
     private Path inDir(String dir, String fileName) {
         return Paths.get(FileCollector.normalize(
-                dir +
-                        Paths
-                                .get(relativeFile)
-                                .getParent()
-                                .resolve(fileName)
-                                .toString()));
+            dir +
+                Paths
+                    .get(relativeFile)
+                    .getParent()
+                    .resolve(fileName)
+                    .toString()));
     }
 
     @Override
@@ -156,7 +153,7 @@ public class Source implements javax0.geci.api.Source {
         return globalSegment;
     }
 
-    public java.util.Set<String> segmentNames(){
+    public java.util.Set<String> segmentNames() {
         loadSegments();
         return segments.keySet();
     }
@@ -263,7 +260,7 @@ public class Source implements javax0.geci.api.Source {
     void consolidate() {
         if (!inMemory && !segments.isEmpty()) {
             throw new GeciException(
-                    "This is an internal error: source was not read into memory but segments were generated");
+                "This is an internal error: source was not read into memory but segments were generated");
         }
         if (globalSegment == null) {
             for (var entry : segments.entrySet()) {
@@ -288,7 +285,7 @@ public class Source implements javax0.geci.api.Source {
 
     private void mergeSegment(Segment segment, SegmentDescriptor segmentLocation) {
         if (segmentLocation.startLine + 1 < segmentLocation.endLine
-                || segment.lines.size() > 0) {
+            || segment.lines.size() > 0) {
             lines.subList(segmentLocation.startLine + 1, segmentLocation.endLine).clear();
             lines.addAll(segmentLocation.startLine + 1, segment.postface);
             lines.addAll(segmentLocation.startLine + 1, segment.lines);
@@ -327,11 +324,15 @@ public class Source implements javax0.geci.api.Source {
      * @throws IOException if the file cannot be read
      */
     private void readToMemory() throws IOException {
-        Files.lines(Paths.get(absoluteFile)).forEach(line -> {
-            lines.add(line);
-            originals.add(line);
-        });
-        inMemory = true;
+        try {
+            Files.lines(Paths.get(absoluteFile)).forEach(line -> {
+                lines.add(line);
+                originals.add(line);
+            });
+            inMemory = true;
+        } catch (Exception e) {
+            throw new GeciException("Cannot read the file " + absoluteFile + "\nIt is probably binary file. Use '.ignore()' to filter binary files out");
+        }
     }
 
     private SegmentDescriptor findDefaultSegment() {
@@ -441,5 +442,25 @@ public class Source implements javax0.geci.api.Source {
         int endLine;
         CompoundParams attr;
         int tab;
+    }
+
+    /**
+     * Equals and hashCode are needed when we collect the sources to avoid that a single file gets into the source set
+     * more than once.
+     *
+     * @param other source to compare
+     * @return as per contract
+     */
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
+        Source source = (Source) other;
+        return absoluteFile.equals(source.absoluteFile);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(absoluteFile);
     }
 }

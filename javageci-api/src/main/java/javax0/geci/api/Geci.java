@@ -137,6 +137,16 @@ public interface Geci {
     Geci only(String... patterns);
 
     /**
+     * This method is the opposite of the method {@link #only(String...)}.
+     * Using this method you can specify patterns to be ignored by the
+     * source collections.
+     * @param patterns regular expression patterns used to filter the
+     *                 source files
+     * @return {@code this}
+     */
+    Geci ignore(String... patterns);
+
+    /**
      * Set filters to filter the sources. The paths are tested using the
      * predicates provided as argument. This method is more difficult to
      * use than the one that tests the absolute file names against
@@ -144,11 +154,25 @@ public interface Geci {
      * other hand it gives more control into the hand of the caller to
      * filter out files.
      *
-     * @param predicates regular expression patterns used to filter the
-     *                   source files
+     * @param predicates used to filter the source files
      * @return {@code this}
      */
     Geci only(Predicate<Path>... predicates);
+
+    /**
+     * Set filters to filter the sources. The paths are tested using the
+     * predicates provided as argument. This method is more difficult to
+     * use than the one that tests the absolute file names against
+     * regular expression patterns, and thus will be used rarer. On the
+     * other hand it gives more control into the hand of the caller to
+     * filter out files.
+     *
+     * @param predicates used to filter the source files. If a predicate matches
+     *                   a source file it will not be collected to the source set
+     *                   the generators work on.
+     * @return {@code this}
+     */
+    Geci ignore(Predicate<Path>... predicates);
 
     /**
      * Set the source code comparator. This comparator returns {@code true}

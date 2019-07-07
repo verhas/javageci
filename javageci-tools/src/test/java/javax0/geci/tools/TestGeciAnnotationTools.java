@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class GeciAnnotationToolsTest {
+public class TestGeciAnnotationTools {
     @Retention(RetentionPolicy.RUNTIME)
     @Geci
     private @interface NoValue {

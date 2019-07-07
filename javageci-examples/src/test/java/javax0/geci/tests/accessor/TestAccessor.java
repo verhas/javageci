@@ -1,4 +1,4 @@
-//START SNIPPET TestAccessor
+//snippet TestAccessor
 package javax0.geci.tests.accessor;
 
 import javax0.geci.accessor.Accessor;
@@ -32,4 +32,4 @@ public class TestAccessor {
     }
 
 }
-//END SNIPPET
+//end snippet

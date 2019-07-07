@@ -16,7 +16,7 @@ public class TestFileCollector {
     void collectAllFiles() {
         final var sources = Map.of(set(),new String[]{"src/test/java/javax0/geci/util"});
         var collector = new FileCollector(sources);
-        collector.collect(null);
+        collector.collect(null,null);
         assertEquals(1, collector.sources.size());
         assertTrue(collector.sources.iterator().next().getKlassName().endsWith("TestFileCollector"));
     }

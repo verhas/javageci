@@ -1,10 +1,10 @@
-// START SNIPPET HelloWorldTest1
+// START SNIPPET Test1HelloWorld
 package javax0.geci.tutorials.simplest;
 
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("EmptyMethod")
-public class HelloWorldTest1 {
+public class Test1HelloWorld {
 
     @Test
     public void generatedMethodReturnsGreetings(){

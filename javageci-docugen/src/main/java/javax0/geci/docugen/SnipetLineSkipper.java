@@ -25,10 +25,10 @@ public class SnipetLineSkipper extends AbstractSnippeter {
         }
     }
 
-    private Pattern skip = Pattern.compile("snippet\\s+skip");
-    private Pattern skipEnd = Pattern.compile("snippet\\s+skip\\s+end");
-    private Pattern skipNrLines = Pattern.compile("snippet\\s+skip\\s+(\\d+)\\s+lines?");
-    private Pattern skipTill = Pattern.compile("snippet\\s+skip\\s+till\\s+/(.*?)/");
+    private Pattern skip = Pattern.compile("skip");
+    private Pattern skipEnd = Pattern.compile("skip\\s+end");
+    private Pattern skipNrLines = Pattern.compile("skip\\s+(\\d+)\\s+lines?");
+    private Pattern skipTill = Pattern.compile("skip\\s+till\\s+/(.*?)/");
 
     private void removeSkippers(Snippet snippet) {
         final var modifiedLines = new ArrayList<String>();

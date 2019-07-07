@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class BuildFluentForSourceBuilder {
+public class TestBuildFluentForSourceBuilder {
 
     @Test
     @DisplayName("Generate the fluent API for the JavaSource writer code generating API")
