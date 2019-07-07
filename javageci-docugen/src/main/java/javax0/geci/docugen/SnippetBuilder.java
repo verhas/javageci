@@ -6,7 +6,7 @@ import javax0.geci.tools.CompoundParamsBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SnippetBuilder extends CompoundParams {
+public class SnippetBuilder {
     private final CompoundParams params;
     private List<String> lines = new ArrayList<>();
 

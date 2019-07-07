@@ -3,8 +3,6 @@ package javax0.geci.util;
 import javax0.geci.api.CompoundParams;
 import javax0.geci.api.SegmentSplitHelper;
 
-import java.util.Map;
-
 /**
  * A segment split helper that will not find any segment in any source.
  */

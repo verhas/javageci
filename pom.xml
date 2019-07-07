@@ -137,6 +137,11 @@
     <artifactId>javageci-annotation</artifactId>
     <version>1.1.2-SNAPSHOT</version>
 </dependency>
+<dependency>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-docugen</artifactId>
+    <version>1.1.2-SNAPSHOT</version>
+</dependency>
         
 <dependency>
 <groupId>org.junit.jupiter</groupId>

@@ -1,12 +1,9 @@
 package javax0.geci.docugen;
 
 import javax0.geci.annotations.Geci;
-import javax0.geci.api.Context;
+import javax0.geci.api.CompoundParams;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
-import javax0.geci.tools.CompoundParams;
-
-import java.util.regex.Pattern;
 
 @Geci("configBuilder localConfigMethod=''")
 public class MarkdownCodeInserter extends AbstractSnippeter {
@@ -21,12 +18,6 @@ public class MarkdownCodeInserter extends AbstractSnippeter {
             segment.write(originalLines.get(0));
         }
         snippet.lines().forEach(l -> segment.write(l));
-    }
-
-    @Override
-    public void context(Context context) {
-        super.context(context);
-        fileNamePattern = Pattern.compile(config.files);
     }
 
     public String mnemonic() {

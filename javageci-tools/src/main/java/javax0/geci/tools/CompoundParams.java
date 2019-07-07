@@ -40,7 +40,7 @@ import java.util.stream.Stream;
 public class CompoundParams implements javax0.geci.api.CompoundParams {
 
     private static final String Q = "\"";
-    private final Map<String, String>[] params;
+    private final Map<String, List<String>>[] params;
     private final CompoundParams[] cparams;
     private final String id;
     private Set<String> allowedKeys = null;
@@ -55,8 +55,22 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
      * @param params the array of parameter maps
      */
     @SafeVarargs
-    public CompoundParams(String id, Map<String, String>... params) {
-        this.params = params;
+    public CompoundParams(String id, Map<String, ?>... params) {
+        this.params = new HashMap[params.length];
+        for( int i = 0 ; i < params.length ; i++ ){
+            this.params[i] = new HashMap<>();
+            for( final var entry : params[i].entrySet()){
+                final List<String> list;
+                if( entry.getValue() instanceof List){
+                    list = (List)entry.getValue();
+                }else if( entry.getValue() instanceof String ){
+                    list = new ArrayList(List.of((String)entry.getValue()));
+                }else{
+                    throw new IllegalArgumentException(entry.getValue().getClass()+" cannot be used in CompountParams as paramater value.");
+                }
+                this.params[i].put(entry.getKey(),list);
+            }
+        }
         this.cparams = null;
         this.id = id;
     }
@@ -217,7 +231,7 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
             return Arrays.stream(params)
                     .filter(Objects::nonNull)
                     .filter(p -> p.containsKey(key))
-                    .map(p -> p.get(key))
+                    .map(p -> p.get(key).get(0))
                     .findFirst()
                     .orElse("id".equals(key) ? id : null);
         }
@@ -231,6 +245,29 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
         }
         if ("id".equals(key)) {
             return id;
+        }
+        return null;
+    }
+
+    public List<String> getValueList(String key) {
+        if (params != null) {
+            return Arrays.stream(params)
+                    .filter(Objects::nonNull)
+                    .filter(p -> p.containsKey(key))
+                    .map(p -> p.get(key))
+                    .findFirst()
+                    .orElse("id".equals(key) ? List.of(id) : null);
+        }
+        if (cparams != null) {
+            return Arrays.stream(cparams)
+                    .filter(Objects::nonNull)
+                    .map(p -> p.getValueList(key))
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse("id".equals(key) ? List.of(id) : null);
+        }
+        if ("id".equals(key)) {
+            return List.of(id);
         }
         return null;
     }

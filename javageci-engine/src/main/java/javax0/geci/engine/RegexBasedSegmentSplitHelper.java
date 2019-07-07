@@ -4,8 +4,6 @@ import javax0.geci.api.CompoundParams;
 import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.tools.CompoundParamsBuilder;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -27,9 +25,10 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
      *
      * @param segmentPreface the lines that contain the preface
      */
-    protected void setSegmentPreface(String ... segmentPreface) {
+    protected void setSegmentPreface(String... segmentPreface) {
         this.segmentPreface = segmentPreface;
     }
+
     /**
      * Set the postface of a segment. These lines will be used as
      * segment postface in a {@link javax0.geci.api.Segment} when a
@@ -37,7 +36,7 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
      *
      * @param segmentPostface the lines that contain the postface
      */
-    protected void setSegmentPostface(String ... segmentPostface) {
+    protected void setSegmentPostface(String... segmentPostface) {
         this.segmentPostface = segmentPostface;
     }
 
@@ -63,7 +62,6 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
      *                       the attributes.
      * @param endPattern     should match the end line of a segment.
      *                       No capture groups need to be defined int this
-     *
      * @param defaultPattern pattern to find the default location of a
      *                       segment. When a segment cannot be found
      *                       using the start and the end pattern then
@@ -87,18 +85,65 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
         final CompoundParams attrs;
         int tabs = 0;
         if (segmentStart) {
-            attrs = new CompoundParamsBuilder(startMatcher.group(2)).redefineId().build();
-            tabs = startMatcher.group(1).length();
+            final var paramsDef = getGroup(2, startMatcher);
+            if (paramsDef == null) {
+                throw new IllegalArgumentException("Start pattern in "
+                    + this.getClass()
+                    + "\n"
+                    + startMatcher
+                    + "\ndoes not give a second matching group. This is probably a coding error in that class.");
+            }
+            attrs = new CompoundParamsBuilder(paramsDef).redefineId().build();
+            final var startSpaces = getGroup(1, startMatcher);
+            if (startSpaces == null) {
+                throw new IllegalArgumentException("Start pattern in "
+                    + this.getClass()
+                    + "\n"
+                    + startMatcher
+                    + "\ndoes not give a first matching group. This is probably a coding error in that class.");
+            }
+
+            tabs = startSpaces.length();
         } else {
             attrs = null;
         }
         final var segmentEnd = endPattern.matcher(line).matches();
         final var defaultMatcher = defaultPattern.matcher(line);
         final var segmentDefault = defaultMatcher.matches();
-        if( segmentDefault ){
+        if (segmentDefault) {
             tabs = defaultMatcher.group(1).length() + defaultOffset;
         }
         return new Matcher(segmentStart, segmentEnd, segmentDefault, attrs, tabs);
+    }
+
+    /**
+     * Get the {@code count}-th group that is not {@code null}. That way the pattern may define alternative
+     * matching lines each with its own groups. For example:
+     *
+     * <pre>
+     *    {@code
+     *    zzz(.*)qqq(.*)|(\w*)bbb(.hhh)
+     *    }
+     * </pre>
+     * <p>
+     * defines four groups that can be referenced as {@code matcher.group(1)}, {@code matcher.group(2)}, {@code
+     * matcher.group(3)} and {@code matcher.group(4)}. When one of the alternatives are matched then the other groups
+     * will return {@code null}. What we need is the first or second group that was matched.
+     *
+     * @param count   the number of group that we need
+     * @param matcher the matcher in which the groups are
+     * @return the string of the matching group or {@code null} in case there is no non-{@code null} matching group
+     */
+    private static String getGroup(int count, java.util.regex.Matcher matcher) {
+        for (int i = 1; i <= matcher.groupCount(); i++) {
+            if (matcher.group(i) != null) {
+                count--;
+            }
+            if (count == 0) {
+                return matcher.group(i);
+            }
+        }
+        return null;
     }
 
     protected class Matcher implements SegmentSplitHelper.Matcher {
@@ -142,9 +187,9 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
         public CompoundParams attributes() {
             if (!segmentStart) {
                 throw new IllegalArgumentException("attributes on " +
-                        SegmentSplitHelper.class.getSimpleName() + "." +
-                        SegmentSplitHelper.Matcher.class.getSimpleName() +
-                        " are not defined when the it is not a segment start.");
+                    SegmentSplitHelper.class.getSimpleName() + "." +
+                    SegmentSplitHelper.Matcher.class.getSimpleName() +
+                    " are not defined when the it is not a segment start.");
             }
             return attrs;
         }

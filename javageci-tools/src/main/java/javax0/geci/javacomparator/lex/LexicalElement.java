@@ -34,7 +34,6 @@ public class LexicalElement {
         }
     }
 
-    ;
     public final String lexeme;
     public final Type type;
 

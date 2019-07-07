@@ -20,6 +20,22 @@ public class TestCompoundParamsBuilder {
     }
 
     @Test
+    @DisplayName("Test that single and double quotes strings are working")
+    void testMultipleValues() {
+        final var sut = new CompoundParamsBuilder("abrakadabra alma=\"Hungarian\" alma='German' apple='English' manzana='Espa\\'nol'");
+        final var cp = sut.build();
+        Assertions.assertEquals("abrakadabra", cp.id());
+        Assertions.assertEquals(3, cp.keySet().size());
+        Assertions.assertEquals("Hungarian", cp.get("alma"));
+        Assertions.assertEquals("English", cp.get("apple"));
+        Assertions.assertEquals("Espa'nol", cp.get("manzana"));
+
+        Assertions.assertEquals(2, cp.getValueList("alma").size());
+        Assertions.assertEquals("Hungarian", cp.getValueList("alma").get(0));
+        Assertions.assertEquals("German", cp.getValueList("alma").get(1));
+    }
+
+    @Test
     @DisplayName("Test that numeric values are working")
     void testNumericValues() {
         final var sut = new CompoundParamsBuilder("abrakadabra long=12L int=5 float=7.54e13 hex=0x55 hexFloat=0x55P3");
@@ -61,7 +77,7 @@ public class TestCompoundParamsBuilder {
     @DisplayName("Test that 'id' as key throws exception when not redefinable")
     void testIdThrows() {
         final var sut = new CompoundParamsBuilder("abrakadabra id=12L int=5 float=7.54e13 hex=0x55 hexFloat=0x55P3");
-        Assertions.assertThrows(GeciException.class, () -> sut.build());
+        Assertions.assertThrows(GeciException.class, sut::build);
     }
 
     @Test

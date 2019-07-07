@@ -3,7 +3,6 @@ package javax0.geci.api;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * A {@code Source} represents a source file in the project that the

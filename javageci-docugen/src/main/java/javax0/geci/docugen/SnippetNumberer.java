@@ -1,13 +1,9 @@
 package javax0.geci.docugen;
 
 import javax0.geci.annotations.Geci;
-import javax0.geci.api.Context;
-import javax0.geci.api.Segment;
-import javax0.geci.api.Source;
-import javax0.geci.tools.CompoundParams;
+import javax0.geci.api.*;
 
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 @Geci("configBuilder localConfigMethod='' configurableMnemonic='number'")
 public class SnippetNumberer extends AbstractSnippeter {
@@ -60,12 +56,6 @@ public class SnippetNumberer extends AbstractSnippeter {
         }
     }
 
-
-    @Override
-    public void context(Context context) {
-        super.context(context);
-        fileNamePattern = Pattern.compile(config.files);
-    }
 
     //<editor-fold id="configBuilder">
     private String configuredMnemonic = "number";

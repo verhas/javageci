@@ -1,15 +1,16 @@
 package javax0.geci.api;
 
+import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
 public interface CompoundParams {
     static boolean toBoolean(String s) {
         return s != null && (
-                s.equalsIgnoreCase("yes") ||
-                        s.equalsIgnoreCase("ok") ||
-                        s.equalsIgnoreCase("1") ||
-                        s.equalsIgnoreCase("true")
+            s.equalsIgnoreCase("yes") ||
+                s.equalsIgnoreCase("ok") ||
+                s.equalsIgnoreCase("1") ||
+                s.equalsIgnoreCase("true")
         );
     }
 
@@ -20,6 +21,8 @@ public interface CompoundParams {
     String get(String key, Supplier<String> defaultSupplier);
 
     String get(String key);
+
+    List<String> getValueList(String key);
 
     String id();
 

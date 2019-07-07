@@ -10,7 +10,6 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 import javax0.geci.api.Logger;
 import javax0.geci.api.Source;

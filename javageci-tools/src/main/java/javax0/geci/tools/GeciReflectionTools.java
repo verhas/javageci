@@ -427,7 +427,7 @@ public class GeciReflectionTools {
     public static Class[] getAllClassesSorted(Class<?> klass) {
         final var classes = Arrays.stream(klass.getClasses()).collect(Collectors.toSet());
         final var declaredClasses = Arrays.stream(klass.getDeclaredClasses()).collect(Collectors.toSet());
-        final var allClasses = new HashSet<>();
+        final var allClasses = new HashSet<Class<?>>();
         allClasses.addAll(classes);
         allClasses.addAll(declaredClasses);
         final Class[] classArray = allClasses.toArray(new Class[0]);

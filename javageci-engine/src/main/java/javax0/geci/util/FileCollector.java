@@ -132,8 +132,8 @@ public class FileCollector {
     /**
      * Get the segment split helper that is to be used for this source.
      *
-     * @param source
-     * @return
+     * @param source for which we need the helper
+     * @return the helper object
      */
     public SegmentSplitHelper getSegmentSplitHelper(Source source) {
         final var absFn = source.getAbsoluteFile();

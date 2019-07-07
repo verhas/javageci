@@ -1,10 +1,10 @@
 package javax0.geci.docugen;
 
 import javax0.geci.annotations.Geci;
+import javax0.geci.api.CompoundParams;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
-import javax0.geci.tools.CompoundParams;
 
 import java.util.regex.Pattern;
 
@@ -38,7 +38,7 @@ public class SnippetCollector extends AbstractSnippeter {
 
     private static class Config extends AbstractSnippeter.Config {
         private Pattern snippetStart = Pattern.compile("//\\s*snipp?et\\s+(.*)$");
-        private Pattern snippetEnd = Pattern.compile("//\\s*end\\s+snipp?et");
+        private Pattern snippetEnd = Pattern.compile("//\\s*end(?:\\s+snipp?et)?");
     }
 
     @Override
@@ -51,7 +51,7 @@ public class SnippetCollector extends AbstractSnippeter {
         throw new IllegalArgumentException("This method should never be invoked");
     }
 
-    //snippet SnippetCollectorProcessExCode
+    //snippet SnippetCollectorProcessExCode skipper="true"
     @Override
     public void processEx(Source source) throws Exception {
         SnippetBuilder builder = null;
@@ -61,16 +61,18 @@ public class SnippetCollector extends AbstractSnippeter {
                 builder = new SnippetBuilder(starter.group(1));
             } else if (builder != null) {
                 final var stopper = config.snippetEnd.matcher(line);
+                // snippet skip
                 if (stopper.find()) {
                     snippets.put(builder.snippetName(), builder.build());
                     builder = null;
                 } else {
                     builder.add(line);
                 }
+                // snippet skip end
             }
         }
         if (builder != null) {
-            throw new GeciException(builder.snippetName() + " was not finished before end of the file " + source.getAbsoluteFile());
+            throw new GeciException("Snippet " + builder.snippetName() + " was not finished before end of the file " + source.getAbsoluteFile());
         }
     }
     //end snippet

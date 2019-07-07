@@ -9,15 +9,15 @@ import java.util.regex.Pattern;
  */
 public class NumberLiteral implements LexEater {
 
-    private static final Pattern patterns[] = new Pattern[]{
-            Pattern.compile("^([+-]?(?:0[Bb])?\\d[\\d_]*[lL]?)")
-            ,
-            Pattern.compile("^([+-]?0[Xx][\\da-fA-F][\\d_a-fA-F]*[lL]?)")
-            ,
-            Pattern.compile("^([+-]?\\d+(?:\\.\\d*)?(?:[eE][+-]?\\d+)?[fFdD]?)")
-            ,
-            Pattern.compile("^([+-]?0[Xx][\\da-fA-F]*(?:\\.[\\da-fA-F]*)?[pP][+-]?\\d+[fFdD]?)")
-            ,
+    private static final Pattern[] patterns = new Pattern[]{
+        Pattern.compile("^([+-]?(?:0[Bb])?\\d[\\d_]*[lL]?)")
+        ,
+        Pattern.compile("^([+-]?0[Xx][\\da-fA-F][\\d_a-fA-F]*[lL]?)")
+        ,
+        Pattern.compile("^([+-]?\\d+(?:\\.\\d*)?(?:[eE][+-]?\\d+)?[fFdD]?)")
+        ,
+        Pattern.compile("^([+-]?0[Xx][\\da-fA-F]*(?:\\.[\\da-fA-F]*)?[pP][+-]?\\d+[fFdD]?)")
+        ,
     };
 
     @Override

@@ -1,14 +1,11 @@
 package javax0.geci.docugen;
 
 import javax0.geci.annotations.Geci;
-import javax0.geci.api.Context;
+import javax0.geci.api.CompoundParams;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
-import javax0.geci.tools.CompoundParams;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -36,39 +33,20 @@ public class SnippetAppender extends AbstractSnippeter {
     }
     //end snippet
 
-    //snippet SnippetAppender_context
-    @Override
-    public void context(Context context) {
-        super.context(context);
-        fileNamePattern = Pattern.compile(config.files);
-    }
-    //end snippet
-
     //<editor-fold id="configBuilder">
     private String configuredMnemonic = "append";
 
     @Override
-    public String mnemonic() {
+    public String mnemonic(){
         return configuredMnemonic;
     }
 
     private final Config config = new Config();
-
     public static SnippetAppender.Builder builder() {
         return new SnippetAppender().new Builder();
     }
 
     public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder {
-        public Builder files(String files) {
-            config.files = files;
-            return this;
-        }
-
-        public Builder phase(int phase) {
-            config.phase = phase;
-            return this;
-        }
-
         public Builder mnemonic(String mnemonic) {
             configuredMnemonic = mnemonic;
             return this;

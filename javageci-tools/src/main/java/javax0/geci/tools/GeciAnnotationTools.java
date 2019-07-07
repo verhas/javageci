@@ -223,7 +223,7 @@ public class GeciAnnotationTools {
         final var annotations = annotation.annotationType()
                 .getDeclaredAnnotations();
         final var renamedName = Arrays.stream(annotations)
-                .filter(x -> isAnnotationGeci(x)).map(GeciAnnotationTools::getRawValue).findFirst();
+                .filter(GeciAnnotationTools::isAnnotationGeci).map(GeciAnnotationTools::getRawValue).findFirst();
         return renamedName.isPresent() && renamedName.get().length() > 0 ?
                 renamedName.get() : selfName;
     }

@@ -1,7 +1,5 @@
 package javax0.geci.api;
 
-import java.util.Map;
-
 /**
  * A SegmentSplitHelper helps to identify the start and end of the
  * segments in a source file and that way it helps to split up the

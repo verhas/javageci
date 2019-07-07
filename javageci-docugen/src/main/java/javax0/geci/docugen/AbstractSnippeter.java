@@ -1,12 +1,8 @@
 package javax0.geci.docugen;
 
 import javax0.geci.annotations.Geci;
-import javax0.geci.api.Context;
-import javax0.geci.api.GeciException;
-import javax0.geci.api.Segment;
-import javax0.geci.api.Source;
+import javax0.geci.api.*;
 import javax0.geci.tools.AbstractGeneratorEx;
-import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.CompoundParamsBuilder;
 
 import java.util.regex.Pattern;
@@ -34,8 +30,8 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
                 final var segment = source.safeOpen(name);
                 final var sourceParams = segment.sourceParams();
                 final var snippetName = sourceParams.get("snippet", name);
-                if( snippets == null ){
-                    throw new GeciException("The method class "+this.getClass().getName()+".context() did not call 'super.context(context)'");
+                if (snippets == null) {
+                    throw new GeciException("The method class " + this.getClass().getName() + ".context() did not call 'super.context(context)'");
                 }
                 final var snippet = snippets.get(name, snippetName);
                 if (snippet == null) {
@@ -67,9 +63,12 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
     @Override
     public void context(Context context) {
         snippets = context.get(SnippetCollector.CONTEXT_SNIPPET_KEY, SnippetStore::new);
+        fileNamePattern = Pattern.compile(config.files);
     }
+
     //<editor-fold id="configBuilder">
     private final Config config = new Config();
+
     public class Builder {
         public Builder files(String files) {
             config.files = files;

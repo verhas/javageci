@@ -2,6 +2,7 @@ package javax0.geci.tools;
 
 import javax0.geci.api.GeciException;
 import javax0.geci.javacomparator.lex.Lexer;
+import javax0.geci.javacomparator.lex.LexicalElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ public class CompoundParamsBuilder {
     private boolean redefine = false;
 
     /**
-     * @return
+     * @return this
      */
     public CompoundParamsBuilder redefineId() {
         redefine = true;
@@ -49,9 +50,14 @@ public class CompoundParamsBuilder {
     }
 
     public CompoundParams build() {
-        final Map<String, String> params = new HashMap<>();
+        final Map<String, List<String>> params = new HashMap<>();
         final var lexer = new Lexer();
-        final var elements = lexer.apply(List.of(line));
+        final LexicalElement[] elements;
+        try {
+            elements = lexer.apply(List.of(line));
+        } catch (IllegalArgumentException iae) {
+            throw new GeciException("Cannot parse the line for parameters: " + line, iae);
+        }
         if (elements.length < 1) {
             throwMalformed(line);
         }
@@ -60,7 +66,7 @@ public class CompoundParamsBuilder {
         if (elements[0].type == IDENTIFIER && elements.length < 2 || elements.length > 1 && elements[1].type != SYMBOL) {
             name = elements[0].lexeme;
             startAt = 1;
-        }else{
+        } else {
             startAt = 0;
         }
         for (int i = startAt; i < elements.length; i++) {
@@ -82,7 +88,10 @@ public class CompoundParamsBuilder {
             } else if ("id".equals(key)) {
                 throw new GeciException("id is not allowed as parameter name in '" + line + "'");
             } else if (!excludedKeys.contains(key)) {
-                params.put(key, value);
+                if (!params.containsKey(key)) {
+                    params.put(key, new ArrayList<>());
+                }
+                params.get(key).add(value);
             }
         }
         return new CompoundParams(name, params);
