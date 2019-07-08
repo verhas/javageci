@@ -12,6 +12,7 @@ public interface Geci {
     String MAIN_RESOURCES = "mainResources";
     String TEST_SOURCE = "testSource";
     String TEST_RESOURCES = "testResources";
+
     /**
      * Add a new directory to the list of source directories that Geci should process.
      *
@@ -51,7 +52,6 @@ public interface Geci {
      *
      * @param fileNameExtension the file name extension to which the
      *                          helper will be registered.
-     *
      * @param helper            the helper associated to the
      *                          fileNameExtension
      */
@@ -92,7 +92,6 @@ public interface Geci {
      * @return {@code this}
      */
     Geci source(Source.Maven maven);
-
 
 
     /**
@@ -140,6 +139,7 @@ public interface Geci {
      * This method is the opposite of the method {@link #only(String...)}.
      * Using this method you can specify patterns to be ignored by the
      * source collections.
+     *
      * @param patterns regular expression patterns used to filter the
      *                 source files
      * @return {@code this}
@@ -195,6 +195,38 @@ public interface Geci {
      * @return {@code this}
      */
     Geci comparator(BiPredicate<List<String>, List<String>> isModified);
+
+    /**
+     * Get the context of the Geci object that is injected into the generators. This method can be used in the special
+     * case of different generators should share the same context. In that case one Geci object can be used to execute
+     * one generator and another can be used to execute other generators using the same context.
+     *
+     * <p>For example the application wants to run the {@code SnippetCollector} code generator only on Java source files
+     * and thus the {@code source()} method calls define the source sets for the Java files only.
+     *
+     * <p>The same application want to insert the snippets into asciidoc files and using a separate Geci object is
+     * configured for the source sets that contain only the asciidoc files to run the generator {@code
+     * AsciidocCodeInserter} (it does not exist yet).
+     *
+     * <p>The collected snippets are stored in objects referenced by the context of the Geci object. This method can be
+     * used to get access to the context object after the first Geci object {@code generate()} returned and the {@link
+     * #context(Context)} method can be used on the next Geci object (configured for different source sets) to inject the
+     * contex.
+     *
+     * @return the context object
+     */
+    Context context();
+
+    /**
+     * Inject a context into the Geci object. In case a contex object is not injected into the Geci object before the
+     * method {@link #generate()} is invoked then a context will automatically be created. If there was a non-null
+     * context object injected then the one injected will be used.
+     *
+     * @param context the object to be injected into the Geci object.
+     * @return this
+     */
+    Geci context(Context context);
+
 
     /**
      * Run the code generation.

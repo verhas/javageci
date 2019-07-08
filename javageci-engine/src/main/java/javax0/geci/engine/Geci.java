@@ -320,8 +320,22 @@ public class Geci implements javax0.geci.api.Geci {
         return touched;
     }
 
+
+    private Context context = null;
+
+    public Context context() {
+        return context;
+    }
+
+    public Geci context(Context context) {
+        this.context = context;
+        return this;
+    }
+
     private void injectContextIntoGenerators() {
-        Context context = new javax0.geci.engine.Context();
+        if( context == null ) {
+            context = new javax0.geci.engine.Context();
+        }
         generators.forEach(g -> g.context(context));
     }
 }
