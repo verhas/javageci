@@ -20,7 +20,7 @@ public class SnippetRegex extends AbstractSnippeter {
     protected void modify(Source source, Segment segment, Snippet snippet, CompoundParams params) {
         final var search = new ArrayList<String>();
         final var replace = new ArrayList<String>();
-        final var tilde = params.is("tilde");
+        final var escape = params.get("escape");
         for (final var rep : params.getValueList("replace")) {
             if (rep.length() == 0) {
                 throw new GeciException("Replace parameter in snippet " + snippet.name() + " in source " + source.getAbsoluteFile() + " has zero length");
@@ -31,9 +31,9 @@ public class SnippetRegex extends AbstractSnippeter {
             }
             final var sepPos = rep.indexOf(startChar, 1);
             search.add((
-                    tilde
+                    escape.length() > 0
                         ?
-                        (Function<String, String>) (String s) -> s.replace('~', '\\')
+                            (Function<String, String>) (String s) -> s.replace(escape, "\\")
                         :
                         (Function<String, String>) (String s) -> s
                 ).apply(rep.substring(1, sepPos))

@@ -16,12 +16,10 @@ public class SnipetLineSkipper extends AbstractSnippeter {
 
     @Override
     protected void modify(Source source, Segment segment, Snippet snippet, CompoundParams params) {
-        if (snippet.param("skipper").length() > 0) {
-            if (params.id().equals("remove")) {
-                removeSkippers(snippet);
-            } else {
-                skipLines(snippet);
-            }
+        if (params.id().equals("remove")) {
+            removeSkippers(snippet);
+        } else {
+            skipLines(snippet);
         }
     }
 
@@ -50,7 +48,7 @@ public class SnipetLineSkipper extends AbstractSnippeter {
             if (skipping) {
                 if (skipCounter > 0) {
                     skipCounter--;
-                    skipping = skipCounter == 0 ;
+                    skipping = skipCounter > 0 ;
                     skipPattern = null;
                     continue;
                 }

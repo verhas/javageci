@@ -37,8 +37,8 @@ public class SnippetCollector extends AbstractSnippeter {
     public static final String CONTEXT_SNIPPET_KEY = "snippets";
 
     private static class Config extends AbstractSnippeter.Config {
-        private Pattern snippetStart = Pattern.compile("//\\s*snipp?et\\s+(.*)$");
-        private Pattern snippetEnd = Pattern.compile("//\\s*end(?:\\s+snipp?et)?");
+        private Pattern snippetStart = Pattern.compile("(?://|/\\*)\\s*snipp?et\\s+(.*)$");
+        private Pattern snippetEnd = Pattern.compile("(?://\\s*end(?:\\s+snipp?et)?|end(?:\\s+snipp?et)?\\s*\\*/)");
     }
 
     @Override
