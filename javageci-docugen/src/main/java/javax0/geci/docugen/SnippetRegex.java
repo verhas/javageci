@@ -41,7 +41,7 @@ import java.util.function.Function;
  * interpreted as a Java string already twice. This means that the
  * escape characters used in regular expressions as well as in strings,
  * the backslash characters had to be repeated four times. This would
- * greatly decrease the readability. Instead of `\s` we could write
+ * greatly decrease readability. Instead of `\s` we could write
  * `\\\\s`. (As a matter of fact it is a possibility.)
  *
  * To lessen the number of backslash characters and to avoid building

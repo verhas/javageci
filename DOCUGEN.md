@@ -1,7 +1,7 @@
 # Documentum Generation using SNIPPETS
 
-A software is as good as it is used. Good and up-to-date documentation
-is needed for the use of a software and be honest: good documentation is
+Software is as good as it is used. Good and up-to-date documentation
+is needed for the use of software and to be honest: good documentation is
 rare. There are many aspects to create good documentation like good
 grammar, easy to understand sentences, up-to-date facts, examples in the
 documentation and many others. Docugen code generator working inside the
@@ -9,23 +9,23 @@ Java::Geci framework can help to keep the documentation up-to-date
 reducing redundancy.
 
 Documentation is redundant many times. This is not a problem.
-Documenatation is not code. When we read the documentation the
+Documentation is not code. When we read the documentation the
 information has to be consistent and has to be there where we actually
-are in the reading and understanding process. This many times mean that
+are in the reading and understanding process. Many times it means that
 the same text appears at different places. It gets there using copy and
 paste. Similarly program documentation many times contains code
 examples. Sometimes these examples are written by the document
 writer/editor (bad practice), other times, they are written by the
-programmers as example programs and th editors only copy the code to the
+programmers as example programs and the editors only copy the code to the
 documentation.
 
-Documentation has to follow the change of the code. If the code chnages
+Documentation has to follow the change of the code. If the code changes
 the relevant, but only the relevant parts of the documentation has to be
 updates.
 
-If the copy and paste or update operations are preformed each time the
+If the copy and paste or update operations are performed each time the
 original text or the code changes then the documentation is up-to-date.
-Usually these operations, when done by a human are not performed,
+Usually, these operations, when done by a human are not performed,
 performed late or with mistakes. The reason for this is that these are
 boring and mechanical tasks which humans are not good at. The same time
 computers can be asked to perform these tasks and this is what
@@ -33,9 +33,9 @@ Java::Geci snippet handling does.
 
 ## Using snippets
 
-To have Java::Geci do these copy paste operations the parts of the text,
+To have Java::Geci do these copy-paste operations the parts of the text,
 or program code that needs to appear elsewhere as well has to be
-signalled. This is done putting a special line containing
+signaled. This is done putting a special line containing
 
 ```
 snippet snippet_name parameters
@@ -49,14 +49,14 @@ end snippet
 
 after the last line of the text. These two lines define a snippet. The
 words `snippet` and `end snippet` are configurable in the code generator
-that collects the snippets. By default these are the strings and the
-word `snippet` can also be writen as `snipet` if you like to misspell
+that collects the snippets. By default, these are the strings and the
+word `snippet` can also be written as `snipet` if you like to misspell
 the word `snippet`.
 
 Snippets are essentially text lines. Each snippet has a name and
 optionally has parameters. The snippet collectors usually collect the
 lines from the sources recognizing the start and the end lines. For
-example the class `SnippetCollector` collects the snippets with the
+example, the class `SnippetCollector` collects the snippets with the
 start and end lines as described above. If only requires that the line
 contains* the work `snippet` there is a name after it and optionally
 parameters. Since it requires that it only *contains* these parts the
@@ -72,7 +72,7 @@ generate code. They, however, implement the `Generator` interface and
 thus work inside the Java::geci framework and they can be configured the
 same way as many other generators.
 
-There are three type of snippet handling generators:
+There are three types of snippet handling generators:
 
 1. **Snippet collectors** that read the source files that the Java::Geci
 interface lists. The snippets are collected into a `SnippetStore`
@@ -80,7 +80,7 @@ object, which itself is stored in the context managed by the framework.
 Since this context is shared between the different generators the
 `SippetStore` object is available to all snippet handling generators
 that run controlled by the same Geci object or by Geci objects that
-themselves share the same context. The `SnippetStore` can store a
+they share the same context. The `SnippetStore` can store a
 snippet and can also retrieve a snippet using its name.
 
 1. **Snippet modifiers** that modify the already collected snippets.
@@ -100,22 +100,22 @@ the code is documentation. They do it the standard way Java::Geci
 support writing segments and possibly failing the unit test when the
 documentation *was* not up-to-date.
 
-Later in this documentum we will write about the available snippet
+Later in this document, we will write about the available snippet
 handling generators and how to use them.
 
 ## Snippet Strategy
 
 Before getting into the details of the different snippet handling
-generators let's talk about the strategy how to use snippets.
+generators let's talk about the strategy on how to use snippets.
 
-When the documentation contains sample code then it is fairly
+When the document contains sample code then it is fairly
 straightforward what a snippet is. It is the code of the unit test that
 plays the role of the documentation. The code is inserted into the
 documentation as formatted code. 
 
 There parts of the document that are repeated. It is also possible to
 have hyperlinks and references to the text, but many times it is better
-to repeat the text. In this case one part of the document can play the
+to repeat the text. In this case, one part of the document can play the
 role of the snippet and the other parts may be the segments where the
 snippet will be copied. This approach needs a lot of discipline no to
 mix up the original snippet text and the copies. Many times it is better
@@ -127,10 +127,10 @@ natural place in the code itself. A good example is the configuration
 parameters of the generators. Generators usually have an inner class
 named `Config` with many fields. When a new configuration parameter is
 inserted or deleted or the use of it changes then this is more likely to
-update the documenation if it is attached directly to the field as a
-comment / snippet than if it is in a separate documentation file.
-Although there is a high chace that the comment, which is part of the
-documentation will also be out dated as comments usually are outdated.
+update the documentation if it is attached directly to the field as a
+comment/snippet than if it is in a separate documentation file.
+Although there is a high chance that the comment, which is part of the
+documentation will also be outdated as comments usually are outdated.
 Even though, the chances are a slim better than in case of a separate
 documentation.
 
@@ -138,17 +138,17 @@ documentation.
 
 Code generators usually work alone without the aid of other generators.
 Snippet handling generators are different. They cooperate heavily. In
-this case it has the consequence that there has to be a specific order
+this case, it has the consequence that there has to be a specific order of
 how these generators are executed. It is obvious that we cannot trim the
 lines of the snippets eliminating the tabbing on the left side of the
 lines if they were not collected yet. Also trimming is not possible when
-the lines were already numbered. In this case the order is fairly
+the lines were already numbered. In this case, the order is fairly
 obvious.
 
-In other cases the ordering may not be so simple and obvious. We may
+In other cases, the ordering may not be so simple and obvious. We may
 need to delete certain lines from a code sample and want to number the
 lines so that the text can reference the individual code lines in the
-explanation. In this case numbering comes after the deletetion of
+explanation. In this case, numbering comes after the deletion of
 certain lines. A different code sample, however, needs to number the
 lines first and then delete the lines that we do not want in the
 documentation. That way the numbering follows the numbering of the
@@ -198,9 +198,9 @@ the implemented generators in three subsections.
 
 ### Collector
 
-Currently there is only one snippet collecting generator (unless this
+Currently, there is only one snippet collecting generator (unless this
 document is out of date). The generator `SnippetCollector`. It is
-executed bz the framework for all sources that are configured and
+executed by the framework for all sources that are configured and
 collected and the collector scans through the lines of the sources and
 collects the snippets.
 
@@ -236,13 +236,13 @@ assigned to the segment where the snippet will be inserted.
 
 Keeping track of the copies is automatically done by the snippet store.
 The snippet store stores the original snippets as they are collected and
-also copies that are identified by the name of the snippet and by the
+also, copies that are identified by the name of the snippet and by the
 id of the segment.
 
-For example the snippet named `SnippetCollector_config` is used a few
+For example, the snippet named `SnippetCollector_config` is used a few
 lines above and the use is configured to perform certain modifications.
-Namely these are trimming, and replacing declaration clutter (types,
-modifiers and so on) that is important in the Java code, but distracts
+Namely, these are trimming, and replacing declaration clutter (types,
+modifiers and so on) that is important in the Java code but distracts
 in the documentation. We can insert the same snippet without any
 modifications again:
 
@@ -285,11 +285,11 @@ to create this documentation:
 16.     geci.failed());
 ```
 
-we can have a look at the line 14. It registers the
+we can have a look at line 14. It registers the
 `MarkdownSegmentSplitHelper` class and associates it with the file
 extension `md`. (We could also write `.md`.) For files that have the
 extension `.md` this segment split helper will be used. For everything
-else the default Java segment split helper.
+else, the default Java segment split helper.
 
 The way segment split helpers work is that they can tell where a segment
 starts and where it ends. Most of the helpers (as a matter of fact both
@@ -311,7 +311,7 @@ expression patterns:
                         "^(\\s*)<!--\\s*end\\s+snip\\s*(.*)-->\\s*$"
 ```
 
-This shows that in case of markdown the segments can start with a HTML
+This shows that in the case of markdown the segments can start with an HTML
 comment that contains the word `snip` at the start and then it is
 followed by the segment parameters or it can be a special
 
@@ -322,7 +322,7 @@ followed by the segment parameters or it can be a special
 line which is a weird hack in markdown and will not get into the HTML
 output and generally can be used as a comment.
 
-The end of a segment is either three backtick or an HTML comment or a
+The end of a segment is either three backticks or an HTML comment or a
 markdown comment as the example shows above that contain the words `end
 snip`. It is important to note that the `MarkdownCodeInserter` generator
 that inserts the code into the segments look at the first line of the
@@ -341,7 +341,7 @@ absolutely fine to have segments with the same name in different source
 files when we generate code into Java programs the snippet handling may
 get confused. If two different segments share the same name even in
 different files and use the same snippet then they will share the same
-copy of the snippet. All the modifications done by one of the use will
+copy of the snippet. All the modifications done by one of the uses will
 also affect the use of the snippet in the other segment. As a rule of
 thumb: segments using snippets have to be uniquely named. If more than
 one segment uses the same snippet then only one can use the name of the
@@ -350,18 +350,18 @@ refer to the snippet using the `snippet` parameter.
 
 #### Invocation of Modifiers
 
-A snippet modfying generator runs only if it is registered in the Geci
+A snippet modifying generator runs only if it is registered in the Geci
 execution for the appropriate phase and only for the segments that
 configures the execution of that modifier.
 
 Each snippet modifier generators has a mnemonic. The use of this
 mnemonic is a bit different than in case Java code generators, but on
-high level it is very similar. It is an word that identifies the
+a high level, it is very similar. It is a word that identifies the
 generator.
 
 When the segment has a parameter, which is the mnemonic of the generator
 then the generator will be executed for that segment, and it will
-execute the modifications is has to perform on the segment copy of the
+execute the modifications it has to perform on the segment copy of the
 snippet.
 
 The format of the parameter with the mnemonic is the same as the format
@@ -378,17 +378,17 @@ snip MarkdownSegmentSplitHelper_patterns skip="do" trim="do" regex="replace='/e_
 
 The identifier of the segment is `MarkdownSegmentSplitHelper_patterns`
 and this is also the name of the snippet it uses. The snippet when
-collected contains some lines that we do not need in the documentation
-therefore the generator with the mnemonic `skip` is used. Also the lines
+collected contains some lines that we do not need in the documentation,
+therefore, the generator with the mnemonic `skip` is used. Also, the lines
 have to be trimmed therefore `trim` is also configured. As a matter of
-fact the skipper generator does not need much configuration and the
-trimming generator is invoked using the default parameters. In this case
-we just write "do" as a configuration string. In that case the id of the
+fact, the skipper generator does not need many configurations and the
+trimming generator is invoked using the default parameters. In this case,
+we just write "do" as a configuration string. In that case, the id of the
 configuration is `do` and this is generally ignored.
 
 It is important that in case a snippet modifier is to be executed but
 does not need configuration then it cannot just be configured with the
-empty string. For example `trim=""` will not run the trimmer. Empty
+empty string. For example `trim=""` will not run the trimmer. The empty
 string means that the modifier is not configured to run.
 
 The generator with the mnemonic `regex` is configured with one
@@ -432,12 +432,12 @@ in the builder interface.
 
 #### Snippet Modifiers
 
-In this section we document the individual snippet modifiers one by one.
+In this section, we document the individual snippet modifiers one by one.
 
 ##### Trim
 
 Trim is implemented in the generator class `SnippetTrim`. It can remove
-the spaces from the left of the lines keeping the originall tabbing.
+the spaces from the left of the lines keeping the original tabbing.
 When a snippet is collected from some deeply nested code structure then
 it usually happens that each line starts with many spaces. This would
 push the code in the documentation to the right leaving a huge gutter on
@@ -451,7 +451,7 @@ The configuration parameters are the followings:
 
 This parameter can define the number of spaces on the left of
 the lines. Although the parameter is a string the value should
-obviously be an integer number as it is recommended to specify
+obviously, be an integer number as it is recommended to specify
 it without `"` or `'` characters surrounding, just simply, for
 example
 
@@ -493,7 +493,7 @@ When we write regular expressions inside the `replace` string it is
 interpreted as a Java string already twice. This means that the
 escape characters used in regular expressions as well as in strings,
 the backslash characters had to be repeated four times. This would
-greatly decrease the readability. Instead of `\s` we could write
+greatly decrease readability. Instead of `\s` we could write
 `\\\\s`. (As a matter of fact it is a possibility.)
 
 To lessen the number of backslash characters and to avoid building
@@ -531,7 +531,7 @@ regex object is created.
 
 ### Snippet Inserters
 
-In case of markdown formatted code is
+In the case of markdown formatted code is
 enclosed between three starting and three ending back-ticks on a line.
 
 When handling markdown Java::Geci needs the `MarkdownSegmentSplitHelper`
