@@ -8,6 +8,15 @@ import javax0.geci.api.Source;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+/** // snippet SnipetLineSkipper_doc
+ *
+ *  The `skip` functionality is implemented in the class `SnippetLineSkipper`. This generator can remove certain lines
+ *  from a snippet that are denoted to be removed. Many times some code segment contains
+ *
+ *
+ *
+ *  // end snippet
+ */
 @Geci("configBuilder localConfigMethod='' configurableMnemonic='skip'")
 public class SnipetLineSkipper extends AbstractSnippeter {
 

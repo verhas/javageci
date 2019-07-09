@@ -525,9 +525,114 @@ regex object is created.
 <!-- end snip -->
 
 ##### Number
+
+<!-- snip SnippetNumberer_doc regex="replace='/^~s*~*~s?//' escape='~'"-->
+
+The `number` snippet handling generator is implemented in the class `SnippetNumberer`.
+It can number the individual lines in a snippet with increasing numbers. The result can be used
+to have some code with line numbers so that the surrounding text can reference the actual lines.
+
+<!-- end snip -->
+
+
+The configuration parameters for the numberer:
+
+<!-- snip SnippetNumberer_config snippet="epsilon" trim="to=0" append="snippets='SnippetNumberer_Config_.*'" regex="replace='/private~s~w+~s/##### `/' replace='/;.*$/`/' replace='|^~s*/~*||' escape='~'" skip="do"-->
+##### `start = "1"`
+
+
+This is the number that will be used to denote the first line. The default is to start from one and to use
+increasing numbers.
+
+##### `step = "1"`
+
+
+This configuration parameter controls the increment between the consecutive numbers. If you want to number
+the lines in step of ten, like we did old times in BASIC then you can set `number="step='10'"`.
+
+##### `format = "%d. "`
+
+
+This configuration option controls how the numbers are formatted. This is the string that is passed to the
+`String.format()` method as first argument when converting the line number to string.
+
+##### `from = "0"`
+
+
+When not all the lines are needed to be numbered in a snippet you can limit the numbering to start at
+certain line and finish at another line. This parameter can specify the index of the first line that
+is to be numbered. The default value is zero, which means that the very first line already will be numbered.
+If you want to number starting with the second line then you can use `number="from=1"` as a configuration.
+If you want to number only the last three lines then you can configure the generator on the segment
+prividing the parameters `number="from=-3"`.
+
+##### `to = ""`
+
+
+You can limit the end of the numbering. This parameter defines the index of the last line that is numbered
+exclusive. If you want to number only the first three lines you can configure the generator as
+`number="to=3"`. That way only the lines with the indexes `0`, `1` and `2` will be numbered.
+
+Negative numbers, just as in case of `from` count backward from the end of the snippet. Empty value, which is
+the default means no limit.
+
+<!-- end snip -->
+
 ##### Append
+<!-- snip SnippetAppender_doc regex="replace='/^~s*~*~s?//' escape='~'"-->
+
+Snippet appender can be used to append multiple snippets together. This is useful when the content of the
+documentation is in different places and it would be inconvinient to include the individual snippets one by one
+into the documentation. The snippets can be referenced using their name and the reference can also contain regular
+expression. In that case all the snippets that match the regular expression will be joined together and added to the
+actual snippet in alphabetical order.
+
+The generator has one configuration parameter `snippets` (note the plural) that should list the snippets that are to
+be appended to the original snippet. Remember that the base snippet is referenced in the segment using the parameter
+`snippet` or using the name of the segment id as a snippet name by default and the appended snippets are appended to
+this snippet.
+
+There can be multiple `snippets` values on the configuration of the snippet appender. They are worked up from left to
+right and when a value matches many snippet names as a regular expression then these snippets will be appended in
+alphabetical order. The usual practice is to name these snippets something like `snippetName_001`, `snippetName_002`
+and so on and use the configuration `append="snippets='snippetName_.*'"`.
+
+The regular expressions sometimes may need escaping and the same way as in case of the snippet modifying generator
+`regex` there is a parameter `escape7 that can be used to specify the character that is used instead of `\\\\`.
+
+Sometimes there is no base snippet to append to. The documentation, for example, needs to join together the snippets
+`manySniipets_.*` that are `manySniipets_001`, `manySniipets_002`, and `manySniipets_003`. In that case if the
+segment references the first snippet, `snippet="manySniipets_001" append="snippets='manySniipets_.*'"` then the first
+snippet will be copied twice. For this reason there is a predefined snippet in the snippet store called `epsilon`
+that contains no lines. Using that we can write
+
+snippet="epsilon" append="snippets='manySniipets_.*'"
+
+The snippets are copied from the original, unmodified version of the snippet. It is not possible to execute
+modifications on the different snippets and perform the appending afterwards.
+
+<!-- end snip -->
+
+<!-- snip SnippetAppender_config snippet="epsilon" trim="to=0" append="snippets='SnippetAppender_Config_.*'" regex="replace='/private~s(?:~w+|List<String>)~s/##### `/' replace='/;.*$/`/' replace='|^~s*/~*||' escape='~'" skip="do"-->
+##### `snippets = List.of()`
+
+
+This configuration parameter defines the snippets that are appended to the base snippet.
+
+##### `escape = ""`
+
+
+This parameter can be used to define an escape character / string that can be used instead of the backslash
+character that would be needed four times to be used in the regular expression. It is recommended to use the
+tilde `~` character.
+
+<!-- end snip -->
+
+
 ##### Skip
 
+<!-- snip SnipetLineSkipper_doc regex="replace='/^~s*~*~s?//' escape='~'"-->
+<!-- end snip -->
 
 ### Snippet Inserters
 

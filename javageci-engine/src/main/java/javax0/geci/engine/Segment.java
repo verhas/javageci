@@ -65,8 +65,8 @@ public class Segment implements javax0.geci.api.Segment {
     @Override
     public String getContent() {
         return String.join("\n", preface) +
-                String.join("\n", lines) +
-                String.join("\n", postface);
+            String.join("\n", lines) +
+            String.join("\n", postface);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class Segment implements javax0.geci.api.Segment {
                 other.lines.forEach(line -> write(line));
             } else {
                 throw new GeciException("Segment " + segment + " is not instance of " + Segment.class.getName() +
-                        ". It is " + segment.getClass().getName() + "which is not compatible with this implementation");
+                    ". It is " + segment.getClass().getName() + "which is not compatible with this implementation");
             }
         }
         return this;
@@ -115,9 +115,13 @@ public class Segment implements javax0.geci.api.Segment {
             } else {
                 final String formatted;
                 if (!params.isEmpty()) {
-                    formatted = new Template(params).resolve(String.format(s, parameters));
+                    formatted = new Template(params).resolve(parameters.length == 0 ? s : String.format(s, parameters));
                 } else {
-                    formatted = String.format(s, parameters);
+                    if (parameters.length == 0) {
+                        formatted = s;
+                    } else {
+                        formatted = String.format(s, parameters);
+                    }
                 }
                 if (formatted.contains("\n")) {
                     Arrays.stream(formatted.split("\r?\n", -1)).forEach(this::write);

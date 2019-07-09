@@ -24,6 +24,8 @@ public interface CompoundParams {
 
     List<String> getValueList(String key);
 
+    List<String> getValueList(String key, List<String> defaults);
+
     String id();
 
     String id(String mnemonic);
