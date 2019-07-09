@@ -41,7 +41,7 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         set to `null` in the builder then there will be no `Generated`
         annotation placed on the class.
 
-        end */
+        end snippet */
         private Class<? extends Annotation> generatedAnnotation = Generated.class;
 
         // snippet Cloner_Config_002
@@ -59,7 +59,7 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         The set of the fields is also controlled by the other option
         `declaredOnly` (see later).
 
-        end */
+        end snippet */
 
         // snippet Cloner_Config_003
         private String cloneMethod = "copy";
@@ -70,13 +70,13 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         `clone()` method defined in the class `Object` and this name
         collisions will cause obnoxious inconveniences.
 
-        end */
+        end snippet */
 
         // snippet Cloner_Config_004
         private String cloneMethodProtection = "public";
         /*
         The protection of the copy method.
-        end */
+        end snippet */
 
         // snippet Cloner_Config_005
         private String copyMethod = "copy";
@@ -85,7 +85,7 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         The name of the generated method that copies the values of the
         fields.
 
-        end */
+        end snippet */
 
         // snippet Cloner_Config_006
         private String superCopyMethod = null;
@@ -99,7 +99,7 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
 
         If the value is `null` or empty string then the configured value for
         `copyMethod` is used.
-        end */
+        end snippet */
 
         // snippet Cloner_Config_007
         private String copyMethodProtection = "protected";
@@ -107,7 +107,7 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
 
         The protection of the generated copy method.
 
-        end */
+        end snippet */
 
         // snippet Cloner_Config_008
         private String cloneWith = "true";
@@ -123,7 +123,7 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         before calling `withXXX()` methods presumably chained for many
         different fields.
 
-        end */
+        end snippet */
 
         // snippet Cloner_Config_009
         private String copyCallsSuper = "false";
@@ -133,7 +133,7 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         method call the same method in the parent class through the
         reference `super`.
 
-        end */
+        end snippet */
 
         // note that this variable is never ever used. It is here to trigger code generation only. The setter is used
         // and the setter sets the code generator class 'declaredOnly' field
@@ -147,7 +147,7 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         to true will limit the working to use only the fields that are
         declared in the actual class.
 
-        end */
+        end snippet */
         private void setDeclaredOnly(boolean b) {
             Cloner.this.declaredOnly = b;
         }

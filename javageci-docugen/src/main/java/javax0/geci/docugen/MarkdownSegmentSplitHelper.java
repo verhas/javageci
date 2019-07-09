@@ -7,23 +7,27 @@ import java.util.regex.Pattern;
 public class MarkdownSegmentSplitHelper extends RegexBasedSegmentSplitHelper {
     public MarkdownSegmentSplitHelper() {
         super(
-
-            //startPattern
+// snippet MarkdownSegmentSplitHelper_patterns
+                //startPattern
+                // skip 1 line
             Pattern.compile(
                 "^(\\s*)\\[//]:\\s*#\\s*\\(\\s*snip\\s+(.*)\\)\\s*$" +
                     "|" +
-                    "^(\\s*)<!--\\s*snip\\s+(.*)-->\\s*$"),
-
-            // endPattern
+                        "^(\\s*)<!--\\s*snip\\s+(.*)-->\\s*$"
+// skip 1 line
+            ),
+                // e_ndPattern
+// skip 1 line
             Pattern.compile(
                 "^(\\s*)```(\\s*)$" +
                     "|" +
-                    "^(\\s*)\\[//]:\\s*#\\s*\\(\\s*end\\s+snip\\s*(.*)\\)\\s*$" +
+                        "^(\\s*)\\[//]:\\s*#\\s*\\(\\s*end\\s+snip\\s*(.*)\\)\\s*$" +
                     "|" +
-                    "^(\\s*)<!--\\s*end\\s+snip\\s*(.*)-->\\s*$"),
-
-            //default pattern
-            Pattern.compile("DEFAULT SEGMENT") // probably will not match ever, if yes, c'mon!
+                        "^(\\s*)<!--\\s*end\\s+snip\\s*(.*)-->\\s*$"
+// end snippet
+            ),
+                //default pattern skip 1 line
+                Pattern.compile("DEFAULT SEGMENT") // probably will not match ever, if yes, c'mon!
 
         );
         setSegmentPreface("");

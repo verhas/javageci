@@ -39,8 +39,8 @@ public class SnippetCollector extends AbstractSnippeter {
     private static class Config extends AbstractSnippeter.Config {
         // snippet SnippetCollector_config
         private Pattern snippetStart = Pattern.compile("(?://|/\\*)\\s*snipp?et\\s+(.*)$");
-        private Pattern snippetEnd = Pattern.compile("(?://\\s*end(?:\\s+snipp?et)?|end(?:\\s+snipp?et)?\\s*\\*/)");
-        // end
+        private Pattern snippetEnd = Pattern.compile("(?://\\s*end\\s+snipp?et|end\\s+snipp?et\\s*\\*/)");
+        // end snippet
     }
 
     @Override
