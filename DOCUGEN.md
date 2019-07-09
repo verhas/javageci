@@ -632,6 +632,12 @@ tilde `~` character.
 ##### Skip
 
 <!-- snip SnipetLineSkipper_doc regex="replace='/^~s*~*~s?//' escape='~'"-->
+
+ The `skip` functionality is implemented in the class `SnippetLineSkipper`. This generator can remove certain lines
+ from a snippet that are denoted to be removed. Many times some code segment contains
+
+
+
 <!-- end snip -->
 
 ### Snippet Inserters
