@@ -1,4 +1,4 @@
-//snippet TestAccessor
+//snippet TestChainedAccessor
 package javax0.geci.tests.accessor;
 
 import javax0.geci.accessor.ChainedAccessor;

@@ -12,17 +12,18 @@ public class TestGenerateJavageciDocumentation {
     void generateJavaGeciDocumenation() throws Exception {
         // snippet TestGenerateJavageciDocumentation
         final var geci = new Geci();
+        int i = 0;
         Assertions.assertFalse(
             geci
                 .source("..", ".").ignore("\\.git", "\\.(png|zip|class|jar|asc|graffle)$", "target")
                 .log(Geci.MODIFIED)
-                .register(SnippetCollector.builder().phase(0).build())
-                .register(SnippetAppender.builder().phase(1).build())
-                .register(SnippetRegex.builder().phase(2).build())
-                .register(SnippetTrim.builder().phase(3).build())
-                .register(SnippetNumberer.builder().phase(4).build())
-                .register(SnipetLineSkipper.builder().phase(5).build())
-                .register(MarkdownCodeInserter.builder().phase(6).build())
+                .register(SnippetCollector.builder().phase(i++).build())
+                .register(SnippetAppender.builder().phase(i++).build())
+                .register(SnippetRegex.builder().phase(i++).build())
+                .register(SnippetTrim.builder().phase(i++).build())
+                .register(SnippetNumberer.builder().phase(i++).build())
+                .register(SnipetLineSkipper.builder().phase(i++).build())
+                .register(MarkdownCodeInserter.builder().phase(i++).build())
                 .splitHelper("md", new MarkdownSegmentSplitHelper())
                 .generate(),
             geci.failed());

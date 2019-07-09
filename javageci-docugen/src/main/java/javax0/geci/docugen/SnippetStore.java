@@ -1,5 +1,7 @@
 package javax0.geci.docugen;
 
+import javax0.geci.api.GeciException;
+import javax0.geci.api.Source;
 import javax0.geci.tools.CompoundParams;
 
 import java.util.HashMap;
@@ -10,6 +12,7 @@ import java.util.Set;
 class SnippetStore {
     final Map<String, Snippet> originals = new HashMap<>();
     final Map<String, Map<String, Snippet>> locals = new HashMap<>();
+    final Map<String, Source> sourceTracking = new HashMap<>();
 
     private static final String EPSILON = "epsilon";
 
@@ -23,8 +26,25 @@ class SnippetStore {
     }
     // end snippet
 
-    void put(String name, Snippet snippet) {
+    /**
+     * Store a new snippet in the store.
+     *
+     * @param name    the name of the snippet
+     * @param snippet the snippet
+     * @param source  the source where the snippet is defined. It is
+     *                used to report errors in case a snippet is defined multiple
+     *                times. In that case the first and the second source is reported.
+     *                Other sources are not discovered because the second time a
+     *                snippet is to be stored with the same name an exception is
+     *                thrown.
+     */
+    void put(String name, Snippet snippet, Source source) {
+        if (originals.containsKey(name)) {
+            throw new GeciException("Snippet '" + name + "' is defined multiple times in sources\n" +
+                    source.getAbsoluteFile() + "\n" + sourceTracking.get(name).getAbsoluteFile());
+        }
         originals.put(name, snippet);
+        sourceTracking.put(name, source);
     }
 
     Snippet get(String segmentName, String snippetName) {
