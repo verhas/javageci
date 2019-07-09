@@ -145,16 +145,23 @@ lines if they were not collected yet. Also trimming is not possible when
 the lines were already numbered. In this case the order is fairly
 obvious.
 
-In other cases the order may be different. We may need to delete certain
-lines from a code sample and want to number the lines so that the text
-can reference the individual code lines in the explaination. At a
-different code sample, however we want to number the lines first and then
-delete the lines that we do not want in the documentation. That way the
-numbering clearly denotes that some of the lines were deleted.
+In other cases the ordering may not be so simple and obvious. We may
+need to delete certain lines from a code sample and want to number the
+lines so that the text can reference the individual code lines in the
+explanation. In this case numbering comes after the deletetion of
+certain lines. A different code sample, however, needs to number the
+lines first and then delete the lines that we do not want in the
+documentation. That way the numbering follows the numbering of the
+original lines in the code sample and it clearly shows in the
+documentation that some of the lines were deleted.
 
-The ordering of the execution of the generators is generally up to date
-to the framework, but generators can decide in which phase they want to
-run.
+The ordering of the execution of the generators is generally up to the
+framework, but generators can decide in which phase they want to run.
+The framework executes the generators in multiple phases and it consults
+each generator in each phase whether it needs execution that phase or
+not. Snippet handling generators nedds execution only in a single phase
+and they can be configured during their creation that follows the
+builder pattern
 
 ## Implemented Snippet Handling Generators
 
