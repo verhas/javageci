@@ -613,7 +613,7 @@ modifications on the different snippets and perform the appending afterwards.
 
 <!-- end snip -->
 
-<!-- snip SnippetAppender_config snippet="epsilon" trim="to=0" append="snippets='SnippetAppender_Config_.*'" regex="replace='/private~s(?:~w+|List<String>)~s/##### `/' replace='/;.*$/`/' replace='|^~s*/~*||' escape='~'" skip="do"-->
+<!-- snip SnippetAppender_config snippet="epsilon" trim="to=0" append="snippets='SnippetAppender_Config_.*'" regex="replace='/private~s(?:~w+|List<String>)~s/##### `/' replace='/;.*$/`/' replace='|^~s*/~*||' escape='~'"-->
 ##### `snippets = List.of()`
 
 
@@ -634,9 +634,78 @@ tilde `~` character.
 <!-- snip SnipetLineSkipper_doc regex="replace='/^~s*~*~s?//' escape='~'"-->
 
  The `skip` functionality is implemented in the class `SnippetLineSkipper`. This generator can remove certain lines
- from a snippet that are denoted to be removed. Many times some code segment contains
+ from a snippet that are denoted to be removed. Many times some code segment contains lines that are not necessarily
+ in the documentation and may distract the reader from the important points of the code. For example you want to
+ include a whole Java class into the documentation and you believe that the `import` statements are not that
+ important. In such cases the snippet may contain some lines that the `SnippetLineSkipper` will recognize and remove
+ the lines indicated. There are three different possibilities.
+
+ The first one is to signal the start and the end of the lines to be removed like
+
+        // skip
+        import javax0.geci.annotations.Geci;
+        import javax0.geci.api.CompoundParams;
+        import javax0.geci.api.Segment;
+        import javax0.geci.api.Source;
+
+        import java.util.ArrayList;
+        import java.util.regex.Pattern;
+        // skip end
+
+The skipper will remove the lines `// skip`, `// skip end` and also the lines between.
+
+The second possibility is to write
+
+        // skip N lines
+
+The number `N` has to be a positive decimal number and the following `N` lines plus the `// skip N lines` will also
+be deleted.
+
+The third possibility is to write
+
+       // skip till regexp
+
+that will delete this line and all following lines until there is a line that matches the regular expression.
+
+The generator will work only for segments that has the configuration parameter `skip="do"` with non zero length string
+value. There is only one configuration possibility. If the value of the `skip` parameter on the segment is `remove`
+(a.k.a. the segment contains the `skip="remove"` parameter) then only the lines that are instructions for the line
+skippings are removed. In any other cases the line removing is performed as described above.
+
+In the generator builder the regular expression patterns that match `skip`, `skip end` and so on are configurable.
+
+<!-- end snip -->
+
+<!-- snip SnipetLineSkipper_config snippet="epsilon" trim="to=0" append="snippets='SnipetLineSkipper_Config_.*'" regex="replace='/private~sPattern~s/##### `/' replace='/;.*$/`/' replace='|^~s*/~*||' escape='~'"-->
+##### `skip = Pattern.compile("skip")`
 
 
+This pattern defines the line that starts the skipping and which skipping is finished by the pattern configured
+using the next configuration option `skipEnd`.
+
+##### `skipEnd = Pattern.compile("skip\\s+end")`
+
+
+This pattern defines the line that stops line skipping in case it was started using a line matched by the
+previous pattern `skip`.
+
+##### `skipNrLines = Pattern.compile("skip\\s+(\\+?\\d+)\\s+lines?")`
+
+
+This pattern finds the line that signals that a certain number of lines should be skipped. If configured other
+than the default then the regular expression MUST have a single matching group (the part between the parentheses)
+that will match a substring that is a positive decimal number.
+
+##### `skipTill = Pattern.compile("skip\\s+till\\s+/(.*?)/")`
+
+
+This pattern finds athe line that is the start of skipping specifying a regular expression that should match
+a later line, which will be the stopping signal for skipping. The line that matches the regular expression
+at the end will NOT be included in the snippet. It will be skipped.
+
+If configured other than the default then the regular expression MUST have a single matching group (the part
+between the parentheses) that will match a substring that will be used as a regular expression to find the
+skipping end.
 
 <!-- end snip -->
 
