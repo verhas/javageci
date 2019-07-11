@@ -1,4 +1,3 @@
-module geci.core_annotations {
+module geci.core.annotations {
     requires geci.annotation;
-
 }
