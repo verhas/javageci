@@ -5,7 +5,7 @@ import javax0.geci.api.Segment;
 
 import java.lang.reflect.Field;
 
-@Geci("annotationBuilder in='javax0.geci'")
+@Geci("annotationBuilder")
 public class Accessor extends AbstractAccessor {
 
     public Accessor(){
