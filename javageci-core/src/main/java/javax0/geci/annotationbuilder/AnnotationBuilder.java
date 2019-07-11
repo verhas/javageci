@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Set;
+import javax0.geci.annotations.Geci;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
@@ -13,6 +14,7 @@ import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
 
+@Geci("annotationBuilder")
 public class AnnotationBuilder extends AbstractJavaGenerator {
 
     private static class Config {
@@ -55,22 +57,16 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
 
     private Segment createContent(Source file, String mnemonic, String annotation, Iterable<String> keys) {
         Segment content = new javax0.geci.engine.Segment(0);
-        //Package declaration
         content.write("package %s;", file.getPackageName());
         content.newline();
-        //Import statements
         content.write("import java.lang.annotation.Retention;");
         content.write("import java.lang.annotation.RetentionPolicy;");
         content.write("import javax0.geci.annotations.Geci;");
         content.newline();
-        //Write annotations
         content.write("@Geci(\"%s\")", mnemonic);
         content.write("@Retention(RetentionPolicy.RUNTIME)");
-        //Interface declaration
         content.write_r("public @interface %s {", annotation);
-        //value() method declaration
         content.write(parameterMethod("value"));
-        //implementedKeys method declarations
         for(final var key : keys) {
             if(!key.equals("id")) {
                 content.write(parameterMethod(key));
