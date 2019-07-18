@@ -1,12 +1,5 @@
 package javax0.geci.annotationbuilder;
 
-import static javax0.geci.tools.CaseTools.ucase;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Set;
-import javax0.geci.annotations.Geci;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
@@ -14,7 +7,14 @@ import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
 
-@Geci("annotationBuilder")
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Set;
+
+import static javax0.geci.api.Source.Set.set;
+import static javax0.geci.tools.CaseTools.ucase;
+
 public class AnnotationBuilder extends AbstractJavaGenerator {
 
     private static class Config {
@@ -24,24 +24,20 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
         try {
-
-            final String mnemonic = getMnemonic(klass);
-            final ArrayList<String> keys = getImplementedKeys(klass);
-            final String annotation = ucase(mnemonic);
+            final var mnemonic = getMnemonic(klass);
+            final var keys = getImplementedKeysSorted(klass);
+            final var annotation = ucase(mnemonic);
             final var in = config.in;
 
-            final var newSource = source.newSource(Source.Set.set(in), annotation + ".java");
-            final var content = createContent(newSource, mnemonic, annotation, keys);
-            final Segment annotationFile = newSource.open();
-            annotationFile.write(content);
+            final var newSource = source.newSource(set(in), annotation + ".java");
+            writeContent(newSource, mnemonic, annotation, keys);
         } catch (NoSuchMethodException ex) {
-            throw new GeciException(
-                "Cannot generate annotation for " + klass.getName() + " because it does not have a mnemonic or implementedKeys method.");
+            throw new GeciException("Cannot generate annotation for " + klass.getName() + " because it does not have a mnemonic or implementedKeys method.");
         }
     }
 
-    private ArrayList<String> getImplementedKeys(final Class<?> klass)
-        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    private ArrayList<String> getImplementedKeysSorted(final Class<?> klass)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         final Method implementedKeysMethod = GeciReflectionTools.getMethod(klass, "implementedKeys");
         implementedKeysMethod.setAccessible(true);
         final var unorderedKeySet = (Set<String>) implementedKeysMethod.invoke(klass.getConstructor().newInstance());
@@ -51,12 +47,11 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
     }
 
     private String getMnemonic(Class<?> klass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        final Method mnemonicMethod = GeciReflectionTools.getMethod(klass, "mnemonic");
-        return (String) mnemonicMethod.invoke(klass.getConstructor().newInstance());
+        return ((AbstractJavaGenerator) klass.getConstructor().newInstance()).mnemonic();
     }
 
-    private Segment createContent(Source file, String mnemonic, String annotation, Iterable<String> keys) {
-        Segment content = new javax0.geci.engine.Segment(0);
+    private void writeContent(Source file, String mnemonic, String annotation, Iterable<String> keys) {
+        Segment content = file.open();
         content.write("package %s;", file.getPackageName());
         content.newline();
         content.write("import java.lang.annotation.Retention;");
@@ -73,7 +68,6 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
             }
         }
         content.write_l("}");
-        return content;
     }
 
     private String parameterMethod(String param) {
@@ -111,4 +105,6 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
         return local;
     }
     //</editor-fold>
+
+    //<editor-fold id="annotationBuilder" />
 }
