@@ -22,6 +22,6 @@ public class TestAnnotationBuilder {
                     .in("annotation-folder")
                     .build())
                 .generate(),
-            Geci.FAILED);
+            geci.failed());
     }
 }

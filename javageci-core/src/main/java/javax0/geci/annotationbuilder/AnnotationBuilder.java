@@ -1,19 +1,17 @@
 package javax0.geci.annotationbuilder;
 
+import static javax0.geci.api.Source.Set.set;
+import static javax0.geci.tools.CaseTools.ucase;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import javax0.geci.api.GeciException;
-import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Set;
-
-import static javax0.geci.api.Source.Set.set;
-import static javax0.geci.tools.CaseTools.ucase;
 
 public class AnnotationBuilder extends AbstractJavaGenerator {
 
@@ -22,51 +20,50 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
     }
 
     @Override
-    public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
+    public void process(Source source, Class<?> klass, CompoundParams global) {
+        final var mnemonic = getMnemonic(klass);
+        final var keys = getImplementedKeysSorted(klass);
+        final var annotation = ucase(mnemonic);
+
+        final var file = source.newSource(set(config.in), annotation + ".java");
+        writeContent(file, mnemonic, annotation, keys);
+    }
+
+    private List<String> getImplementedKeysSorted(final Class<?> klass) {
         try {
-            final var mnemonic = getMnemonic(klass);
-            final var keys = getImplementedKeysSorted(klass);
-            final var annotation = ucase(mnemonic);
-            final var in = config.in;
-
-            final var newSource = source.newSource(set(in), annotation + ".java");
-            writeContent(newSource, mnemonic, annotation, keys);
-        } catch (NoSuchMethodException ex) {
-            throw new GeciException("Cannot generate annotation for " + klass.getName() + " because it does not have a mnemonic or implementedKeys method.");
+            final var getKeys = GeciReflectionTools.getMethod(klass, "implementedKeys");
+            getKeys.setAccessible(true);
+            final var keySet = (Set<String>) getKeys.invoke(klass.getConstructor().newInstance());
+            final var keyList = new ArrayList<>(keySet);
+            keyList.sort(String::compareTo);
+            return keyList;
+        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException ex) {
+            throw new GeciException("Cannot generate annotation for " + klass.getName() + " because it does not have an implementedKeys() method.", ex);
         }
     }
 
-    private ArrayList<String> getImplementedKeysSorted(final Class<?> klass)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        final Method implementedKeysMethod = GeciReflectionTools.getMethod(klass, "implementedKeys");
-        implementedKeysMethod.setAccessible(true);
-        final var unorderedKeySet = (Set<String>) implementedKeysMethod.invoke(klass.getConstructor().newInstance());
-        final var implementedKeys = new ArrayList<>(unorderedKeySet);
-        implementedKeys.sort(String::compareTo);
-        return implementedKeys;
-    }
-
-    private String getMnemonic(Class<?> klass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        return ((AbstractJavaGenerator) klass.getConstructor().newInstance()).mnemonic();
-    }
-
-    private void writeContent(Source file, String mnemonic, String annotation, Iterable<String> keys) {
-        Segment content = file.open();
-        content.write("package %s;", file.getPackageName());
-        content.newline();
-        content.write("import java.lang.annotation.Retention;");
-        content.write("import java.lang.annotation.RetentionPolicy;");
-        content.write("import javax0.geci.annotations.Geci;");
-        content.newline();
-        content.write("@Geci(\"%s\")", mnemonic);
-        content.write("@Retention(RetentionPolicy.RUNTIME)");
-        content.write_r("public @interface %s {", annotation);
-        content.write(parameterMethod("value"));
-        for(final var key : keys) {
-            if(!key.equals("id")) {
-                content.write(parameterMethod(key));
-            }
+    private String getMnemonic(Class<?> klass) {
+        try {
+            return ((AbstractJavaGenerator) klass.getConstructor().newInstance()).mnemonic();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
+            throw new GeciException("Cannot generate annotation for " + klass.getName() + " because it does not have a mnemonic() method.", ex);
         }
+    }
+
+    private void writeContent(Source file, String mnemonic, String annotation, List<String> keys) {
+        final var content = file.open();
+        content.write("package %s;", file.getPackageName())
+        .newline()
+        .write("import java.lang.annotation.Retention;")
+        .write("import java.lang.annotation.RetentionPolicy;")
+        .write("import javax0.geci.annotations.Geci;")
+        .newline()
+        .write("@Geci(\"%s\")", mnemonic)
+        .write("@Retention(RetentionPolicy.RUNTIME)")
+        .write_r("public @interface %s {", annotation)
+        .newline()
+        .write(parameterMethod("value"));
+        keys.stream().filter(key -> !key.equals("id")).map(this::parameterMethod).forEach(content::write);
         content.write_l("}");
     }
 
