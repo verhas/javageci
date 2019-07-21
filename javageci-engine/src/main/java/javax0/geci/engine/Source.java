@@ -30,6 +30,14 @@ public class Source implements javax0.geci.api.Source {
 
     Generator currentGenerator = null;
 
+
+    private void assertTouching() {
+        if (currentGenerator != null && currentGenerator instanceof Distant) {
+            throw new GeciException("The distant generator " + currentGenerator.getClass().getName() +
+                " tried to touch the source " + getAbsoluteFile());
+        }
+    }
+
     /**
      * The constructor is not supposed to be used from outside, only through the {@link FileCollector} which
      * is invoked only from {@link Geci#generate()}.
@@ -77,6 +85,7 @@ public class Source implements javax0.geci.api.Source {
 
     @Override
     public Source newSource(Source.Set sourceSet, String fileName) {
+        assertTouching();
         if (!collector.directories.containsKey(sourceSet)) {
             throw new GeciException("SourceSet '" + sourceSet + "' does not exist");
         }
@@ -88,6 +97,7 @@ public class Source implements javax0.geci.api.Source {
 
     @Override
     public Source newSource(String fileName) {
+        assertTouching();
         for (final var source : collector.newSources) {
             if (this.absoluteFile.equals(source.absoluteFile)) {
                 return source;
@@ -135,6 +145,7 @@ public class Source implements javax0.geci.api.Source {
 
     @Override
     public Segment open() {
+        assertTouching();
         if (!segments.isEmpty()) {
             throw new GeciException("Global segment was opened when the there were already opened segments");
         }
@@ -153,12 +164,15 @@ public class Source implements javax0.geci.api.Source {
         return globalSegment;
     }
 
+    @Override
     public java.util.Set<String> segmentNames() {
         loadSegments();
         return segments.keySet();
     }
 
+    @Override
     public Segment temporary() {
+        assertTouching();
         return new Segment(0);
     }
 
@@ -194,6 +208,7 @@ public class Source implements javax0.geci.api.Source {
 
     @Override
     public Segment open(String id) throws IOException {
+        assertTouching();
         if (globalSegment != null) {
             throw new GeciException("Segment was opened after the global segment was already created.");
         }

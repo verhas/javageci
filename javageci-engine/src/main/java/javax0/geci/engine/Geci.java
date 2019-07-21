@@ -254,7 +254,9 @@ public class Geci implements javax0.geci.api.Geci {
             }
         }
         if (!sourcesConsolidate(collector)) {
-            throw new GeciException("The generators did not touch any source");
+            if (generators.stream().filter(g -> !(g instanceof Distant)).findAny().isPresent()) {
+                throw new GeciException("The generators did not touch any source");
+            }
         }
         return sourcesModifiedAndSave(collector);
     }
@@ -333,7 +335,7 @@ public class Geci implements javax0.geci.api.Geci {
     }
 
     private void injectContextIntoGenerators() {
-        if( context == null ) {
+        if (context == null) {
             context = new javax0.geci.engine.Context();
         }
         generators.forEach(g -> g.context(context));

@@ -3,40 +3,17 @@ package javax0.geci.docugen;
 import javax0.geci.annotations.Geci;
 import javax0.geci.api.*;
 
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
-/**
- * A snippet collector.
- * <p>
- * This generator collects all the snippets that are between lines
- *
- * <pre>
- *     {@code
- *     //snippet snippetname
- *     }
- * </pre>
- *
- * <p> and
- *
- * <pre>
- *     {@code
- *     //end snippet
- *     }
- * </pre>
- *
- * <p> The collected snippets get into a Map keyed by the names of the
- * snippets and can be used by other generators. Note that this
- * generator does not touch any source therefore it should not and
- * cannot be used alone.
- */
-@Geci("configBuilder localConfigMethod='' configurableMnemonic='snippetCollector'")
-public class SnippetCollector extends AbstractSnippeter implements Distant {
-    public static final String CONTEXT_SNIPPET_KEY = "snippets";
+@Geci("configBuilder localConfigMethod='' configurableMnemonic='fragmentCollector'")
+public class FragmentCollector extends AbstractSnippeter implements Distant {
 
     private static class Config extends AbstractSnippeter.Config {
-        // snippet SnippetCollector_config
-        private Pattern snippetStart = Pattern.compile("(?://|/\\*)\\s*snipp?et\\s+(.*)$");
-        private Pattern snippetEnd = Pattern.compile("(?://\\s*end\\s+snipp?et|end\\s+snipp?et\\s*\\*/)");
+        // snippet FragmentCollector_config
+        private Pattern snippetStart = Pattern.compile("^\\s*\\*\\s*-(?:\\s+(.*))?$");
+        private Pattern snippetEnd = Pattern.compile("^\\s*\\*/\\s*$");
+        private Function<String,String> transform = line -> line.replaceAll("^\\s*\\*\\s?","");
         // end snippet
     }
 
@@ -45,22 +22,32 @@ public class SnippetCollector extends AbstractSnippeter implements Distant {
         throw new IllegalArgumentException("This method should never be invoked");
     }
 
-    //snippet SnippetCollectorProcessExCode skipper="true"
     @Override
     public void processEx(Source source) throws Exception {
+        final var absFileName = source.getAbsoluteFile();
+        final var fileName = absFileName.substring(absFileName.lastIndexOf('/') + 1);
+        final var dot = fileName.lastIndexOf('.');
+        final var className = dot > -1 ? fileName.substring(0, fileName.lastIndexOf('.')) : fileName;
+        var snippetSubName = "";
+        var snippetCounter = 1;
         SnippetBuilder builder = null;
         for (final var line : source.getLines()) {
             final var starter = config.snippetStart.matcher(line);
             if (builder == null && starter.find()) {
-                builder = new SnippetBuilder(starter.group(1));
+                if (starter.group(1) != null ) {
+                    snippetSubName = starter.group(1);
+                    snippetCounter = 1;
+                }
+                builder = new SnippetBuilder(String.format("%s_%s_%06d",className,snippetSubName,snippetCounter++));
             } else if (builder != null) {
                 final var stopper = config.snippetEnd.matcher(line);
                 // skip
                 if (stopper.find()) {
-                    snippets.put(builder.snippetName(), builder.build(),source);
+                    snippets.put(builder.snippetName(), builder.build(), source);
                     builder = null;
                 } else {
-                    builder.add(line);
+                    final var convertedLine = config.transform.apply(line);
+                    builder.add(convertedLine);
                 }
                 // skip end
             }
@@ -69,10 +56,9 @@ public class SnippetCollector extends AbstractSnippeter implements Distant {
             throw new GeciException("Snippet " + builder.snippetName() + " was not finished before end of the file " + source.getAbsoluteFile());
         }
     }
-    //end snippet
 
     //<editor-fold id="configBuilder">
-    private String configuredMnemonic = "snippetCollector";
+    private String configuredMnemonic = "fragmentCollector";
 
     @Override
     public String mnemonic(){
@@ -80,8 +66,8 @@ public class SnippetCollector extends AbstractSnippeter implements Distant {
     }
 
     private final Config config = new Config();
-    public static SnippetCollector.Builder builder() {
-        return new SnippetCollector().new Builder();
+    public static FragmentCollector.Builder builder() {
+        return new FragmentCollector().new Builder();
     }
 
     public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder {
@@ -95,13 +81,18 @@ public class SnippetCollector extends AbstractSnippeter implements Distant {
             return this;
         }
 
+        public Builder transform(java.util.function.Function<String,String> transform) {
+            config.transform = transform;
+            return this;
+        }
+
         public Builder mnemonic(String mnemonic) {
             configuredMnemonic = mnemonic;
             return this;
         }
 
-        public SnippetCollector build() {
-            return SnippetCollector.this;
+        public FragmentCollector build() {
+            return FragmentCollector.this;
         }
     }
     //</editor-fold>

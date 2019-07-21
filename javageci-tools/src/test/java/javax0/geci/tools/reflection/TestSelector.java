@@ -358,7 +358,7 @@ class TestSelector {
 
     @Test
     void testNativeMethod() throws NoSuchMethodException {
-        final var f = System.class.getDeclaredMethod("initProperties", Properties.class);
+        final var f = System.class.getDeclaredMethod("registerNatives");
         Assertions.assertTrue(Selector.compile("native").match(f));
     }
 

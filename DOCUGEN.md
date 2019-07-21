@@ -165,15 +165,21 @@ Snippet handling generators need execution only in a single phase and
 they can be configured during their creation (using the builder) which
 phase they should run. If the line trimming should run before numbering
 then the generator `SnippetTrim` should have a smaller phase serial
-number than `SnippetNumberer`. The snippet handling generator build up usually looks like
-the one that is used to create this documentation:
+number than `SnippetNumberer`. The snippet handling generator build up
+usually looks like the one that is used to create this documentation:
 
 <!-- snip TestGenerateJavageciDocumentation trim="to=0"-->
 ```java
+final var fragmentCollector = new Geci();
+fragmentCollector
+    .source(Source.maven().module("javageci-docugen").mainSource())
+    .register(FragmentCollector.builder().build())
+    .generate();
+
 final var geci = new Geci();
 int i = 0;
 Assertions.assertFalse(
-    geci
+    geci.context(fragmentCollector.context())
         .source("..", ".").ignore("\\.git", "\\.(png|zip|class|jar|asc|graffle)$", "target")
         .log(Geci.MODIFIED)
         .register(SnippetCollector.builder().phase(i++).build())
@@ -191,18 +197,35 @@ Assertions.assertFalse(
 The generators are registered in the order they are to be executed and
 the call to `phase(i++)` registers the phases 0, 1, 2 ... and so on.
 
+There is another possibility to have the generators executed the
+appropriate order. You can create several execution environment (Geci
+objects) and then invoke `generate()` on those one after the other. To
+share the context between these objects you can use the method
+`context()` either without argument to retrieve the context of the Geci
+object or with argument to set the context.
+
+In the example above the Geci object `fragmentCollector` is created and
+used separately to collect the documentation fragments from the Java
+files only. It could be executed together with the other generators in
+the phase 0 but in that case it would try to collect the documentation
+fragments from all the files. As it is now the object
+`fragmentCollector` collects the documentation fragments only from the
+Java files of the module `javageci-docugen`. Retrieving the context
+built up by this object and injecting into the next one will transfer
+the collected snippets inside the context for the next generators.
+
 ## Implemented Snippet Handling Generators
 
 As there are three types of snippet handling generators we will discuss
 the implemented generators in three subsections.
 
-### Collector
+### Collectors
 
-Currently, there is only one snippet collecting generator (unless this
-document is out of date). The generator `SnippetCollector`. It is
-executed by the framework for all sources that are configured and
-collected and the collector scans through the lines of the sources and
-collects the snippets.
+#### `SnippetCollector`
+
+The generator `SnippetCollector` is executed by the framework for all
+sources that are configured and collected and the collector scans
+through the lines of the sources and collects the snippets.
 
 It starts to collect lines after a line that matches the regular
 expression named `snippetStart` and before `snippetEnd`. These regular
@@ -223,6 +246,32 @@ stored using the name and this name is used when later the snippet is
 referenced in the text that needs the snippet to be inserted. The
 parameters are stored along with the snippet and are available for
 snippet modifying and snippet inserting generators.
+
+#### `FragmentCollector`
+
+The fragment collector was designed to collect documentation fragments
+from Java source files. It is easier to use a bit than the general
+purpose snippet collector to collect documentation fragments that are
+not code samples. The collected snippets start with a line that has a
+star `*` and a dash `-` character with optioinal space between them
+(this is usually inside some code fragment) and end with the end of the
+comment, which is `*/` on its own line. The regular expression patterns
+matching the start and the end of the snippets are configurable in the
+builder of the generator. The default values are fitting Java:
+
+<!-- snip FragmentCollector_config trim="to=0" regex="replace='/snippetEnd/snippetEnd  /' replace='/private (?:Pattern|Function<.*?>)//' replace='/(~$)\"~);/$1\"/' replace='/Pattern.compile~(//' escape='~'"-->
+```java
+snippetStart = "^\\s*\\*\\s*-(?:\\s+(.*))?$"
+snippetEnd   = "^\\s*\\*/\\s*$"
+transform = line -> line.replaceAll("^\\s*\\*\\s?","");
+```
+
+The transformation is applied on each line of the snippet. The default
+is to remove all spaces, the `*` character and optionally a space after
+that. When a line does not start with `*` character (after the spaces)
+then this default transformation will not touch it. Also only one space
+is removed after the `*` character so that indentation and code
+fragments that are indented in markdown are not ruined.
 
 ### Modifiers
 
@@ -267,22 +316,28 @@ to create this documentation:
                                                           
 <!-- snip splitHelperRegistering snippet="TestGenerateJavageciDocumentation" trim="to=0" number="do"-->
 ```java
-1. final var geci = new Geci();
-2. int i = 0;
-3. Assertions.assertFalse(
-4.     geci
-5.         .source("..", ".").ignore("\\.git", "\\.(png|zip|class|jar|asc|graffle)$", "target")
-6.         .log(Geci.MODIFIED)
-7.         .register(SnippetCollector.builder().phase(i++).build())
-8.         .register(SnippetAppender.builder().phase(i++).build())
-9.         .register(SnippetRegex.builder().phase(i++).build())
-10.         .register(SnippetTrim.builder().phase(i++).build())
-11.         .register(SnippetNumberer.builder().phase(i++).build())
-12.         .register(SnipetLineSkipper.builder().phase(i++).build())
-13.         .register(MarkdownCodeInserter.builder().phase(i++).build())
-14.         .splitHelper("md", new MarkdownSegmentSplitHelper())
-15.         .generate(),
-16.     geci.failed());
+1. final var fragmentCollector = new Geci();
+2. fragmentCollector
+3.     .source(Source.maven().module("javageci-docugen").mainSource())
+4.     .register(FragmentCollector.builder().build())
+5.     .generate();
+6. 
+7. final var geci = new Geci();
+8. int i = 0;
+9. Assertions.assertFalse(
+10.     geci.context(fragmentCollector.context())
+11.         .source("..", ".").ignore("\\.git", "\\.(png|zip|class|jar|asc|graffle)$", "target")
+12.         .log(Geci.MODIFIED)
+13.         .register(SnippetCollector.builder().phase(i++).build())
+14.         .register(SnippetAppender.builder().phase(i++).build())
+15.         .register(SnippetRegex.builder().phase(i++).build())
+16.         .register(SnippetTrim.builder().phase(i++).build())
+17.         .register(SnippetNumberer.builder().phase(i++).build())
+18.         .register(SnipetLineSkipper.builder().phase(i++).build())
+19.         .register(MarkdownCodeInserter.builder().phase(i++).build())
+20.         .splitHelper("md", new MarkdownSegmentSplitHelper())
+21.         .generate(),
+22.     geci.failed());
 ```
 
 we can have a look at line 14. It registers the
