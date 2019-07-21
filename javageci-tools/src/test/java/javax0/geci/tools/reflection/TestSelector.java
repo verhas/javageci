@@ -9,7 +9,6 @@ import org.junit.jupiter.api.TestInfo;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.util.Arrays;
-import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;

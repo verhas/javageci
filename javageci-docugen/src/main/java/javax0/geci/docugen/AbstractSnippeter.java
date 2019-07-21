@@ -12,8 +12,8 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
 
     protected static class Config {
         protected int phase = 1;
-        /**
-         *- config
+        /*
+         * - config
          * ##### `phase = 1`
          *
          *
@@ -28,7 +28,7 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
          */
 
         protected CharSequence files = "\\.md$";
-        /**
+        /*
          *-
          *
          * ##### `files = "\\.md$"`

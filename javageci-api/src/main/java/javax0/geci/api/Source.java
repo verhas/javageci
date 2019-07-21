@@ -245,7 +245,7 @@ public interface Source {
      * String...)} usually naming the source set typically as {@code
      * set("java")} or {@code set("resources")}.
      */
-    public class Set {
+    class Set {
         private String name;
         private final boolean autoName;
 
