@@ -253,11 +253,13 @@ The fragment collector was designed to collect documentation fragments
 from Java source files. It is easier to use a bit than the general
 purpose snippet collector to collect documentation fragments that are
 not code samples. The collected snippets start with a line that has a
-star `*` and a dash `-` character with optioinal space between them
-(this is usually inside some code fragment) and end with the end of the
+star `*` and a dash `-` character with optional space between them (this
+is usually inside some code fragment) and end with the end of the
 comment, which is `*/` on its own line. The regular expression patterns
 matching the start and the end of the snippets are configurable in the
-builder of the generator. The default values are fitting Java:
+builder of the generator. There is also a configurable transformation,
+which is applied to each line before appending to the snippet. The
+default values are fitting Java:
 
 <!-- snip FragmentCollector_config trim="to=0" regex="replace='/snippetEnd/snippetEnd  /' replace='/private (?:Pattern|Function<.*?>)//' replace='/(~$)\"~);/$1\"/' replace='/Pattern.compile~(//' escape='~'"-->
 ```java
@@ -265,6 +267,33 @@ snippetStart = "^\\s*\\*\\s*-(?:\\s+(.*))?$"
 snippetEnd   = "^\\s*\\*/\\s*$"
 transform = line -> line.replaceAll("^\\s*\\*\\s?","");
 ```
+
+The snippets 
+
+The capture group after the `*-` can specify part of the name of the
+snippet. In the code this part of the name is called sub-name. The full
+name of the snippet is calculated automatically using the following
+format:
+
+    FileName_subName_nnnnnn
+
+where `FileName` is the name of the file without the path or the
+extension. In case of Java classes this is the name of the top level
+class defined in the file. `subName` is either empty string (default
+value) or the last sub-name defined in the file. `nnnnnn` is a six
+character counter that starts with 1 every time when a new sub-name is
+defined.
+
+Using this automatic naming you can refer to the segments joining them
+together and can have the comments contain the documentation in strong
+cohesion of the actual code without individually naming them in the
+source code.
+
+Although it is possible to have the default empty string as a sub-name
+it is recommended to define a sub-name in every file that contains
+documentation fragments to be collected by `FragmentCollector`. If there
+is no sub-name defined then there will be two underscore characters
+between the `FileName` and `nnnnnn` part.
 
 The transformation is applied on each line of the snippet. The default
 is to remove all spaces, the `*` character and optionally a space after
