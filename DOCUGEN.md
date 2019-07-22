@@ -333,7 +333,7 @@ modifications again:
 #### Segments for Snippets
 
 The snippets are inserted into segments like any other generated code.
-These segment, however, are usually not editor-fold segments. Editor
+These segments, however, are usually not editor-fold segments. Editor
 fold segments are useful for Java code, but are not useful for markdown
 or other documentation format. When the framework Java::Geci is searching
 the segments in source codes it uses segment split helpers. These helper
@@ -795,18 +795,24 @@ skipping end.
 
 ### Snippet Inserters
 
-In the case of markdown formatted code is
-enclosed between three starting and three ending back-ticks on a line.
+In the case of markdown formatted code is enclosed between three
+starting and three ending back-ticks on a line.
 
 When handling markdown Java::Geci needs the `MarkdownSegmentSplitHelper`
 registered with the appropriate file extension. 
 
-<!-- snip TestGenerateJavageciDocumentation trim="to=0"-->
+<!-- snip SnippetInserterConfig snippet="TestGenerateJavageciDocumentation" trim="to=0"-->
 ```java
+final var fragmentCollector = new Geci();
+fragmentCollector
+    .source(Source.maven().module("javageci-docugen").mainSource())
+    .register(FragmentCollector.builder().build())
+    .generate();
+
 final var geci = new Geci();
 int i = 0;
 Assertions.assertFalse(
-    geci
+    geci.context(fragmentCollector.context())
         .source("..", ".").ignore("\\.git", "\\.(png|zip|class|jar|asc|graffle)$", "target")
         .log(Geci.MODIFIED)
         .register(SnippetCollector.builder().phase(i++).build())

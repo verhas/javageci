@@ -1,5 +1,7 @@
 package javax0.geci.api;
 
+import java.util.List;
+
 /**
  * A SegmentSplitHelper helps to identify the start and end of the
  * segments in a source file and that way it helps to split up the
@@ -47,6 +49,14 @@ public interface SegmentSplitHelper {
      * SegmentSplitHelper.Matcher}
      */
     Matcher match(String line);
+
+    default Matcher match(List<String> lines, int i){
+        return match(lines.get(i));
+    }
+
+    default int firstLineIndex(List<String> lines, int i){
+        return i+1;
+    }
 
     /**
      * In case of default segment creation the strings returned by this

@@ -299,12 +299,12 @@ public class Source implements javax0.geci.api.Source {
     }
 
     private void mergeSegment(Segment segment, SegmentDescriptor segmentLocation) {
-        if (segmentLocation.startLine + 1 < segmentLocation.endLine
+        if (segmentLocation.startLine < segmentLocation.endLine
             || segment.lines.size() > 0) {
-            lines.subList(segmentLocation.startLine + 1, segmentLocation.endLine).clear();
-            lines.addAll(segmentLocation.startLine + 1, segment.postface);
-            lines.addAll(segmentLocation.startLine + 1, segment.lines);
-            lines.addAll(segmentLocation.startLine + 1, segment.preface);
+            lines.subList(segmentLocation.startLine, segmentLocation.endLine).clear();
+            lines.addAll(segmentLocation.startLine, segment.postface);
+            lines.addAll(segmentLocation.startLine, segment.lines);
+            lines.addAll(segmentLocation.startLine, segment.preface);
         }
     }
 
@@ -353,12 +353,11 @@ public class Source implements javax0.geci.api.Source {
     private SegmentDescriptor findDefaultSegment() {
         if (allowDefaultSegment) {
             for (int i = lines.size() - 1; 0 < i; i--) {
-                final var line = lines.get(i);
-                final var matcher = splitHelper.match(line);
+                final var matcher = splitHelper.match(lines, i);
                 if (matcher.isDefaultSegmentEnd()) {
                     var seg = new SegmentDescriptor();
                     seg.attr = null;
-                    seg.startLine = i - 1;
+                    seg.startLine = splitHelper.firstLineIndex(lines, i);
                     seg.endLine = i;
                     seg.tab = matcher.tabbing();
                     return seg;
@@ -378,7 +377,7 @@ public class Source implements javax0.geci.api.Source {
     private SegmentDescriptor findSegment(String id) {
         for (int i = 0; i < lines.size(); i++) {
             var line = lines.get(i);
-            final var matcher = splitHelper.match(line);
+            final var matcher = splitHelper.match(lines, i);
             if (matcher.isSegmentStart()) {
                 var attr = matcher.attributes();
                 if (id.equals(attr.id())) {
@@ -387,8 +386,8 @@ public class Source implements javax0.geci.api.Source {
                     seg.originals = new ArrayList<>();
                     seg.attr = attr;
                     seg.tab = matcher.tabbing();
-                    seg.startLine = i;
-                    for (int j = seg.startLine + 1; j < lines.size(); j++) {
+                    seg.startLine = splitHelper.firstLineIndex(lines, i);
+                    for (int j = seg.startLine; j < lines.size(); j++) {
                         line = lines.get(j);
                         final var endMatcher = splitHelper.match(line);
                         if (endMatcher.isSegmentEnd()) {
@@ -412,7 +411,7 @@ public class Source implements javax0.geci.api.Source {
         }
         for (int i = 0; i < lines.size(); i++) {
             var line = lines.get(i);
-            final var matcher = splitHelper.match(line);
+            final var matcher = splitHelper.match(lines, i);
             if (matcher.isSegmentStart()) {
                 var attr = matcher.attributes();
                 var seg = new SegmentDescriptor();
@@ -420,14 +419,16 @@ public class Source implements javax0.geci.api.Source {
                 seg.originals = new ArrayList<>();
                 seg.attr = attr;
                 seg.tab = matcher.tabbing();
-                seg.startLine = i;
-                for (i = i + 1; i < lines.size(); i++) {
+                seg.startLine = splitHelper.firstLineIndex(lines, i);
+                for (i = seg.startLine; i < lines.size(); i++) {
                     line = lines.get(i);
-                    final var endMatcher = splitHelper.match(line);
+                    final var endMatcher = splitHelper.match(lines, i);
                     if (endMatcher.isSegmentEnd()) {
                         seg.endLine = i;
                         if (!segments.containsKey(seg.id)) {
                             segments.put(seg.id, new Segment(seg.tab, seg.attr, seg.originals));
+                        } else {
+                            throw new GeciException("Segment " + seg.id + " is defined multiple times in source " + getAbsoluteFile());
                         }
                         break;
                     }
