@@ -11,13 +11,13 @@ import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 
-@Geci("annotationBuilder")
+@Geci("annotationBuilder absolute='yes'")
 public class AnnotationBuilder extends AbstractJavaGenerator {
 
     private static class Config {
         private String module = "";
         private String in = "annotation";
-        private String maven = "true";
+        private String absolute = "no";
     }
 
     @Override
@@ -26,21 +26,27 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
         final var keys = getImplementedKeysSorted(klass);
         final var annotation = ucase(mnemonic);
         final var module = global.get("module", config.module);
-        final var in = normalizePackage(global.get("in", config.in));
-        final var directory = module.equals("") ? "" : Source.maven().module(module).mainSource().getDirectories()[0];
+        final var directory = module.equals("") ? "" : "../" + Source.maven().module(module).mainSource().getDirectories()[0];
+
+        final var isRelative = global.is("absolute");
+        String in = global.get("in", config.in);
+        if(isRelative) {
+            in = "/" + in;
+        }
+        in = normalizePackage(in);
+
         final var file = source.newSource(directory, in + annotation + ".java");
         writeContent(file, mnemonic, annotation, keys);
     }
 
     private String normalizePackage(String in) {
+        if("".equals(in)) return in;
         var normalized = in;
-        if(!in.startsWith("/")) {
-            normalized = "/" + normalized;
-        }
-        if(!in.endsWith("/")) {
+        if(!normalized.endsWith("/")) {
             normalized = normalized + "/";
         }
         normalized = normalized.replaceAll("[.]", "/");
+        normalized = normalized.replaceAll("//", "/");
         return normalized;
     }
 
@@ -88,8 +94,8 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
     }
 
     private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+        "absolute",
         "in",
-        "maven",
         "module",
         "id"
     );
@@ -99,13 +105,13 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
         return implementedKeys;
     }
     public class Builder {
-        public Builder in(String in) {
-            config.in = in;
+        public Builder absolute(String absolute) {
+            config.absolute = absolute;
             return this;
         }
 
-        public Builder maven(String maven) {
-            config.maven = maven;
+        public Builder in(String in) {
+            config.in = in;
             return this;
         }
 
@@ -120,8 +126,8 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
     }
     private Config localConfig(CompoundParams params){
         final var local = new Config();
+        local.absolute = params.get("absolute",config.absolute);
         local.in = params.get("in",config.in);
-        local.maven = params.get("maven",config.maven);
         local.module = params.get("module",config.module);
         return local;
     }

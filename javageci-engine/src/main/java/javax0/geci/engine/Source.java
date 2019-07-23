@@ -89,7 +89,7 @@ public class Source implements javax0.geci.api.Source {
         if(directory == null || directory.equals("")) {
             return newSource(fileName);
         }
-        return createNewSource(directory, fileName);
+        return createNewSource(FileCollector.normalized(directory), fileName);
     }
 
     @Override

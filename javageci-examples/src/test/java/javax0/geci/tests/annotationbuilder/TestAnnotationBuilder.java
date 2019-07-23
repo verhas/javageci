@@ -16,6 +16,9 @@ public class TestAnnotationBuilder {
                     "./javageci-core/src/main/java/",
                     "../javageci-core/src/main/java/")
                 .register(AnnotationBuilder.builder()
+                    .module("javageci-core-annotations")
+                    .absolute("yes")
+                    .in("javax0.geci.annotations")
                     .build())
                 .generate(),
             geci.failed());

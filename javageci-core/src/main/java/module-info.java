@@ -4,6 +4,7 @@ module geci.core {
     requires transitive geci.engine;
     requires jamal.engine;
     requires jamal.api;
+    requires geci.core.annotations;
 
     exports javax0.geci.factory;
     exports javax0.geci.builder;
