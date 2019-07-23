@@ -66,29 +66,6 @@ public interface SegmentSplitHelper {
     }
 
     /**
-     * The index of the line that is the first line after a segment
-     * start. SegmentHelpers that support multi-line segment start
-     * should implement this method. The default implementation simply
-     * returns {@code i+1}, which means that the segment header is one
-     * line.
-     *
-     * <p> When this method is used it has to be called only after
-     * calling {@link #match(List, int)} and only if a successive call
-     * to {@link Matcher#isSegmentStart()} returned {@code true}. This
-     * is guaranteed so that implementations can ignore the actual
-     * parameters and use a value calculated and stored when {@link
-     * #match(List, int)} was invoked.
-     * *
-     * @param lines the list of lines
-     * @param i the index of the current line
-     * @return the index of the first line of the segment that is to be
-     * replaced
-     */
-    default int firstLineIndex(List<String> lines, int i){
-        return i+1;
-    }
-
-    /**
      * In case of default segment creation the strings returned by this
      * method will be inserted before the default segment. These lines
      * usually contain some string(s) that will be recognized by the
@@ -146,6 +123,19 @@ public interface SegmentSplitHelper {
          * @return {@code true} if this line starts a segment.
          */
         boolean isSegmentStart();
+
+        /**
+         * The number of the lines that the header of the segment
+         * contains. SegmentHelpers that support multi-line segment
+         * start should implement this method in their {@link Matcher}
+         * implementation. The default implementation simply returns
+         * {@code 1}, which means that the segment header is one line.
+         *
+         * @return the number of the lines in the segment header
+         */
+        default int headerLength(){
+            return 1;
+        }
 
         /**
          * @return {@code true} if this line ends a segment.

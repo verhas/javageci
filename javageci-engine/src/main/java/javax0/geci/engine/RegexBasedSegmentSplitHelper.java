@@ -146,7 +146,7 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
         return null;
     }
 
-    protected class Matcher implements SegmentSplitHelper.Matcher {
+    protected static class Matcher implements SegmentSplitHelper.Matcher {
 
         private final boolean segmentStart;
         private final boolean segmentEnd;

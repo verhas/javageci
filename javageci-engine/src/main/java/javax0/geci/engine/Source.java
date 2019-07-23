@@ -357,7 +357,7 @@ public class Source implements javax0.geci.api.Source {
                 if (matcher.isDefaultSegmentEnd()) {
                     var seg = new SegmentDescriptor();
                     seg.attr = null;
-                    seg.startLine = splitHelper.firstLineIndex(lines, i);
+                    seg.startLine = i + matcher.headerLength();
                     seg.endLine = i;
                     seg.tab = matcher.tabbing();
                     return seg;
@@ -386,7 +386,7 @@ public class Source implements javax0.geci.api.Source {
                     seg.originals = new ArrayList<>();
                     seg.attr = attr;
                     seg.tab = matcher.tabbing();
-                    seg.startLine = splitHelper.firstLineIndex(lines, i);
+                    seg.startLine = i + matcher.headerLength();
                     for (int j = seg.startLine; j < lines.size(); j++) {
                         line = lines.get(j);
                         final var endMatcher = splitHelper.match(line);
@@ -419,7 +419,7 @@ public class Source implements javax0.geci.api.Source {
                 seg.originals = new ArrayList<>();
                 seg.attr = attr;
                 seg.tab = matcher.tabbing();
-                seg.startLine = splitHelper.firstLineIndex(lines, i);
+                seg.startLine = i + matcher.headerLength();
                 for (i = seg.startLine; i < lines.size(); i++) {
                     line = lines.get(i);
                     final var endMatcher = splitHelper.match(lines, i);

@@ -261,7 +261,12 @@ builder of the generator. There is also a configurable transformation,
 which is applied to each line before appending to the snippet. The
 default values are fitting Java:
 
-<!-- snip FragmentCollector_config trim="to=0" regex="replace='/snippetEnd/snippetEnd  /' replace='/private (?:Pattern|Function<.*?>)//' replace='/(~$)\"~);/$1\"/' replace='/Pattern.compile~(//' escape='~'"-->
+<!-- snip FragmentCollector_config trim="to=0" 
+                                   regex="replace='/snippetEnd/snippetEnd  /' 
+                                          replace='/private (?:Pattern|Function<.*?>)//'
+                                          replace='/(~$)\"~);/$1\"/' 
+                                          replace='/Pattern.compile~(//' 
+                                          escape='~'"-->
 ```java
 snippetStart = "^\\s*\\*\\s*-(?:\\s+(.*))?$"
 snippetEnd   = "^\\s*\\*/\\s*$"
@@ -406,6 +411,30 @@ followed by the segment parameters or it can be a special
 line which is a weird hack in markdown and will not get into the HTML
 output and generally can be used as a comment.
 
+The `MarkdownSegmentSplitHelper` can also collect consecutive lines in
+case the segment starting HTML comment is multiline. This way you can
+write
+
+    <!-- snip SampleMultlineSnippet snippet="epsilon" 
+              regex="replace='/^~s*~*~s?//' 
+                     escape='~'"-->
+    <!-- end snip -->
+    
+This is convenient when there are many regular expression, trimming and
+other parameters for the snippet. The lines are joined together first
+and are analyzed to get the parameters after that so it is not a problem
+if you insert a new line inside a parameter string. The new-line
+character will be removed, but the spaces at the end and at the start of
+the lines not. In the example above the string after the parameter
+`regex` spans two lines. When these are joined the parser wil process it
+as
+
+```
+regex="replace='/^~s*~*~s?//'                     escape='~'"-->
+```
+
+with the many spaces before the parameter `escape`.
+    
 The end of a segment is either three backticks or an HTML comment or a
 markdown comment as the example shows above that contain the words `end
 snip`. It is important to note that the `MarkdownCodeInserter` generator
@@ -456,9 +485,9 @@ inside a string thus the `"` character has to be quoted in case `"` was
 used to enclose the parameter itself. For example the snippet insertion
 above in the markdown code looks like the following:
 
-```
-snip MarkdownSegmentSplitHelper_patterns skip="do" trim="do" regex="replace='/e_n/en/'"
-```
+
+    snip MarkdownSegmentSplitHelper_patterns skip="do" trim="do" regex="replace='/e_n/en/'"
+
 
 The identifier of the segment is `MarkdownSegmentSplitHelper_patterns`
 and this is also the name of the snippet it uses. The snippet when
@@ -490,7 +519,14 @@ and thus they inherit these configuration options. The other
 configuration options that are specific to an individual snippet
 modifier are detailed separately for each.
 
-<!-- snip AbstractSnippeter_configuration snippet="epsilon" trim="to=0" append="snippets='AbstractSnippeter_config_.*'" regex="replace='/protected~s~w+~s/##### `/' replace='/;.*$/`/' replace='|^~s*/~*||' escape='~'" skip="do"-->
+<!-- snip AbstractSnippeter_configuration 
+              snippet="epsilon" 
+              trim="to=0" 
+              append="snippets='AbstractSnippeter_config_.*'" 
+              regex="replace='/protected~s~w+~s/##### `/'
+              replace='/;.*$/`/' 
+              replace='|^~s*/~*||' 
+              escape='~'" skip="do"-->
 ##### `phase = 1`
 
 
@@ -697,7 +733,13 @@ modifications on the different snippets and perform the appending afterwards.
 
 <!-- end snip -->
 
-<!-- snip SnippetAppender_config snippet="epsilon" trim="to=0" append="snippets='SnippetAppender_Config_.*'" regex="replace='/private~s(?:~w+|List<String>)~s/##### `/' replace='/;.*$/`/' replace='|^~s*/~*||' escape='~'"-->
+<!-- snip SnippetAppender_config snippet="epsilon" trim="to=0" 
+                                 append="snippets='SnippetAppender_Config_.*'"
+                                 regex="replace='/private~s(?:~w+|List<String>)~s/##### `/' 
+                                        replace='/;.*$/`/' 
+                                        replace='|^~s*/~*||' 
+                                        escape='~'"
+                                        -->
 ##### `snippets = List.of()`
 
 
