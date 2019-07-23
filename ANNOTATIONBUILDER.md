@@ -77,35 +77,47 @@ You put your generator (let's say `exampleGenerator`) in `example-generators` in
 </thead>
 <tbody>
     <tr>
-        <td>@AnnotationBuilder </td>
+        <td><pre>@AnnotationBuilder</pre> </td>
         <td>
             module: example-generators <br/>
             package: an.example.package.annotation
         </td>
     </tr>
     <tr>
-        <td>@AnnotationBuilder(module="example-annotations") </td>
+        <td><pre>@AnnotationBuilder(module="example-annotations")</pre>
+        </td>
         <td>
             module: example-annotations <br/>
             package: an.example.package.annotation
         </td>
     </tr>
     <tr>
-        <td>@AnnotationBuilder(in="other") </td>
+        <td><pre>@AnnotationBuilder(in="other")</pre>
+        </td>
         <td>
             module: example-generators<br/>
             package: an.example.package.other
         </td>
     </tr>
     <tr>
-        <td>@AnnotationBuilder(module="example-annotations", in="other") </td>
         <td>
-            module: example-annotations <br/>
+            <pre>@AnnotationBuilder (
+    module="example-annotations",
+    in="other"
+)</pre>
+        </td>
+        <td>
+            module: example-annotations
             package: an.example.package.other
         </td>
     </tr>
     <tr>
-        <td>@AnnotationBuilder(module="example-annotations", in="an.other.example", absolute="yes") </td>
+        <td><pre>@AnnotationBuilder (
+    module="example-annotations", 
+    in="an.other.example", 
+    absolute="yes"
+)</pre>
+        </td>
         <td>
             module: example-annotations <br/>
             package: an.other.example
