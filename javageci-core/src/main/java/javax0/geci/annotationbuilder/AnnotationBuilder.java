@@ -5,13 +5,12 @@ import static javax0.geci.tools.CaseTools.ucase;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax0.geci.annotations.Geci;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 
-@Geci("annotationBuilder absolute='yes'")
+@javax0.geci.core.annotations.AnnotationBuilder(absolute = "yes")
 public class AnnotationBuilder extends AbstractJavaGenerator {
 
     private static class Config {

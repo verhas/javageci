@@ -18,7 +18,7 @@ public class TestAnnotationBuilder {
                 .register(AnnotationBuilder.builder()
                     .module("javageci-core-annotations")
                     .absolute("yes")
-                    .in("javax0.geci.annotations")
+                    .in("javax0.geci.core.annotations")
                     .build())
                 .generate(),
             geci.failed());

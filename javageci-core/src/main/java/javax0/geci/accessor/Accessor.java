@@ -1,11 +1,11 @@
 package javax0.geci.accessor;
 
 import java.lang.reflect.Field;
-import javax0.geci.annotations.Geci;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
+import javax0.geci.core.annotations.AnnotationBuilder;
 
-@Geci("annotationBuilder absolute='yes'")
+@AnnotationBuilder(absolute = "yes")
 public class Accessor extends AbstractAccessor {
     public Accessor(){
         config.mnemonic = "accessor";
