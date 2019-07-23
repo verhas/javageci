@@ -107,7 +107,7 @@ You put your generator (let's say `exampleGenerator`) in `example-generators` in
 )</pre>
         </td>
         <td>
-            module: example-annotations
+            module: example-annotations <br />
             package: an.example.package.other
         </td>
     </tr>
