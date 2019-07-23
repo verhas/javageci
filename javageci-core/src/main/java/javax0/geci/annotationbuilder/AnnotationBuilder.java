@@ -16,7 +16,7 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
 
     private static class Config {
         private String module = "";
-        private String in = "";
+        private String in = "annotation";
         private String maven = "true";
     }
 
@@ -25,14 +25,11 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
         final var mnemonic = getMnemonic(klass);
         final var keys = getImplementedKeysSorted(klass);
         final var annotation = ucase(mnemonic);
-        if(global.is("maven", config.maven)) {
-            final var module = global.get("module", config.module);
-            final var in = normalizePackage(global.get("in", config.in));
-            final var directory = Source.maven().module(module).mainSource().getDirectories()[0];
-            final var file = source.newSource(directory, in + annotation + ".java");
-            writeContent(file, mnemonic, annotation, keys);
-        }
-
+        final var module = global.get("module", config.module);
+        final var in = normalizePackage(global.get("in", config.in));
+        final var directory = module.equals("") ? "" : Source.maven().module(module).mainSource().getDirectories()[0];
+        final var file = source.newSource(directory, in + annotation + ".java");
+        writeContent(file, mnemonic, annotation, keys);
     }
 
     private String normalizePackage(String in) {

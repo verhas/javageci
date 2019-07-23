@@ -86,6 +86,9 @@ public class Source implements javax0.geci.api.Source {
 
     @Override
     public Source newSource(String directory, String fileName) {
+        if(directory == null || directory.equals("")) {
+            return newSource(fileName);
+        }
         return createNewSource(directory, fileName);
     }
 
