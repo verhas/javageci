@@ -50,10 +50,27 @@ public interface SegmentSplitHelper {
      */
     Matcher match(String line);
 
+    /**
+     * Create a matcher using the current line and possible reading
+     * consecutive or even previous lines.
+     *
+     * @param lines the list of lines
+     * @param i     the index of the current line
+     * @return a new matcher just like {@link #match(String)}.
+     */
     default Matcher match(List<String> lines, int i){
         return match(lines.get(i));
     }
 
+    /**
+     * The index of the line that is the first line after a segment
+     * start.
+     *
+     * @param lines the list of lines
+     * @param i the index of the current line
+     * @return the index of the first line of the segment that is to be
+     * replaced
+     */
     default int firstLineIndex(List<String> lines, int i){
         return i+1;
     }
