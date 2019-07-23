@@ -214,14 +214,14 @@ Java files of the module `javageci-docugen`. Retrieving the context
 built up by this object and injecting into the next one will transfer
 the collected snippets inside the context for the next generators.
 
-## Implemented Snippet Handling Generators
+# Implemented Snippet Handling Generators
 
 As there are three types of snippet handling generators we will discuss
 the implemented generators in three subsections.
 
-### Collectors
+## Collectors
 
-#### `SnippetCollector`
+### `SnippetCollector`
 
 The generator `SnippetCollector` is executed by the framework for all
 sources that are configured and collected and the collector scans
@@ -247,7 +247,7 @@ referenced in the text that needs the snippet to be inserted. The
 parameters are stored along with the snippet and are available for
 snippet modifying and snippet inserting generators.
 
-#### `FragmentCollector`
+### `FragmentCollector`
 
 The fragment collector was designed to collect documentation fragments
 from Java source files. It is easier to use a bit than the general
@@ -307,7 +307,7 @@ then this default transformation will not touch it. Also only one space
 is removed after the `*` character so that indentation and code
 fragments that are indented in markdown are not ruined.
 
-### Modifiers
+## Modifiers
 
 Snippet modifiers run when the snippets are collected and modify the
 lines of the snippets. Because the same snippet may be used with
@@ -315,7 +315,7 @@ different modifications for different segments modifiers create a copy
 of the snippet before any modification is performed. The copy is
 assigned to the segment where the snippet will be inserted.
 
-#### Snippet Store and Snippet Copies
+### Snippet Store and Snippet Copies
 
 Keeping track of the copies is automatically done by the snippet store.
 The snippet store stores the original snippets as they are collected and
@@ -335,7 +335,7 @@ modifications again:
         private Pattern snippetEnd = Pattern.compile("(?://\\s*end\\s+snipp?et|end\\s+snipp?et\\s*\\*/)");
 ```
 
-#### Segments for Snippets
+### Segments for Snippets
 
 The snippets are inserted into segments like any other generated code.
 These segments, however, are usually not editor-fold segments. Editor
@@ -386,7 +386,10 @@ of them that have been developed so far) are based on regular expression
 matching. The `MarkdownSegmentSplitHelper` defines the following regular
 expression patterns:
 
-<!-- snip MarkdownSegmentSplitHelper_patterns skip="do" trim="do" regex="replace='/e_n/en/'"-->
+<!-- snip MarkdownSegmentSplitHelper_patterns 
+              skip="do"
+              trim="do" 
+              regex="replace='/e_n/en/'"-->
 ```java
                 //startPattern
                 "^(\\s*)\\[//]:\\s*#\\s*\\(\\s*snip\\s+(.*)\\)\\s*$" +
@@ -461,7 +464,7 @@ one segment uses the same snippet then only one can use the name of the
 snippet as segment id, the others should have different identifiers and
 refer to the snippet using the `snippet` parameter.
 
-#### Invocation of Modifiers
+### Invocation of Modifiers
 
 A snippet modifying generator runs only if it is registered in the Geci
 execution for the appropriate phase and only for the segments that
@@ -510,7 +513,7 @@ generator to replace every occurrence of `e_n` to `en`. (It is only
 there for demonstration purposes only, there is no `e_n` in the actual
 snippet.)
 
-#### Configuration for all Snippet Modifiers
+### Configuration for all Snippet Modifiers
 
 The following configuration options are available for all the snippet
 modifiers. These configuration options are defined in the abstract class
@@ -527,7 +530,7 @@ modifier are detailed separately for each.
               replace='/;.*$/`/' 
               replace='|^~s*/~*||' 
               escape='~'" skip="do"-->
-##### `phase = 1`
+#### `phase = 1`
 
 
 The phase parameter defines the phase that the snippet
@@ -539,7 +542,7 @@ phases the generator needs and when asked if it has to be
 active in a phase it will return `true` if the actual phase is
 the same as the one configured.
 
-##### `files = "\\.md$"`
+#### `files = "\\.md$"`
 
 
 This configuration parameter can limit the file name pattern
@@ -550,11 +553,11 @@ in the builder interface.
 
 <!-- end snip -->
 
-#### Snippet Modifiers
+### Snippet Modifiers
 
 In this section, we document the individual snippet modifiers one by one.
 
-##### Trim
+#### Trim
 
 Trim is implemented in the generator class `SnippetTrim`. It can remove
 the spaces from the left of the lines keeping the original tabbing.
@@ -565,7 +568,15 @@ the left. This modifier removes the extra spaces.
 
 The configuration parameters are the followings:
 
-<!-- snip SnippetTrim_config snippet="epsilon" trim="to=0" append="snippets='SnippetTrim_config_.*'" regex="replace='/private~s~w+~s/##### `/' replace='/;.*$/`/' replace='|^~s*/~*||' escape='~'" skip="do"-->
+<!-- snip SnippetTrim_config snippet="epsilon" 
+                             trim="to=0" 
+                             skip="do"
+                             append="snippets='SnippetTrim_config_.*'" 
+                             regex="replace='/private~s~w+~s/##### `/' 
+                                    replace='/;.*$/`/' 
+                                    replace='|^~s*/~*||' 
+                                    escape='~'" 
+                             -->
 ##### `to = "0"`
 
 
@@ -580,7 +591,7 @@ example
 
 <!-- end snip -->
 
-##### Regex
+#### Regex
 
 <!-- snip SnippetRegex_doc regex="replace='/^~s*~*~s?//' escape='~'"-->
 
@@ -644,7 +655,7 @@ regex object is created.
 
 <!-- end snip -->
 
-##### Number
+#### Number
 
 <!-- snip SnippetNumberer_doc regex="replace='/^~s*~*~s?//' escape='~'"-->
 
@@ -698,7 +709,7 @@ the default means no limit.
 
 <!-- end snip -->
 
-##### Append
+#### Append
 <!-- snip SnippetAppender_doc regex="replace='/^~s*~*~s?//' escape='~'"-->
 
 Snippet appender can be used to append multiple snippets together. This is useful when the content of the
@@ -755,7 +766,7 @@ tilde `~` character.
 <!-- end snip -->
 
 
-##### Skip
+#### Skip
 
 <!-- snip SnipetLineSkipper_doc regex="replace='/^~s*~*~s?//' escape='~'"-->
 
@@ -802,7 +813,15 @@ In the generator builder the regular expression patterns that match `skip`, `ski
 
 <!-- end snip -->
 
-<!-- snip SnipetLineSkipper_config snippet="epsilon" trim="to=0" append="snippets='SnipetLineSkipper_Config_.*'" regex="replace='/Pattern~.compile~(//' replace='/private~sPattern~s/##### `/' replace='/~);.*$/`/' replace='|^~s*/~*||' escape='~'"-->
+<!-- snip SnipetLineSkipper_config snippet="epsilon" 
+                                   trim="to=0" 
+                                   append="snippets='SnipetLineSkipper_Config_.*'" 
+                                   regex="replace='/Pattern~.compile~(//' 
+                                          replace='/private~sPattern~s/##### `/' 
+                                          replace='/~);.*$/`/' 
+                                          replace='|^~s*/~*||' 
+                                          escape='~'"
+                                          -->
 ##### `skip = "skip"`
 
 
@@ -837,34 +856,36 @@ skipping end.
 
 ### Snippet Inserters
 
-In the case of markdown formatted code is enclosed between three
-starting and three ending back-ticks on a line.
+The snippet inserters insert the snippets after they got their final
+content into the segments that refer to them. Since different formats
+may need different syntax for segment start and finish there are different
+snippet inserting generators for different formatted files.
 
-When handling markdown Java::Geci needs the `MarkdownSegmentSplitHelper`
-registered with the appropriate file extension. 
+The snippet inserting code generators should run after the other
+generators. It can be configured in the test so that they are active in
+the last phase. Another approach is to execute them in a different Geci
+object that gets the snippets throgh context insertion.
 
-<!-- snip SnippetInserterConfig snippet="TestGenerateJavageciDocumentation" trim="to=0"-->
-```java
-final var fragmentCollector = new Geci();
-fragmentCollector
-    .source(Source.maven().module("javageci-docugen").mainSource())
-    .register(FragmentCollector.builder().build())
-    .generate();
+#### Markdown Snippet Insertion
 
-final var geci = new Geci();
-int i = 0;
-Assertions.assertFalse(
-    geci.context(fragmentCollector.context())
-        .source("..", ".").ignore("\\.git", "\\.(png|zip|class|jar|asc|graffle)$", "target")
-        .log(Geci.MODIFIED)
-        .register(SnippetCollector.builder().phase(i++).build())
-        .register(SnippetAppender.builder().phase(i++).build())
-        .register(SnippetRegex.builder().phase(i++).build())
-        .register(SnippetTrim.builder().phase(i++).build())
-        .register(SnippetNumberer.builder().phase(i++).build())
-        .register(SnipetLineSkipper.builder().phase(i++).build())
-        .register(MarkdownCodeInserter.builder().phase(i++).build())
-        .splitHelper("md", new MarkdownSegmentSplitHelper())
-        .generate(),
-    geci.failed());
-```
+To insert snippet into a markdown formatted file the
+`MarkdownCodeInserter` can be used. There is no configuration option of
+this generator. The only speciality of this snippet inserting generator
+is that it looks at the original content of the segment and in case the
+first line starts with three backticks then it keeps this line as the
+first line of the segment and appends the lines of the snippet after
+this line.
+
+That way it is possible to include a verbatim code sample, keeping the
+starting backticks that formats markdown code fragment and to use the
+closing backticks as segment closing.
+
+# Sample
+
+A documentation is several words and explanations but understaning is
+usually best via examples. In this case the best example of the use of
+the snippets is the source code of this documentation itself
+`DOCUGEN.md`. The snippets from the documentum generating code was
+extensively used in this document and it is also used in a careful and
+explnatory way that can be used to understand the use of the snippet
+handling generators.
