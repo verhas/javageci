@@ -36,15 +36,6 @@
 </plugins></build>
 
     <dependencies>
-        
-            
-<dependency>
-    <groupId>com.javax0.geci</groupId>
-    <artifactId>javageci-core</artifactId>
-    
-</dependency>
-        
-            
 <dependency>
     <groupId>org.junit.jupiter</groupId>
     <artifactId>junit-jupiter-api</artifactId>
@@ -64,6 +55,10 @@
     <artifactId>jamal-engine</artifactId>
     <version>1.0.3</version>
 </dependency>
+        <dependency>
+            <groupId>com.javax0.geci</groupId>
+            <artifactId>javageci-annotation</artifactId>
+        </dependency>
 
     </dependencies>
 </project>

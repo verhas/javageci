@@ -11,7 +11,6 @@ import javax0.geci.tools.reflection.Selector;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -103,7 +102,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
                 .write_l(");")
                 .newline();
         segment.write_l("@Override")
-                .write_r("protected java.util.Set<String> implementedKeys() {")
+                .write_r("public java.util.Set<String> implementedKeys() {")
                 .write("return implementedKeys;")
                 .write_l("}");
     }
@@ -238,8 +237,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
             "id"
     );
 
-    @Override
-    protected java.util.Set<String> implementedKeys() {
+    @Override public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
 

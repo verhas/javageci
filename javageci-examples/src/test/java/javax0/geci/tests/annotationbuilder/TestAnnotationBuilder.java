@@ -11,15 +11,11 @@ public class TestAnnotationBuilder {
     @Test
     public void testAnnotationBuilder() throws Exception {
         final var geci = new Geci();
-        Assertions.assertFalse(
+         Assertions.assertFalse(
             geci.source(
                     "./javageci-core/src/main/java/",
                     "../javageci-core/src/main/java/")
-                .source(Source.Set.set("annotation-folder"),
-                    "./javageci-core-annotations/src/main/java/",
-                    "../javageci-core-annotations/src/main/java/")
                 .register(AnnotationBuilder.builder()
-                    .in("annotation-folder")
                     .build())
                 .generate(),
             geci.failed());

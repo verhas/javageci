@@ -193,8 +193,7 @@ public class Repeated extends AbstractJavaGenerator {
         "id"
     );
 
-    @Override
-    protected java.util.Set<String> implementedKeys() {
+    @Override public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
     public class Builder {

@@ -8,8 +8,6 @@
     {@include ../plugins.jim}
 
     {dependencies#
-        {@for MODULE in (core)=
-            {dependency :{GROUPID}:javageci-MODULE:}}
         {@for MODULE in (api,engine)=
             {dependency :org.junit.jupiter:junit-jupiter-MODULE:}}
         {@define JAMAL=com.javax0.jamal}

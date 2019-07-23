@@ -157,10 +157,21 @@ public interface Source {
      * Create the new source file in the directory that was used to open the specified source set.
      *
      * @param fileName relative file name to the current source.
-     * @param set      identifies the source set with a name
+     * @param set      identifies the source set with a name.
      * @return the new {@code Source} object.
      */
     Source newSource(Source.Set set, String fileName);
+
+    /**
+     * Create a new source that may or may not exist. This source is going to be generated and if it already existed
+     * it will be overwritten, unless the already existing file has exactly the same content as the new one.
+     * The folder structure inherent in the relative file name is replaced with the value of the directory parameter.
+     * Create the new source file in the directory that was used to open the specified source set.
+     * @param directory   relative directory name where the new source file will be generated.
+     * @param fileName    relative file name to the current source.
+     * @return the new {@code Source} object.
+     */
+    Source newSource(String directory, String fileName);
 
     /**
      * Initialize a segment. This is needed in case it is possible that the code generator does not
@@ -296,6 +307,14 @@ public interface Source {
             this.set = set;
             this.directories = directories;
         }
+
+        public Set getSet() {
+            return set;
+        }
+
+        public String[] getDirectories() {
+            return directories;
+        }
     }
 
     /**
@@ -320,7 +339,7 @@ public interface Source {
          * <pre>
          * '{@code ./src/(main|test)/(java|resources)}'
          * </pre>
-         * wehere the sources can be. This is sufficient. The current working directory is the project root
+         * where the sources can be. This is sufficient. The current working directory is the project root
          * when the tests are started either interactively in an IDE or from the command line using the
          * command {@code mvn}.
          * </p>

@@ -1,6 +1,9 @@
 package javax0.geci.engine;
 
 
+import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Generator;
 import javax0.geci.api.Logger;
@@ -82,11 +85,20 @@ public class Source implements javax0.geci.api.Source {
     }
 
     @Override
+    public Source newSource(String directory, String fileName) {
+        return createNewSource(directory, fileName);
+    }
+
+    @Override
     public Source newSource(Source.Set sourceSet, String fileName) {
         if (!collector.directories.containsKey(sourceSet)) {
             throw new GeciException("SourceSet '" + sourceSet + "' does not exist");
         }
         var directory = collector.directories.get(sourceSet)[0];
+        return createNewSource(directory, fileName);
+    }
+
+    private Source createNewSource(String directory, String fileName) {
         var source = new Source(collector, directory, inDir(directory, fileName));
         collector.addNewSource(source);
         return source;
@@ -94,12 +106,9 @@ public class Source implements javax0.geci.api.Source {
 
     @Override
     public Source newSource(String fileName) {
-        for (final var source : collector.newSources) {
-            if (this.absoluteFile.equals(source.absoluteFile)) {
-                return source;
-            }
-        }
-        var source = new Source(collector, dir, inDir(dir, fileName));
+        var source = collector.newSources.stream()
+            .filter(other -> this.absoluteFile.equals(other.absoluteFile)).findFirst()
+            .orElse(new Source(collector, dir, inDir(dir, fileName)));
         collector.addNewSource(source);
         return source;
     }

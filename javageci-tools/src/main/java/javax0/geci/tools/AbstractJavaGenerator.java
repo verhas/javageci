@@ -133,7 +133,7 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
      * @return {@code null}. Concrete implementations should return the
      * set of the keys that are accepted by the generator.
      */
-    protected Set<String> implementedKeys() {
+    public Set<String> implementedKeys() {
         return null;
     }
 

@@ -1,22 +1,23 @@
 package javax0.geci.annotationbuilder;
 
-import static javax0.geci.api.Source.Set.set;
 import static javax0.geci.tools.CaseTools.ucase;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
+import javax0.geci.annotations.Geci;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
-import javax0.geci.tools.GeciReflectionTools;
 
+@Geci("annotationBuilder")
 public class AnnotationBuilder extends AbstractJavaGenerator {
 
     private static class Config {
+        private String module = "";
         private String in = "";
+        private String maven = "true";
     }
 
     @Override
@@ -24,19 +25,31 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
         final var mnemonic = getMnemonic(klass);
         final var keys = getImplementedKeysSorted(klass);
         final var annotation = ucase(mnemonic);
+        if(global.is("maven", config.maven)) {
+            final var module = global.get("module", config.module);
+            final var in = normalizePackage(global.get("in", config.in));
+            final var directory = Source.maven().module(module).mainSource().getDirectories()[0];
+            final var file = source.newSource(directory, in + annotation + ".java");
+            writeContent(file, mnemonic, annotation, keys);
+        }
 
-        final var file = source.newSource(set(config.in), annotation + ".java");
-        writeContent(file, mnemonic, annotation, keys);
+    }
+
+    private String normalizePackage(String in) {
+        var normalized = in;
+        if(!in.startsWith("/")) {
+            normalized = "/" + normalized;
+        }
+        if(!in.endsWith("/")) {
+            normalized = normalized + "/";
+        }
+        normalized = normalized.replaceAll("[.]", "/");
+        return normalized;
     }
 
     private List<String> getImplementedKeysSorted(final Class<?> klass) {
         try {
-            final var getKeys = GeciReflectionTools.getMethod(klass, "implementedKeys");
-            getKeys.setAccessible(true);
-            final var keySet = (Set<String>) getKeys.invoke(klass.getConstructor().newInstance());
-            final var keyList = new ArrayList<>(keySet);
-            keyList.sort(String::compareTo);
-            return keyList;
+            return ((AbstractJavaGenerator) klass.getConstructor().newInstance()).implementedKeys().stream().sorted().collect(Collectors.toList());
         } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException ex) {
             throw new GeciException("Cannot generate annotation for " + klass.getName() + " because it does not have an implementedKeys() method.", ex);
         }
@@ -79,16 +92,28 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
 
     private static final java.util.Set<String> implementedKeys = java.util.Set.of(
         "in",
+        "maven",
+        "module",
         "id"
     );
 
     @Override
-    protected java.util.Set<String> implementedKeys() {
+    public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
     public class Builder {
         public Builder in(String in) {
             config.in = in;
+            return this;
+        }
+
+        public Builder maven(String maven) {
+            config.maven = maven;
+            return this;
+        }
+
+        public Builder module(String module) {
+            config.module = module;
             return this;
         }
 
@@ -99,6 +124,8 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
     private Config localConfig(CompoundParams params){
         final var local = new Config();
         local.in = params.get("in",config.in);
+        local.maven = params.get("maven",config.maven);
+        local.module = params.get("module",config.module);
         return local;
     }
     //</editor-fold>
