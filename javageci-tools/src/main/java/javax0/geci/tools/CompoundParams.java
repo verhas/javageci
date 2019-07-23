@@ -257,22 +257,37 @@ public class CompoundParams {
         return toBoolean(s);
     }
 
+    /**
+     *
+     * Retrieves a parameter boolean value if it exists. If it does not it returns with a default value.
+     *
+     * @param key          the name of the parameter
+     * @param defaultValue the default value if the parameter does not exist.
+     * @return the default value if the parameter does not exist. If it exists, it behaves as {@link #is(String)}.
+     */
     public boolean is(String key, boolean defaultValue) {
         var s = get(key);
-        if (s == null) {
+        if (s == null || s.equals("")) {
             return defaultValue;
         } else {
-            return is(key);
+            return toBoolean(s);
         }
     }
 
+    /**
+     * Retrieves a parameter boolean value if it exists or tests a default value if it does not.
+     *
+     * @param key          the name of the parameter
+     * @param defaultValue the default value if the parameter does not exist.
+     * @return {@code true} if the parameter exists and fulfills the condition of {@link #is(String)} or if the parameter
+     * does not exists and the default value fulfills the condition of {@link #is(String)}. In any other case the method returns {@code false}.
+     */
     public boolean is(String key, String defaultValue) {
         var s = get(key);
-        if (s == null) {
-            return is(defaultValue);
-        } else {
-            return is(key);
+        if (s == null || s.equals("")) {
+            s = defaultValue;
         }
+        return toBoolean(s);
     }
 
     public boolean isNot(String key) {
