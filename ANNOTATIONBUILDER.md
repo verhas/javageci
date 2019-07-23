@@ -59,7 +59,7 @@ Use `@AnnotationBuilder(in="name.of.package")` to generate the annotation in a d
  
 ## `absolute='true'`
  
-Use @AnnotationBuilder(absolute="yes") to generate the annotation not relative to the
+Use `@AnnotationBuilder(absolute="yes")` to generate the annotation not relative to the
 place of the generator, but to the java folder. Please note, that if you use `absolute="yes"`,
 then you should also specify a package with the `in` parameter.
 
