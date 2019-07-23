@@ -52,7 +52,10 @@ public interface SegmentSplitHelper {
 
     /**
      * Create a matcher using the current line and possible reading
-     * consecutive or even previous lines.
+     * consecutive or even previous lines. Simple implementations that
+     * do not intend to support multi-line segment start do not need
+     * to implement this method. The default implementation simply calls
+     * {@link #match(String)} with the {@code i}-th line.
      *
      * @param lines the list of lines
      * @param i     the index of the current line
@@ -64,8 +67,18 @@ public interface SegmentSplitHelper {
 
     /**
      * The index of the line that is the first line after a segment
-     * start.
+     * start. SegmentHelpers that support multi-line segment start
+     * should implement this method. The default implementation simply
+     * returns {@code i+1}, which means that the segment header is one
+     * line.
      *
+     * <p> When this method is used it has to be called only after
+     * calling {@link #match(List, int)} and only if a successive call
+     * to {@link Matcher#isSegmentStart()} returned {@code true}. This
+     * is guaranteed so that implementations can ignore the actual
+     * parameters and use a value calculated and stored when {@link
+     * #match(List, int)} was invoked.
+     * *
      * @param lines the list of lines
      * @param i the index of the current line
      * @return the index of the first line of the segment that is to be
