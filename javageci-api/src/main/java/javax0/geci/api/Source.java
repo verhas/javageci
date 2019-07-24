@@ -250,6 +250,9 @@ public interface Source {
         private final boolean autoName;
 
         private Set(String name, boolean autoName) {
+            if( name == null && autoName){
+                throw new GeciException("When the name for a set is not specified it cannot be 'autoName'");
+            }
             if (name == null) {
                 name = randomUniqueName();
             }
@@ -285,6 +288,26 @@ public interface Source {
             return new Set(name, false);
         }
 
+        /**
+         * Crete a new set with the name {@code name}. The argument
+         * {@code autoName} signals that the name is a default name and
+         * it is not directly specified by the user. This is like {@code
+         * mainSource} or {@code testResource}. In this case it may
+         * happen that there are multiple sets with the same name
+         * especially if multiple modules are specified as sources in a
+         * multi-module project. If that happens when the application
+         * tries to save the source into the map indexed by the source
+         * set objects it renames the set with a "random" name.
+         *
+         * <p>Note that the "random" name is also used when the user
+         * defines a set without name. In that case the argument {@code
+         * name} is {@code null} and {@code autoName} has to be {@code
+         * false}.
+         *
+         * @param name the name of the set
+         * @param autoName signals if the name was set automatically
+         * @return the new set
+         */
         public static Set set(String name, boolean autoName) {
             return new Set(name, autoName);
         }
@@ -318,7 +341,7 @@ public interface Source {
         final Set set;
         final String[] directories;
 
-        public NamedSourceSet(Set set, String[] directories) {
+        NamedSourceSet(Set set, String[] directories) {
             this.set = set;
             this.directories = directories;
         }
