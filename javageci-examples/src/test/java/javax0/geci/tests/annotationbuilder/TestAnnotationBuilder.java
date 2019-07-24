@@ -1,7 +1,6 @@
 package javax0.geci.tests.annotationbuilder;
 
 import javax0.geci.annotationbuilder.AnnotationBuilder;
-import javax0.geci.api.Source;
 import javax0.geci.engine.Geci;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

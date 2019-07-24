@@ -2,6 +2,7 @@ package javax0.geci.annotationbuilder;
 
 import static javax0.geci.tools.CaseTools.ucase;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +26,15 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
         final var keys = getImplementedKeysSorted(klass);
         final var annotation = ucase(mnemonic);
         final var module = global.get("module", config.module);
-        final var directory = module.equals("") ? "" : "../" + Source.maven().module(module).mainSource().getDirectories()[0];
+        String directory = "";
+        if(!module.equals("")) {
+            final var folder = new File(module);
+            if(folder.exists() && folder.isDirectory()) {
+                directory = Source.maven().module(module).mainSource().getDirectories()[0];
+            } else {
+                throw new RuntimeException("Source directory [" + module + "] is not found.");
+            }
+        }
 
         final var isRelative = global.is("absolute");
         String in = global.get("in", config.in);
