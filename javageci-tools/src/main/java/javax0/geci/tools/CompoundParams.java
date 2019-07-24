@@ -267,7 +267,7 @@ public class CompoundParams {
      */
     public boolean is(String key, boolean defaultValue) {
         var s = get(key);
-        if (s == null || s.equals("")) {
+        if (s.equals("")) {
             return defaultValue;
         } else {
             return toBoolean(s);
@@ -284,7 +284,7 @@ public class CompoundParams {
      */
     public boolean is(String key, String defaultValue) {
         var s = get(key);
-        if (s == null || s.equals("")) {
+        if (s.equals("")) {
             s = defaultValue;
         }
         return toBoolean(s);
