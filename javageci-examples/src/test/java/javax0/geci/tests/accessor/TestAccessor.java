@@ -1,4 +1,3 @@
-//snippet TestAccessor
 package javax0.geci.tests.accessor;
 
 import javax0.geci.accessor.Accessor;
@@ -10,15 +9,17 @@ import static javax0.geci.api.Source.maven;
 
 public class TestAccessor {
 
+    //snippet TestAccessor
     @Test
     public void testAccessor() throws Exception {
         Geci geci;
         Assertions.assertFalse(
-                (geci = new Geci()).source(
-                maven().module("javageci-examples").mainSource()
-                ).register(Accessor.builder().build()).generate(),
+                (geci = new Geci()).source(maven().module("javageci-examples").mainSource())
+                        .register(Accessor.builder().build())
+                        .generate(),
                 geci.failed());
     }
+//end snippet
 
 
     @Test
@@ -32,4 +33,3 @@ public class TestAccessor {
     }
 
 }
-//end snippet
