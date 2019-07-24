@@ -31,6 +31,11 @@ boring and mechanical tasks which humans are not good at. The same time
 computers can be asked to perform these tasks and this is what
 Java::Geci snippet handling does.
 
+The different functions that the snippet handling provides were tested
+in a former application focusing on the documentation generation. This
+tool was written in Python and was tested when I wrote the book Java
+Projects by Peter Verhas, second edition, PACKT, ISBN 978-1-78913-189-5.
+
 ## Using snippets
 
 To have Java::Geci do these copy-paste operations the parts of the text,
@@ -389,18 +394,21 @@ expression patterns:
 <!-- snip MarkdownSegmentSplitHelper_patterns 
               skip="do"
               trim="do" 
-              regex="replace='/e_n/en/'"-->
+              regex="replace='/e_n/en/'
+                     kill='Pattern~.compile'
+                     escape='~'
+                     "-->
 ```java
                 //startPattern
-                "^(\\s*)\\[//]:\\s*#\\s*\\(\\s*snip\\s+(.*)\\)\\s*$" +
-                    "|" +
-                        "^(\\s*)<!--\\s*snip\\s+(.*)-->\\s*$"
+                        "^(\\s*)\\[//]:\\s*#\\s*\\(\\s*snip\\s+(.*)\\)\\s*$" +
+                                "|" +
+                                "^(\\s*)<!--\\s*snip\\s+(.*)-->\\s*$"
                 // endPattern
-                "^(\\s*)```(\\s*)$" +
-                    "|" +
-                        "^(\\s*)\\[//]:\\s*#\\s*\\(\\s*end\\s+snip\\s*(.*)\\)\\s*$" +
-                    "|" +
-                        "^(\\s*)<!--\\s*end\\s+snip\\s*(.*)-->\\s*$"
+                        "^(\\s*)```(\\s*)$" +
+                                "|" +
+                                "^(\\s*)\\[//]:\\s*#\\s*\\(\\s*end\\s+snip\\s*(.*)\\)\\s*$" +
+                                "|" +
+                                "^(\\s*)<!--\\s*end\\s+snip\\s*(.*)-->\\s*$"
 ```
 
 This shows that in the case of markdown the segments can start with an HTML
@@ -593,21 +601,24 @@ example
 
 #### Regex
 
-<!-- snip SnippetRegex_doc regex="replace='/^~s*~*~s?//' escape='~'"-->
+<!-- snip SnippetRegex_doc_000001 -->
 
 The `regex` snippet generator goes through each line of the snippet
-and does regular expression based search and replace. It can be used
-for example as
+and does regular expression based search and replace and it also
+deletes certain lines that match a regular expression kill pattern.
 
-     regex="replace='/a/b/'"
+It can be used for example as
 
-to replace each occurrence of `a` to `b`.
+     regex="replace='/a/b/' kill='abraka'"
+
+to replace each occurrence of `a` to `b` and the same time delete all
+lines from the snippet that contains `abraka`.
 
 A real life example is:
 
      regex="replace='/^\\\\s*\\\\*\\\\s?//'
 
-It is used in the documentation of docugen to include the snippet
+It was used in the documentation of DOCUGEN.md to include the snippet
 defined in the JavaDoc of the class `SnippetRegex` and to remove the
 `*` characters from the start of the line. The result is what you are
 reading now (or you may be reading the original JavaDoc in the Java
@@ -651,7 +662,16 @@ expression escape sequences.
 
 If you want to use the same escape string in all the snippet regex
 modifications then you can configure it in the builder when the
-regex object is created.
+regex snippet modifier generator object is created.
+
+It is to note that by default the replacements are performed on each
+line and then the code decides if the line has to be killed or not.
+You can reverse this order using the configuration
+
+    killFirst=true
+
+on the segment header. If there is a need for this parameter it is a
+smell that something is overcomplicated in the use of the snippets.
 
 <!-- end snip -->
 
@@ -819,7 +839,7 @@ In the generator builder the regular expression patterns that match `skip`, `ski
                                    regex="replace='/Pattern~.compile~(//' 
                                           replace='/private~sPattern~s/##### `/' 
                                           replace='/~);.*$/`/' 
-                                          replace='|^~s*/~*||' 
+                                          replace='|^~s*/~*||'
                                           escape='~'"
                                           -->
 ##### `skip = "skip"`
@@ -882,10 +902,10 @@ closing backticks as segment closing.
 
 # Sample
 
-A documentation is several words and explanations but understaning is
+A documentation is several words and explanations but understanding is
 usually best via examples. In this case the best example of the use of
 the snippets is the source code of this documentation itself
-`DOCUGEN.md`. The snippets from the documentum generating code was
+`DOCUGEN.md`. The snippets from the document generating code was
 extensively used in this document and it is also used in a careful and
-explnatory way that can be used to understand the use of the snippet
+explanatory way that can be used to understand the use of the snippet
 handling generators.

@@ -14,7 +14,7 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
         protected int phase = 1;
         /*
          * - config
-         * ##### `phase = 1`
+         * #### `phase = 1`
          *
          *
          * The phase parameter defines the phase that the snippet
@@ -31,7 +31,7 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
         /*
          *-
          *
-         * ##### `files = "\\.md$"`
+         * #### `files = "\\.md$"`
          *
          *
          * This configuration parameter can limit the file name pattern

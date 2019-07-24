@@ -5,7 +5,7 @@ import javax0.geci.api.CompoundParams;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 
-@Geci("configBuilder localConfigMethod='' configurableMnemonic='markdown'")
+@Geci("configBuilder localConfigMethod=''")
 public class MarkdownCodeInserter extends AbstractSnippeter {
 
     private static class Config extends AbstractSnippeter.Config {
@@ -20,13 +20,12 @@ public class MarkdownCodeInserter extends AbstractSnippeter {
         snippet.lines().forEach(l -> segment.write(l));
     }
 
-    //<editor-fold id="configBuilder">
-    private String configuredMnemonic = "markdown";
-
     @Override
     public String mnemonic(){
-        return configuredMnemonic;
+        return null;
     }
+    //<editor-fold id="configBuilder">
+
 
     private final Config config = new Config();
     public static MarkdownCodeInserter.Builder builder() {
@@ -34,10 +33,6 @@ public class MarkdownCodeInserter extends AbstractSnippeter {
     }
 
     public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder {
-        public Builder mnemonic(String mnemonic) {
-            configuredMnemonic = mnemonic;
-            return this;
-        }
 
         public MarkdownCodeInserter build() {
             return MarkdownCodeInserter.this;
