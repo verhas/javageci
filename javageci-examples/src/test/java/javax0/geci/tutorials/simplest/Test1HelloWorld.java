@@ -1,4 +1,4 @@
-// START SNIPPET Test1HelloWorld
+// snippet Test1HelloWorld
 package javax0.geci.tutorials.simplest;
 
 import org.junit.jupiter.api.Test;

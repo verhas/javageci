@@ -1,4 +1,4 @@
-// START SNIPPET Test2HelloWorld
+// snippet Test2HelloWorld
 package javax0.geci.tutorials.simplest;
 
 import javax0.geci.engine.Geci;

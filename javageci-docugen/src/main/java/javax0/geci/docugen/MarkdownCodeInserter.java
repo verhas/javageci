@@ -20,6 +20,17 @@ public class MarkdownCodeInserter extends AbstractSnippeter {
         snippet.lines().forEach(l -> segment.write(l));
     }
 
+    /**
+     * The mnemonic of this generator has to be null. If the mnemonic of
+     * a snippet handling generator is not null then it is only invoked
+     * from {@link AbstractSnippeter} if the mnemonic is configured in
+     * the snippet header (it is used). When we insert snippet into the
+     * source (markdown) we do not request it explicitly, but since the
+     * mnemonic returned from here is {@code null} and could not match
+     * any string in the header it is invoked.
+     *
+     * @return {@code null}
+     */
     @Override
     public String mnemonic(){
         return null;

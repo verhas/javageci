@@ -15,7 +15,7 @@ public class Test3HelloWorld {
         }
     }
 
-// START SNIPPET Test3HelloWorld
+// snippet Test3HelloWorld
     @Test
     public void generatedMethodReturnsGreetings() {
         Assertions.assertEquals("greetings", greeting());
