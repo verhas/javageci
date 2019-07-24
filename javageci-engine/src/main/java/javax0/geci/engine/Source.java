@@ -1,16 +1,5 @@
 package javax0.geci.engine;
 
-
-import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-import javax0.geci.api.GeciException;
-import javax0.geci.api.Generator;
-import javax0.geci.api.Logger;
-import javax0.geci.api.SegmentSplitHelper;
-import javax0.geci.tools.GeciReflectionTools;
-import javax0.geci.util.FileCollector;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -21,6 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
+import javax0.geci.api.GeciException;
+import javax0.geci.api.Generator;
+import javax0.geci.api.Logger;
+import javax0.geci.api.SegmentSplitHelper;
+import javax0.geci.tools.GeciReflectionTools;
+import javax0.geci.util.FileCollector;
 
 public class Source implements javax0.geci.api.Source {
     final List<String> lines = new ArrayList<>();
@@ -85,23 +80,11 @@ public class Source implements javax0.geci.api.Source {
     }
 
     @Override
-    public Source newSource(String directory, String fileName) {
-        if(directory == null || directory.equals("")) {
-            return newSource(fileName);
-        }
-        return createNewSource(FileCollector.normalized(directory), fileName);
-    }
-
-    @Override
     public Source newSource(Source.Set sourceSet, String fileName) {
         if (!collector.directories.containsKey(sourceSet)) {
             throw new GeciException("SourceSet '" + sourceSet + "' does not exist");
         }
         var directory = collector.directories.get(sourceSet)[0];
-        return createNewSource(directory, fileName);
-    }
-
-    private Source createNewSource(String directory, String fileName) {
         var source = new Source(collector, directory, inDir(directory, fileName));
         collector.addNewSource(source);
         return source;

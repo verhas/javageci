@@ -28,8 +28,6 @@ public class Accessor extends AbstractAccessor {
     }
 
 
-    Source.NamedSourceSet set;
-
     public static AbstractAccessor.Builder builder() {
         return new Accessor().new Builder();
     }

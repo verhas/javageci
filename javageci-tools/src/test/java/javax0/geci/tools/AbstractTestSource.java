@@ -51,11 +51,6 @@ public abstract class AbstractTestSource implements Source {
     }
 
     @Override
-    public Source newSource(String directory, String fileName) {
-        return null;
-    }
-
-    @Override
     public void init(String id) {
 
     }

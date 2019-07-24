@@ -11,5 +11,5 @@ public @interface AnnotationBuilder {
     String value() default "";
     String absolute() default "";
     String in() default "";
-    String module() default "";
+    String set() default "";
 }

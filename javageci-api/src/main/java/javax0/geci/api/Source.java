@@ -163,17 +163,6 @@ public interface Source {
     Source newSource(Source.Set set, String fileName);
 
     /**
-     * Create a new source that may or may not exist. This source is going to be generated and if it already existed
-     * it will be overwritten, unless the already existing file has exactly the same content as the new one.
-     * The folder structure inherent in the relative file name is replaced with the value of the directory parameter.
-     * Create the new source file in the directory that was used to open the specified source set.
-     * @param directory   relative directory name where the new source file will be generated.
-     * @param fileName    relative file name to the current source.
-     * @return the new {@code Source} object.
-     */
-    Source newSource(String directory, String fileName);
-
-    /**
      * Initialize a segment. This is needed in case it is possible that the code generator does not
      * write anything into the segment. In that case the segment may not even be opened and in that
      * case the segment is not touched and the old text, presumably garbage may be there. For example,
@@ -306,14 +295,6 @@ public interface Source {
         public NamedSourceSet(Set set, String[] directories) {
             this.set = set;
             this.directories = directories;
-        }
-
-        public Set getSet() {
-            return set;
-        }
-
-        public String[] getDirectories() {
-            return directories;
         }
     }
 

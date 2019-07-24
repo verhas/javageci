@@ -1,61 +1,39 @@
 package javax0.geci.annotationbuilder;
 
-import static javax0.geci.tools.CaseTools.ucase;
-
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax0.geci.api.GeciException;
+import javax0.geci.api.Generator;
 import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractJavaGenerator;
+import javax0.geci.tools.CaseTools;
 import javax0.geci.tools.CompoundParams;
 
 @javax0.geci.core.annotations.AnnotationBuilder(absolute = "yes")
 public class AnnotationBuilder extends AbstractJavaGenerator {
 
     private static class Config {
-        private String module = "";
+        private String set = "";
         private String in = "annotation";
         private String absolute = "no";
     }
 
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global) {
-        final var mnemonic = getMnemonic(klass);
-        final var keys = getImplementedKeysSorted(klass);
-        final var annotation = ucase(mnemonic);
-        final var module = global.get("module", config.module);
-        String directory = "";
-        if(!module.equals("")) {
-            final var folder = new File(module);
-            if(folder.exists() && folder.isDirectory()) {
-                directory = Source.maven().module(module).mainSource().getDirectories()[0];
-            } else {
-                throw new RuntimeException("Source directory [" + module + "] is not found.");
+        if(Generator.class.isAssignableFrom(klass)) {
+            final var local = localConfig(global);
+            final var mnemonic = getMnemonic(klass);
+            final var keys = getImplementedKeysSorted(klass);
+            final var annotation = CaseTools.ucase(mnemonic);
+
+            if(CompoundParams.toBoolean(local.absolute)) {
+                local.in = "/" + local.in.replaceAll("[.]", "/");
             }
-        }
 
-        final var isRelative = global.is("absolute");
-        String in = global.get("in", config.in);
-        if(isRelative) {
-            in = "/" + in;
+            final var file = source.newSource(Source.Set.set(local.set), local.in + "/" + annotation + ".java");
+            writeContent(file, mnemonic, annotation, keys);
         }
-        in = normalizePackage(in);
-
-        final var file = source.newSource(directory, in + annotation + ".java");
-        writeContent(file, mnemonic, annotation, keys);
-    }
-
-    private String normalizePackage(String in) {
-        if("".equals(in)) return in;
-        var normalized = in;
-        if(!normalized.endsWith("/")) {
-            normalized = normalized + "/";
-        }
-        normalized = normalized.replaceAll("[.]", "/");
-        normalized = normalized.replaceAll("//", "/");
-        return normalized;
     }
 
     private List<String> getImplementedKeysSorted(final Class<?> klass) {
@@ -104,7 +82,7 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
     private static final java.util.Set<String> implementedKeys = java.util.Set.of(
         "absolute",
         "in",
-        "module",
+        "set",
         "id"
     );
 
@@ -123,8 +101,8 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder module(String module) {
-            config.module = module;
+        public Builder set(String set) {
+            config.set = set;
             return this;
         }
 
@@ -136,7 +114,7 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
         final var local = new Config();
         local.absolute = params.get("absolute",config.absolute);
         local.in = params.get("in",config.in);
-        local.module = params.get("module",config.module);
+        local.set = params.get("set",config.set);
         return local;
     }
     //</editor-fold>
