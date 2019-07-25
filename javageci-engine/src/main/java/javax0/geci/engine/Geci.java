@@ -7,6 +7,7 @@ import javax0.geci.javacomparator.Comparator;
 import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
 import javax0.geci.tools.AbstractJavaGenerator;
+import javax0.geci.util.DirectoryLocator;
 import javax0.geci.util.FileCollector;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static javax0.geci.api.Source.Predicates.exists;
 import static javax0.geci.api.Source.Set.set;
 
 public class Geci implements javax0.geci.api.Geci {
@@ -32,7 +34,7 @@ public class Geci implements javax0.geci.api.Geci {
     public static final int UNTOUCHED = ~0x04;
     public static final int NONE = 0xFF;
     private static final Logger LOG = LoggerFactory.getLogger();
-    private final Map<Source.Set, String[]> directories = new HashMap<>();
+    private final Map<Source.Set, javax0.geci.api.DirectoryLocator> directories = new HashMap<>();
     private final List<Generator> generators = new ArrayList<>();
     private final Set<Source> modifiedSources = new HashSet<>();
     private final Map<String, SegmentSplitHelper> splitHelpers = new HashMap<>();
@@ -42,10 +44,32 @@ public class Geci implements javax0.geci.api.Geci {
     private BiPredicate<List<String>, List<String>> sourceComparator = null;
     private BiPredicate<List<String>, List<String>> EQUALS_COMPARATOR = (orig, gen) -> !orig.equals(gen);
     private BiPredicate<List<String>, List<String>> JAVA_COMPARATOR = new Comparator();
+    private final Set<Source.Set> outputSet = new HashSet<>();
+    private Source.Set lastSet = null;
 
     @Override
     public Geci source(String... directory) {
-        directories.put(set(), directory);
+        return source(exists(), directory);
+    }
+
+    @Override
+    public Geci source(Predicate<String> predicate, String... directory) {
+        source(set(), new DirectoryLocator(predicate, directory));
+        lastSet = null;
+        return this;
+    }
+
+    @Override
+    public Geci source(javax0.geci.api.DirectoryLocator locator) {
+        source(set(), locator);
+        lastSet = null;
+        return this;
+    }
+
+    @Override
+    public Geci source(Source.Set set, javax0.geci.api.DirectoryLocator locator) {
+        lastSet = set;
+        directories.put(set, locator);
         return this;
     }
 
@@ -112,8 +136,8 @@ public class Geci implements javax0.geci.api.Geci {
         sb.append(FAILED).append('\n');
         sb.append('\n');
         sb.append(String.format("The file%s that %s modified:",
-            modifiedSources.size() > 1 ? "s" : "",
-            modifiedSources.size() > 1 ? "were" : "was")).append('\n');
+                modifiedSources.size() > 1 ? "s" : "",
+                modifiedSources.size() > 1 ? "were" : "was")).append('\n');
         for (final var source : modifiedSources) {
             sb.append(source.getAbsoluteFile()).append('\n');
         }
@@ -123,13 +147,19 @@ public class Geci implements javax0.geci.api.Geci {
 
     @Override
     public Geci source(Source.Set set, String... directory) {
+        return source(set, exists(), directory);
+    }
+
+    @Override
+    public Geci source(Source.Set set, Predicate<String> predicate, String... directory) {
+        lastSet = set;
         if (directories.containsKey(set)) {
             set.tryRename();
             if (directories.containsKey(set)) {
                 throw new GeciException("The set '" + set + "' is defined more than once.");
             }
         }
-        directories.put(set, directory);
+        directories.put(set, new DirectoryLocator(predicate, directory));
         return this;
     }
 
@@ -154,6 +184,7 @@ public class Geci implements javax0.geci.api.Geci {
         source(maven.testSource());
         source(maven.testResources());
         lenient = true;
+        lastSet = null;
         return this;
     }
 
@@ -166,20 +197,34 @@ public class Geci implements javax0.geci.api.Geci {
     @Override
     public Geci only(String... patterns) {
         Collections.addAll(this.onlys,
-            Arrays.stream(patterns)
-                .map(Pattern::compile)
-                .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
-                .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
+                Arrays.stream(patterns)
+                        .map(Pattern::compile)
+                        .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
+                        .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
     }
 
     @Override
+    public Geci output(javax0.geci.engine.Source.Set... sets) {
+        outputSet.addAll(Arrays.asList(sets));
+        return this;
+    }
+
+    @Override
+    public Geci output() {
+        if (lastSet == null) {
+            throw new GeciException("Source set not defined but declared as output calling Geci.source()");
+        }
+        outputSet.add(lastSet);
+        return this;
+    }
+
     public Geci ignore(String... patterns) {
         Collections.addAll(this.ignores,
-            Arrays.stream(patterns)
-                .map(Pattern::compile)
-                .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
-                .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
+                Arrays.stream(patterns)
+                        .map(Pattern::compile)
+                        .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
+                        .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
     }
 
@@ -226,9 +271,9 @@ public class Geci implements javax0.geci.api.Geci {
         injectContextIntoGenerators();
 
         final var phases = generators.stream()
-            .mapToInt(Generator::phases)
-            .max()
-            .orElse(1);
+                .mapToInt(Generator::phases)
+                .max()
+                .orElse(1);
         final FileCollector collector;
         if (directories.isEmpty()) {
             setDefaultDirectories();
@@ -241,9 +286,9 @@ public class Geci implements javax0.geci.api.Geci {
             }
         }
         collector.registerSplitHelpers(splitHelpers);
-        collector.collect(onlys, ignores);
+        collector.collect(onlys, ignores, outputSet);
         for (int phase = 0; phase < phases; phase++) {
-            for (final var source : collector.sources) {
+            for (final var source : collector.getSources()) {
                 for (var generator : generators) {
                     if (generator.activeIn(phase)) {
                         source.allowDefaultSegment = false;
@@ -264,8 +309,8 @@ public class Geci implements javax0.geci.api.Geci {
     private boolean sourcesModifiedAndSave(FileCollector collector) throws IOException {
         var generated = false;
         var allSources = Stream.concat(
-            collector.sources.stream(),
-            collector.newSources.stream()
+                collector.getSources().stream(),
+                collector.getNewSources().stream()
         ).collect(Collectors.toSet());
         for (var source : allSources) {
             if (source.isTouched() && source.isModified(getSourceComparator(source))) {
@@ -274,7 +319,7 @@ public class Geci implements javax0.geci.api.Geci {
                 generated = true;
             }
         }
-        for (var source : Stream.concat(collector.sources.stream(), collector.newSources.stream()).collect(Collectors.toSet())) {
+        for (var source : Stream.concat(collector.getSources().stream(), collector.getNewSources().stream()).collect(Collectors.toSet())) {
             if (modifiedSources.contains(source)) {
                 if ((whatToLog & ~MODIFIED) == 0) {
                     LOG.info("MODIFIED  '%s'", source.getAbsoluteFile());
@@ -311,11 +356,11 @@ public class Geci implements javax0.geci.api.Geci {
 
     private boolean sourcesConsolidate(FileCollector collector) {
         var touched = false;
-        for (var source : collector.sources) {
+        for (var source : collector.getSources()) {
             source.consolidate();
             touched = touched || source.isTouched();
         }
-        for (var source : collector.newSources) {
+        for (var source : collector.getNewSources()) {
             source.consolidate();
             touched = touched || source.isTouched();
         }

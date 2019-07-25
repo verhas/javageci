@@ -86,10 +86,10 @@ public class Source implements javax0.geci.api.Source {
     @Override
     public Source newSource(Source.Set sourceSet, String fileName) {
         assertTouching();
-        if (!collector.directories.containsKey(sourceSet)) {
+        var directory = collector.getDirectory(sourceSet);
+        if (directory == null) {
             throw new GeciException("SourceSet '" + sourceSet + "' does not exist");
         }
-        var directory = collector.directories.get(sourceSet)[0];
         var source = new Source(collector, directory, inDir(directory, fileName));
         collector.addNewSource(source);
         return source;
@@ -98,7 +98,7 @@ public class Source implements javax0.geci.api.Source {
     @Override
     public Source newSource(String fileName) {
         assertTouching();
-        for (final var source : collector.newSources) {
+        for (final var source : collector.getNewSources()) {
             if (this.absoluteFile.equals(source.absoluteFile)) {
                 return source;
             }

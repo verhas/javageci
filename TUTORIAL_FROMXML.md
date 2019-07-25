@@ -13,27 +13,43 @@ To invoke the generator we will use the following test:
     @Test
     public void testBeanGenerator() throws Exception {
         if (new Geci()
-            .source("./src/test/resources", "./javageci-examples/src/test/resources")
+            .source(hasTheFile("javax0/geci/tutorials/beangenerator/SampleBean.xml"),"./src/test/resources", "./javageci-examples/src/test/resources")
             .source(set("java"),"./src/test/java", "./javageci-examples/src/test/java")
             .register(new BeanGenerator()).generate()) {
             Assertions.fail("Code was changed during test phase.");
         }
     }
 ```
-This test uses two different methods to define source sets. One is `source(String ...)`, the other
-one is `source(Source.Set, String ....)`. The first one defines a directory
-without naming the set. The second one defines the sources where the Java files are and should be generated and
-assigns the set name `"java"`˙. (Note that the several directory names in the argument list are alternatives to
-make the test executable from different current working directories.) Later we will see that when the generator
-calls the method 
-`source.newSource(set("java"), file)` it will refer to the set to tell the framework that it needs a new
-source that is in a different source set named `"java"`.
+
+This test uses two different methods to define source sets. One is
+`source(Predicate, String ...)`, the other one is `source(Source.Set,
+String ...)`. The first one defines a directory without naming the set.
+(The `hasTheFile()` call we discuss a few lines below.) The second one
+defines the sources where the Java files are and should be generated and
+assigns the set name `"java"`˙. (Note that the several directory names
+in the argument list are alternatives to make the test executable from
+different current working directories.) Later we will see that when the
+generator calls the method `source.newSource(set("java"), file)` it will
+refer to the set to tell the framework that it needs a new source that
+is in a different source set named `"java"`.
+
+The call
+`hasTheFile("javax0/geci/tutorials/beangenerator/SampleBean.xml")`
+instructs Geci to consider only directories that contain a
+`SampleBean.xml` file in the subdirectory
+`javax0/geci/tutorials/beangenerator`. This extra check helps to located
+the right directory when one of the wrong directories in the list may
+actually exist. You can also check for the existence of multiple files
+or you can provide alternative files so that one of them should exist in
+the directory.
 
 ## Generator
 
-To create a new Java class that does not exist yet needs the use of special part of the API. In this case
-there is no source code that we could just extend writing some of the `editor-fold` segments. Because of that
-the generator needs to extend the class `AbstractGeneratorEx` abstract class.
+To create a new Java class that does not exist yet needs the use of
+special part of the API. In this case there is no source code that we
+could just extend writing some of the `editor-fold` segments. Because of
+that the generator needs to extend the class `AbstractGeneratorEx`
+abstract class.
 
 <!-- snip BeanGenerator_head snippet="epsilon" 
                              append="snippets='BeanGenerator_head.*'"

@@ -1,8 +1,11 @@
 package javax0.geci.api;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * A {@code Source} represents a source file in the project that the
@@ -348,7 +351,83 @@ public interface Source {
     }
 
     /**
-     * Class to build up the directory structures that correspond to the Maven directory structure
+     * This class provides predicates that can be used as an argument
+     * to the methods {@link Geci#source(Predicate, String...)} and
+     * {@link Geci#source(Set, Predicate, String...)}.
+     */
+    class Predicates {
+
+        /**
+         * Creates the default predicate that tests  {@code true} if the
+         * directory exists and is a directory.
+         *
+         * @return the predicate.
+         */
+        public static Predicate<String> exists() {
+            return file -> new File(file).isDirectory();
+        }
+
+        /**
+         * Returns a predicate that tests {@code true} if the file
+         * exists, it is a directory and a file with the anchor name
+         * can be found in the directory. The anchor name may contain
+         * leading directory names that make it relative to the tested
+         * directory.
+         *
+         * @param anchor the anchor file.
+         * @return the predicate
+         */
+        public static Predicate<String> hasTheFile(String anchor) {
+            return exists().and(file -> {
+                return exists().test(file)
+                        && new File(file + anchor).exists();
+            });
+        }
+
+        /**
+         * Returns a predicate that tests {@code true} if the file
+         * exists, it is a directory and a one of the files with the
+         * anchor names can be found in the directory. The anchor name
+         * may contain leading directory names that make it relative to
+         * the tested directory.
+         *
+         * @param anchors the anchor files one of which should be there
+         *                in the directory.
+         * @return the predicate
+         */
+        public static Predicate<String> hasOneOfTheFiles(String... anchors) {
+            return exists().and(file -> {
+                return exists().test(file)
+                        && Arrays.stream(anchors)
+                        .anyMatch(anchor ->
+                                new File(file + anchor).exists());
+            });
+        }
+
+        /**
+         * Returns a predicate that tests {@code true} if the file
+         * exists, it is a directory and a all of the files with the
+         * anchor names can be found in the directory. The anchor name
+         * may contain leading directory names that make it relative to
+         * the tested directory.
+         *
+         * @param anchors the anchor files which all should be there in
+         *                the directory.
+         * @return the predicate
+         */
+        public static Predicate<String> hasAllTheFiles(String... anchors) {
+            return exists().and(file -> {
+                return exists().test(file)
+                        && Arrays.stream(anchors)
+                        .allMatch(anchor ->
+                                new File(file + anchor).exists());
+            });
+        }
+    }
+
+    /**
+     * Class to build up the directory structures that correspond to the
+     * Maven directory structure
      */
     class Maven {
         private final String rootModuleDir;

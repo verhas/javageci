@@ -294,11 +294,35 @@ In other words, it is the directory where the `com` directory is
 corresponding to your `com. ...` package structure. In still another
 words this is the `src/main/java` directory in Maven terms.
 
-You should not specify a directory deeper to limit the source scanning
-of the framework, because this will prevent finding the class that was
-created from a certain source file. If there are many packages and
-sources the generators will ignore them if they do not have anything to
-do with.
+You should not specify a directory deeper in order to limit the source
+scanning of the framework, because this will prevent finding the class
+that was created from a certain source file. If there are many packages
+and sources the generators will (should) ignore them if they do not have
+anything to do with.
+
+There are two versions of the method `source()` that has a `Predicate`
+as an argument before the alternative directory names. When the
+directory is selected from the possible alternatives this predicate is
+used. The leftmost directory in the argument list that tests `true` with
+the predicate will be used for the source set. The versions of the
+method `source()` that do not have this parameter are using a default
+predicate that simply checks that the directory exists and it a
+directory (not a file).
+
+To ease the use of the version that defines predicates there are
+predefined predicates in the class `javax0.geci.api.Source.Predicates`.
+These are:
+
+* `hasTheFile(String anchor)` returns a predicate, which will test `true`
+  when there is a file named `anchor` in the directory.
+* `hasOneOfTheFiles(String... anchors)` returns a predicate, which will
+  test `true` when least one of the files named in `anchors` can be
+  found in the directory.
+* `hasAllTheFiles(String... anchors)` returns a predicate, which will
+  test `true` when all of the files named in `anchors` can be
+  found in the directory.
+  
+
 
 ##### Named Source Sets 
 
@@ -395,6 +419,40 @@ specified as a pattern and which was given by the caller as a predicate.
 One call can be used to specify multiple patterns or predicates, but it
 is also possible to use subsequent calls to `only()`.
 
+Similarly to `only()` there are two methods, both named `ignore()`. One
+has regular expression patterns, 
+
+* `ignore(Pattern ...)`
+
+the other predicates:
+
+* `ignore(Predicate<Path> ...)`
+
+During the collection process a file is only collected if none of the
+patterns or predicates match the file name. The method `ignore()` can be
+used together with the method `only()`.
+
+In addition to this you can exclude whole source sets from source file
+collections. This makes sense when the source set does not contain any
+source file that a generator would read and get information from, but
+the set is named and is used by some generator to create new sources in
+the set.
+
+To declare that a named source set is for output only you should call
+`output()` without any argument chained right after the `source()` call
+that specifies the named source. If the source specified in the
+preceding `source()` call is not names then the framework throws a
+GeciException.
+
+As an alternative, you can also call `output(Source.Set ... sets)` to
+specify which named sets are for output only. This call can be before or
+after the definition of the source set.
+
+Note that calling any of the filtering methods should be done to
+increase performance. If the sources should be filtered this way or else
+you get erroneous output then you probably have a wrong configuration or
+a generator, which is not configurable flexible enough or simply wrong.
+
 #### Registering generators
 
 After the source sets are defined, the code generator objects have to be
@@ -464,7 +522,7 @@ should be used by the generator
   needed,
 * get access to the compiled class that was  generated from the given
   source (such class may not exist in case the source code is not a Java
-  source file)
+  source file),
 * to get access to writable segments of the source file and to write
   text into the source
 * to get access to totally new source files and to write into those

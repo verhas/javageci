@@ -1,6 +1,7 @@
 package javax0.geci.util;
 
 
+import javax0.geci.api.DirectoryLocator;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.engine.Source;
@@ -10,22 +11,36 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class FileCollector {
 
-    public final Map<Source.Set, String[]> directories;
-    public final Set<Source> newSources = new HashSet<>();
-    public final Set<Source> sources = new HashSet<>();
+    private final Map<Source.Set, DirectoryLocator> directories;
+    private final Map<Source.Set, DirectoryLocated> located = new HashMap<>();
+    private final Set<Source> newSources = new HashSet<>();
+    private final Set<Source> sources = new HashSet<>();
     private boolean lenient = false;
 
-    public FileCollector(Map<Source.Set, String[]> directories) {
+    public FileCollector(Map<Source.Set, javax0.geci.api.DirectoryLocator> directories) {
         this.directories = new HashMap<>(directories);
     }
 
     public void registerSplitHelpers(Map<String, SegmentSplitHelper> splitHelpers) {
         this.splitHelpers.putAll(splitHelpers);
+    }
+
+    public String getDirectory(Source.Set sourceSet) {
+        return located.get(sourceSet).getDirectory();
+    }
+
+    public Set<Source> getNewSources() {
+        return newSources;
+    }
+
+    public Set<Source> getSources() {
+        return sources;
     }
 
     /**
@@ -184,42 +199,53 @@ public class FileCollector {
      *                collected that are otherwise collected from the
      *                directory.
      */
-    public void collect(Set<Predicate<Path>> onlys, Set<Predicate<Path>> ignores) {
-        var processedSome = false;
+    public void collect(Set<Predicate<Path>> onlys, Set<Predicate<Path>> ignores, Set<Source.Set> outputSets) {
+        var processedSome = new AtomicBoolean(false);
         for (var entry : directories.entrySet()) {
-            var processed = false;
-            for (final var directory : entry.getValue()) {
-                var dir = normalized(directory);
-                try {
-                    Files.find(Paths.get(dir), MAX_DEPTH_UNLIMITED,
-                        (filePath, fileAttr) -> fileAttr.isRegularFile())
-                        .filter(path -> (onlys == null || onlys.isEmpty())
-                            || onlys.stream().anyMatch(predicate -> predicate.test(path)))
-                        .filter(path -> (ignores == null || ignores.isEmpty())
-                            || ignores.stream().noneMatch(negicate -> negicate.test(path)))
-                        .forEach(path -> sources.add(
-                            new Source(this,
-                                dir,
-                                path)));
-                    processed = true;
-                    processedSome = true;
-                    entry.setValue(new String[]{dir});
-                    break;
-                } catch (IOException ignore) {
-                }
-            }
-            if (!processed && !lenient) {
+            var processed = new AtomicBoolean(false);
+            final var locator = entry.getValue();
+            locator.alternatives().takeWhile(x -> !processed.get())
+                    .forEach(directory -> {
+                        var dir = normalized(directory);
+                        try {
+                            if (locator.test(dir)) {
+                                if (!outputSets.contains(entry.getKey())) {
+                                    Files.find(Paths.get(dir), MAX_DEPTH_UNLIMITED,
+                                            (filePath, fileAttr) -> fileAttr.isRegularFile())
+                                            .filter(path -> (onlys == null || onlys.isEmpty())
+                                                    || onlys.stream().anyMatch(predicate -> predicate.test(path)))
+                                            .filter(path -> (ignores == null || ignores.isEmpty())
+                                                    || ignores.stream().noneMatch(negicate -> negicate.test(path)))
+                                            .forEach(path -> sources.add(
+                                                    new Source(this,
+                                                            dir,
+                                                            path)));
+                                    processed.set(true);
+                                    processedSome.set(true);
+                                    located.put(entry.getKey(), new DirectoryLocated(dir));
+                                }
+                            }
+                        } catch (IOException ioex) {
+                            throw new GeciException("The directory '"
+                                    + dir
+                                    + "' was selected but no files can be collected from it.",
+                                    ioex);
+                        }
+                    });
+
+            if (!processed.get() && !lenient) {
                 throw new GeciException("Source directory [" +
-                    String.join(",", entry.getValue()) + "] is not found");
+                        locator.alternatives().collect(Collectors.joining(","))
+                        + "] is not found");
             }
         }
-        if (!processedSome) {
+        if (!processedSome.get()) {
             throw new GeciException("None of the configured directories {" +
                 directories.entrySet().stream()
                     .map(entry -> "\"" +
                         entry.getKey() +
                         " : " + "[" +
-                        String.join(",", entry.getValue())
+                            entry.getValue().alternatives().collect(Collectors.joining(","))
                         + "]")
                     .collect(Collectors.joining(",\n"))
                 + "} are found.");
