@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 public class Context implements javax0.geci.api.Context {
 
-    private Map<Object, Object> map = new HashMap<>();
+    private final Map<Object, Object> map = new HashMap<>();
 
     @Override
     public <Z> Z get(Object key, Supplier<Z> ini) {

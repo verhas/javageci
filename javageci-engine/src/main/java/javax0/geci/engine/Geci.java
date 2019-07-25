@@ -38,12 +38,12 @@ public class Geci implements javax0.geci.api.Geci {
     private final List<Generator> generators = new ArrayList<>();
     private final Set<Source> modifiedSources = new HashSet<>();
     private final Map<String, SegmentSplitHelper> splitHelpers = new HashMap<>();
-    private Set<Predicate<Path>> onlys = new HashSet<>();
-    private Set<Predicate<Path>> ignores = new HashSet<>();
+    private final Set<Predicate<Path>> onlys = new HashSet<>();
+    private final Set<Predicate<Path>> ignores = new HashSet<>();
     private int whatToLog = MODIFIED & TOUCHED;
     private BiPredicate<List<String>, List<String>> sourceComparator = null;
-    private BiPredicate<List<String>, List<String>> EQUALS_COMPARATOR = (orig, gen) -> !orig.equals(gen);
-    private BiPredicate<List<String>, List<String>> JAVA_COMPARATOR = new Comparator();
+    private final BiPredicate<List<String>, List<String>> EQUALS_COMPARATOR = (orig, gen) -> !orig.equals(gen);
+    private final BiPredicate<List<String>, List<String>> JAVA_COMPARATOR = new Comparator();
     private final Set<Source.Set> outputSet = new HashSet<>();
     private Source.Set lastSet = null;
 
@@ -299,7 +299,7 @@ public class Geci implements javax0.geci.api.Geci {
             }
         }
         if (!sourcesConsolidate(collector)) {
-            if (generators.stream().filter(g -> !(g instanceof Distant)).findAny().isPresent()) {
+            if (generators.stream().anyMatch(g -> !(g instanceof Distant))) {
                 throw new GeciException("The generators did not touch any source");
             }
         }

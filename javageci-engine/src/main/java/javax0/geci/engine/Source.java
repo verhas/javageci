@@ -47,7 +47,6 @@ public class Source implements javax0.geci.api.Source {
      * @param dir       the directory of the source
      * @param path      the path of the source
      */
-    @SuppressWarnings("ClassEscapesDefinedScope")
     public Source(FileCollector collector, String dir, Path path) {
         this.collector = collector;
         this.dir = dir;

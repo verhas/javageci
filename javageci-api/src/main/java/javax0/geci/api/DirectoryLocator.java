@@ -25,7 +25,7 @@ public interface DirectoryLocator {
      *
      * @return tha array of possible alternative directories
      */
-    public Stream<String> alternatives();
+    Stream<String> alternatives();
 
     /**
      * Test that the predicate match the given file name.

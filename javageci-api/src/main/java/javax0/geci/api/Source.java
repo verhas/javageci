@@ -378,10 +378,7 @@ public interface Source {
          * @return the predicate
          */
         public static Predicate<String> hasTheFile(String anchor) {
-            return exists().and(file -> {
-                return exists().test(file)
-                        && new File(file + anchor).exists();
-            });
+            return exists().and(file -> new File(file + anchor).exists());
         }
 
         /**
@@ -396,12 +393,9 @@ public interface Source {
          * @return the predicate
          */
         public static Predicate<String> hasOneOfTheFiles(String... anchors) {
-            return exists().and(file -> {
-                return exists().test(file)
-                        && Arrays.stream(anchors)
-                        .anyMatch(anchor ->
-                                new File(file + anchor).exists());
-            });
+            return exists().and(file ->
+                    Arrays.stream(anchors).anyMatch(anchor ->
+                            new File(file + anchor).exists()));
         }
 
         /**
@@ -416,12 +410,9 @@ public interface Source {
          * @return the predicate
          */
         public static Predicate<String> hasAllTheFiles(String... anchors) {
-            return exists().and(file -> {
-                return exists().test(file)
-                        && Arrays.stream(anchors)
-                        .allMatch(anchor ->
-                                new File(file + anchor).exists());
-            });
+            return exists().and(file ->
+                    Arrays.stream(anchors).allMatch(anchor ->
+                            new File(file + anchor).exists()));
         }
     }
 

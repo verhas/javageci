@@ -8,7 +8,7 @@ import java.util.List;
 
 public class SnippetBuilder {
     private final CompoundParams params;
-    private List<String> lines = new ArrayList<>();
+    private final List<String> lines = new ArrayList<>();
 
     public String snippetName() {
         return params.id();

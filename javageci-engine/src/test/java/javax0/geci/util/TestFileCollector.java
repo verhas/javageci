@@ -4,10 +4,8 @@ import javax0.geci.api.Source;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import static javax0.geci.api.Source.Predicates.exists;
 import static javax0.geci.api.Source.Set.set;
