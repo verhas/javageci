@@ -197,7 +197,7 @@ public class GeciAnnotationTools {
             final String rawValue = getRawValue(annotation);
             final var annotationName = getAnnotationGeciName(annotation);
             final var value = getValue(CaseTools.lcase(annotationName), rawValue.trim());
-            for (final var method : annotation.getClass().getDeclaredMethods()) {
+            for (final var method : getAnnotationDeclaredMethods(annotation)) {
                 if (method.getReturnType().equals(String.class) &&
                         !method.getName().equals("value") &&
                         !method.getName().equals("toString")) {
@@ -239,12 +239,62 @@ public class GeciAnnotationTools {
 
     private static String getRawValue(Annotation annotation) {
         try {
-            final var valueMethod = annotation.getClass().getDeclaredMethod("value");
+            final var valueMethod = getAnnotationValueMethod(annotation);
             valueMethod.setAccessible(true);
             return (String) valueMethod.invoke(annotation);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             return "";
         }
+    }
+
+    /**
+     * Get the value method of an annotation.
+     *
+     * <p>Implementation notes: when executing this code in an
+     * application that uses JPMS (e.g. Java::Geci) then the annotation
+     * object itself is not an instance of the annotation interface. It
+     * is fairly obvious, since interfaces do not have instances. The
+     * object is the instance of a proxy class which is in the package
+     * {@code com.sun.proxy.jdk.proxy1} in the module {@code
+     * jdk.proxy1}. This module does not "opens" this package and there
+     * is no way to open this package for good reason. Because it is not
+     * opened for reflective access we cannot invoke any method of this
+     * class on the annotation object instance, let alone we cannot even
+     * call {@code setAccessible()} on it.
+     *
+     * <p>The good news is that we do not need. What we really need is
+     * to call the method of the interface reflectively on the
+     * annotation object instance.
+     *
+     * <p>In short: we invoke the interface method and not the
+     * class method on the object.
+     *
+     * <p>Annotation objects have only one interface they implement and
+     * that is the annotation interface. Therefore there is no need to
+     * check that the annotation class has interfaces and how many. We
+     * just grab the annotation interface as the zero-th element of the
+     * array.
+     *
+     * @param annotation of which we need the value method
+     * @return the value method
+     * @throws NoSuchMethodException when the annotation does not have a
+     * {@code value()} method
+     */
+    private static Method getAnnotationValueMethod(Annotation annotation) throws NoSuchMethodException {
+        return annotation.annotationType().getDeclaredMethod("value");
+    }
+
+    /**
+     * Get the declared methods of the annotation that this annotation
+     * object instance implements. See also the implementation comments
+     * on the documentation of {@link
+     * #getAnnotationValueMethod(Annotation)}.
+     *
+     * @param annotation of which we need the declared methods
+     * @return the array of declared methods
+     */
+    private static Method[] getAnnotationDeclaredMethods(Annotation annotation) {
+        return annotation.annotationType().getDeclaredMethods();
     }
 
     /**

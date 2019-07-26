@@ -12,13 +12,50 @@
     }
     {build|{pluginManagement|{plugins|
                 {plugin|
-                    {GAV :org.apache.maven.plugins:maven-surefire-plugin:3.0.0-M3}
+                    {GAV :org.apache.maven.plugins:maven-surefire-plugin:{SUREFIRE_VERSION}}
+                    <configuration>
+                    {@define opens(module,package)=--add-opens geci.module/javax0.geci.package=ALL-UNNAMED}
+                    {@define opensTo(module,package,to)=--add-opens geci.module/javax0.geci.package=geci.to}
+                    {@define exportsTo(module,package,to)=--add-exports geci.module/javax0.geci.package=geci.to}
+                        <argLine>
+                            {opens/api/api}
+                            {opens/tools/tools}
+                            {opens/tools/tools.syntax}
+                            {opens/tools/tools.reflection}
+                            {opens/tools/javacomparator}
+                            {opens/tools/javacomparator.lex}
+                            {opens/engine/util}
+                            {opens/engine/toolsgen}
+                            {opens/engine/engine}
+                            {opens/core/fluent.syntax}
+                            {opens/examples/tutorials.simple}
+                            {opens/examples/tutorials.hello}
+                            {opensTo/examples/tutorials.hello/tools}
+                            {opens/examples/tests.templated}
+                            {opens/examples/tests.repeated}
+                            {opens/examples/tests.mapper}
+                            {opens/examples/tests.builder}
+                            {opens/examples/buildfluent}
+                            {opens/examples/consistency}
+                            {opens/examples/tests.builder}
+                            {opens/examples/tests.cloner}
+                            {opens/examples/tests.configBuilder}
+                            {exportsTo/examples/tutorials.simple/core}
+                            {exportsTo/examples/tests.fluent/tools}
+                            {exportsTo/examples/tests.fluent/core}
+                            {exportsTo/examples/buildfluent/core}
+                            {exportsTo/examples/buildfluent/core}
+                            {opens/examples/jamal}
+                            {opens/examples/jamal.util}
+                            --add-exports geci.examples/javax0.geci.jamal.reflection=ALL-UNNAMED
+                        </argLine>
+                    </configuration>
                     {dependencies|
-                        {dependency :org.junit.jupiter:junit-jupiter-engine:5.3.1}
+                        {dependency :org.junit.jupiter:junit-jupiter-engine:{JUPITER_VERSION}}
                     }
                 }
                 {plugin|
-                    {GAV :org.apache.maven.plugins:maven-source-plugin:3.0.1}
+                    {GAV :org.apache.maven.plugins:maven-source-plugin:{MAVEN_SOURCE_PLUGIN_VERSION}}
                     <executions>
                         <execution>
                             <id>attach-sources</id>
@@ -29,7 +66,7 @@
                     </executions>
                 }
                 {plugin|
-                    {GAV :org.apache.maven.plugins:maven-javadoc-plugin:3.1.0}
+                    {GAV :org.apache.maven.plugins:maven-javadoc-plugin:{MAVEN_JAVADOC_PLUGIN_VERSION}}
                     <configuration>
                         <detectLinks>false</detectLinks>
                     </configuration>
@@ -39,7 +76,7 @@
                             {goals|{goal|jar}}}}
                 }
                 {plugin|
-                    {GAV :org.apache.maven.plugins:maven-compiler-plugin:3.8.0}
+                    {GAV :org.apache.maven.plugins:maven-compiler-plugin:{MAVEN_COMPILER_PLUGIN_VERSION}}
                     <configuration>
                         <release>{JAVA_RELEASE}</release>
                     </configuration>
@@ -49,6 +86,6 @@
     }
     {dependencyManagement|{dependencies|
         {@for MODULE in (api,core,tools,engine,annotation,docugen)={dependency :{GROUPID}:javageci-MODULE:{VERSION}}}
-        {@for MODULE in (api,engine)={testDependency :org.junit.jupiter:junit-jupiter-MODULE:5.3.1}}
+        {@for MODULE in (api,engine)={testDependency :org.junit.jupiter:junit-jupiter-MODULE:{JUPITER_VERSION}}}
         }}
 }
