@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class LexerTest {
+public class TestLexer {
 
     @Test
     @DisplayName("Test the lexer returning EOF multiple times when input is empty")

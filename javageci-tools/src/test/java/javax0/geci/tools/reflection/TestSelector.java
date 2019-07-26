@@ -9,7 +9,6 @@ import org.junit.jupiter.api.TestInfo;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.util.Arrays;
-import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -358,7 +357,7 @@ class TestSelector {
 
     @Test
     void testNativeMethod() throws NoSuchMethodException {
-        final var f = System.class.getDeclaredMethod("initProperties", Properties.class);
+        final var f = System.class.getDeclaredMethod("registerNatives");
         Assertions.assertTrue(Selector.compile("native").match(f));
     }
 

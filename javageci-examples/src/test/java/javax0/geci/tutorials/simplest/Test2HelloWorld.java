@@ -1,12 +1,13 @@
+// snippet Test2HelloWorld
 package javax0.geci.tutorials.simplest;
 
 import javax0.geci.engine.Geci;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings("SameReturnValue")
+@SuppressWarnings({"SameReturnValue", "EmptyMethod"})
 @javax0.geci.annotations.Geci("HelloWorldTest")
-public class HelloWorldTest3 {
+public class Test2HelloWorld {
 
     @Test
     public void generateOkay() throws Exception {
@@ -15,12 +16,9 @@ public class HelloWorldTest3 {
         }
     }
 
-// START SNIPPET HelloWorldTest3
     @Test
     public void generatedMethodReturnsGreetings() {
-        Assertions.assertEquals("greetings", greeting());
     }
-// END SNIPPET
 
     //<editor-fold id="HelloWorldTest">
     private static String greeting(){
@@ -28,3 +26,4 @@ public class HelloWorldTest3 {
         }
     //</editor-fold>
 }
+// end snippet

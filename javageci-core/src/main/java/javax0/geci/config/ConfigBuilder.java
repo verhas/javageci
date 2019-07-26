@@ -11,7 +11,6 @@ import javax0.geci.tools.reflection.Selector;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +28,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         private String buildMethod = "build";
         private String configAccess = "private";
         private String generateImplementedKeys = "true";
+        private String localConfigMethod = "localConfig";
         private String configurableMnemonic = "";
     }
 
@@ -49,22 +49,25 @@ public class ConfigBuilder extends AbstractJavaGenerator {
                 "access", local.configAccess,
                 "build", local.buildMethod,
                 "builder", local.builderFactoryMethod,
-                "Builder", local.builderName);
-        generateMnemonic(segment, local);
+                "Builder", local.builderName,
+                "localConfig", local.localConfigMethod);
+        generateMnemonic(segment, local, klass);
         generateConfigField(segment);
-        generateBuilderFactoryMethod(segment);
+        generateBuilderFactoryMethod(segment, klass);
         if (CompoundParams.toBoolean(local.generateImplementedKeys)) {
             generateConfigKeySet(segment, fields);
         }
-        startBuilderClass(segment);
+        startBuilderClass(segment, klass);
         allDeclaredFields.forEach(field -> generateBuilderMethod(segment, klass, configClass, field));
         generateMnemonicConfiguration(segment, local);
         finishBuilderClass(segment);
-        generateLocalConfigMethod(segment, allDeclaredFields, fields, configClass);
+        if (local.localConfigMethod.length() > 0) {
+            generateLocalConfigMethod(segment, allDeclaredFields, fields, configClass);
+        }
     }
 
     private void generateMnemonicConfiguration(Segment segment, Config local) {
-        if (configurableMnemonic(local)) {
+        if (mnemonicIsConfigurable(local)) {
             segment.write_r("public {{Builder}} mnemonic(String mnemonic) {")
                     .write("configuredMnemonic = mnemonic;")
                     .write("return this;")
@@ -73,19 +76,23 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         }
     }
 
-    private void generateMnemonic(Segment segment, Config local) {
-        if (configurableMnemonic(local)) {
-            segment.write("private String configuredMnemonic = \"%s\";",local.configurableMnemonic)
-                    .newline()
-                    .write("@Override")
-                    .write_r("public String mnemonic(){")
+    private void generateMnemonic(Segment segment, Config local, Class klass) {
+        if (mnemonicIsConfigurable(local)) {
+            segment.write("private String configuredMnemonic = \"%s\";", local.configurableMnemonic)
+                    .newline();
+            try {
+                klass.getSuperclass().getMethod("mnemonic");
+                segment.write("@Override");
+            } catch (NoSuchMethodException ignored) {
+            }
+            segment.write_r("public String mnemonic(){")
                     .write("return configuredMnemonic;")
                     .write_l("}")
                     .newline();
         }
     }
 
-    private boolean configurableMnemonic(Config local) {
+    private boolean mnemonicIsConfigurable(Config local) {
         return local.configurableMnemonic != null && local.configurableMnemonic.length() > 0;
     }
 
@@ -109,7 +116,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
     }
 
     private void generateLocalConfigMethod(Segment segment, List<Field> allDeclaredFields, List<Field> fields, Class<?> configClass) {
-        segment.write_r("private Config localConfig(CompoundParams params){")
+        segment.write_r("private Config {{localConfig}}(CompoundParams params){")
                 .write("final var local = new Config();");
         for (final var field : allDeclaredFields) {
             final var name = field.getName();
@@ -175,15 +182,22 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         }
     }
 
-    private void startBuilderClass(Segment segment) {
-        segment.write_r("public class {{Builder}} {");
+    private void startBuilderClass(Segment segment, Class klass) {
+        try {
+            final var superBuilder = Class.forName(klass.getSuperclass().getName() + "$Builder");
+            segment.write_r("public class {{Builder}} extends %s {", superBuilder.getCanonicalName());
+        } catch (ClassNotFoundException cnfe) {
+            segment.write_r("public class {{Builder}} {");
+        }
     }
 
-    private void generateBuilderFactoryMethod(Segment segment) {
-        segment.write_r("public static {{klass}}.{{Builder}} {{builder}}() {")
-                .write("return new {{klass}}().new {{Builder}}();")
-                .write_l("}")
-                .newline();
+    private void generateBuilderFactoryMethod(Segment segment, Class klass) {
+        if (!Modifier.isAbstract(klass.getModifiers())) {
+            segment.write_r("public static {{klass}}.{{Builder}} {{builder}}() {")
+                    .write("return new {{klass}}().new {{Builder}}();")
+                    .write_l("}")
+                    .newline();
+        }
     }
 
     /**
@@ -235,6 +249,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
             "configurableMnemonic",
             "filter",
             "generateImplementedKeys",
+            "localConfigMethod",
             "id"
     );
 
@@ -279,6 +294,11 @@ public class ConfigBuilder extends AbstractJavaGenerator {
             return this;
         }
 
+        public Builder localConfigMethod(String localConfigMethod) {
+            config.localConfigMethod = localConfigMethod;
+            return this;
+        }
+
         public ConfigBuilder build() {
             return ConfigBuilder.this;
         }
@@ -293,6 +313,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         local.configurableMnemonic = params.get("configurableMnemonic", config.configurableMnemonic);
         local.filter = params.get("filter", config.filter);
         local.generateImplementedKeys = params.get("generateImplementedKeys", config.generateImplementedKeys);
+        local.localConfigMethod = params.get("localConfigMethod", config.localConfigMethod);
         return local;
     }
     //</editor-fold>

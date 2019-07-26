@@ -15,7 +15,7 @@
 
 </parent>
     <name>javageci core</name>
-    <description>Javageci macro library core code generators</description>
+    <description>Javageci generator library core code generators</description>
 
     <build><plugins>
         <plugin>

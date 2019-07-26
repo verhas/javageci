@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class GeciReflectionToolsTest {
+public class TestGeciReflectionTools {
     @javax0.geci.annotations.Geci("aaa a='b' b='c' c='d' a$='dollared' b3='bthree' _='-'")
     @javax0.geci.annotations.Geci("xxx x='x' y='y' z='z'")
     private static Object something;
@@ -30,15 +30,6 @@ public class GeciReflectionToolsTest {
 
     private static java.util.Map.Entry<? extends String, ? super Integer>[] m2() {
         return null;
-    }
-
-    @Test
-    void testParameterParser() {
-        var map = GeciAnnotationTools.getParameters("a='b' b='c' c='d'");
-        assertEquals(map.size(), 3);
-        assertEquals(map.get("a"), "b");
-        assertEquals(map.get("b"), "c");
-        assertEquals(map.get("c"), "d");
     }
 
     @Test
@@ -104,13 +95,18 @@ public class GeciReflectionToolsTest {
                 () -> assertEquals("Entry<K,V>", GeciReflectionTools.getSimpleGenericClassName(java.util.Map.Entry.class)),
                 () -> assertEquals("Map.Entry<K,V>", GeciReflectionTools.getLocalGenericClassName(java.util.Map.Entry.class)),
                 () -> assertEquals("U<T>", GeciReflectionTools.getSimpleGenericClassName(Z.U.class)),
-                () -> assertEquals("GeciReflectionToolsTest.Z.U<T>", GeciReflectionTools.getLocalGenericClassName(Z.U.class))
+                () -> assertEquals("TestGeciReflectionTools.Z.U<T>", GeciReflectionTools.getLocalGenericClassName(Z.U.class))
         );
     }
 
     @Test
     void getParametersFromSource() {
         Source testSource = new AbstractTestSource() {
+            @Override
+            public java.util.Set<String> segmentNames() {
+                return null;
+            }
+
             @Override
             public List<String> getLines() {
                 return List.of("    // @Geci(\"aaa a='b' b='c' c='d' a$='dollared' b3='bthree' _='-'\")",
@@ -217,7 +213,7 @@ public class GeciReflectionToolsTest {
 
     @Test
     @DisplayName("Get the gecis from own annotations")
-    @GeciReflectionToolsTest.Geci("barbarumba k1='v1' k2='v2'")
+    @TestGeciReflectionTools.Geci("barbarumba k1='v1' k2='v2'")
     void getGecisFromOwnAnnotation() throws NoSuchMethodException {
         final var gecis = GeciAnnotationTools.getGecis(this.getClass().getDeclaredMethod("getGecisFromOwnAnnotation"));
         Assertions.assertEquals(1, gecis.length);
@@ -226,7 +222,7 @@ public class GeciReflectionToolsTest {
 
     @Test
     @DisplayName("Get the gecis from own annotations with annotation parameter")
-    @GeciReflectionToolsTest.Geci(value = "barbarumba k2='v2'", k1 = "v1")
+    @TestGeciReflectionTools.Geci(value = "barbarumba k2='v2'", k1 = "v1")
     void getGecisFromOwnAnnotationParams() throws NoSuchMethodException {
         final var gecis = GeciAnnotationTools.getGecis(this.getClass().getDeclaredMethod("getGecisFromOwnAnnotationParams"));
         Assertions.assertEquals(1, gecis.length);
@@ -235,7 +231,7 @@ public class GeciReflectionToolsTest {
 
     @Test
     @DisplayName("Get the gecis from own annotations with annotation parameter that is not named Geci")
-    @GeciReflectionToolsTest.MyGeci(value = "barbarumba k2='v2'", k1 = "v1")
+    @TestGeciReflectionTools.MyGeci(value = "barbarumba k2='v2'", k1 = "v1")
     void getGecisFromOwnAnnotationMyNameParams() throws NoSuchMethodException {
         final var gecis = GeciAnnotationTools.getGecis(this.getClass().getDeclaredMethod("getGecisFromOwnAnnotationMyNameParams"));
         Assertions.assertEquals(1, gecis.length);
@@ -244,7 +240,7 @@ public class GeciReflectionToolsTest {
 
     @Test
     @DisplayName("Get the gecis from own annotations with annotation parameter that is not named Geci")
-    @GeciReflectionToolsTest.MyWrongGeci(value = "barbarumba k2='v2'", k1 = "v1")
+    @TestGeciReflectionTools.MyWrongGeci(value = "barbarumba k2='v2'", k1 = "v1")
     void getGecisFromOwnAnnotationMyWrongNameParams() throws NoSuchMethodException {
         final var gecis = GeciAnnotationTools.getGecis(this.getClass().getDeclaredMethod("getGecisFromOwnAnnotationMyWrongNameParams"));
         Assertions.assertEquals(0, gecis.length);
@@ -252,8 +248,8 @@ public class GeciReflectionToolsTest {
 
     @Test
     @DisplayName("Get the gecis from own annotations with annotation parameter that is not named Geci")
-    @GeciReflectionToolsTest.MyGeci(value = "barbarumba k2='v2'", k1 = "v1")
-    @GeciReflectionToolsTest.MyGeci(k1 = "v1")
+    @TestGeciReflectionTools.MyGeci(value = "barbarumba k2='v2'", k1 = "v1")
+    @TestGeciReflectionTools.MyGeci(k1 = "v1")
     void getGecisFromOwnAnnotationMyNameParamsMultiple() throws NoSuchMethodException {
         final var gecis = GeciAnnotationTools.getGecis(this.getClass().getDeclaredMethod("getGecisFromOwnAnnotationMyNameParamsMultiple"));
         Assertions.assertEquals(2, gecis.length);

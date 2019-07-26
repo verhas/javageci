@@ -3,7 +3,7 @@ package javax0.geci.javacomparator.lex;
 import java.util.Objects;
 
 public class LexicalElement {
-    public static final LexicalElement IGNORED = new LexicalElement("",Type.COMMENT);
+    public static final LexicalElement IGNORED = new LexicalElement("", Type.COMMENT);
 
     LexicalElement(String lexeme, Type type) {
         this.lexeme = lexeme;
@@ -23,23 +23,33 @@ public class LexicalElement {
         return Objects.hash(lexeme);
     }
 
-    enum Type {
-        COMMENT, STRING, CHARACTER, IDENTIFIER, INTEGER, FLOAT, SYMBOL
+    public enum Type {
+        COMMENT, STRING, CHARACTER, IDENTIFIER, INTEGER, FLOAT, SYMBOL;
+
+        public boolean is(Type... types) {
+            for (final var t : types) {
+                if (t == this) return true;
+            }
+            return false;
+        }
     }
 
-    ;
-    final String lexeme;
-    final Type type;
+    public final String lexeme;
+    public final Type type;
 
-    static class INteger extends LexicalElement {
-        final int value;
+    public static class INteger extends LexicalElement {
+        public final long value;
 
         INteger(String lexeme) {
             super(lexeme, Type.INTEGER);
             if (lexeme.startsWith("0x") || lexeme.startsWith("0X")) {
-                value = Integer.parseInt(lexeme.substring(2), 16);
+                value = Long.parseLong(lexeme.substring(2), 16);
             } else {
-                value = Integer.parseInt(lexeme);
+                if (lexeme.toUpperCase().endsWith("L")) {
+                    value = Long.parseLong(lexeme.substring(0,lexeme.length()-1));
+                } else {
+                    value = Long.parseLong(lexeme);
+                }
             }
         }
 
@@ -57,8 +67,8 @@ public class LexicalElement {
         }
     }
 
-    static class FLoat extends LexicalElement {
-        final double value;
+    public static class FLoat extends LexicalElement {
+        public final double value;
 
         FLoat(String lexeme) {
             super(lexeme, Type.FLOAT);
@@ -79,25 +89,25 @@ public class LexicalElement {
         }
     }
 
-    static class Symbol extends LexicalElement {
+    public static class Symbol extends LexicalElement {
         Symbol(String lexeme) {
             super(lexeme, Type.SYMBOL);
         }
     }
 
-    static class STring extends LexicalElement {
+    public static class STring extends LexicalElement {
         STring(String lexeme) {
             super(lexeme, Type.STRING);
         }
     }
 
-    static class CHaracter extends LexicalElement {
+    public static class CHaracter extends LexicalElement {
         CHaracter(String lexeme) {
             super(lexeme, Type.CHARACTER);
         }
     }
 
-    static class Identifier extends LexicalElement {
+    public static class Identifier extends LexicalElement {
         Identifier(String lexeme) {
             super(lexeme, Type.IDENTIFIER);
         }

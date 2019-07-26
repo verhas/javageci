@@ -3,7 +3,7 @@
     {GAV :{GROUPID}:javageci-parent:{VERSION}}
     {name/javageci-parent}
     {description/Java GEnerate Code Inline source code generation framework}
-    {modules|javageci-engine,javageci-api,javageci-tools,javageci-core,javageci-annotation,javageci-examples,javageci-jamal}
+    {modules|javageci-engine,javageci-api,javageci-tools,javageci-core,javageci-annotation,javageci-examples,javageci-jamal,javageci-docugen}
     {license|The Apache License, Version 2.0|http://www.apache.org/licenses/LICENSE-2.0.txt}
     {developer|Peter Verhas|peter@verhas.com}
     {github|verhas|javageci}
@@ -12,10 +12,9 @@
     }
     {build|{pluginManagement|{plugins|
                 {plugin|
-                    {GAV :org.apache.maven.plugins:maven-surefire-plugin:2.22.1}
+                    {GAV :org.apache.maven.plugins:maven-surefire-plugin:3.0.0-M3}
                     {dependencies|
-                        {dependency :org.junit.platform:junit-platform-surefire-provider:1.0.3}
-                        {dependency :org.junit.jupiter:junit-jupiter-engine:5.2.0}
+                        {dependency :org.junit.jupiter:junit-jupiter-engine:5.3.1}
                     }
                 }
                 {plugin|
@@ -49,7 +48,7 @@
         }
     }
     {dependencyManagement|{dependencies|
-        {@for MODULE in (api,core,tools,engine,annotation)={dependency :{GROUPID}:javageci-MODULE:{VERSION}}}
-        {@for MODULE in (api,engine)={testDependency :org.junit.jupiter:junit-jupiter-MODULE:5.2.0}}
+        {@for MODULE in (api,core,tools,engine,annotation,docugen)={dependency :{GROUPID}:javageci-MODULE:{VERSION}}}
+        {@for MODULE in (api,engine)={testDependency :org.junit.jupiter:junit-jupiter-MODULE:5.3.1}}
         }}
 }

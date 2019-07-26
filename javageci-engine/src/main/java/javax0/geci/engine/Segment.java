@@ -1,5 +1,6 @@
 package javax0.geci.engine;
 
+import javax0.geci.api.CompoundParams;
 import javax0.geci.api.GeciException;
 import javax0.geci.tools.Template;
 
@@ -13,12 +14,27 @@ public class Segment implements javax0.geci.api.Segment {
     final private int openingTabStop;
     private int tabStop;
     private final Map<String, String> params = new HashMap<>();
+    private final CompoundParams cparams;
+    private final List<String> originals;
 
     public Segment(int tabStop) {
         this.openingTabStop = tabStop;
         this.tabStop = tabStop;
+        this.cparams = new javax0.geci.tools.CompoundParams();
+        this.originals = List.of();
     }
 
+    public Segment(int tabStop, CompoundParams cparams, List<String> originals) {
+        this.openingTabStop = tabStop;
+        this.tabStop = tabStop;
+        this.cparams = cparams;
+        this.originals = originals;
+    }
+
+    @Override
+    public CompoundParams sourceParams() {
+        return cparams;
+    }
 
     @Override
     public void resetParams() {
@@ -39,6 +55,11 @@ public class Segment implements javax0.geci.api.Segment {
     @Override
     public Set<String> paramKeySet() {
         return params.keySet();
+    }
+
+    @Override
+    public List<String> originalLines() {
+        return originals;
     }
 
     @Override
@@ -94,12 +115,16 @@ public class Segment implements javax0.geci.api.Segment {
             } else {
                 final String formatted;
                 if (!params.isEmpty()) {
-                    formatted = new Template(params).resolve(String.format(s, parameters));
+                    formatted = new Template(params).resolve(parameters.length == 0 ? s : String.format(s, parameters));
                 } else {
-                    formatted = String.format(s, parameters);
+                    if (parameters.length == 0) {
+                        formatted = s;
+                    } else {
+                        formatted = String.format(s, parameters);
+                    }
                 }
                 if (formatted.contains("\n")) {
-                    Arrays.stream(formatted.split("\r?\n",-1)).forEach(this::write);
+                    Arrays.stream(formatted.split("\r?\n", -1)).forEach(this::write);
                 } else {
                     lines.add((tabStop > 0 ? String.format("%" + tabStop + "s", " ") : "") + formatted);
                 }

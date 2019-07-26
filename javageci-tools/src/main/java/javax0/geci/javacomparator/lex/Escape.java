@@ -29,7 +29,7 @@ public class Escape {
             } else if (nextCh >= '4' && nextCh <= '7') {
                 output.append(octal(sb, 2));
             } else {
-                throw new IllegalArgumentException("Invalid escape sequence in string");
+                throw new IllegalArgumentException("Invalid escape sequence in string: \\"+nextCh);
             }
         } else {
             output.append(escaped.charAt(esindex));

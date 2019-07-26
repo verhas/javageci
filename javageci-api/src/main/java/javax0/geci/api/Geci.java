@@ -14,29 +14,119 @@ public interface Geci {
     String TEST_RESOURCES = "testResources";
 
     /**
-     * Add a new directory to the list of source directories that Geci should process.
+     * Add a new directory to the list of source directories that Geci
+     * should process.
      *
-     * @param directory list of directories that can be used as alternatives. When looking for files the first is used
-     *                  at start, if that fails then the second and so on.
+     * @param directory list of directories that can be used as
+     *                  alternatives. When looking for files the first
+     *                  is used at start, if that fails then the second
+     *                  and so on.
      * @return {@code this}
      */
     Geci source(String... directory);
 
     /**
-     * Add a new directory to the list of source directories that Geci should process. The set of source files will
-     * belong to the set represented by the first argument and can later be referenced. This is needed when a
-     * generator wants to open a new source but in a different source set than where the source worked up is.
+     * Add a new directory to the list of source directories that Geci
+     * should process. See {@link #source(String...)} and also {@link
+     * #source(Source.Set, Predicate, String...)} on the use of the
+     * predicate.
      *
-     * @param directory list of directories that can be used as alternatives. When looking for files the first is used
-     *                  at start, if that fails then the second and so on.
+     * @param predicate the predicate used to test the directory names
+     * @param directory list of directories that can be used as
+     *                  alternatives. When looking for files the first
+     *                  is used at start, if that fails then the second
+     *                  and so on.
+     * @return {@code this}
+     */
+    Geci source(Predicate<String> predicate, String... directory);
+
+    /**
+     * Define the sources using an implementation of the interface
+     * {@link DirectoryLocator}. Use this method if you want to have
+     * tight and special control on how the directory for a given source
+     * set is found. If you want to use the available implementation you
+     * should use the other {@code source()} methods that implicitly use
+     * the Geci implemented {@code javax0.geci.util.DirectoryLocator}.
+     *
+     * @param set     identifies the source set with a name
+     * @param locator the directory locator instance
+     * @return {@code this}
+     */
+    Geci source(Source.Set set, DirectoryLocator locator);
+
+    /**
+     * Same as {@link #source(Source.Set, DirectoryLocator)} but without
+     * naming the souzrce set.
+     *
+     * @param locator the directory locator instance
+     * @return {@code this}
+     */
+    Geci source(DirectoryLocator locator);
+
+    /**
+     * Add a new directory to the list of source directories that Geci
+     * should process. The set of source files will belong to the set
+     * represented by the first argument and can later be referenced.
+     * This is needed when a generator wants to open a new source but in
+     * a different source set than where the source worked up is.
+     *
+     * @param directory list of directories that can be used as
+     *                  alternatives. When looking for files the first
+     *                  is used at start, if that fails then the second
+     *                  and so on.
      * @param set       identifies the source set with a name
      * @return {@code this}
      */
     Geci source(Source.Set set, String... directory);
 
     /**
-     * Set the source set with the given name specified in the {@code nameAndSet} parameter that has the name as
-     * well as the array of directory names.
+     * Add a new directory to the list of source directories that Geci
+     * should process. See {@link #source(Source.Set, String...)}.
+     *
+     * <p>When identifying the actual directory instead of checking that
+     * the directory exists use the provided predicate. Note that it is
+     * an error if the predicate tests {@code true} but the directory
+     * does not exist or is not a directory.
+     *
+     * @param directory list of directories that can be used as
+     *                  alternatives. When looking for files the first
+     *                  is used at start, if that fails then the second
+     *                  and so on.
+     * @param predicate the predicate used to test the directory names
+     * @param set       identifies the source set with a name
+     * @return {@code this}
+     */
+    Geci source(Source.Set set, Predicate<String> predicate, String... directory);
+
+    /**
+     * Register a new {@link SegmentSplitHelper} associated with the
+     * file name extension. When a source file is split up into segments
+     * it is done by the class {@link javax0.geci.api.Source} using
+     * segment split helpers. Different files may have different
+     * helpers. The file collector keeps track of the different helpers
+     * and provide it to the source to help the splitting process.
+     *
+     * <p> It is an error to register a helper for an extension that is
+     * already registered.
+     *
+     * <p>Note that the {@code java} extension has a default segment
+     * split helper. It is not an error to register a different helper
+     * for the {@code java} extension, but it is still an error to
+     * register another one after that.
+     *
+     * @param fileNameExtension the file name extension to which the
+     *                          helper will be registered.
+     * @param helper            the helper associated to the
+     *                          fileNameExtension
+     * @return {@code this}
+     */
+    Geci splitHelper(String fileNameExtension, SegmentSplitHelper helper);
+
+    /**
+     * Set the source set with the given name specified in the {@code
+     * nameAndSet} parameter that has the name as well as the array of
+     * directory names. Using this method you can simply specify the
+     * source set as, for example {@code geci.source(maven.mainSource());}.
      *
      * @param nameAndSet the name of the set and the directories array
      * @return {@code this}
@@ -68,13 +158,8 @@ public interface Geci {
      *              project.
      * @return {@code this}
      */
-    default Geci source(Source.Maven maven) {
-        source(maven.mainSource());
-        source(maven.mainResources());
-        source(maven.testSource());
-        source(maven.testResources());
-        return this;
-    }
+    Geci source(Source.Maven maven);
+
 
     /**
      * Register one or more generator instances. (Probably instances of different generators.)
@@ -118,6 +203,41 @@ public interface Geci {
     Geci only(String... patterns);
 
     /**
+     * This method is the opposite of the method {@link #only(String...)}.
+     * Using this method you can specify patterns to be ignored by the
+     * source collections.
+     *
+     * @param patterns regular expression patterns used to filter the
+     *                 source files
+     * @return {@code this}
+     */
+    Geci ignore(String... patterns);
+
+    /**
+     * This method declares that certain sets are output sets. It means
+     * that they are available for the generators to create new sources
+     * in the set, but the sources are not collected from these sets and
+     * no generator will be executed for any source file in these source
+     * sets.
+     *
+     * @param sets the sets that are for output only and will not be
+     *             used to collect source files.
+     * @return {@code this}
+     */
+    Geci output(Source.Set... sets);
+
+    /**
+     * This method declares that the last source set defined is an
+     * output set. It means that it is available for the generators to
+     * create new sources in the set, but the sources are not collected
+     * from the set and no generator will be executed for any source
+     * file in the source set.
+     *
+     * @return {@code this}
+     */
+    Geci output();
+
+    /**
      * Set filters to filter the sources. The paths are tested using the
      * predicates provided as argument. This method is more difficult to
      * use than the one that tests the absolute file names against
@@ -125,11 +245,25 @@ public interface Geci {
      * other hand it gives more control into the hand of the caller to
      * filter out files.
      *
-     * @param predicates regular expression patterns used to filter the
-     *                   source files
+     * @param predicates used to filter the source files
      * @return {@code this}
      */
     Geci only(Predicate<Path>... predicates);
+
+    /**
+     * Set filters to filter the sources. The paths are tested using the
+     * predicates provided as argument. This method is more difficult to
+     * use than the one that tests the absolute file names against
+     * regular expression patterns, and thus will be used rarer. On the
+     * other hand it gives more control into the hand of the caller to
+     * filter out files.
+     *
+     * @param predicates used to filter the source files. If a predicate matches
+     *                   a source file it will not be collected to the source set
+     *                   the generators work on.
+     * @return {@code this}
+     */
+    Geci ignore(Predicate<Path>... predicates);
 
     /**
      * Set the source code comparator. This comparator returns {@code true}
@@ -152,6 +286,38 @@ public interface Geci {
      * @return {@code this}
      */
     Geci comparator(BiPredicate<List<String>, List<String>> isModified);
+
+    /**
+     * Get the context of the Geci object that is injected into the generators. This method can be used in the special
+     * case of different generators should share the same context. In that case one Geci object can be used to execute
+     * one generator and another can be used to execute other generators using the same context.
+     *
+     * <p>For example the application wants to run the {@code SnippetCollector} code generator only on Java source files
+     * and thus the {@code source()} method calls define the source sets for the Java files only.
+     *
+     * <p>The same application want to insert the snippets into asciidoc files and using a separate Geci object is
+     * configured for the source sets that contain only the asciidoc files to run the generator {@code
+     * AsciidocCodeInserter} (it does not exist yet).
+     *
+     * <p>The collected snippets are stored in objects referenced by the context of the Geci object. This method can be
+     * used to get access to the context object after the first Geci object {@code generate()} returned and the {@link
+     * #context(Context)} method can be used on the next Geci object (configured for different source sets) to inject the
+     * contex.
+     *
+     * @return the context object
+     */
+    Context context();
+
+    /**
+     * Inject a context into the Geci object. In case a contex object is not injected into the Geci object before the
+     * method {@link #generate()} is invoked then a context will automatically be created. If there was a non-null
+     * context object injected then the one injected will be used.
+     *
+     * @param context the object to be injected into the Geci object.
+     * @return this
+     */
+    Geci context(Context context);
+
 
     /**
      * Run the code generation.

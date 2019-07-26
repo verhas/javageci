@@ -37,10 +37,10 @@ import java.util.stream.Stream;
  * that editor-fold segment is named {@code "accessor"} then there is no
  * need to specify this separately in the annotation.
  */
-public class CompoundParams {
+public class CompoundParams implements javax0.geci.api.CompoundParams {
 
     private static final String Q = "\"";
-    private final Map<String, String>[] params;
+    private final Map<String, List<String>>[] params;
     private final CompoundParams[] cparams;
     private final String id;
     private Set<String> allowedKeys = null;
@@ -55,8 +55,22 @@ public class CompoundParams {
      * @param params the array of parameter maps
      */
     @SafeVarargs
-    public CompoundParams(String id, Map<String, String>... params) {
-        this.params = params;
+    public CompoundParams(String id, Map<String, ?>... params) {
+        this.params = new HashMap[params.length];
+        for (int i = 0; i < params.length; i++) {
+            this.params[i] = new HashMap<>();
+            for (final var entry : params[i].entrySet()) {
+                final List<String> list;
+                if (entry.getValue() instanceof List) {
+                    list = (List) entry.getValue();
+                } else if (entry.getValue() instanceof String) {
+                    list = new ArrayList(List.of((String) entry.getValue()));
+                } else {
+                    throw new IllegalArgumentException(entry.getValue().getClass() + " cannot be used in CompountParams as paramater value.");
+                }
+                this.params[i].put(entry.getKey(), list);
+            }
+        }
         this.cparams = null;
         this.id = id;
     }
@@ -89,11 +103,11 @@ public class CompoundParams {
 
     private <T> T find(CompoundParams[] cparams, Function<CompoundParams, T> mapper) {
         return Arrays.stream(cparams)
-                .filter(Objects::nonNull)
-                .map(mapper)
-                .filter(Objects::nonNull)
-                .limit(1)
-                .findFirst().orElse(null);
+            .filter(Objects::nonNull)
+            .map(mapper)
+            .filter(Objects::nonNull)
+            .limit(1)
+            .findFirst().orElse(null);
     }
 
     /**
@@ -122,11 +136,11 @@ public class CompoundParams {
         for (final var key : keySet()) {
             if (!allowedKeys.contains(key)) {
                 throw new GeciException("The configuration '"
-                        + key
-                        + "' can not be used with the generator "
-                        + mnemonic
-                        + " in source code "
-                        + source.getAbsoluteFile());
+                    + key
+                    + "' can not be used with the generator "
+                    + mnemonic
+                    + " in source code "
+                    + source.getAbsoluteFile());
             }
         }
     }
@@ -215,19 +229,19 @@ public class CompoundParams {
         }
         if (params != null) {
             return Arrays.stream(params)
-                    .filter(Objects::nonNull)
-                    .filter(p -> p.containsKey(key))
-                    .map(p -> p.get(key))
-                    .findFirst()
-                    .orElse("id".equals(key) ? id : null);
+                .filter(Objects::nonNull)
+                .filter(p -> p.containsKey(key))
+                .map(p -> p.get(key).get(0))
+                .findFirst()
+                .orElse("id".equals(key) ? id : null);
         }
         if (cparams != null) {
             return Arrays.stream(cparams)
-                    .filter(Objects::nonNull)
-                    .map(p -> p.get0(key))
-                    .filter(Objects::nonNull)
-                    .findFirst()
-                    .orElse("id".equals(key) ? id : null);
+                .filter(Objects::nonNull)
+                .map(p -> p.get0(key))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse("id".equals(key) ? id : null);
         }
         if ("id".equals(key)) {
             return id;
@@ -235,13 +249,44 @@ public class CompoundParams {
         return null;
     }
 
+    public List<String> getValueList(String key, List<String> defaults) {
+        final var list = getValueList(key);
+        if (list != null) {
+            return list;
+        }
+        return defaults;
+    }
+
+    public List<String> getValueList(String key) {
+        if (params != null) {
+            return Arrays.stream(params)
+                .filter(Objects::nonNull)
+                .filter(p -> p.containsKey(key))
+                .map(p -> p.get(key))
+                .findFirst()
+                .orElse("id".equals(key) ? List.of(id) : null);
+        }
+        if (cparams != null) {
+            return Arrays.stream(cparams)
+                .filter(Objects::nonNull)
+                .map(p -> p.getValueList(key))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse("id".equals(key) ? List.of(id) : null);
+        }
+        if ("id".equals(key)) {
+            return List.of(id);
+        }
+        return null;
+    }
+
 
     public static boolean toBoolean(String s) {
         return s != null && (
-                s.equalsIgnoreCase("yes") ||
-                        s.equalsIgnoreCase("ok") ||
-                        s.equalsIgnoreCase("1") ||
-                        s.equalsIgnoreCase("true")
+            s.equalsIgnoreCase("yes") ||
+                s.equalsIgnoreCase("ok") ||
+                s.equalsIgnoreCase("1") ||
+                s.equalsIgnoreCase("true")
         );
     }
 
@@ -290,22 +335,22 @@ public class CompoundParams {
         final Stream<Set<String>> keyStream;
         if (params != null) {
             keyStream = Arrays.stream(params).filter(Objects::nonNull)
-                    .map(Map::keySet);
+                .map(Map::keySet);
         } else if (cparams != null) {
             keyStream = Arrays.stream(cparams).filter(Objects::nonNull)
-                    .map(CompoundParams::keySet);
+                .map(CompoundParams::keySet);
         } else {
             keyStream = Stream.of();
         }
         return keyStream.filter(Objects::nonNull).flatMap(Collection::stream)
-                .collect(Collectors.toSet());
+            .collect(Collectors.toSet());
     }
 
     @Override
     public String toString() {
         return "{ " +
-                keySet().stream().map(k -> Q + k + Q + ":" + Q + get(k) + Q)
-                        .collect(Collectors.joining(","))
-                + " }";
+            keySet().stream().map(k -> Q + k + Q + ":" + Q + get(k) + Q)
+                .collect(Collectors.joining(","))
+            + " }";
     }
 }
