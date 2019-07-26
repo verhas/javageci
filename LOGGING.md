@@ -32,8 +32,10 @@ output which belong to a source that were
 * `MODIFIED` and/or
 
 If you are not interested in the log messages that were generated during
-the processing of a source that was not touched then these messages will
-not be printed if the log is set that way.
+the processing of a source that was not touched (source was read and
+processed by the generator, but the generator did not try to write
+anything into the code) then these messages will not be printed if the
+log is set that way.
 
 A `javax0.geci.engine.Geci` object has the chain-able method `log(int)`
 that can be used to configure what to log. By default messages sent
