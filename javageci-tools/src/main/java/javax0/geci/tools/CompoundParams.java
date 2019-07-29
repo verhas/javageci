@@ -312,7 +312,7 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
      */
     public boolean is(String key, boolean defaultValue) {
         var s = get(key);
-        if (s.equals("")) {
+        if (s.isEmpty()) {
             return defaultValue;
         } else {
             return toBoolean(s);
@@ -329,7 +329,7 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
      */
     public boolean is(String key, String defaultValue) {
         var s = get(key);
-        if (s.equals("")) {
+        if (s.isEmpty()) {
             s = defaultValue;
         }
         return toBoolean(s);

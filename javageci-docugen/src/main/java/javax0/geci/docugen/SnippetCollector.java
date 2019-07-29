@@ -31,7 +31,6 @@ import java.util.regex.Pattern;
  */
 @Geci("configBuilder localConfigMethod='' configurableMnemonic='snippetCollector'")
 public class SnippetCollector extends AbstractSnippeter implements Distant {
-    public static final String CONTEXT_SNIPPET_KEY = "snippets";
 
     private static class Config extends AbstractSnippeter.Config {
         // snippet SnippetCollector_config

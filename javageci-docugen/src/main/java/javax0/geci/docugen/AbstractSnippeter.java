@@ -5,10 +5,15 @@ import javax0.geci.api.*;
 import javax0.geci.tools.AbstractGeneratorEx;
 import javax0.geci.tools.CompoundParamsBuilder;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @Geci("configBuilder localConfigMethod=''")
 public abstract class AbstractSnippeter extends AbstractGeneratorEx {
+
+    private static final Object ALLOWED_KEYS_CONTEXT_KEY = new Object();
+    private static final Object SNIPPET_CONTEXT_KEY = new Object();
 
     protected static class Config {
         protected int phase = 1;
@@ -44,11 +49,38 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
     }
 
     protected SnippetStore snippets;
+    /**
+     * The allowed keys that can be used on a segment that use the
+     * snippeter generators. These are {@code snippet}, {@code id} and
+     * the actual mnemonics of the registered snippeter generators. The
+     * set is collected in the method {@link #context(Context)} and used
+     * to set constraints to the segment parameters. This helps to
+     * discover parameter configuration typos in the segment headers.
+     */
+    private Set<String> allowedKeys;
 
+    /**
+     * The file name pattern is configurable in every snippeter
+     * generator. The default is {@code .md} file extension in the file
+     * name.
+     */
     protected Pattern fileNamePattern;
 
     protected abstract void modify(Source source, Segment segment, Snippet snippet, CompoundParams params) throws Exception;
 
+    /**
+     * The mnemonics of the concrete extensions of this class are used
+     * in the segment configuration. If the mnemonic is used on the
+     * segment as a parameter then the actual extension's {@code
+     * modify()} method is invoked from this abstract class otherwise
+     * not.
+     *
+     * The extensions that implement the interface {@link
+     * NonConfigurable} will be invoked regardless of any configuration
+     * on the segment.
+     *
+     * @return the mnemonic of the snippeter
+     */
     public abstract String mnemonic();
 
     @Override
@@ -57,6 +89,7 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
             for (final var name : source.segmentNames()) {
                 final var segment = source.safeOpen(name);
                 final var sourceParams = segment.sourceParams();
+                sourceParams.setConstraints(source, "'snip'", allowedKeys);
                 final var snippetName = sourceParams.get("snippet", name);
                 if (snippets == null) {
                     throw new GeciException("The method class " + this.getClass().getName() + ".context() did not call 'super.context(context)'");
@@ -65,13 +98,13 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
                 if (snippet == null) {
                     throw new GeciException("The snippet '" + snippetName + "' is not defined but referenced in file '" + source.getAbsoluteFile() + "' in snippet");
                 }
-                if (mnemonic() != null) {
+                if (this instanceof NonConfigurable) {
+                    modify(source, segment, snippet, null);
+                } else {
                     final var configString = sourceParams.get(mnemonic());
                     if (configString.length() > 0) {
                         modify(source, segment, snippet, new CompoundParamsBuilder(configString).build());
                     }
-                } else {
-                    modify(source, segment, snippet, null);
                 }
             }
         }
@@ -90,8 +123,16 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
 
     @Override
     public void context(Context context) {
-        snippets = context.get(SnippetCollector.CONTEXT_SNIPPET_KEY, SnippetStore::new);
+        snippets = context.get(SNIPPET_CONTEXT_KEY, SnippetStore::new);
         fileNamePattern = Pattern.compile(config.files.toString());
+        allowedKeys = context.get(ALLOWED_KEYS_CONTEXT_KEY, HashSet::new);
+        if (allowedKeys.isEmpty()) {
+            allowedKeys.add("snippet");
+            allowedKeys.add("id");
+        }
+        if (mnemonic() != null) {
+            allowedKeys.add(mnemonic());
+        }
     }
 
     //<editor-fold id="configBuilder">
