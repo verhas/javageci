@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
+import static javax0.geci.api.CompoundParams.toBoolean;
 import static javax0.geci.tools.CaseTools.ucase;
 
 /**
@@ -183,7 +184,7 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
 
         log.info("Creating %s void %s(%s it)",local.copyMethodProtection, local.copyMethod, fullyQualified);
         segment.write_r("%s void %s(%s it) {", local.copyMethodProtection, local.copyMethod, fullyQualified);
-        if (CompoundParams.toBoolean(local.copyCallsSuper)) {
+        if (toBoolean(local.copyCallsSuper)) {
             segment.write("super.%s(it);", local.getSuperCopyMethod());
         }
         segment.newline();
@@ -201,7 +202,7 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         final var type = GeciReflectionTools.normalizeTypeName(field.getType().getName(), klass);
         final var fullyQualified = GeciReflectionTools.getSimpleGenericClassName(klass);
         segment.write_r("%s with%s(%s %s) {", fullyQualified, ucase(name), type, name);
-        if (CompoundParams.toBoolean(local.cloneWith)) {
+        if (toBoolean(local.cloneWith)) {
             segment.write("final var it = %s();", local.cloneMethod)
                 .write("it.%s = %s;", name, name)
                 .write("return it;");

@@ -7,15 +7,18 @@ package javax0.geci.tools;
  * <p> This implementation is used to guess the parameter name in case
  * it is not found because the user made a typo. In that case the error
  * message suggest the closest keyword. Thus the calculation of the
- * distance is limited to 5. Because of this the recursive and "slow"
- * algorithm is used as it cannot explode exponentially because the
- * maximal cost is limited to 5.
+ * distance is limited to {@code MAX_COST}. Because of this the
+ * recursive and "slow" algorithm is used as it cannot explode
+ * exponentially because the maximal cost is limited to {@code
+ * MAX_COST}.
  */
 class Levenshtein {
 
+    private static final int MAX_COST = 5;
+
     static int distance(String x, String y) {
         final var lev = new Levenshtein();
-        lev.maxCost = 5;
+        lev.maxCost = MAX_COST;
         return lev.calculate(x, y, 0);
     }
 

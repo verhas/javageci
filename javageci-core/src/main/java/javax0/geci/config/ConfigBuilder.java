@@ -14,6 +14,8 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static javax0.geci.api.CompoundParams.toBoolean;
+
 /**
  * Generator that generates the code for a generator class to handle the configuration.
  * <p>
@@ -54,7 +56,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         generateMnemonic(segment, local, klass);
         generateConfigField(segment);
         generateBuilderFactoryMethod(segment, klass);
-        if (CompoundParams.toBoolean(local.generateImplementedKeys)) {
+        if (toBoolean(local.generateImplementedKeys)) {
             generateConfigKeySet(segment, fields);
         }
         startBuilderClass(segment, klass);
