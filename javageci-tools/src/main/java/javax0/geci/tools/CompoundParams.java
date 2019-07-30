@@ -66,7 +66,9 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
                 } else if (entry.getValue() instanceof String) {
                     list = new ArrayList(List.of((String) entry.getValue()));
                 } else {
-                    throw new IllegalArgumentException(entry.getValue().getClass() + " cannot be used in CompountParams as paramater value.");
+                    throw new IllegalArgumentException(entry.getValue().getClass() + " cannot be used in "
+                            + CompoundParams.class.getSimpleName()
+                            +" as parameter value.");
                 }
                 this.params[i].put(entry.getKey(), list);
             }
