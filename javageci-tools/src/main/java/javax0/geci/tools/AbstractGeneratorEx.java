@@ -29,10 +29,11 @@ public abstract class AbstractGeneratorEx implements Generator {
         try {
             processEx(source);
         } catch (Exception e) {
-            final var sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            System.out.println(sw.toString());
-            throw new GeciException(e);
+            if( e instanceof GeciException){
+                throw (GeciException)e;
+            }else {
+                throw new GeciException(e);
+            }
         }
     }
 

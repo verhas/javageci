@@ -135,12 +135,28 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
     private void checkAllowedKeys() {
         for (final var key : keySet()) {
             if (!allowedKeys.contains(key)) {
+                String closestKey = null;
+                int closestDistance = Integer.MAX_VALUE;
+                for (final var s : allowedKeys) {
+                    final var d = Levenshtein.distance(key, s);
+                    if( d == closestDistance ){
+                        closestKey = null;
+                    }
+                    if (d < closestDistance) {
+                        closestDistance = d;
+                        closestKey = s;
+                    }
+                }
                 throw new GeciException("The configuration '"
                     + key
                     + "' can not be used with the generator "
                     + mnemonic
                     + " in source code "
-                    + source.getAbsoluteFile());
+                        + source.getAbsoluteFile()
+                        + (closestKey == null ? "" : ", did you mean '" + closestKey + "' ?")
+                        + "\nThe possible keys are:\n  "
+                        + String.join(", ", allowedKeys)
+                );
             }
         }
     }
