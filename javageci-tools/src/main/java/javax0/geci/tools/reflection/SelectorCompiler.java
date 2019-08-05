@@ -84,14 +84,6 @@ class SelectorCompiler {
             return new SelectorNode.Not(expression2());
         }
 
-        if( isSymbol("?")) {
-            lexer.get();
-            final var converter = lexer.get();
-            if( converter.type != Lexeme.Type.WORD){
-                throw new IllegalArgumentException("Conversion is missing after '`'" + atRest());
-            }
-            return new SelectorNode.Converted(expression2(),converter.string);
-        }
         if (isSymbol("(")) {
             lexer.get();
             final var sub = expression();
@@ -104,6 +96,15 @@ class SelectorCompiler {
         }
         if (lexer.peek().type == Lexeme.Type.WORD) {
             final var name = lexer.get().string;
+            if( isSymbol("-")){
+                lexer.get();
+                if( isSymbol(">")) {
+                    lexer.get();
+                    return new SelectorNode.Converted(expression2(), name);
+                }else{
+                    throw new IllegalArgumentException("Conversion is missing -> " + atRest());
+                }
+            }
             if (isSymbol("~")) {
                 lexer.get();
                 if (lexer.peek().type != Lexeme.Type.REGEX) {
