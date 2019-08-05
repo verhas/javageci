@@ -109,7 +109,7 @@ public class Selector<T> {
 
     private void methodAndClassOnlySelectors() {
         selector("abstract", m -> only(m, Class.class, Method.class) && Modifier.isAbstract(getModifiers(m)));
-        selector("implements", m -> only(m, Method.class, Class.class) && methodOrClassImplements(m));
+        selector("implements", m -> only(m, Class.class, Method.class) && methodOrClassImplements(m));
     }
 
     private void classOnlySelectors() {
