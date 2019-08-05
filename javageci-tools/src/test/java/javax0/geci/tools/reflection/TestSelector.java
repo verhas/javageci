@@ -63,6 +63,11 @@ class TestSelector {
     }
 
     @Test
+    void testDeclaringClass() throws Exception{
+        Assertions.assertTrue(Selector.compile("? declaringClass simpleName ~ /^Test/").match(TestSelector.class.getDeclaredMethod("testDeclaringClass")));
+    }
+
+    @Test
     void testImplements(){
         Assertions.assertTrue(Selector.compile("implements ~ /Function/").match(X.class));
         Assertions.assertTrue(Selector.compile("implements").match(X.class));

@@ -22,6 +22,17 @@ class SelectorNode {
         }
     }
 
+    static class Converted extends SelectorNode {
+        final SelectorNode subNode;
+        final String converter;
+
+        Converted(SelectorNode subNode, String converter) {
+            this.converter = converter;
+            this.subNode = subNode;
+        }
+    }
+
+
     static class Terminal extends SelectorNode {
         final String terminal;
 

@@ -27,7 +27,7 @@ class SelectorCompiler {
         final var topNode = it.expression();
         if (it.lexer.rest().length() > 0) {
             throw new IllegalArgumentException("There are extra characters " +
-                "at the end of the selector expresison" + it.atRest());
+                "at the end of the selector expression" + it.atRest());
         }
         return topNode;
     }
@@ -82,6 +82,15 @@ class SelectorCompiler {
         if (isSymbol("!")) {
             lexer.get();
             return new SelectorNode.Not(expression2());
+        }
+
+        if( isSymbol("?")) {
+            lexer.get();
+            final var converter = lexer.get();
+            if( converter.type != Lexeme.Type.WORD){
+                throw new IllegalArgumentException("Conversion is missing after '`'" + atRest());
+            }
+            return new SelectorNode.Converted(expression2(),converter.string);
         }
         if (isSymbol("(")) {
             lexer.get();

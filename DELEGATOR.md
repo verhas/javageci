@@ -49,7 +49,7 @@ then annotate the class and the field:
 @Geci("delegator")
 public class MapWriter<K,V> extends Writer {
 
-    @Geci("delegator id='map'")
+    @Geci("delegator id='map' methods=' !name ~ /equals|hashCode/ & !static '")
     Map<K,V> contained = new HashMap<>();
 ```
 
@@ -123,11 +123,6 @@ build process and get the methods created:
     }
 
     @javax0.geci.annotations.Generated("delegator")
-    public boolean equals(Object arg1) {
-        return contained.equals(arg1);
-    }
-
-    @javax0.geci.annotations.Generated("delegator")
     public boolean isEmpty() {
         return contained.isEmpty();
     }
@@ -140,11 +135,6 @@ build process and get the methods created:
     @javax0.geci.annotations.Generated("delegator")
     public boolean replace(K arg1, V arg2, V arg3) {
         return contained.replace(arg1,arg2,arg3);
-    }
-
-    @javax0.geci.annotations.Generated("delegator")
-    public int hashCode() {
-        return contained.hashCode();
     }
 
     @javax0.geci.annotations.Generated("delegator")
@@ -197,7 +187,7 @@ Then you can extend the header of the class to
 @Geci("delegator")
 public class MapWriter<K,V> extends Writer implements Map<K,V> {
 
-    @Geci("delegator id='map'")
+    @Geci("delegator id='map' methods=' !name ~ /equals|hashCode/ & !static '")
     Map<K,V> contained = new HashMap<>();
 ```
 

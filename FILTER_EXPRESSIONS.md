@@ -1,3 +1,5 @@
+<!-- snip Selector_head_000001 -->
+
 # Filter expressions
 
 Many of the generators use filter expressions that select certain
@@ -55,6 +57,7 @@ selectors that select from a set of classes.) Regular expressions are
 checked using the standard Java `java.util.regex.Matcher` class'
 `find()` method. It means that the regular expression may match only a
 substring and does not need to match the whole string.
+<!-- end snip -->
 
 ### Type words and matchers
 
