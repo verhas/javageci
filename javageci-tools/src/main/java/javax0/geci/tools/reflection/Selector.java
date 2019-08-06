@@ -9,69 +9,9 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
- * - head
+ * Reflection selector.
  *
- * # Filter expressions
- *
- * Many of the generators use filter expressions that select certain
- * members from a class. For example you want to map an object to a
- * `Map` and you use the `mapper` generator. You want to control which
- * fields should be stored into the map. This can be done through the
- * configuration key `filter` specifying a filter expression. The
- * expression will select certain fields to be included and exclude
- * others.
- *
- * Generators are encouraged to use the configuration parameter `filter`
- * for the purpose. This configuration key is also supported by the
- * abstract generators `AbstractFilteredMethodsGenerator` and
- * `AbstractFilteredFieldsGenerator`. Generators extending one of these
- * abstract generators will get the methods or fields already filtered.
- *
- * ## What is a filter expression
- *
- * A filter expression is a string, a logical expression. For example
- * the filter expression
- *
- * `public | private`
- *
- * will select all members (fields or methods, whichever the code
- * generator works with) that are either `private` or `public`, but will
- * not select `protected` or package private members. You can use `|` to
- * express OR relation and `&` to express AND relation. For example the
- * filter expression
- *
- * `public | private & final`
- *
- * will select the members that are `public` or `private` but the
- * `private` fields also have to be `final` or else they will not be
- * selected. (The operator `&` has higher precedence than `|`.)
- *
- * The expressions can use the `!` character to negate the following
- * part and `(` and `)` can also be used to override the evaluation
- * order. The words and matchers are numerous, and are documented in the
- * following section.
- *
- * The filter expression compiler and matcher can also be extended with
- * specific words and matchers. If a generator does that it MUST
- * document these extensions. If the documentation does not mention any
- * extension then it uses the default set of words and matchers.
- *
- * ## Filter words and matchers
- *
- * Words are simple selectors, like `private` or `package` that will
- * select a member if the access protection of the member is private or
- * package private. Matchers are regular expression matchers that
- * identify certain feature of a member and compare it against a regular
- * expression. For example `simpleName ~ /Map$/` will match any class
- * that the simple name ends with the characters `M`, `a` and `p`.
- * Regular expressions are checked using the standard Java
- * `java.util.regex.Matcher` class' `find()` method. It means that the
- * regular expression may match a substring and does not need to match
- * the whole string. If you need to match the expression against the
- * whol string then start it with the character `^` which means the
- * start of the string in a regular expression and end the expression
- * with the character `$`, which matches the end of the string in a
- * regular expression.
+ * @param <T> the type of the member to test. Field, Class, Method etc.
  */
 public class Selector<T> {
 
@@ -83,7 +23,7 @@ public class Selector<T> {
 
     private Selector() {
 
-        defineConverters();
+        defineConversions();
 
         methodAndClassOnlySelectors();
 
@@ -95,15 +35,52 @@ public class Selector<T> {
 
         classOnlySelectors();
 
-
+        /**
+         * - head
+         *
+         * `annotation ~ /regex/` is `true` if the examined member has
+         * an annotation that matches the regular expression.
+         */
         regexSelector("annotation", (m, regex) -> only(m, AnnotatedElement.class) &&
                 matchAnnotations((AnnotatedElement) m, regex));
+        /**
+         * -
+         *
+         * `annotated` is `true` if the examined member has an
+         * annotation. (Any annotation.)
+         */
         selector("annotated", (m) -> only(m, AnnotatedElement.class) &&
                 hasAnnotations((AnnotatedElement) m));
     }
 
-    private void defineConverters() {
-        converter("declaringClass", m -> only(m,Method.class, Field.class ) ? ((Member)m).getDeclaringClass() : null);
+    /**
+     * -
+     *
+     * ### Conversion
+     *
+     * Conversions are used to direct the next part of the expression to
+     * check something else instead of the member. The conversion is on
+     * the same level as the `!` negation operator and the name of the
+     * conversion is separated from the following part of the expression
+     * by `->`.
+     */
+    private void defineConversions() {
+        /**
+         * -
+         *
+         * * `declaringClass` check the declaring class instead of the
+         * member. This can be applied to methods, fields and classes.
+         * Note that there is an `enclosingClass` that can be applied to
+         * classes.
+         */
+        converter("declaringClass", m -> ((Member) m).getDeclaringClass());
+        converter("returnType", m -> only(m, Method.class) ? ((Method) m).getReturnType() : null);
+        converter("type", m -> only(m, Field.class) ? ((Field) m).getType() : null);
+        converter("superClass", m -> only(m, Class.class) ? ((Class) m).getSuperclass() : null);
+        converter("enclosingClass", m -> only(m, Class.class) ? ((Class) m).getEnclosingClass() : null);
+        converter("enclosingMethod", m -> only(m, Class.class) ? ((Class) m).getEnclosingMethod() : null);
+        converter("componentType", m -> only(m, Class.class) ? ((Class) m).getComponentType() : null);
+        converter("nestHost", m -> only(m, Class.class) ? ((Class) m).getNestHost() : null);
     }
 
     /**
@@ -132,9 +109,12 @@ public class Selector<T> {
     }
 
     /**
-     * - <p> ### Class and method checking selectors <p> These
-     * conditions work on classes and on methods. Applying them on a
-     * field will throw exception.
+     * -
+     *
+     * ### Class and method checking selectors
+     *
+     * <p> These conditions work on classes and on methods. Applying
+     * them on a field will throw exception.
      */
     private void methodAndClassOnlySelectors() {
         /**
@@ -161,16 +141,16 @@ public class Selector<T> {
 
     /**
      * -
-     * <p>
+     *
      * ### Class checking selectors
-     * <p>
+     *
      * These conditions work on classes. When used on a field then
-     * the type of the field is checked. When used on a method then
-     * the return type of the method is checked. When the
-     * documentation here says "... when the type is ..." it means
-     * that the class or interface itself or the type of the field
-     * or the return type of the method in case the condition is
-     * checked against a field or method.
+     * the type of the field is checked. When used on a method then the
+     * return type of the method is checked. When the documentation here
+     * says "... when the type is ..." it means that the class or
+     * interface itself or the type of the field or the return type of
+     * the method in case the condition is checked against a field or
+     * method.
      */
     private void classOnlySelectors() {
         /**
@@ -273,45 +253,204 @@ public class Selector<T> {
         regexSelector("implements", (m, regex) -> classImplements(toClass(m), regex));
     }
 
+    /**
+     * -
+     *
+     * ### Method checking selectors
+     *
+     * These conditions work on methods. If applied to anything else
+     * than a method the checking will throw an exception.
+     */
     private void methodOnlySelectors() {
+        /**
+         * -
+         *
+         * * `synthetic` is `true` if the method is synthetic. Synthetic
+         * methods are generated by the Javac compiler in some special
+         * situation. These methods do not appear in the source code.
+         */
         selector("synthetic", m -> only(m, Method.class) && (getModifiers(m) & SYNTHETIC) != 0);
+        /**
+         * -
+         *
+         * * `synchronized` is `true` if the method is synchronized.
+         */
         selector("synchronized", m -> only(m, Method.class) && Modifier.isSynchronized(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `native` is `true` if the method is native.
+         */
         selector("native", m -> only(m, Method.class) && Modifier.isNative(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `strict` is `true` if the method has the `strict` modifier.
+         * This is a rarely used modifier and affects the floating point
+         * calculation.
+         */
         selector("strict", m -> only(m, Method.class) && Modifier.isStrict(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `default` is `true` if the method is defined as a default
+         * method in an interface.
+         */
         selector("default", m -> only(m, Method.class) &&
                 ((Member) m).getDeclaringClass().isInterface() && !Modifier.isAbstract(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `bridge` is `true` if the method is a bridge method. Bridge
+         * methods are generated by the Javac compiler in some special
+         * situation. These methods do not appear in the source code.
+         */
+        selector("bridge", m -> only(m, Method.class) && ((Method) m).isBridge());
+        /**
+         * -
+         *
+         * * `vararg` is `true` if the method is a variable argument
+         * method.
+         */
         selector("vararg", m -> only(m, Method.class) && ((Method) m).isVarArgs());
+        /**
+         * -
+         *
+         * * `overrides` is `true` if the method is overriding another
+         * method in the superclass of the method's declaring method or
+         * a method in the superclass of the superclass and so on.
+         * Implementing a method declared in an interface alone will not
+         * result `true`, even though methods implementing an interface
+         * method are annotated using the compile time `@Override`
+         * annotation. This check is not the same.
+         */
         selector("overrides", m -> only(m, Method.class) && methodOverrides((Method) m));
+        /**
+         * -
+         *
+         * * `void` is `true` if the method has no return value.
+         */
         selector("void", m -> only(m, Method.class) && ((Method) m).getReturnType().equals(Void.TYPE));
-
+        /**
+         * -
+         *
+         * * `returns ~ /regex/` is `true` if the method return type's
+         * canonical name matches the regular expression.
+         */
         regexSelector("returns", (m, regex) -> only(m, Method.class) && regex.matcher(
                 ((Method) m).getReturnType().getCanonicalName()).find());
+        /**
+         * -
+         *
+         * * `throws ~ /regex/` is `true` if the method throws a declared
+         * exception that matches the regular expression.
+         */
         regexSelector("throws", (m, regex) -> only(m, Method.class) &&
                 Arrays.stream(((Method) m).getGenericExceptionTypes())
                         .anyMatch(exception -> regex.matcher(exception.getTypeName()).find()));
+        /**
+         * -
+         *
+         * * `signature ~ /regex/` checks that the signature of the method
+         * matches the regular expression. The signature of the method
+         * uses the formal argument names `arg0` ,`arg1`,...,`argN`.
+         */
         regexSelector("signature", (m, regex) ->
                 only(m, Method.class) && regex.matcher(MethodTool.methodSignature((Method) m)).find());
     }
 
+    /**
+     * -
+     *
+     * ### Field checking selectors
+     *
+     * These conditions work on fields. If applied to anything else
+     * than a field the checking will throw an exception.
+     */
     private void fieldOnlySelectors() {
+        /**
+         * -
+         *
+         * * `transient` is `true` if the field is transient.
+         */
         selector("transient", m -> only(m, Field.class) && Modifier.isTransient(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `volatile` is `true` if the field is declared volatile.
+         */
         selector("volatile", m -> only(m, Field.class) && Modifier.isVolatile(getModifiers(m)));
     }
 
+    /**
+     * -
+     *
+     * ### Universal selectors
+     *
+     * These conditions work on filds, classes and methods.
+     */
     private void universalSelectors() {
+        /**
+         * -
+         *
+         * * `true` is `true` always.
+         */
         selector("true", m -> true);
+        /**
+         * -
+         *
+         * * `false` is `false` always.
+         */
         selector("false", m -> false);
-
+        /**
+         * -
+         *
+         * * `private` is `true` if the examined member has private
+         * protection.
+         */
         selector("private", m -> Modifier.isPrivate(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `protected` is `true` if the examined member has protected
+         * protection.
+         */
         selector("protected", m -> Modifier.isProtected(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `package` is `true` if the examined member has package
+         * private protection.
+         */
         selector("package", m ->
                 !Modifier.isPublic(getModifiers(m)) &&
                         !Modifier.isProtected(getModifiers(m)) &&
                         !Modifier.isPrivate(getModifiers(m)));
-        selector("static", m -> Modifier.isStatic(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `public` is `true` if the examined member is public.
+         */
         selector("public", m -> Modifier.isPublic(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `static` is `true` if the examined member is static.
+         */
+        selector("static", m -> Modifier.isStatic(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `static` is `true` if the examined member is final.
+         */
         selector("final", m -> Modifier.isFinal(getModifiers(m)));
 
+        /**
+         * -
+         *
+         * * `name ~ /regex/` is `true` if the examined member's name
+         * matches the regular expression.
+         */
         regexSelector("name", (m, regex) -> regex.matcher(getName(m)).find());
     }
 
@@ -426,6 +565,14 @@ public class Selector<T> {
     }
 
 
+    /**
+     * Checks if this method overrides a method in one of the super
+     * classes.
+     *
+     * @param m the method to be checked
+     * @return {@code true} if the method is overriding a method in the
+     * superclass or in the superclass of the superclass and so on.
+     */
     private boolean methodOverrides(Method m) {
         final var args = m.getParameterTypes();
         final var name = m.getName();
@@ -468,9 +615,9 @@ public class Selector<T> {
 
     /**
      * Define a converter and allow redefinition.
-     * @param name
-     * @param function
-     * @return
+     * @param name the name of the converter
+     * @param function the function that performs the conversion
+     * @return {@code this}
      */
     public Selector converterRe(String name, Function<T, Object> function) {
         converters.put(name, function);
@@ -478,11 +625,11 @@ public class Selector<T> {
     }
 
     /**
-     * Define a converter.
+     * Define a converter but it does not allow redefinition.
      *
-     * @param name
-     * @param function
-     * @return
+     * @param name the name of the converter
+     * @param function the function that performs the conversion
+     * @return {@code this}
      */
     public Selector converter(String name, Function<T, Object> function) {
         if (converters.containsKey(name)) {
@@ -494,9 +641,12 @@ public class Selector<T> {
     /**
      * Define a {@link Function} assigned to the name that can be referenced in the expression.
      *
-     * @param name     the name to be used in the expression referencing the function
-     * @param function the function that will be executed when evaluating {@code #name}, where {@code name} is actually
-     *                 the string provided in the argument {@code name}
+     * @param name     the name to be used in the expression referencing
+     *                 the function
+     * @param function the function that will be executed when
+     *                 evaluating {@code #name}, where {@code name} is
+     *                 actually the string provided in the argument
+     *                 {@code name}
      * @return {@code this} object to allow method chaining
      */
     @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
@@ -592,6 +742,7 @@ public class Selector<T> {
         }
         if (node instanceof SelectorNode.Converted) {
             final var converter = ((SelectorNode.Converted) node).converter;
+            //TODO check that the converter exists and that the result after apply is not null
             return match((T)converters.get(converter).apply(m), ((SelectorNode.Converted) node).subNode);
         }
         if (node instanceof SelectorNode.Not) {

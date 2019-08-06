@@ -9,12 +9,10 @@ import java.util.Arrays;
  * <ul>
  * <li>EXPRESSION ::= EXPRESSION1 ['|' EXPRESSION1 ]+ </li>
  * <li>EXPRESSION1 ::= EXPRESSION2 ['&amp;' EXPRESSION2] +</li>
- * <li>EXPRESSION2 :== TERMINAL | '!' EXPRESSION2 | '(' EXPRESSION ')' </li>
- * <li>TERMINAL ::= MODIFIER | PSEUDO_MODIFIER | name '~' REGEX | signature '~' REGEX |
- * annotation ~ REGEX | returns ~ REGEX | CALLER_DEFINED_SELECTOR</li>
- * <li>MODIFIER ::= private | protected | package | public | final | transient | volatile | static |
- * synthetic | synchronized | native | abstract | strict </li>
- * <li>PSEUDO_MODIFIER ::= default | implements | inherited | overrides | vararg | true | false </li>
+ * <li>EXPRESSION2 :== TERMINAL | '!' EXPRESSION2 | CONVERSION '->' EXPRESSION2 |'(' EXPRESSION ')' </li>
+ * <li>TERMINAL ::= TEST | REGEX_MATCH
+ * <li>TEST ::= registered word</li>
+ * <li>REGEX_MATCH ::= registered regex word '~' '/' regular expression '/'</li>
  * </ul>
  */
 class SelectorCompiler {

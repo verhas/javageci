@@ -1,162 +1,262 @@
-<!-- snip Selector_head_000001 -->
-
 # Filter expressions
 
-Many of the generators use filter expressions that select certain
-members from a class. For example you want to map an object to a `Map`
-and you use the `mapper` generator. You want to control which fields
-should be stored into the map. This can be done through the
-configuration key `filter` specifying a filter expression. The
-expression will select certain fields to be included and exclude others.
+Filter expression is a logical expression that can test a method, class
+or field (member). When the expression is evaluated against a member
+then the result is either `true` or `false`. The Selector class can be
+used to compile an expression and then to match against a member, like
 
-Generators are encouraged to use the configuration parameter `filter`
-for the purpose. This configuration key is also supported by the
-abstract generators `AbstractFilteredMethodsGenerator` and
-`AbstractFilteredFieldsGenerator`. Generators extending one of these
-abstract generators will get the methods or fields already filtered.
+    Selector.compile("... expression ... ").match(myMember)
 
-## What is a filter expression
+which will be either true or false. The expression can check that the
+class, field or method is private, public, abstract, volatile and many
+other features. These simple conditions can be used together as a
+logical expression containing logical AND, OR and NOT operators,
+parentheses and attribute conversions.
 
-A filter expression is a string, a logical expression. For example the
-filter expression
+For example the filter expression
 
 `public | private`
 
-will select all members (fields or methods, whichever the code generator
-works with) that are either `private` or `public`, but will not select
-`protected` or package private members. You can use `|` to express OR
-relation and `&` to express AND relation. For example the filter
-expression
+will be `true` for any field, class or method, whichever the code
+queries that is either `private` or `public`, but will
+not "select" `protected` or package private members.
+
+You can use `|` to express OR relation and `&` to express AND relation.
+For example the filter expression
 
 `public | private & final`
 
-will select the members that are `public` or `private` but the `private`
-fields also have to be `final` or else they will not be selected. (The
-operator `&` has higher precedence than `|`.)
+will select the members that are `public` or `private` but the
+`private` fields also have to be `final` or else they will not be
+selected. (The operator `&` has higher precedence than `|`.)
 
-The expressions can use the `!` character to negate the following part
-and `(` and `)` can also be used to override the evaluation order. The
-words and matchers are numerous, and are documented in the following
-section.
+The expressions can use the `!` character to negate the following
+part and `(` and `)` can also be used to override the evaluation
+order. 
 
-The filter expression compiler and matcher can also be extended with
-specific words and matchers. If a generator does that it MUST document
-these extensions. If the documentation does not mention any extension
-then it uses the default set of words and matchers.
+Sometimes you want to write a condition in part of the expression that
+is checking not the actual member but something that is related to that
+member. For example you can write the expression
 
-## Filter words and matchers
+    (simpleName ~ /boolean/ | simpleName ~ /int/) & declaringClass -> !simpleName ~ /Object/
 
-Words are simple selectors, like `private` or `package` that will select
-a member if the access protection of the member is private or package
-private. Matchers are regular expression matchers that identify certain
-feature of a member and compare it against a regular expression. For
-example `simpleName ~ /Map$/` will match any class member where the
-simple name ends with the characters `M`, `a` and `p`. (Quite obviously,
-since only classes can have simple names it can only be used for
-selectors that select from a set of classes.) Regular expressions are
-checked using the standard Java `java.util.regex.Matcher` class'
-`find()` method. It means that the regular expression may match only a
-substring and does not need to match the whole string.
+to test methods `equals()` and `hashCode()`. It will check that the
+simple name of the return value is `boolean` or `int` and that the
+declaring class is not `Object`. The part `declaringClass ->` signals
+that the next part of the expression should be evaluated not for the
+object but rather for the declaring class of the object. These
+conversions are on the same precedence level as the `!` negation
+operator and can be used up to any level. For example you can write
+
+    declaringClass -> superClass -> superClass -> !simpleName ~ /Object/
+
+to check that the method is at least three inheritance level deeper
+declared than the `Object` class.
+
+The formal BNF definition of the selector expressions is the following:
+
+
+    EXPRESSION ::= EXPRESSION1 ['|' EXPRESSION1 ]+ 
+    EXPRESSION1 ::= EXPRESSION2 ['&amp;' EXPRESSION2] +
+    EXPRESSION2 :== TERMINAL | '!' EXPRESSION2 | CONVERSION '->' EXPRESSION2 |'(' EXPRESSION ')' 
+    TERMINAL ::= TEST | REGEX_MATCHER
+    TEST ::= registered word
+    CONVERSION ::= registered conversion
+    REGEX_MATCHER ::= registered regex word '~' '/' regular expression '/'
+
+The registered words, regex matchers and conversions are numerous, and
+are documented in the following sections. There are many predefined but
+the class `Select` provides a possibility to register your own tests,
+regex matchers and conversions.
+
+Many of the generators use filter expressions that select certain
+members from a class. For example you want to map an object to a
+`Map` and you use the `mapper` generator. You want to control which
+fields should be stored into the map. This can be done through the
+configuration key `filter` specifying a filter expression. The
+expression will select certain fields to be included and exclude
+others.
+
+Filter expressions are used by many Java::Geci generators and the tool
+is a strong weapon in the hands of the generator writers. For example
+generators are encouraged to use the configuration parameter `filter` to
+filter out methods or fields that need the attendance of the specific
+generator. This configuration key is supported out of the box by the
+abstract generators `AbstractFilteredMethodsGenerator` and
+`AbstractFilteredFieldsGenerator`. Generators extending one of these
+abstract generators will get the methods or fields already filtered.
+ 
+<!-- snip documentation snippet="epsilon" 
+                       append="snippets='Selector_head_.*'" trim="do"-->
+
+`annotation ~ /regex/` is `true` if the examined member has
+an annotation that matches the regular expression.
+
+`annotated` is `true` if the examined member has an
+annotation. (Any annotation.)
+
+### Conversion
+
+Conversions are used to direct the next part of the expression to
+check something else instead of the member. The conversion is on
+the same level as the `!` negation operator and the name of the
+conversion is separated from the following part of the expression
+by `->`.
+
+* `declaringClass` check the declaring class instead of the
+member. This can be applied to methods, fields and classes.
+Note that there is an `enclosingClass` that can be applied to
+classes.
+
+### Class and method checking selectors
+
+<p> These conditions work on classes and on methods. Applying
+them on a field will throw exception.
+
+* `abstract` is `true` if the type of method is abstract.
+
+
+* `implements` is `true` if the class implements at least one
+interface. When applied to a method it is `true` if the
+method implements a method of the same name and argument
+types in one of the interfaces the class directly or
+indirectly implements. In other words it means that there is
+an interface that declares this method and this method is an
+implementation (not abstract).
+
+
+### Class checking selectors
+
+These conditions work on classes. When used on a field then
+the type of the field is checked. When used on a method then the
+return type of the method is checked. When the documentation here
+says "... when the type is ..." it means that the class or
+interface itself or the type of the field or the return type of
+the method in case the condition is checked against a field or
+method.
+
+* `interface` is `true` if the type is an interface
+
+* `primitive` is `true` when the type is a primitive type,
+a.k.a. `int`, `double`, `char` and so on. Note that `String`
+is not a primitive type.
+
+* `annotation` is `true` if the type is an annotation
+interface.
+
+* `anonymous` is `true` if the type is anonymous.
+
+* `array` is `true` if the type is an array.
+
+* `enum` is `true` if the type is an enumeration.
+
+* `member` is `true` if the type is a member class, a.k.a.
+inner or nested class or interface
+
+* `local` is `true` if the type is a local class. Local
+classes are defined inside a method.
+
+* `extends` without any regular expression checks that the
+class explicitly extends some other class. (Implicitly
+extending `Object` does not count.)
+
+
+* `extends ~ /regex/` is `true` if the canonical name of the
+superclass matches the regular expression. In other words if
+the class extends directly the class given in the regular
+expression.
+
+* `simpleName ~ /regex/` is `true` if the simple name of the
+class (the name without the package) matches the regular
+expression.
+
+* `canonicalName ~ /regex/` is `true` if the canonical name of
+the class matches the regular expression.
+
+* `implements ~ /regex/` is `true` if the type directly
+implements an interface whose name matches the regular
+expression. (Note: `implements` can also be used without a
+regular expression. In that case the checking is different.)
+
+### Method checking selectors
+
+These conditions work on methods. If applied to anything else
+than a method the checking will throw an exception.
+
+* `synthetic` is `true` if the method is synthetic. Synthetic
+methods are generated by the Javac compiler in some special
+situation. These methods do not appear in the source code.
+
+* `synchronized` is `true` if the method is synchronized.
+
+* `native` is `true` if the method is native.
+
+* `strict` is `true` if the method has the `strict` modifier.
+This is a rarely used modifier and affects the floating point
+calculation.
+
+* `default` is `true` if the method is defined as a default
+method in an interface.
+
+* `bridge` is `true` if the method is a bridge method. Bridge
+methods are generated by the Javac compiler in some special
+situation. These methods do not appear in the source code.
+
+* `vararg` is `true` if the method is a variable argument
+method.
+
+* `overrides` is `true` if the method is overriding another
+method in the superclass of the method's declaring method or
+a method in the superclass of the superclass and so on.
+Implementing a method declared in an interface alone will not
+result `true`, even though methods implementing an interface
+method are annotated using the compile time `@Override`
+annotation. This check is not the same.
+
+* `void` is `true` if the method has no return value.
+
+* `returns ~ /regex/` is `true` if the method return type's
+canonical name matches the regular expression.
+
+* `throws ~ /regex/` is `true` if the method throws a declared
+exception that matches the regular expression.
+
+* `signature ~ /regex/` checks that the signature of the method
+matches the regular expression. The signature of the method
+uses the formal argument names `arg0` ,`arg1`,...,`argN`.
+
+### Field checking selectors
+
+These conditions work on fields. If applied to anything else
+than a field the checking will throw an exception.
+
+* `transient` is `true` if the field is transient.
+
+* `volatile` is `true` if the field is declared volatile.
+
+### Universal selectors
+
+These conditions work on filds, classes and methods.
+
+* `true` is `true` always.
+
+* `false` is `false` always.
+
+* `private` is `true` if the examined member has private
+protection.
+
+* `protected` is `true` if the examined member has protected
+protection.
+
+* `package` is `true` if the examined member has package
+private protection.
+
+* `public` is `true` if the examined member is public.
+
+* `static` is `true` if the examined member is static.
+
+* `static` is `true` if the examined member is final.
+
+* `name ~ /regex/` is `true` if the examined member's name
+matches the regular expression.
 <!-- end snip -->
-
-### Type words and matchers
-
-The following words and matchers work with members that are types
-(classes, interfaces, enums etc.) If they are applied to fields then the
-type of the field will be checked against these words. In case they are
-applied to methods then the return type will be considered. Note, that
-some of these combinations may not make sense. For example a method will
-never have a returns type which is a `local` class, therefore applying
-`local` when selecting methods will always yield to `false`.
-
-* `interface` checks that the certain class type is an interface
-* `primitive` checks that the type is primitive
-* `annotation` checks that the type is an annotation
-* `anonymous` checks that the type is anonymous
-* `array` checks that the type is an array
-* `enum` checks that the type is an enumeration
-* `member` checks that the type is a member class, a.k.a. inner and
-  nested classes
-* `local` checks that the type is a local class. Local classes are
-  defined inside a method.
-* `extends` checks that the class explicitly extends some other class   
-* `extends ~ /regex/` the canonical name of the superclass matches the 
-  regular expression. 
-* `simpleName ~ /regex/` the simple name of the class matches the
-  regular expression.
-* `canonicalName ~ /regex/` the canonical name of the class matches the
-  regular expression.
-* The matcher `name ~ /regex/` is universal, can be applied to fields
-  and methods as well and therefore it is listed below with the
-  universal matchers in the last section.
-
-### Method only words and matchers
-
-The following words and matchers work only with members that are methods
-and must not apply to fields and methods. If any of these are used in
-case of something that is not a method then the code will throw
-`IllegalArgumentException`. Generators should encapsulate that into a
-`GeciException` and code generation will fail.
-
-* `synthetic` checks that the method is synthetic generated by the
-  compiler and not one existing in the source code.
-* `synchronized` checks that the method is synchronized
-* `native` checks that method is native
-* `strict` checks that method is strict
-* `default` checks that method is a default method implemented in an
-  interface
-* `vararg`  checks that method has variable number of arguments.
-* `implements`  checks that the method implements a method defined at
-   least in one interface
-* `implements` checks that the class implements at least one interface
-* `implements ~ /regex/` checks that the class implements an interface
-   of which the name matches the regular expression
-* `overrides`  checks that method overrides a method of the superclass
-  or any class above that in the inheritance chain. 
-* `void` checks that the method is `void`. This will have the same
-  result as `returns ~ /void/`.
-* `returns ~ /regex/`  checks that the canonical name of the return type
-  of the method matches the regular expression 
-* `throws ~ /regex/` checks that any of the declared exceptions matches
-  the regular expression. 
-* `signature ~ /regex/` checks that the signature of the method matches
-  the regular expression. The signature of the
-  method uses the formal argument names `arg0` ,`arg1`,...,`argN`. 
-* The matcher `name ~ /regex/` is universal, can be applied to fields
-  and methods as well and therefore it is listed below with the
-  universal matchers in the last section.
-  
-### Field only words
-
-
-The following words work only with members that are fields and must not
-apply to types and methods. If any of these are used in case of
-something that is not a field then the code will throw
-`IllegalArgumentException`. Generators should encapsulate that into a
-`GeciException` and code generation will fail.
-
-* `transient` checks that the field is transient
-* `volatile` checks that the field is volatile
-
-### Universal words and matcher
-
-The following words and matchers can be applies to select any type of
-members.
-
-* `true` is simply true. It can be used when the filter is used in the
-  configuration of the member overriding the global configuration. This
-  will create a filter expression that includes everything. When this is
-  applied in the configuration of a specific member the everything is
-  that member. 
-* `false` is just the opposite of `true`.
-* `private` the access protection of the member is private.
-* `protected` the access protection of the member is protected
-* `package` the access protection of the member is package protected
-* `static` the member is static
-* `public`  the access protection of the member is public
-* `final` the member is final
-* `name ~ /regex/` the name of the member matches the regular
-  expression.
-* `annotation ~ /regex/` the class, field or member has an annotation
-  that matches the regular expression
-* `annotated` checks that the class, method or field has annotation  
