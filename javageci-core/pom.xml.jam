@@ -3,7 +3,7 @@
     {GAV ::javageci-core:{VERSION}}
     {parent :javageci-parent}
     {name|javageci core}
-    {description|Javageci macro library core code generators}
+    {description|Javageci generator library core code generators}
 
     {@include ../plugins.jim}
 

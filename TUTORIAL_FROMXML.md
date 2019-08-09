@@ -8,34 +8,52 @@ generated Java file are in different directory structures (a.k.a. source sets).
 ## Test Code
 
 To invoke the generator we will use the following test:
-<!-- USE SNIPPET */testBeanGenerator-->
+<!-- snip testBeanGenerator-->
 ```java
     @Test
     public void testBeanGenerator() throws Exception {
         if (new Geci()
-            .source("./src/test/resources", "./javageci-examples/src/test/resources")
+            .source(hasTheFile("javax0/geci/tutorials/beangenerator/SampleBean.xml"),"./src/test/resources", "./javageci-examples/src/test/resources")
             .source(set("java"),"./src/test/java", "./javageci-examples/src/test/java")
             .register(new BeanGenerator()).generate()) {
             Assertions.fail("Code was changed during test phase.");
         }
     }
 ```
-This test uses two different methods to define source sets. One is `source(String ...)`, the other
-one is `source(Source.Set, String ....)`. The first one defines a directory
-without naming the set. The second one defines the sources where the Java files are and should be generated and
-assigns the set name `"java"`˙. (Note that the several directory names in the argument list are alternatives to
-make the test executable from different current working directories.) Later we will see that when the generator
-calls the method 
-`source.newSource(set("java"), file)` it will refer to the set to tell the framework that it needs a new
-source that is in a different source set named `"java"`.
+
+This test uses two different methods to define source sets. One is
+`source(Predicate, String ...)`, the other one is `source(Source.Set,
+String ...)`. The first one defines a directory without naming the set.
+(The `hasTheFile()` call we discuss a few lines below.) The second one
+defines the sources where the Java files are and should be generated and
+assigns the set name `"java"`˙. (Note that the several directory names
+in the argument list are alternatives to make the test executable from
+different current working directories.) Later we will see that when the
+generator calls the method `source.newSource(set("java"), file)` it will
+refer to the set to tell the framework that it needs a new source that
+is in a different source set named `"java"`.
+
+The call
+`hasTheFile("javax0/geci/tutorials/beangenerator/SampleBean.xml")`
+instructs Geci to consider only directories that contain a
+`SampleBean.xml` file in the subdirectory
+`javax0/geci/tutorials/beangenerator`. This extra check helps to located
+the right directory when one of the wrong directories in the list may
+actually exist. You can also check for the existence of multiple files
+or you can provide alternative files so that one of them should exist in
+the directory.
 
 ## Generator
 
-To create a new Java class that does not exist yet needs the use of special part of the API. In this case
-there is no source code that we could just extend writing some of the `editor-fold` segments. Because of that
-the generator needs to extend the class `AbstractGeneratorEx` abstract class.
+To create a new Java class that does not exist yet needs the use of
+special part of the API. In this case there is no source code that we
+could just extend writing some of the `editor-fold` segments. Because of
+that the generator needs to extend the class `AbstractGeneratorEx`
+abstract class.
 
-<!-- USE SNIPPET */BeanGenerator_head  KILL "import" "^$"-->
+<!-- snip BeanGenerator_head snippet="epsilon" 
+                             append="snippets='BeanGenerator_head.*'"
+                             regex="kill='import' kill='^$'"-->
 ```java
 package javax0.geci.tutorials.beangenerator;
 public class BeanGenerator extends AbstractGeneratorEx {
@@ -52,7 +70,7 @@ care about the XML files that have `.xml` extension. A real life generator would
 file to check that it is really a description of some code that the generator has to create, but for this tutorial
 we assume that all XML files that are in the configured directories are bean definitions.
 
-<!-- USE SNIPPET */BeanGenerator_main1-->
+<!-- snip BeanGenerator_main1 snippet="epsilon" append="snippets='BeanGenerator_main1.*'"-->
 ```java
     @Override
     public void processEx(Source source) throws Exception {
@@ -77,7 +95,7 @@ in the test that invokes the generator. To identify the different directories th
 The new file will be created in the same "relative" directory as the actual source (the XML file) except in a
 different top directory.
  
-<!-- USE SNIPPET */BeanGenerator_main2-->
+<!-- snip BeanGenerator_main2-->
 ```java
             final var newKlass = source.getKlassSimpleName();
             final var pckage = source.getPackageName();
@@ -96,16 +114,12 @@ source is saved at the end of the code generations the directory will be created
 The `getDocument()` method is a simple `static private` method that parses the XML from the source. The method `cap()`
 capitalizes the first character of a string:
 
-<!-- USE SNIPPET */BeanGenerator_aux-->
+<!-- snip BeanGenerator_aux-->
 ```java
     private Document getDocument(Source source) throws ParserConfigurationException, SAXException, IOException {
         final var dbFactory = DocumentBuilderFactory.newInstance();
         final var dBuilder = dbFactory.newDocumentBuilder();
         return dBuilder.parse(new InputSource(new StringReader(source.toString())));
-    }
-
-    private static String cap(String s) {
-        return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
 ```
 
@@ -118,7 +132,7 @@ and writing into it will overwrite the whole file. This is the global segment of
 the `open()` method without argument. This is what we do in the `try-with-resources` command. After this we simply
 analyze the data in the XML and based on this we write the class we wanted to generate.
 
-<!-- USE SNIPPET */BeanGenerator_main3-->
+<!-- snip BeanGenerator_main3-->
 ```java
             try (final var segment = target.open()) {
                 segment.write("package " + pckage + ";");
@@ -131,11 +145,11 @@ analyze the data in the XML and based on this we write the class we wanted to ge
                     String type = attributes.getNamedItem("type").getNodeValue();
                     segment.write("private " + type + " " + name + ";");
 
-                    segment.write_r("public " + type + " get" + cap(name) + "() {");
+                    segment.write_r("public " + type + " get" + ucase(name) + "() {");
                     segment.write("return " + name + ";");
                     segment.write_l("}");
 
-                    segment.write_r("public void set" + cap(name) + "(" + type + " " + name + ") {");
+                    segment.write_r("public void set" + ucase(name) + "(" + type + " " + name + ") {");
                     segment.write("this." + name + " = " + name + ";");
                     segment.write_l("}");
 

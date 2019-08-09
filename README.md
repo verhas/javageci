@@ -60,13 +60,13 @@ To do that with maven use the following dependencies:
     <!-- This is optional, you can use your own annotations or comment config -->
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-annotation</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.2.0</version>
 </dependency>
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-engine</artifactId>
     <scope>test</scope>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
@@ -94,27 +94,17 @@ generator.
 If you look at the test code `TestAccessor.java` in the test module you
 can see that this is a proof of concept demonstration sample code:
 
-<!-- USE SNIPPET */TestAccessor -->
+<!-- snip TestAccessor -->
 ```java
-package javax0.geci.tests.accessor;
-
-import javax0.geci.accessor.Accessor;
-import javax0.geci.engine.Geci;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import static javax0.geci.api.Source.maven;
-
-public class TestAccessor {
-
     @Test
     public void testAccessor() throws Exception {
-        Assertions.assertFalse(new Geci().source(maven()
-                        .module("javageci-examples").mainSource())
-                        .register(Accessor.builder().build()).generate(),
-                Geci.FAILED);
+        Geci geci;
+        Assertions.assertFalse(
+                (geci = new Geci()).source(maven().module("javageci-examples").mainSource())
+                        .register(Accessor.builder().build())
+                        .generate(),
+                geci.failed());
     }
-}
 ```
 
 The test runs during the build process and it generates files if that is

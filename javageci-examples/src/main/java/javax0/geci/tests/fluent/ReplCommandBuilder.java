@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("FieldCanBeLocal")
-@ReplCommandBuilder.Geci(value = "fluent", definedBy = "javax0.geci.buildfluent.ReplCommandBuilderFluenterTest::sourceBuilderGrammar")
+@ReplCommandBuilder.Geci(value = "fluent", definedBy = "javax0.geci.buildfluent.TestReplCommandBuilderFluenter::sourceBuilderGrammar")
 public class ReplCommandBuilder {
     @Retention(RetentionPolicy.RUNTIME)
     public @interface Geci {

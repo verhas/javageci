@@ -1,4 +1,4 @@
-// START SNIPPET HelloWorldTestGenerator1
+// snippet HelloWorldTestGenerator1
 package javax0.geci.tutorials.simplest;
 
 import javax0.geci.api.Source;
@@ -20,4 +20,4 @@ public class HelloWorldTestGenerator1 extends AbstractJavaGenerator {
         return "HelloWorldTest";
     }
 }
-// END SNIPPET
+//  end snippet

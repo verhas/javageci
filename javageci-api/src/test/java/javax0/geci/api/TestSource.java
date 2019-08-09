@@ -24,13 +24,13 @@ public class TestSource {
         /*
          * You can specify the same as above, but also the maven module where the test code and the code needing code generation is.
          */
-        Assertions.assertEquals("./module/src/main/java ### ./src/main/java", String.join(" ### ",
+        Assertions.assertEquals("./module/src/main/java ### ../module/src/main/java ### ./src/main/java", String.join(" ### ",
             Source.maven().module("module").mainSource().directories));
-        Assertions.assertEquals("./module/src/test/java ### ./src/test/java", String.join(" ### ",
+        Assertions.assertEquals("./module/src/test/java ### ../module/src/test/java ### ./src/test/java", String.join(" ### ",
             Source.maven().module("module").testSource().directories));
-        Assertions.assertEquals("./module/src/main/resources ### ./src/main/resources", String.join(" ### ",
+        Assertions.assertEquals("./module/src/main/resources ### ../module/src/main/resources ### ./src/main/resources", String.join(" ### ",
             Source.maven().module("module").mainResources().directories));
-        Assertions.assertEquals("./module/src/test/resources ### ./src/test/resources", String.join(" ### ",
+        Assertions.assertEquals("./module/src/test/resources ### ../module/src/test/resources ### ./src/test/resources", String.join(" ### ",
             Source.maven().module("module").testResources().directories));
 
         /*

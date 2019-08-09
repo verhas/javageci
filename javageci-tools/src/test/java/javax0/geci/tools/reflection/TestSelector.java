@@ -9,7 +9,6 @@ import org.junit.jupiter.api.TestInfo;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.util.Arrays;
-import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -61,6 +60,20 @@ class TestSelector {
                         .filter(Selector.compile("private & primitive")::match)
                         .collect(Collectors.toSet());
         Assertions.assertEquals(3,fields.size());
+    }
+
+    @Test
+    void testDeclaringClassDemo() throws Exception{
+        final var equals = this.getClass().getMethod("equals",Object.class);
+        final var hashCode = this.getClass().getMethod("hashCode");
+        final var matcher = Selector.compile("(simpleName ~ /boolean/ | simpleName ~ /int/) & declaringClass -> !simpleName ~ /Object/ ");
+        Assertions.assertTrue(matcher.match(equals));
+        Assertions.assertFalse(matcher.match(hashCode));
+    }
+
+    @Test
+    void testDeclaringClass() throws Exception{
+        Assertions.assertTrue(Selector.compile("declaringClass -> simpleName ~ /^Test/").match(TestSelector.class.getDeclaredMethod("testDeclaringClass")));
     }
 
     @Test
@@ -358,7 +371,7 @@ class TestSelector {
 
     @Test
     void testNativeMethod() throws NoSuchMethodException {
-        final var f = System.class.getDeclaredMethod("initProperties", Properties.class);
+        final var f = System.class.getDeclaredMethod("registerNatives");
         Assertions.assertTrue(Selector.compile("native").match(f));
     }
 

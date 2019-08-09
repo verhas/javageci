@@ -65,7 +65,9 @@ public class Lexer {
                     .replaceAll("\\s*\\)", ")")
                     .replaceAll("\\s*\\?", "?")
                     .replaceAll("\\s*\\*", "*")
-                    .replaceAll("\\s*\\+", "+");
+                    .replaceAll("\\s*\\+", "+")
+                    .replaceAll("\\s*-\\s*>\\s*", "->")
+            ;
         }
         this.input = new StringBuilder(preprocessed);
         this.selectorExpression = selectorExpression;

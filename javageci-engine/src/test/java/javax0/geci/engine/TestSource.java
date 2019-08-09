@@ -15,7 +15,7 @@ public class TestSource {
     @Test
     public void testSource() throws IOException {
         final var collector = new FileCollector(Map.of());
-        var sut = new Source(collector, "ddd", Paths.get("xyz"));
+        var sut = new Source(collector, "ddd", Paths.get("xyz.java"));
         sut.inMemory = true;
         sut.lines.addAll(List.of(
                 "This is something there",

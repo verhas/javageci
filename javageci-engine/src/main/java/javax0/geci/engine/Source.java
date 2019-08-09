@@ -5,10 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiPredicate;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Generator;
@@ -34,6 +31,14 @@ public class Source implements javax0.geci.api.Source {
 
     Generator currentGenerator = null;
 
+
+    private void assertTouching() {
+        if (currentGenerator != null && currentGenerator instanceof Distant) {
+            throw new GeciException("The distant generator " + currentGenerator.getClass().getName() +
+                " tried to touch the source " + getAbsoluteFile());
+        }
+    }
+
     /**
      * The constructor is not supposed to be used from outside, only through the {@link FileCollector} which
      * is invoked only from {@link Geci#generate()}.
@@ -43,7 +48,6 @@ public class Source implements javax0.geci.api.Source {
      * @param dir       the directory of the source
      * @param path      the path of the source
      */
-    @SuppressWarnings("ClassEscapesDefinedScope")
     public Source(FileCollector collector, String dir, Path path) {
         this.collector = collector;
         this.dir = dir;
@@ -73,7 +77,7 @@ public class Source implements javax0.geci.api.Source {
 
     @Override
     public void init(String id) throws IOException {
-        if (id == null || id.equals("")) {
+        if (id == null || id.isEmpty()) {
             return;
         }
         open(id);
@@ -81,10 +85,11 @@ public class Source implements javax0.geci.api.Source {
 
     @Override
     public Source newSource(Source.Set sourceSet, String fileName) {
-        if (!collector.directories.containsKey(sourceSet)) {
+        assertTouching();
+        var directory = collector.getDirectory(sourceSet);
+        if (directory == null) {
             throw new GeciException("SourceSet '" + sourceSet + "' does not exist");
         }
-        var directory = collector.directories.get(sourceSet)[0];
         var source = new Source(collector, directory, inDir(directory, fileName));
         collector.addNewSource(source);
         return source;
@@ -101,12 +106,12 @@ public class Source implements javax0.geci.api.Source {
 
     private Path inDir(String dir, String fileName) {
         return Paths.get(FileCollector.normalize(
-                dir +
-                        Paths
-                                .get(relativeFile)
-                                .getParent()
-                                .resolve(fileName)
-                                .toString()));
+            dir +
+                Paths
+                    .get(relativeFile)
+                    .getParent()
+                    .resolve(fileName)
+                    .toString()));
     }
 
     @Override
@@ -136,6 +141,7 @@ public class Source implements javax0.geci.api.Source {
 
     @Override
     public Segment open() {
+        assertTouching();
         if (!segments.isEmpty()) {
             throw new GeciException("Global segment was opened when the there were already opened segments");
         }
@@ -154,7 +160,15 @@ public class Source implements javax0.geci.api.Source {
         return globalSegment;
     }
 
+    @Override
+    public java.util.Set<String> segmentNames() {
+        loadSegments();
+        return segments.keySet();
+    }
+
+    @Override
     public Segment temporary() {
+        assertTouching();
         return new Segment(0);
     }
 
@@ -167,6 +181,14 @@ public class Source implements javax0.geci.api.Source {
         return segment;
     }
 
+    /**
+     * Replace every {@code {{menmonic}}} with {@code id} in the strings
+     * {@code s}
+     *
+     * @param id the identifier to replace the mnemonic placeholders
+     * @param s  the strings to replace the mnemonics in
+     * @return the modified string array
+     */
     private String[] mnemonize(String id, String... s) {
         final String[] res = new String[s.length];
         for (int i = 0; i < s.length; i++) {
@@ -182,6 +204,7 @@ public class Source implements javax0.geci.api.Source {
 
     @Override
     public Segment open(String id) throws IOException {
+        assertTouching();
         if (globalSegment != null) {
             throw new GeciException("Segment was opened after the global segment was already created.");
         }
@@ -198,7 +221,7 @@ public class Source implements javax0.geci.api.Source {
                 }
                 defaultSegment = true;
             }
-            var segment = new Segment(segDesc.tab);
+            var segment = new Segment(segDesc.tab, segDesc.attr, segDesc.originals);
             if (defaultSegment) {
                 segment.setPreface(mnemonize(id, splitHelper.getSegmentPreface()));
                 segment.setPostface(mnemonize(id, splitHelper.getSegmentPostface()));
@@ -248,7 +271,7 @@ public class Source implements javax0.geci.api.Source {
     void consolidate() {
         if (!inMemory && !segments.isEmpty()) {
             throw new GeciException(
-                    "This is an internal error: source was not read into memory but segments were generated");
+                "This is an internal error: source was not read into memory but segments were generated");
         }
         if (globalSegment == null) {
             for (var entry : segments.entrySet()) {
@@ -272,12 +295,12 @@ public class Source implements javax0.geci.api.Source {
     }
 
     private void mergeSegment(Segment segment, SegmentDescriptor segmentLocation) {
-        if (segmentLocation.startLine + 1 < segmentLocation.endLine
-                || segment.lines.size() > 0) {
-            lines.subList(segmentLocation.startLine + 1, segmentLocation.endLine).clear();
-            lines.addAll(segmentLocation.startLine + 1, segment.postface);
-            lines.addAll(segmentLocation.startLine + 1, segment.lines);
-            lines.addAll(segmentLocation.startLine + 1, segment.preface);
+        if (segmentLocation.startLine < segmentLocation.endLine
+            || segment.lines.size() > 0) {
+            lines.subList(segmentLocation.startLine, segmentLocation.endLine).clear();
+            lines.addAll(segmentLocation.startLine, segment.postface);
+            lines.addAll(segmentLocation.startLine, segment.lines);
+            lines.addAll(segmentLocation.startLine, segment.preface);
         }
     }
 
@@ -312,22 +335,25 @@ public class Source implements javax0.geci.api.Source {
      * @throws IOException if the file cannot be read
      */
     private void readToMemory() throws IOException {
-        Files.lines(Paths.get(absoluteFile)).forEach(line -> {
-            lines.add(line);
-            originals.add(line);
-        });
-        inMemory = true;
+        try {
+            Files.lines(Paths.get(absoluteFile)).forEach(line -> {
+                lines.add(line);
+                originals.add(line);
+            });
+            inMemory = true;
+        } catch (Exception e) {
+            throw new GeciException("Cannot read the file " + absoluteFile + "\nIt is probably binary file. Use '.ignore()' to filter binary files out");
+        }
     }
 
     private SegmentDescriptor findDefaultSegment() {
         if (allowDefaultSegment) {
             for (int i = lines.size() - 1; 0 < i; i--) {
-                final var line = lines.get(i);
-                final var matcher = splitHelper.match(line);
+                final var matcher = splitHelper.match(lines, i);
                 if (matcher.isDefaultSegmentEnd()) {
                     var seg = new SegmentDescriptor();
                     seg.attr = null;
-                    seg.startLine = i - 1;
+                    seg.startLine = i + matcher.headerLength();
                     seg.endLine = i;
                     seg.tab = matcher.tabbing();
                     return seg;
@@ -346,38 +372,70 @@ public class Source implements javax0.geci.api.Source {
      */
     private SegmentDescriptor findSegment(String id) {
         for (int i = 0; i < lines.size(); i++) {
-            final var line = lines.get(i);
-            final var matcher = splitHelper.match(line);
+            var line = lines.get(i);
+            final var matcher = splitHelper.match(lines, i);
             if (matcher.isSegmentStart()) {
                 var attr = matcher.attributes();
-                if (id.equals(attr.get("id"))) {
+                if (id.equals(attr.id())) {
                     var seg = new SegmentDescriptor();
+                    seg.id = id;
+                    seg.originals = new ArrayList<>();
                     seg.attr = attr;
                     seg.tab = matcher.tabbing();
-                    seg.startLine = i;
-                    seg.endLine = findSegmentEnd(i, id);
-                    return seg;
+                    seg.startLine = i + matcher.headerLength();
+                    for (int j = seg.startLine; j < lines.size(); j++) {
+                        line = lines.get(j);
+                        final var endMatcher = splitHelper.match(line);
+                        if (endMatcher.isSegmentEnd()) {
+                            seg.endLine = j;
+                            return seg;
+                        }
+                        seg.originals.add(line);
+                    }
+                    throw new GeciException("Segment '" + seg.attr.id() + "'does not end in file " + getAbsoluteFile());
                 }
             }
         }
         return null;
     }
 
-    /**
-     * Find the end of the segment that starts at line {@code start}.
-     *
-     * @param start the start of the segment of which we seek the end
-     * @return the index of the line that contains the segment ending
-     */
-    private int findSegmentEnd(int start, String id) {
-        for (int i = start + 1; i < lines.size(); i++) {
-            final var line = lines.get(i);
-            final var matcher = splitHelper.match(line);
-            if (matcher.isSegmentEnd()) {
-                return i;
+    private boolean segmentsLoaded = false;
+
+    private void loadSegments() {
+        if (segmentsLoaded) {
+            return;
+        }
+        for (int i = 0; i < lines.size(); i++) {
+            var line = lines.get(i);
+            final var matcher = splitHelper.match(lines, i);
+            if (matcher.isSegmentStart()) {
+                var attr = matcher.attributes();
+                var seg = new SegmentDescriptor();
+                seg.id = attr.id();
+                seg.originals = new ArrayList<>();
+                seg.attr = attr;
+                seg.tab = matcher.tabbing();
+                seg.startLine = i + matcher.headerLength();
+                for (i = seg.startLine; i < lines.size(); i++) {
+                    line = lines.get(i);
+                    final var endMatcher = splitHelper.match(lines, i);
+                    if (endMatcher.isSegmentEnd()) {
+                        seg.endLine = i;
+                        if (!segments.containsKey(seg.id)) {
+                            segments.put(seg.id, new Segment(seg.tab, seg.attr, seg.originals));
+                        } else {
+                            throw new GeciException("Segment " + seg.id + " is defined multiple times in source " + getAbsoluteFile());
+                        }
+                        break;
+                    }
+                    seg.originals.add(line);
+                }
+                if (i >= lines.size()) {
+                    throw new GeciException("Segment '" + seg.attr.id() + "'does not end in file " + getAbsoluteFile());
+                }
             }
         }
-        throw new GeciException("Segment '" + id + "'does not end in file " + getAbsoluteFile());
+        segmentsLoaded = true;
     }
 
     /**
@@ -390,9 +448,31 @@ public class Source implements javax0.geci.api.Source {
      * will change.
      */
     private class SegmentDescriptor {
+        String id;
+        List<String> originals;
         int startLine;
         int endLine;
-        Map<String, String> attr;
+        CompoundParams attr;
         int tab;
+    }
+
+    /**
+     * Equals and hashCode are needed when we collect the sources to avoid that a single file gets into the source set
+     * more than once.
+     *
+     * @param other source to compare
+     * @return as per contract
+     */
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
+        Source source = (Source) other;
+        return absoluteFile.equals(source.absoluteFile);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(absoluteFile);
     }
 }

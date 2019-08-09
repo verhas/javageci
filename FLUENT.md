@@ -68,7 +68,7 @@ A good example is the `JavaSource` class that is in the Java::Geci tools
 module. It starts with the following lines:
 
 ```java
-@Geci("fluent definedBy='javax0.geci.buildfluent.BuildFluentForSourceBuilder::sourceBuilderGrammar'")
+@Geci("fluent definedBy='javax0.geci.buildfluent.TestBuildFluentForSourceBuilder::sourceBuilderGrammar'")
 public class JavaSource implements AutoCloseable {
 ```
 

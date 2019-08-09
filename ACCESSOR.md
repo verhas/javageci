@@ -4,27 +4,17 @@ The accessor (setter/getter) generator is part of Java::Geci core. It is
 implemented in the class `javax0.geci.accessor.Accessor` and can be used
 to generate setters and getters. To use it you should create a test
 
-<!-- USE SNIPPET */TestAccessor -->
+<!-- snip TestAccessor -->
 ```java
-package javax0.geci.tests.accessor;
-
-import javax0.geci.accessor.Accessor;
-import javax0.geci.engine.Geci;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import static javax0.geci.api.Source.maven;
-
-public class TestAccessor {
-
     @Test
     public void testAccessor() throws Exception {
-        Assertions.assertFalse(new Geci().source(maven()
-                        .module("javageci-examples").mainSource())
-                        .register(new Accessor()).generate(),
-                Geci.FAILED);
+        Geci geci;
+        Assertions.assertFalse(
+                (geci = new Geci()).source(maven().module("javageci-examples").mainSource())
+                        .register(Accessor.builder().build())
+                        .generate(),
+                geci.failed());
     }
-}
 ```
 
 that will generate the code during test time.

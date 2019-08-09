@@ -1,8 +1,11 @@
 package javax0.geci.api;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * A {@code Source} represents a source file in the project that the
@@ -42,10 +45,10 @@ public interface Source {
      * @param root the directory to the root module where the top level
      *             {@code pom.xml} containing the
      *             <pre>
-     *               {@code <modules>
-     *                   <module>...</module>
-     *                 </modules>}
-     *               </pre>
+     *                                       {@code <modules>
+     *                                           <module>...</module>
+     *                                         </modules>}
+     *                                       </pre>
      *             declaration is.
      * @return a new Maven source directory configuration object.
      */
@@ -126,6 +129,13 @@ public interface Source {
      * @return the new segment object.
      */
     Segment open();
+
+    /**
+     * Get all the segment names that are defined in the source
+     *
+     * @return the set of the names of the segments
+     */
+    java.util.Set<String> segmentNames();
 
     /**
      * Generators can use this method to read the whole content of a file. The content of the list should not be
@@ -239,17 +249,35 @@ public interface Source {
      * set("java")} or {@code set("resources")}.
      */
     class Set {
-        private final String name;
+        private String name;
+        private final boolean autoName;
 
-        private Set(String name) {
+        private Set(String name, boolean autoName) {
+            if( name == null && autoName){
+                throw new GeciException("When the name for a set is not specified it cannot be 'autoName'");
+            }
             if (name == null) {
                 name = randomUniqueName();
             }
             this.name = name;
+            this.autoName = autoName;
         }
 
         private String randomUniqueName() {
             return "" + super.hashCode();
+        }
+
+        /**
+         * When a set was automatically named, like {@code mainSource} then it may happen that there are more than
+         * one sets with that name. It will cause collision in the directory map. In that case we try to rename the
+         * set. If the name was specified by the user, from top level and not automatically named then it is an error.
+         * The programmer using the package must not name two different sets with the same name. On the other hand when
+         * the sets were getting their default name, then it is a safe routine to rename them.
+         */
+        public void tryRename() {
+            if (autoName) {
+                name = randomUniqueName();
+            }
         }
 
         /**
@@ -260,7 +288,31 @@ public interface Source {
          * @return identifier object.
          */
         public static Set set(String name) {
-            return new Set(name);
+            return new Set(name, false);
+        }
+
+        /**
+         * Crete a new set with the name {@code name}. The argument
+         * {@code autoName} signals that the name is a default name and
+         * it is not directly specified by the user. This is like {@code
+         * mainSource} or {@code testResource}. In this case it may
+         * happen that there are multiple sets with the same name
+         * especially if multiple modules are specified as sources in a
+         * multi-module project. If that happens when the application
+         * tries to save the source into the map indexed by the source
+         * set objects it renames the set with a "random" name.
+         *
+         * <p>Note that the "random" name is also used when the user
+         * defines a set without name. In that case the argument {@code
+         * name} is {@code null} and {@code autoName} has to be {@code
+         * false}.
+         *
+         * @param name the name of the set
+         * @param autoName signals if the name was set automatically
+         * @return the new set
+         */
+        public static Set set(String name, boolean autoName) {
+            return new Set(name, autoName);
         }
 
         public static Set set() {
@@ -292,14 +344,81 @@ public interface Source {
         final Set set;
         final String[] directories;
 
-        public NamedSourceSet(Set set, String[] directories) {
+        NamedSourceSet(Set set, String[] directories) {
             this.set = set;
             this.directories = directories;
         }
     }
 
     /**
-     * Class to build up the directory structures that correspond to the Maven directory structure
+     * This class provides predicates that can be used as an argument
+     * to the methods {@link Geci#source(Predicate, String...)} and
+     * {@link Geci#source(Set, Predicate, String...)}.
+     */
+    class Predicates {
+
+        /**
+         * Creates the default predicate that tests  {@code true} if the
+         * directory exists and is a directory.
+         *
+         * @return the predicate.
+         */
+        public static Predicate<String> exists() {
+            return file -> new File(file).isDirectory();
+        }
+
+        /**
+         * Returns a predicate that tests {@code true} if the file
+         * exists, it is a directory and a file with the anchor name
+         * can be found in the directory. The anchor name may contain
+         * leading directory names that make it relative to the tested
+         * directory.
+         *
+         * @param anchor the anchor file.
+         * @return the predicate
+         */
+        public static Predicate<String> hasTheFile(String anchor) {
+            return exists().and(file -> new File(file + anchor).exists());
+        }
+
+        /**
+         * Returns a predicate that tests {@code true} if the file
+         * exists, it is a directory and a one of the files with the
+         * anchor names can be found in the directory. The anchor name
+         * may contain leading directory names that make it relative to
+         * the tested directory.
+         *
+         * @param anchors the anchor files one of which should be there
+         *                in the directory.
+         * @return the predicate
+         */
+        public static Predicate<String> hasOneOfTheFiles(String... anchors) {
+            return exists().and(file ->
+                    Arrays.stream(anchors).anyMatch(anchor ->
+                            new File(file + anchor).exists()));
+        }
+
+        /**
+         * Returns a predicate that tests {@code true} if the file
+         * exists, it is a directory and a all of the files with the
+         * anchor names can be found in the directory. The anchor name
+         * may contain leading directory names that make it relative to
+         * the tested directory.
+         *
+         * @param anchors the anchor files which all should be there in
+         *                the directory.
+         * @return the predicate
+         */
+        public static Predicate<String> hasAllTheFiles(String... anchors) {
+            return exists().and(file ->
+                    Arrays.stream(anchors).allMatch(anchor ->
+                            new File(file + anchor).exists()));
+        }
+    }
+
+    /**
+     * Class to build up the directory structures that correspond to the
+     * Maven directory structure
      */
     class Maven {
         private final String rootModuleDir;
@@ -314,71 +433,94 @@ public interface Source {
         }
 
         /**
-         * Return the array of directories where the Java sources could be found.
-         * <p>
-         * If there is no maven module defined then there is only one directory,
+         * Return the array of directories where the Java sources could
+         * be found.
+         *
+         * <p> If there is no maven module defined then there is only
+         * one directory,
+         *
          * <pre>
          * '{@code ./src/(main|test)/(java|resources)}'
          * </pre>
-         * wehere the sources can be. This is sufficient. The current working directory is the project root
-         * when the tests are started either interactively in an IDE or from the command line using the
-         * command {@code mvn}.
-         * </p>
-         * <p>
-         * If there is a maven module defined then execution of the tests and thus the generators can be started
-         * with different current working directory. Practice shows that the current working directory is the
-         * project root when you start the code generation along with the test using the {@code mvn} command. On the
-         * other hand when the tests are executed from the IDE then the current working directory is the root
-         * directory of the module root where the test belongs to.
-         * </p>
-         * <p>
-         * When the test executing the code generation is in the same module as the code that is the target of the
-         * code generation then the directories are
+         *
+         * where the sources can be. This is sufficient. The current
+         * working directory is the project root when the tests are
+         * started either interactively in an IDE or from the command
+         * line using the command {@code mvn}.
+         *
+         * <p> If there is a maven module defined then execution of the
+         * tests and thus the generators can be started with different
+         * current working directories. Practice shows that the current
+         * working directory is the project root when you start the code
+         * generation along with the test using the {@code mvn} command.
+         * On the other hand when the tests are executed from the IDE
+         * then the current working directory is the root directory of
+         * the module root where the test belongs to.
+         *
+         * <p> When the test executing the code generation is in the
+         * same module as the code that is the target of the code
+         * generation then the directories are
+         *
          * <pre>
          *     {@code ./module/src/(main|test)/(java|resources)
          *     }
          * </pre>
+         *
          * or
+         *
          * <pre>
          *     {@code ./src/(main|test)/(java|resources)
          *     }
          * </pre>
-         * </p>
-         * <p>
-         * When the test is not in the same module as the code that needs the generational support then the
-         * directories should be
+         *
+         * <p> When the test is not in the same module as the code that
+         * needs the generational support then the directories should be
          * code generation then the directories are
+         *
          * <pre>
          *     {@code $root/module/src/(main|test)/(java|resources)
          *     }
          * </pre>
+         *
          * or
+         *
          * <pre>
          *     {@code ./module/src/(main|test)/(java|resources)
          *     }
          * </pre>
-         * where {@code $root} is where the root module is. In this case the test should specify the source
-         * directories calling the static method {@link Source#maven(String)} specifying the value for
-         * {@code $root} instead of simply calling {@link Source#maven()}. The specified {@code $root} is
-         * usually simply '{@code ..}'.
-         * </p>
-         * This method calculates these directories and returns the arrays.
+         *
+         * where {@code $root} is where the root module is. In this case
+         * the algorithm will also try {@code ..} as {@code $root},
+         * which works if the module structure is only two levels.
+         *
+         * <p> In other cases when the structure level is more than two
+         * the test should specify the source directories calling the
+         * static method {@link Source#maven(String)} specifying the
+         * value for {@code $root} instead of simply calling {@link
+         * Source#maven()}. The specified {@code $root} is usually
+         * simply '{@code ../..}' in case of three levels of maven
+         * modules.
+         *
+         * <p> This method calculates these directories and returns the
+         * arrays.
          *
          * @param mainOrTest      is either '{@code main}' or '{@code test}'
          * @param javaOrResources is either '{@code java}' or '{@code resources}'
-         * @return the array of directory names where the generator has to look for the sources
+         * @return the array of directory names where the generator has
+         * to look for the sources
          */
         private NamedSourceSet source(String name, String mainOrTest, String javaOrResources) {
             if (module == null) {
-                return new NamedSourceSet(Set.set(name), new String[]{"./src/" + mainOrTest + "/" + javaOrResources});
+                return new NamedSourceSet(Set.set(name, true), new String[]{"./src/" + mainOrTest + "/" + javaOrResources});
             } else {
                 if (rootModuleDir == null) {
-                    return new NamedSourceSet(Set.set(name), new String[]{
+                    return new NamedSourceSet(Set.set(name, true), new String[]{
                             "./" + module + "/src/" + mainOrTest + "/" + javaOrResources,
+                            "../" + module + "/src/" + mainOrTest + "/" + javaOrResources,
                             "./src/" + mainOrTest + "/" + javaOrResources
                     });
                 } else {
-                    return new NamedSourceSet(Set.set(name), new String[]{
+                    return new NamedSourceSet(Set.set(name, true), new String[]{
                             rootModuleDir + "/" + module + "/src/" + mainOrTest + "/" + javaOrResources,
                             "./" + module + "/src/" + mainOrTest + "/" + javaOrResources
                     });

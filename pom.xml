@@ -6,7 +6,7 @@
     
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-parent</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.2.0</version>
 
     <name>javageci-parent</name>
     <description>Java GEnerate Code Inline source code generation framework</description>
@@ -19,6 +19,7 @@
 <module>javageci-examples</module>
 <module>javageci-jamal</module>
 <module>javageci-core-annotations</module>
+<module>javageci-docugen</module>
 </modules>
     <licenses>
 <license>
@@ -46,20 +47,51 @@
                     
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-surefire-plugin</artifactId>
-    <version>2.22.1</version>
+    <version>3.0.0-M3</version>
 
+                    <configuration>
+                    
+                    
+                    
+                        <argLine>
+                            --add-opens geci.api/javax0.geci.api=ALL-UNNAMED
+                            --add-opens geci.tools/javax0.geci.tools=ALL-UNNAMED
+                            --add-opens geci.tools/javax0.geci.tools.syntax=ALL-UNNAMED
+                            --add-opens geci.tools/javax0.geci.tools.reflection=ALL-UNNAMED
+                            --add-opens geci.tools/javax0.geci.javacomparator=ALL-UNNAMED
+                            --add-opens geci.tools/javax0.geci.javacomparator.lex=ALL-UNNAMED
+                            --add-opens geci.engine/javax0.geci.util=ALL-UNNAMED
+                            --add-opens geci.engine/javax0.geci.toolsgen=ALL-UNNAMED
+                            --add-opens geci.engine/javax0.geci.engine=ALL-UNNAMED
+                            --add-opens geci.core/javax0.geci.fluent.syntax=ALL-UNNAMED
+                            --add-opens geci.examples/javax0.geci.tutorials.simple=ALL-UNNAMED
+                            --add-opens geci.examples/javax0.geci.tutorials.hello=ALL-UNNAMED
+                            --add-opens geci.examples/javax0.geci.tutorials.hello=geci.tools
+                            --add-opens geci.examples/javax0.geci.tests.templated=ALL-UNNAMED
+                            --add-opens geci.examples/javax0.geci.tests.repeated=ALL-UNNAMED
+                            --add-opens geci.examples/javax0.geci.tests.mapper=ALL-UNNAMED
+                            --add-opens geci.examples/javax0.geci.tests.builder=ALL-UNNAMED
+                            --add-opens geci.examples/javax0.geci.buildfluent=ALL-UNNAMED
+                            --add-opens geci.examples/javax0.geci.consistency=ALL-UNNAMED
+                            --add-opens geci.examples/javax0.geci.tests.builder=ALL-UNNAMED
+                            --add-opens geci.examples/javax0.geci.tests.cloner=ALL-UNNAMED
+                            --add-opens geci.examples/javax0.geci.tests.configBuilder=ALL-UNNAMED
+                            --add-exports geci.examples/javax0.geci.tutorials.simple=geci.core
+                            --add-exports geci.examples/javax0.geci.tests.fluent=geci.tools
+                            --add-exports geci.examples/javax0.geci.tests.fluent=geci.core
+                            --add-exports geci.examples/javax0.geci.buildfluent=geci.core
+                            --add-exports geci.examples/javax0.geci.buildfluent=geci.core
+                            --add-opens geci.examples/javax0.geci.jamal=ALL-UNNAMED
+                            --add-opens geci.examples/javax0.geci.jamal.util=ALL-UNNAMED
+                            --add-exports geci.examples/javax0.geci.jamal.reflection=ALL-UNNAMED
+                        </argLine>
+                    </configuration>
                     <dependencies>
-                        
-<dependency>
-    <groupId>org.junit.platform</groupId>
-    <artifactId>junit-platform-surefire-provider</artifactId>
-    <version>1.0.3</version>
-</dependency>
                         
 <dependency>
     <groupId>org.junit.jupiter</groupId>
     <artifactId>junit-jupiter-engine</artifactId>
-    <version>5.2.0</version>
+    <version>5.5.1</version>
 </dependency>
                     </dependencies>
                 </plugin>
@@ -115,39 +147,44 @@
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-api</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.2.0</version>
 </dependency>
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-core</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.2.0</version>
 </dependency>
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-tools</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.2.0</version>
 </dependency>
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-engine</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.2.0</version>
 </dependency>
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-annotation</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.2.0</version>
+</dependency>
+<dependency>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-docugen</artifactId>
+    <version>1.2.0</version>
 </dependency>
         
 <dependency>
 <groupId>org.junit.jupiter</groupId>
 <artifactId>junit-jupiter-api</artifactId>
-<version>5.2.0</version>
+<version>5.5.1</version>
 <scope>test</scope>
 </dependency>
 <dependency>
 <groupId>org.junit.jupiter</groupId>
 <artifactId>junit-jupiter-engine</artifactId>
-<version>5.2.0</version>
+<version>5.5.1</version>
 <scope>test</scope>
 </dependency>
         </dependencies></dependencyManagement>
