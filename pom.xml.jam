@@ -85,7 +85,7 @@
         }
     }
     {dependencyManagement|{dependencies|
-        {@for MODULE in (api,core,tools,engine,annotation,docugen)={dependency :{GROUPID}:javageci-MODULE:{VERSION}}}
+        {@for MODULE in (api,core,tools,engine,annotation,docugen,core-annotations)={dependency :{GROUPID}:javageci-MODULE:{VERSION}}}
         {@for MODULE in (api,engine)={testDependency :org.junit.jupiter:junit-jupiter-MODULE:{JUPITER_VERSION}}}
         }}
 }
