@@ -2,8 +2,6 @@ package javax0.geci.tests.equals;
 
 import javax0.geci.annotations.Geci;
 
-import java.util.Objects;
-
 public class ClassNeedingEquals {
 
     private int anInt;

@@ -1,4 +1,4 @@
-// START SNIPPET BeanGenerator_head
+// snippet BeanGenerator_head_00
 package javax0.geci.tutorials.beangenerator;
 
 import javax0.geci.api.Source;
@@ -16,21 +16,21 @@ import static javax0.geci.api.Source.Set.set;
 import static javax0.geci.tools.CaseTools.ucase;
 
 public class BeanGenerator extends AbstractGeneratorEx {
-// END SNIPPET
+// end snippet
 
-    // START SNIPPET BeanGenerator_main1
+    // snippet BeanGenerator_main1_01
     @Override
     public void processEx(Source source) throws Exception {
         if (source.getAbsoluteFile().endsWith(".xml")) {
 //          ...
-// END SNIPPET
-// START SNIPPET BeanGenerator_main2
+// end snippet
+// snippet BeanGenerator_main2
             final var newKlass = source.getKlassSimpleName();
             final var pckage = source.getPackageName();
             final var target = source.newSource(set("java"), newKlass + ".java");
             final var doc = getDocument(source);
-// END SNIPPET
-// START SNIPPET BeanGenerator_main3
+// end snippet
+// snippet BeanGenerator_main3
             try (final var segment = target.open()) {
                 segment.write("package " + pckage + ";");
                 segment.write_r("public class " + newKlass + " {");
@@ -53,19 +53,19 @@ public class BeanGenerator extends AbstractGeneratorEx {
                 }
                 segment.write_l("}");
             }
-// END SNIPPET
-// START SNIPPET BeanGenerator_main1
+// end snippet
+// snippet BeanGenerator_main1_02
         }
     }
-// END SNIPPET
+// end snippet
 
-    // START SNIPPET BeanGenerator_aux
+    // snippet BeanGenerator_aux
     private Document getDocument(Source source) throws ParserConfigurationException, SAXException, IOException {
         final var dbFactory = DocumentBuilderFactory.newInstance();
         final var dBuilder = dbFactory.newDocumentBuilder();
         return dBuilder.parse(new InputSource(new StringReader(source.toString())));
     }
-    //END SNIPPET
-// START SNIPPET BeanGenerator_head
+    //end snippet
+// snippet BeanGenerator_head_01
 }
-// END SNIPPET
+// end snippet

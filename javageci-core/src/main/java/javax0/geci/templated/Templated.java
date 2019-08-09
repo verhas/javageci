@@ -408,7 +408,7 @@ public class Templated extends AbstractJavaGenerator {
         }
     }
 
-    public void process(Source source, Class<?> klass, CompoundParams params, Method method, Segment segment) throws Exception {
+    public void process(Source source, Class<?> klass, CompoundParams params, Method method, Segment segment) {
         final var local = localConfig(params);
         final var returnType = method.getReturnType();
         setParams(segment, "method.",

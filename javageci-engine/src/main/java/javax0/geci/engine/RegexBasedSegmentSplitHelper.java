@@ -1,9 +1,9 @@
 package javax0.geci.engine;
 
+import javax0.geci.api.CompoundParams;
 import javax0.geci.api.SegmentSplitHelper;
+import javax0.geci.tools.CompoundParamsBuilder;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -11,8 +11,6 @@ import java.util.regex.Pattern;
  * segment using regular expressions.
  */
 public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
-
-    private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*\"(.*?)\"");
     final Pattern startPattern;
     final Pattern endPattern;
     final Pattern defaultPattern;
@@ -27,9 +25,10 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
      *
      * @param segmentPreface the lines that contain the preface
      */
-    protected void setSegmentPreface(String ... segmentPreface) {
+    protected void setSegmentPreface(String... segmentPreface) {
         this.segmentPreface = segmentPreface;
     }
+
     /**
      * Set the postface of a segment. These lines will be used as
      * segment postface in a {@link javax0.geci.api.Segment} when a
@@ -37,7 +36,7 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
      *
      * @param segmentPostface the lines that contain the postface
      */
-    protected void setSegmentPostface(String ... segmentPostface) {
+    protected void setSegmentPostface(String... segmentPostface) {
         this.segmentPostface = segmentPostface;
     }
 
@@ -59,10 +58,10 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
      *                       first one has to match the spaces at the
      *                       start of the line. The length of it will
      *                       define the tabbing of the segment. The second
-     *                       should capture the attributes.
+     *                       should capture the name of the segment and
+     *                       the attributes.
      * @param endPattern     should match the end line of a segment.
      *                       No capture groups need to be defined int this
-     *
      * @param defaultPattern pattern to find the default location of a
      *                       segment. When a segment cannot be found
      *                       using the start and the end pattern then
@@ -83,63 +82,79 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
     public SegmentSplitHelper.Matcher match(String line) {
         final var startMatcher = startPattern.matcher(line);
         final var segmentStart = startMatcher.matches();
-        final Map<String, String> attrs;
+        final CompoundParams attrs;
         int tabs = 0;
         if (segmentStart) {
-            attrs = parseParametersString(startMatcher.group(2));
-            tabs = startMatcher.group(1).length();
+            final var paramsDef = getGroup(2, startMatcher);
+            if (paramsDef == null) {
+                throw new IllegalArgumentException("Start pattern in "
+                    + this.getClass()
+                    + "\n"
+                    + startMatcher
+                    + "\ndoes not give a second matching group. This is probably a coding error in that class.");
+            }
+            attrs = new CompoundParamsBuilder(paramsDef).redefineId().build();
+            final var startSpaces = getGroup(1, startMatcher);
+            if (startSpaces == null) {
+                throw new IllegalArgumentException("Start pattern in "
+                    + this.getClass()
+                    + "\n"
+                    + startMatcher
+                    + "\ndoes not give a first matching group. This is probably a coding error in that class.");
+            }
+
+            tabs = startSpaces.length();
         } else {
             attrs = null;
         }
         final var segmentEnd = endPattern.matcher(line).matches();
         final var defaultMatcher = defaultPattern.matcher(line);
         final var segmentDefault = defaultMatcher.matches();
-        if( segmentDefault ){
+        if (segmentDefault) {
             tabs = defaultMatcher.group(1).length() + defaultOffset;
         }
         return new Matcher(segmentStart, segmentEnd, segmentDefault, attrs, tabs);
     }
 
     /**
-     * Parses the parameters on the line that contains the
-     * {@code // <editor-fold...>} line. For example if the line is
-     * <pre>{@code
-     *     // <editor-fold id="aa" desc="sample description" other_param="other">
-     *  }
+     * Get the {@code count}-th group that is not {@code null}. That way the pattern may define alternative
+     * matching lines each with its own groups. For example:
+     *
+     * <pre>
+     *    {@code
+     *    zzz(.*)qqq(.*)|(\w*)bbb(.hhh)
+     *    }
      * </pre>
      * <p>
-     * then the map will contain the values:
-     * <pre>{@code
-     *     "id" -> "aa"
-     *     "desc" -> "sample description"
-     *     "other_param" -> "other"
-     * }
-     * </pre>
+     * defines four groups that can be referenced as {@code matcher.group(1)}, {@code matcher.group(2)}, {@code
+     * matcher.group(3)} and {@code matcher.group(4)}. When one of the alternatives are matched then the other groups
+     * will return {@code null}. What we need is the first or second group that was matched.
      *
-     * @param attributes the string containing the part of the line that is after the {@code editor-fold} and
-     *                   before the closing {@code >}
-     * @return the attributes map
+     * @param count   the number of group that we need
+     * @param matcher the matcher in which the groups are
+     * @return the string of the matching group or {@code null} in case there is no non-{@code null} matching group
      */
-    public static Map<String, String> parseParametersString(String attributes) {
-        var attributeMatcher = ATTRIBUTE_PATTERN.matcher(attributes);
-        var attr = new HashMap<String, String>();
-        while (attributeMatcher.find()) {
-            var key = attributeMatcher.group(1);
-            var value = attributeMatcher.group(2);
-            attr.put(key, value);
+    private static String getGroup(int count, java.util.regex.Matcher matcher) {
+        for (int i = 1; i <= matcher.groupCount(); i++) {
+            if (matcher.group(i) != null) {
+                count--;
+            }
+            if (count == 0) {
+                return matcher.group(i);
+            }
         }
-        return attr;
+        return null;
     }
 
-    class Matcher implements SegmentSplitHelper.Matcher {
+    protected static class Matcher implements SegmentSplitHelper.Matcher {
 
         private final boolean segmentStart;
         private final boolean segmentEnd;
         private final boolean segmentDefault;
-        private final Map<String, String> attrs;
+        private final CompoundParams attrs;
         private final int tabs;
 
-        Matcher(boolean segmentStart, boolean segmentEnd, boolean segmentDefault, Map<String, String> attrs, int tabs) {
+        protected Matcher(boolean segmentStart, boolean segmentEnd, boolean segmentDefault, CompoundParams attrs, int tabs) {
             this.segmentStart = segmentStart;
             this.segmentEnd = segmentEnd;
             this.segmentDefault = segmentDefault;
@@ -169,12 +184,12 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
         }
 
         @Override
-        public Map<String, String> attributes() {
+        public CompoundParams attributes() {
             if (!segmentStart) {
                 throw new IllegalArgumentException("attributes on " +
-                        SegmentSplitHelper.class.getSimpleName() + "." +
-                        SegmentSplitHelper.Matcher.class.getSimpleName() +
-                        " are not defined when the it is not a segment start.");
+                    SegmentSplitHelper.class.getSimpleName() + "." +
+                    SegmentSplitHelper.Matcher.class.getSimpleName() +
+                    " are not defined when the it is not a segment start.");
             }
             return attrs;
         }

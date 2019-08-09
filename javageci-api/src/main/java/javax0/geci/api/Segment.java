@@ -1,23 +1,32 @@
 package javax0.geci.api;
 
+import java.util.List;
 import java.util.Set;
 
 /**
- * A {@code Segment} object represents an editor-fold part in the source file that the code generator can
- * write. A {@code Segment} is retrieved by the code generator calling the {@link Source#open(String)} method
- * of the source and it can write into the segment.
+ * A {@code Segment} object represents an editor-fold part in the source
+ * file that the code generator can write. A {@code Segment} is
+ * retrieved by the code generator calling the {@link
+ * Source#open(String)} method of the source and it can write into the
+ * segment.
  */
 public interface Segment extends AutoCloseable {
 
     /**
-     * Get the lines of the segment as it is at the moment. This is the text that was written into the segment by the
-     * code generator. There is no way to get the content of a segment that was in the file before the generator
-     * started it's work. The generator should not depend on the code that is inside the generated segment prior
-     * its work started.
+     * Get the lines of the segment as it is at the moment. This is the
+     * text that was written into the segment by the code generator.
      *
      * @return the textual content of the segment as it is at the moment.
      */
     String getContent();
+
+    /**
+     * Get the original lines of the segment as it was in the source
+     * code before starting to overwrite it.
+     *
+     * @return the list of the lines as strings
+     */
+    List<String> originalLines();
 
     /**
      * When the generator does not find a segment based on the starting
@@ -39,13 +48,22 @@ public interface Segment extends AutoCloseable {
      *
      * @param preface the preface lines
      */
-    void setPreface(String ... preface);
+    void setPreface(String... preface);
+
+    /**
+     * Get the parameters that were defined in the source.
+     *
+     * @return the compound parameters that were created while scanning
+     * the source code
+     */
+    CompoundParams sourceParams();
 
     /**
      * See the documentation of {@link #setPreface(String...)}
+     *
      * @param postface the postface lines that end a segment
      */
-    void setPostface(String ... postface);
+    void setPostface(String... postface);
 
     /**
      * Set the content of the segment.
@@ -77,16 +95,18 @@ public interface Segment extends AutoCloseable {
 
     /**
      * Insert a new line into the segment.
+     *
      * @return {@code this}
      */
     Segment newline();
 
     /**
      * Define a parameter that can be used in the write methods.
+     *
      * @param keyValuePairs the keys and values that can be used in the first parameter of the write method between {{ and }}
      * @return {@code this}
      */
-    Segment param(String ... keyValuePairs);
+    Segment param(String... keyValuePairs);
 
     Set<String> paramKeySet();
 

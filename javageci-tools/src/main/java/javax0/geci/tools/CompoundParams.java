@@ -9,6 +9,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static javax0.geci.api.CompoundParams.toBoolean;
+
 /**
  * A parameter set that is composed from two or more parameter maps. The
  * parameter maps are passed to the constructor in the order they should
@@ -37,10 +39,10 @@ import java.util.stream.Stream;
  * that editor-fold segment is named {@code "accessor"} then there is no
  * need to specify this separately in the annotation.
  */
-public class CompoundParams {
+public class CompoundParams implements javax0.geci.api.CompoundParams {
 
     private static final String Q = "\"";
-    private final Map<String, String>[] params;
+    private final Map<String, List<String>>[] params;
     private final CompoundParams[] cparams;
     private final String id;
     private Set<String> allowedKeys = null;
@@ -55,10 +57,42 @@ public class CompoundParams {
      * @param params the array of parameter maps
      */
     @SafeVarargs
-    public CompoundParams(String id, Map<String, String>... params) {
-        this.params = params;
+    public CompoundParams(String id, Map<String, ?>... params) {
+        this.params = new HashMap[params.length];
+        for (int i = 0; i < params.length; i++) {
+            this.params[i] = new HashMap<>();
+            for (final var entry : params[i].entrySet()) {
+                this.params[i]
+                        .put(entry.getKey(),
+                                valueToList(entry.getValue()));
+            }
+        }
         this.cparams = null;
         this.id = id;
+    }
+
+    /**
+     * Convert an object that is supposed to be a list of strings or a
+     * single string to a list of strings. The value is already a list
+     * then return the list. If the value is a string then create a
+     * mutable list that contains the string as a single element.
+     *
+     * @param value which is to be converted
+     * @return the list that contains the value or the value itself if
+     * value is already a list
+     */
+    private static List<String> valueToList(Object value) {
+        final List<String> list;
+        if (value instanceof List) {
+            return (List) value;
+        } else if (value instanceof String) {
+            return new ArrayList(List.of((String) value));
+        } else {
+            throw new IllegalArgumentException(value.getClass()
+                    + " cannot be used in "
+                    + CompoundParams.class.getSimpleName()
+                    + " as parameter value.");
+        }
     }
 
     /**
@@ -78,37 +112,47 @@ public class CompoundParams {
     public CompoundParams(CompoundParams... cparams) {
         this.params = null;
         this.cparams = cparams;
-        this.id = find(cparams, c -> c.id);
-        this.source = find(cparams, c -> c.source);
-        this.mnemonic = find(cparams, c -> c.mnemonic);
-        this.allowedKeys = find(cparams, c -> c.allowedKeys);
+        this.id = find(c -> c.id, cparams);
+        this.source = find(c -> c.source, cparams);
+        this.mnemonic = find(c -> c.mnemonic, cparams);
+        this.allowedKeys = find(c -> c.allowedKeys, cparams);
         if (source != null && mnemonic != null && allowedKeys != null) {
             checkAllowedKeys();
         }
     }
 
-    private <T> T find(CompoundParams[] cparams, Function<CompoundParams, T> mapper) {
+    /**
+     * <ol>
+     *
+     * <li> Go through all non-null cparam array element, </li>
+     *
+     * <li> fetch the {@code id}, {@code source}, {@code mnemonic},
+     * {@code allowedKeys} as defined by the mapper, </li>
+     *
+     * <li>find the first non-null</li>
+     *
+     * </ol>
+     *
+     * @param mapper  that fetches {@code id}, {@code source}, {@code
+     *                mnemonic}, {@code allowedKeys} from the cparam
+     * @param cparams the compound parameters from which the constructor
+     *                calling this method wants to inherit the mapped
+     *                field
+     * @param <T>     the type of the inherited field selected by the
+     *                mapper
+     * @return the value that is to be inherited
+     */
+    private static <T> T find(Function<CompoundParams, T> mapper,
+                              CompoundParams... cparams) {
         return Arrays.stream(cparams)
-                .filter(Objects::nonNull)
-                .map(mapper)
-                .filter(Objects::nonNull)
-                .limit(1)
-                .findFirst().orElse(null);
+            .filter(Objects::nonNull)
+            .map(mapper)
+            .filter(Objects::nonNull)
+            .limit(1)
+            .findFirst().orElse(null);
     }
 
-    /**
-     * Set the constraints that this {@code CompoundParameters} should
-     * adhere. The constrain is simply the set of the allowed key
-     * strings. The other parameters are used to construct a meaningful
-     * exception during checking.
-     *
-     * <p> After the constraints are set a check is also performed and a
-     * {@link GeciException} may be thrown.
-     *
-     * @param source      the source object from which the keys come from
-     * @param mnemonic    the mnemonic of the generator
-     * @param allowedKeys the set of the allowed keys
-     */
+    @Override
     public void setConstraints(Source source, String mnemonic, Set<String> allowedKeys) {
         this.source = source;
         this.mnemonic = mnemonic;
@@ -118,106 +162,103 @@ public class CompoundParams {
         }
     }
 
+    /**
+     * Check that the key set contains only strings that are in the
+     * {@code allowedKeys} field. If there is any key, which is not
+     * listed in the field then throw an exception. The exception will
+     * try to find the one from the allowed keys that is the closest to
+     * the one, which is not allowed. The error message in the exception
+     * will list all the keys that are not allowed and after that at the
+     * end it will also list the possible, allowed values.
+     */
     private void checkAllowedKeys() {
+        final StringBuilder errorMessage = new StringBuilder();
         for (final var key : keySet()) {
             if (!allowedKeys.contains(key)) {
-                throw new GeciException("The configuration '"
-                        + key
-                        + "' can not be used with the generator "
-                        + mnemonic
-                        + " in source code "
-                        + source.getAbsoluteFile());
+                String closestKey = null;
+                int closestDistance = Integer.MAX_VALUE;
+                for (final var s : allowedKeys) {
+                    final var d = Levenshtein.distance(key, s);
+                    if( d == closestDistance ){
+                        closestKey = null;
+                    }
+                    if (d < closestDistance) {
+                        closestDistance = d;
+                        closestKey = s;
+                    }
+                }
+                errorMessage
+                        .append("\nThe configuration '")
+                        .append(key)
+                        .append("' can not be used with the generator ")
+                        .append(mnemonic)
+                        .append(closestKey == null ?
+                                "" :
+                                ", did you mean '" + closestKey + "' ?");
             }
+        }
+        if (errorMessage.length() > 0) {
+            throw new GeciException(errorMessage.append(
+                    "\nThe possible keys are:\n  ").append(
+                    String.join(", ", allowedKeys))
+                    .append("\nIn source code ")
+                    .append(source.getAbsoluteFile())
+                    .toString()
+            );
+
         }
     }
 
-    /**
-     * Get the parameter or return the {@code defaults} if the parameter
-     * is not defined.
-     *
-     * @param key      the name of the parameter
-     * @param defaults to use when the parameter is not defined
-     * @return the value of the parameter
-     */
+    @Override
     public String get(String key, String defaults) {
         return Optional.ofNullable(get0(key)).orElse(defaults);
     }
 
-    /**
-     * Get the parameter or return the value supplied by the parameter
-     * {@code defaultSupplier} if the parameter is not defined. <p> This
-     * method can be used instead of {@link #get(String, String)} when
-     * the calculation of the default string costs a lot.
-     *
-     * @param key             the name of the parameter
-     * @param defaultSupplier to use when the parameter is not defined
-     * @return the value of the parameter
-     */
+    @Override
     public String get(String key, Supplier<String> defaultSupplier) {
         return Optional.ofNullable(get0(key)).orElse(defaultSupplier.get());
     }
 
-    /**
-     * Get a parameter. The implementation looks through the underlying
-     * map array or compound parameters array in the order they were
-     * specified in the constructor. If the key is not found then {@code
-     * ""} is returned.
-     *
-     * <p> The key "id" is handled in a special way. In case there is no
-     * "id" defined in the parameters then the identifier of the
-     * parameter set is returned. In the normal use case that is the
-     * mnemonic of the actual generator calling this method. That way
-     * generators can get the "id" of the segment they are supposed to
-     * write that has the same name as the generator and the using code
-     * does not need to specify it in the "id" parameter. This is a
-     * simple convention over configuration simplification that is
-     * implemented by all the generators, which use this method to get
-     * the "id" to identify the segment where to write the generated
-     * code.
-     *
-     * @param key the name of the parameter.
-     * @return the parameter or {@code ""} if the parameter is not
-     * defined. In case the key is {@code "id"} and is not defined in
-     * the underlying array then the parameter set identifier is
-     * returned.
-     */
+    @Override
     public String get(String key) {
         return Objects.requireNonNullElse(get0(key), "");
     }
 
-    /**
-     * Shortcut to {@code get("id")}
-     *
-     * @return the ID from the configuration
-     */
-    public String id() {
-        return get("id");
-    }
 
-    /**
-     * Get the id from the parameters or the default value, which is the
-     * argument {@code mnemonic} in case there is no id defined.
-     *
-     * @param mnemonic the default value for the id in case it is not
-     *                 defined in the parameters. This is usually the
-     *                 mnemonic of the generator that is currently
-     *                 running.
-     * @return the id
-     */
+    @Override
     public String id(String mnemonic) {
         var id = get("id");
         return id.length() == 0 ? mnemonic : id;
     }
 
+    /**
+     * Get the value for the key.
+     *
+     * <p>This method the actual implementation of the parameter search
+     * traversing along the different sub structures that are stored in
+     * a hierarchy in the the {@code CompoundParams}.
+     *
+     * <p>If the sub structure in this {@code CompoundParams} are hash
+     * maps then the value is retrieved from the first that contains the
+     * key.
+     *
+     * <p>If the sub structure in this {@code CompoundParams} are
+     * further {@code CompoundParams} objects then the value is
+     * retrieved from those using recursive calls. There is no check for
+     * circular data structure that would cause infinite recursion.
+     *
+     * @param key the key we search for
+     * @return the value String or an empty string in case there is no
+     * such key or the value is empty string. It never returns {@code
+     * null}.
+     */
     private String get0(String key) {
-        if (allowedKeys != null && !allowedKeys.contains(key)) {
-            throw new GeciException("Generator is accessing key '" + key + "' which is not allowed. This is a generator bug.");
-        }
+        assertKeyAllowed(key);
         if (params != null) {
             return Arrays.stream(params)
                     .filter(Objects::nonNull)
                     .filter(p -> p.containsKey(key))
-                    .map(p -> p.get(key))
+                    .map(p -> p.get(key).get(0))
                     .findFirst()
                     .orElse("id".equals(key) ? id : null);
         }
@@ -235,77 +276,108 @@ public class CompoundParams {
         return null;
     }
 
-
-    public static boolean toBoolean(String s) {
-        return s != null && (
-                s.equalsIgnoreCase("yes") ||
-                        s.equalsIgnoreCase("ok") ||
-                        s.equalsIgnoreCase("1") ||
-                        s.equalsIgnoreCase("true")
-        );
+    /**
+     * The method checks that the key is listed in the {@code
+     * allowedKeys} field unless the filed is {@code null}. If the key
+     * is not listed in the {@code allowedKeys}, but there *is* an
+     * {@code allowedKeys} set then the generator using the services of
+     * {@code CompoundParams} has defined the allowed keys buit then
+     * tries to access a key, which was not listed. This is an error in
+     * the generator. In such a case this method will throw a {@link
+     * GeciException}.
+     *
+     * @param key the key that we check
+     */
+    private void assertKeyAllowed(String key) {
+        if (allowedKeys != null && !allowedKeys.contains(key)) {
+            throw new GeciException("Generator is accessing key '"
+                    + key
+                    + "' which it does not list as an allowed key."
+                    + " This is a generator bug.");
+        }
     }
 
-    /**
-     * Retrieves a parameter boolean value.
-     *
-     * @param key the name of the parameter
-     * @return {@code true} if the parameter has a value {@code true}, {@code ok}, {@code 1} or {@code yes} (case
-     * insensitive). In any other case the method returns {@code false}.
-     */
+    @Override
+    public List<String> getValueList(String key, List<String> defaults) {
+        final var list = getValueList(key);
+        if (list != null) {
+            return list;
+        }
+        return defaults;
+    }
+
+    @Override
+    public List<String> getValueList(String key) {
+        if (params != null) {
+            return Arrays.stream(params)
+                    .filter(Objects::nonNull)
+                    .filter(p -> p.containsKey(key))
+                    .map(p -> p.get(key))
+                    .findFirst()
+                    .orElse("id".equals(key) ? List.of(id) : null);
+        }
+        if (cparams != null) {
+            return Arrays.stream(cparams)
+                    .filter(Objects::nonNull)
+                    .map(p -> p.getValueList(key))
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse("id".equals(key) ? List.of(id) : null);
+        }
+        if ("id".equals(key)) {
+            return List.of(id);
+        }
+        return null;
+    }
+
+
+    @Override
     public boolean is(String key) {
         var s = get(key);
         return toBoolean(s);
     }
 
+    @Override
     public boolean is(String key, boolean defaultValue) {
         var s = get(key);
-        if (s == null) {
+        if (s.isEmpty()) {
             return defaultValue;
         } else {
-            return is(key);
+            return toBoolean(s);
         }
     }
 
+    @Override
     public boolean is(String key, String defaultValue) {
         var s = get(key);
-        if (s == null) {
-            return is(defaultValue);
-        } else {
-            return is(key);
+        if (s.isEmpty()) {
+            s = defaultValue;
         }
+        return toBoolean(s);
     }
 
-    public boolean isNot(String key) {
-        return !is(key);
-    }
 
-    /**
-     * Returns the set of queryable keys. The key {@code id} will only
-     * be listed if it is explicitly contained in some of the maps or
-     * underlying compound parameters.
-     *
-     * @return the set of the keys
-     */
+    @Override
     public Set<String> keySet() {
         final Stream<Set<String>> keyStream;
         if (params != null) {
             keyStream = Arrays.stream(params).filter(Objects::nonNull)
-                    .map(Map::keySet);
+                .map(Map::keySet);
         } else if (cparams != null) {
             keyStream = Arrays.stream(cparams).filter(Objects::nonNull)
-                    .map(CompoundParams::keySet);
+                .map(CompoundParams::keySet);
         } else {
             keyStream = Stream.of();
         }
         return keyStream.filter(Objects::nonNull).flatMap(Collection::stream)
-                .collect(Collectors.toSet());
+            .collect(Collectors.toSet());
     }
 
     @Override
     public String toString() {
         return "{ " +
-                keySet().stream().map(k -> Q + k + Q + ":" + Q + get(k) + Q)
-                        .collect(Collectors.joining(","))
-                + " }";
+            keySet().stream().map(k -> Q + k + Q + ":" + Q + get(k) + Q)
+                .collect(Collectors.joining(","))
+            + " }";
     }
 }

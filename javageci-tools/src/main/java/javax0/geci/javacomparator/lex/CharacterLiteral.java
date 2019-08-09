@@ -23,9 +23,6 @@ public class CharacterLiteral implements LexEater{
             } else {
                 handleNormalCharacter(sb, output, ch);
             }
-            if (output.length() > 1) {
-                throw new IllegalArgumentException("Character is too long");
-            }
         }
         if (sb.length() == 0) {
             throw new IllegalArgumentException(CHARACTER + " is not terminated before eol");

@@ -32,6 +32,11 @@ mkdir -p release/06jamal
 cp javageci-jamal/target/*jar release/06jamal
 cp javageci-jamal/pom.xml release/06jamal
 
+echo Creating 07docugen
+mkdir -p release/07docugen
+cp javageci-docugen/target/*jar release/07docugen
+cp javageci-docugen/pom.xml release/07docugen
+
 cd release
 for artifact in *
 do

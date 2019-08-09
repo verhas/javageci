@@ -3,7 +3,7 @@ package javax0.geci.tools;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class JavaSourceTest {
+public class TestJavaSource {
 
     @Test
     public void testSourceBuilder() {

@@ -16,10 +16,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class GeciAnnotationTools {
-    private static final Pattern SEGMENT_HEADER_PATTERN = Pattern.compile("//\\s*<\\s*editor-fold.*>");
+    private static final Pattern SEGMENT_HEADER_PATTERN = Pattern.compile("//\\s*<\\s*editor-fold(.*)>");
     private static final Pattern ANNOTATION_PATTERN = Pattern.compile("@Geci\\(\"(.*)\"\\)");
     private static final Pattern pattern = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*'(.*?)'");
-    private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile("([\\w\\d_$]+)\\s*=\\s*\"(.*?)\"");
 
     /**
      * Get the strings of the values of the {@link Geci} annotations
@@ -47,9 +46,9 @@ public class GeciAnnotationTools {
      */
     public static String[] getGecis(AnnotatedElement element) {
         return getDeclaredAnnotationUnwrapped(element)
-            .filter(GeciAnnotationTools::isAnnotationGeci)
-            .map(GeciAnnotationTools::getValue)
-            .toArray(String[]::new);
+                .filter(GeciAnnotationTools::isAnnotationGeci)
+                .map(GeciAnnotationTools::getValue)
+                .toArray(String[]::new);
     }
 
     /**
@@ -68,7 +67,7 @@ public class GeciAnnotationTools {
     private static Stream<Annotation> getDeclaredAnnotationUnwrapped(AnnotatedElement element) {
         final var allAnnotations = element.getDeclaredAnnotations();
         return Arrays.stream(allAnnotations)
-            .flatMap(GeciAnnotationTools::getSelfOrRepeated);
+                .flatMap(GeciAnnotationTools::getSelfOrRepeated);
     }
 
     /**
@@ -108,8 +107,8 @@ public class GeciAnnotationTools {
                 return Stream.of(annotation);
             }
         } catch (NoSuchMethodException |
-            IllegalAccessException |
-            InvocationTargetException e) {
+                IllegalAccessException |
+                InvocationTargetException e) {
             return Stream.of(annotation);
         }
     }
@@ -165,10 +164,10 @@ public class GeciAnnotationTools {
             return true;
         }
         final var annotations = annotation.annotationType()
-            .getDeclaredAnnotations();
+                .getDeclaredAnnotations();
         return Arrays.stream(annotations)
-            .filter(x -> !checked.contains(x))
-            .anyMatch(x -> isAnnotationGeci(x, checked));
+                .filter(x -> !checked.contains(x))
+                .anyMatch(x -> isAnnotationGeci(x, checked));
     }
 
     private static String annotationName(Annotation a) {
@@ -197,36 +196,36 @@ public class GeciAnnotationTools {
         try {
             final String rawValue = getRawValue(annotation);
             final var annotationName = getAnnotationGeciName(annotation);
-            final var value = getValue( CaseTools.lcase(annotationName), rawValue.trim());
-            for (final var method : annotation.getClass().getDeclaredMethods()) {
+            final var value = getValue(CaseTools.lcase(annotationName), rawValue.trim());
+            for (final var method : getAnnotationDeclaredMethods(annotation)) {
                 if (method.getReturnType().equals(String.class) &&
-                    !method.getName().equals("value") &&
-                    !method.getName().equals("toString")) {
+                        !method.getName().equals("value") &&
+                        !method.getName().equals("toString")) {
                     final String param = geParam(annotation, method);
                     if (param != null && param.length() > 0) {
                         value.append(" ")
-                            .append(method.getName())
-                            .append("='")
-                            .append(param)
-                            .append("'");
+                                .append(method.getName())
+                                .append("='")
+                                .append(param)
+                                .append("'");
                     }
                 }
             }
             return value.toString();
         } catch (ClassCastException e) {
             throw new GeciException("Cannot use '" + annotationName(annotation)
-                + "' as generator annotation.", e);
+                    + "' as generator annotation.", e);
         }
     }
 
     private static String getAnnotationGeciName(Annotation annotation) {
         final var selfName = annotation.annotationType().getSimpleName();
         final var annotations = annotation.annotationType()
-            .getDeclaredAnnotations();
+                .getDeclaredAnnotations();
         final var renamedName = Arrays.stream(annotations)
-            .filter(x -> isAnnotationGeci(x)).map(GeciAnnotationTools::getRawValue).findFirst();
+                .filter(GeciAnnotationTools::isAnnotationGeci).map(GeciAnnotationTools::getRawValue).findFirst();
         return renamedName.isPresent() && renamedName.get().length() > 0 ?
-            renamedName.get() : selfName;
+                renamedName.get() : selfName;
     }
 
     private static String geParam(Annotation annotation, Method method) {
@@ -240,12 +239,62 @@ public class GeciAnnotationTools {
 
     private static String getRawValue(Annotation annotation) {
         try {
-            final var valueMethod = annotation.getClass().getDeclaredMethod("value");
+            final var valueMethod = getAnnotationValueMethod(annotation);
             valueMethod.setAccessible(true);
             return (String) valueMethod.invoke(annotation);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             return "";
         }
+    }
+
+    /**
+     * Get the value method of an annotation.
+     *
+     * <p>Implementation notes: when executing this code in an
+     * application that uses JPMS (e.g. Java::Geci) then the annotation
+     * object itself is not an instance of the annotation interface. It
+     * is fairly obvious, since interfaces do not have instances. The
+     * object is the instance of a proxy class which is in the package
+     * {@code com.sun.proxy.jdk.proxy1} in the module {@code
+     * jdk.proxy1}. This module does not "opens" this package and there
+     * is no way to open this package for good reason. Because it is not
+     * opened for reflective access we cannot invoke any method of this
+     * class on the annotation object instance, let alone we cannot even
+     * call {@code setAccessible()} on it.
+     *
+     * <p>The good news is that we do not need. What we really need is
+     * to call the method of the interface reflectively on the
+     * annotation object instance.
+     *
+     * <p>In short: we invoke the interface method and not the
+     * class method on the object.
+     *
+     * <p>Annotation objects have only one interface they implement and
+     * that is the annotation interface. Therefore there is no need to
+     * check that the annotation class has interfaces and how many. We
+     * just grab the annotation interface as the zero-th element of the
+     * array.
+     *
+     * @param annotation of which we need the value method
+     * @return the value method
+     * @throws NoSuchMethodException when the annotation does not have a
+     * {@code value()} method
+     */
+    private static Method getAnnotationValueMethod(Annotation annotation) throws NoSuchMethodException {
+        return annotation.annotationType().getDeclaredMethod("value");
+    }
+
+    /**
+     * Get the declared methods of the annotation that this annotation
+     * object instance implements. See also the implementation comments
+     * on the documentation of {@link
+     * #getAnnotationValueMethod(Annotation)}.
+     *
+     * @param annotation of which we need the declared methods
+     * @return the array of declared methods
+     */
+    private static Method[] getAnnotationDeclaredMethods(Annotation annotation) {
+        return annotation.annotationType().getDeclaredMethods();
     }
 
     /**
@@ -302,13 +351,13 @@ public class GeciAnnotationTools {
                                           String value) {
         final var mnemonicEnd = value.indexOf(' ');
         final String mnemonic = mnemonicEnd == -1 ?
-            value
-            :
-            value.substring(0, mnemonicEnd);
+                value
+                :
+                value.substring(0, mnemonicEnd);
         if (mnemonic.contains("=") || mnemonic.length() == 0) {
             return new StringBuilder(annotationName)
-                .append(value.length() == 0 ? "" : " ")
-                .append(value);
+                    .append(value.length() == 0 ? "" : " ")
+                    .append(value);
         } else {
             return new StringBuilder(value);
         }
@@ -437,39 +486,22 @@ public class GeciAnnotationTools {
      */
     public static CompoundParams getSegmentParameters(Source source,
                                                       String mnemonic) {
-        final var params = new ArrayList<Map<String, String>>();
         for (var line : source.getLines()) {
             final var trimmedLine = line.trim();
-            final var matchLine = trimmedLine.trim();
-            if (SEGMENT_HEADER_PATTERN.matcher(matchLine).matches()) {
-                var attributeMatcher = ATTRIBUTE_PATTERN.matcher(matchLine);
-                var attr = new HashMap<String, String>();
-                while (attributeMatcher.find()) {
-                    var key = attributeMatcher.group(1);
-                    var value = attributeMatcher.group(2);
-                    if (!key.equals("desc")) {
-                        attr.put(key, value);
-                    }
-                }
-                if (attr.getOrDefault("id", "").equals(mnemonic)) {
-                    attr.remove("id");
-                    params.add(attr);
+            final var headerMatcher = SEGMENT_HEADER_PATTERN.matcher(trimmedLine);
+            if (headerMatcher.matches()) {
+                final var params = new CompoundParamsBuilder(headerMatcher.group(1)).exclude("desc").redefineId().build();
+                if( mnemonic.equals(params.id())){
+                    return params;
                 }
             }
         }
-        if (params.size() > 0) {
-            return new CompoundParams(mnemonic, params.toArray(Map[]::new));
-        } else {
-            return null;
-        }
+        return null;
     }
 
     public static CompoundParams getParameters(String generatorMnemonic, String string) {
-        if (string.startsWith(generatorMnemonic + " ")) {
-            var parametersString = string.substring(generatorMnemonic.length() + 1);
-            return new CompoundParams(generatorMnemonic, Map.copyOf(getParameters(parametersString)));
-        } else if (string.equals(generatorMnemonic)) {
-            return new CompoundParams(generatorMnemonic, Map.of());
+        if (string.startsWith(generatorMnemonic + " ") || string.equals(generatorMnemonic)) {
+            return new CompoundParamsBuilder(string).redefineId().build();
         } else {
             return null;
         }
@@ -489,15 +521,19 @@ public class GeciAnnotationTools {
     private static Matcher getMatch(String prefix, String line) {
         final var trimmedLine = line.trim();
         final var chopped = prefix != null && trimmedLine.startsWith(prefix) ?
-            trimmedLine.substring(prefix.length()) : trimmedLine;
+                trimmedLine.substring(prefix.length()) : trimmedLine;
         final var matchLine = chopped.trim();
         return ANNOTATION_PATTERN.matcher(matchLine);
     }
 
     /**
-     * Get the parameters into a map from the string. The {@link Geci}
-     * annotation has one single value that is a string. This string is
-     * supposed to have the format:
+     * This method is not used any more. The functionality was moved to
+     * {@link CompoundParamsBuilder} and it is based on lexical analysis
+     * instead of simple regular expression use.
+     *
+     * <p> Get the parameters into a map from the string. The {@link
+     * Geci} annotation has one single value that is a string. This
+     * string is supposed to have the format:
      *
      * <pre>
      *
@@ -506,7 +542,7 @@ public class GeciAnnotationTools {
      *
      * <p> The key can be anything that is more or less an identifier
      * (contains only alphanumeric characters, underscore and {@code $}
-     * charater, but can also start with any of those, thus it could be
+     * character, but can also start with any of those, thus it could be
      * '{@code 1966}').
      *
      * <p>The value is enclosed between single quotes, that makes it
@@ -516,6 +552,7 @@ public class GeciAnnotationTools {
      * @param s the string parameter
      * @return the map composed from the string
      */
+    @Deprecated(forRemoval = true)
     public static Map<String, String> getParameters(String s) {
         var pars = new HashMap<String, String>();
         var matcher = pattern.matcher(s);

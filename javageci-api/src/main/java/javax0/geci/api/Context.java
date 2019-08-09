@@ -7,6 +7,15 @@ import java.util.function.Supplier;
  * generators that are executed under the same Geci engine instance.
  * Context makes it possible to share information between different
  * generators.
+ *
+ * <p>A context is something like a {@code Map<Object,Object>} object.
+ * Similar to, for example a servlet session object. It can be used to
+ * share objects associated to other objects that are usually strings.
+ *
+ * <p>The context is automatically created by the Geci object when none
+ * was injected. On the other hand when the created context object is
+ * retrieved from the Geci object it can be injected into a different
+ * Geci object and that way different Geci instances can share context.
  */
 public interface Context {
 
@@ -35,7 +44,7 @@ public interface Context {
      *
      * @param key see {@link #get(Object, Supplier)}
      * @param <T> the type of the value
-     * @return the object associted with the key or null if there is no
+     * @return the object associated with the key or null if there is no
      * such object
      */
     default <T> T get(Object key) {

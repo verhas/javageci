@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class ReplCommandBuilderFluenterTest {
+public class TestReplCommandBuilderFluenter {
 
     @Test
     @DisplayName("Fluent API for the CommandDefinitionBuilder is up-to-date")
