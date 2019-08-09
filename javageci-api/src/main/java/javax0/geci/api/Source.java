@@ -157,7 +157,7 @@ public interface Source {
      * Create the new source file in the directory that was used to open the specified source set.
      *
      * @param fileName relative file name to the current source.
-     * @param set      identifies the source set with a name.
+     * @param set      identifies the source set with a name
      * @return the new {@code Source} object.
      */
     Source newSource(Source.Set set, String fileName);
@@ -320,7 +320,7 @@ public interface Source {
          * <pre>
          * '{@code ./src/(main|test)/(java|resources)}'
          * </pre>
-         * where the sources can be. This is sufficient. The current working directory is the project root
+         * wehere the sources can be. This is sufficient. The current working directory is the project root
          * when the tests are started either interactively in an IDE or from the command line using the
          * command {@code mvn}.
          * </p>
