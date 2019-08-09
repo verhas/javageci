@@ -9,61 +9,21 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
- * An {@code Selector} can select or deselect a member based on the selection expression.
- * <p>
- * A selection expression can be as simple as {@code final} which will match a member if the member if final.
- * Expressions can refer to the modifiers, the name of the member using regular expression and can contain {@code |}
- * and {@code &} to form logical expressions. Also the expression can use parentheses and subexpressions or the whole
- * expression can be negated using the {@code !} character.
- * <p>
- * Example:
- * <ul>
- * <li>{@code final & public} will select a member if it is final and public</li>
- * <li>{@code final | public} will select a member if it is final or public</li>
- * <li>{@code !final & (protected | public)} will select a member if it is final and protected or public</li>
- * <li>{@code !final & (package | public)} will select a member if it is final
- * and package private or public</li>
- * <li>{@code implements} will select a member if it is the implementation of an interface method</li>
- * <li>{@code overrides} will select a member if it is the overriding implementation of an parent class method</li>
- * <li>{@code default} will select a member if it is a default method in an interface</li>
- * <li>{@code overloaded} will select a member if there are multiple methods with the same name in the class</li>
- * <li>{@code vararg} will select a member if it is a variable argument method</li>
- * <li>{@code name ~ /^has/} will select a member if the name of the member starts with {@code has}</li>
- * <li>{@code signature ~ /^has.*\(String,.*\)/} will select a member if the name starts with {@code has} and the
- * signature of the method contains a {@code }String} as the first argument.</li>
- * <li>{@code returns ~ /String/} will select a method if the return value is {@code String}</li>
- * <li>{@code annotation ~ /Generated/} will select a member if it is annotated with an annotation that
- * starts with {@code Generated}</li>
- * <li> any other identifier "selector" will select a member if the configured {@code Function<Member,Boolean>} assigned to the name
- * "selector" returns {@code true}. Selector functions can be added calling the method {@link #selector(String, Function)}.</li>
- * </ul>
- * <p>
- * Some of the conditions can only be applied to methods or only to fields. In that case using the expression for
- * a field or a method, for which it should not have been applied to will throw {@link IllegalArgumentException}.
- * <p>
- * The syntax of a selection expression formally:
+ * Reflection selector.
  *
- * <ul>
- * <li>EXPRESSION :== TERMINAL | '!' EXPRESSION | '(' EXPRESSION ')' | EXPRESSION '&amp;' EXPRESSION ... |
- * EXPRESSION '|' EXPRESSION ... </li>
- * <li>TERMINAL ::= MODIFIER | PSEUDO_MODIFIER | name '~' REGEX | signature '~' REGEX | annotation ~ REGEX |
- * CALLER_DEFINED_SELECTOR</li>
- * <li>MODIFIER ::= private | protected | package | public | final | transient | volatile | static |
- * synthetic | synchronized | native | abstract | strict </li>
- * <li>PSEUDO_MODIFIER ::= default | implements | inherited | overrides | vararg | true | false</li>
- * </ul>
- * <p>
- * 'and' operation has higher priority than 'or' ust like in Java. Expressions are evaluated short circuit, although
- * it has no vital importance since the sub expressions cannot have side effects.
+ * @param <T> the type of the member to test. Field, Class, Method etc.
  */
 public class Selector<T> {
 
     private static final int SYNTHETIC = 0x00001000;
     private final Map<String, Function<T, Boolean>> selectors = new HashMap<>();
+    private final Map<String, Function<T, Object>> converters = new HashMap<>();
     private final Map<String, BiFunction<T, Pattern, Boolean>> regexMemberSelectors = new HashMap<>();
     private SelectorNode top = null;
 
     private Selector() {
+
+        defineConversions();
 
         methodAndClassOnlySelectors();
 
@@ -75,11 +35,52 @@ public class Selector<T> {
 
         classOnlySelectors();
 
-
+        /**
+         * - head
+         *
+         * `annotation ~ /regex/` is `true` if the examined member has
+         * an annotation that matches the regular expression.
+         */
         regexSelector("annotation", (m, regex) -> only(m, AnnotatedElement.class) &&
                 matchAnnotations((AnnotatedElement) m, regex));
+        /**
+         * -
+         *
+         * `annotated` is `true` if the examined member has an
+         * annotation. (Any annotation.)
+         */
         selector("annotated", (m) -> only(m, AnnotatedElement.class) &&
                 hasAnnotations((AnnotatedElement) m));
+    }
+
+    /**
+     * -
+     *
+     * ### Conversion
+     *
+     * Conversions are used to direct the next part of the expression to
+     * check something else instead of the member. The conversion is on
+     * the same level as the `!` negation operator and the name of the
+     * conversion is separated from the following part of the expression
+     * by `->`.
+     */
+    private void defineConversions() {
+        /**
+         * -
+         *
+         * * `declaringClass` check the declaring class instead of the
+         * member. This can be applied to methods, fields and classes.
+         * Note that there is an `enclosingClass` that can be applied to
+         * classes.
+         */
+        converter("declaringClass", m -> ((Member) m).getDeclaringClass());
+        converter("returnType", m -> only(m, Method.class) ? ((Method) m).getReturnType() : null);
+        converter("type", m -> only(m, Field.class) ? ((Field) m).getType() : null);
+        converter("superClass", m -> only(m, Class.class) ? ((Class) m).getSuperclass() : null);
+        converter("enclosingClass", m -> only(m, Class.class) ? ((Class) m).getEnclosingClass() : null);
+        converter("enclosingMethod", m -> only(m, Class.class) ? ((Class) m).getEnclosingMethod() : null);
+        converter("componentType", m -> only(m, Class.class) ? ((Class) m).getComponentType() : null);
+        converter("nestHost", m -> only(m, Class.class) ? ((Class) m).getNestHost() : null);
     }
 
     /**
@@ -107,70 +108,349 @@ public class Selector<T> {
         throw new IllegalArgumentException("Selector cannot be applied to " + m.getClass());
     }
 
+    /**
+     * -
+     *
+     * ### Class and method checking selectors
+     *
+     * <p> These conditions work on classes and on methods. Applying
+     * them on a field will throw exception.
+     */
     private void methodAndClassOnlySelectors() {
+        /**
+         * -
+         *
+         * * `abstract` is `true` if the type of method is abstract.
+         *
+         */
         selector("abstract", m -> only(m, Class.class, Method.class) && Modifier.isAbstract(getModifiers(m)));
-        selector("implements", m -> only(m, Method.class, Class.class) && methodOrClassImplements(m));
+        /**
+         * -
+         *
+         * * `implements` is `true` if the class implements at least one
+         * interface. When applied to a method it is `true` if the
+         * method implements a method of the same name and argument
+         * types in one of the interfaces the class directly or
+         * indirectly implements. In other words it means that there is
+         * an interface that declares this method and this method is an
+         * implementation (not abstract).
+         *
+         */
+        selector("implements", m -> only(m, Class.class, Method.class) && methodOrClassImplements(m));
     }
 
+    /**
+     * -
+     *
+     * ### Class checking selectors
+     *
+     * These conditions work on classes. When used on a field then
+     * the type of the field is checked. When used on a method then the
+     * return type of the method is checked. When the documentation here
+     * says "... when the type is ..." it means that the class or
+     * interface itself or the type of the field or the return type of
+     * the method in case the condition is checked against a field or
+     * method.
+     */
     private void classOnlySelectors() {
+        /**
+         * -
+         *
+         * * `interface` is `true` if the type is an interface
+         */
         selector("interface", m -> toClass(m).isInterface());
+        /**
+         * -
+         *
+         * * `primitive` is `true` when the type is a primitive type,
+         * a.k.a. `int`, `double`, `char` and so on. Note that `String`
+         * is not a primitive type.
+         */
         selector("primitive", m -> toClass(m).isPrimitive());
+        /**
+         * -
+         *
+         * * `annotation` is `true` if the type is an annotation
+         * interface.
+         */
         selector("annotation", m -> toClass(m).isAnnotation());
+        /**
+         * -
+         *
+         * * `anonymous` is `true` if the type is anonymous.
+         */
         selector("anonymous", m -> toClass(m).isAnonymousClass());
+        /**
+         * -
+         *
+         * * `array` is `true` if the type is an array.
+         */
         selector("array", m -> toClass(m).isArray());
+        /**
+         * -
+         *
+         * * `enum` is `true` if the type is an enumeration.
+         */
         selector("enum", m -> toClass(m).isEnum());
+        /**
+         * -
+         *
+         * * `member` is `true` if the type is a member class, a.k.a.
+         * inner or nested class or interface
+         */
         selector("member", m -> toClass(m).isMemberClass());
+        /**
+         * -
+         *
+         * * `local` is `true` if the type is a local class. Local
+         * classes are defined inside a method.
+         */
         selector("local", m -> toClass(m).isLocalClass());
+        /**
+         * -
+         *
+         * * `extends` without any regular expression checks that the
+         * class explicitly extends some other class. (Implicitly
+         * extending `Object` does not count.)
+         *
+         */
         selector("extends", m -> {
             final var superClass = toClass(m).getSuperclass();
             return superClass != null && !"java.lang.Object".equals((superClass.getCanonicalName()));
         });
-
-        regexSelector("simpleName", (m, regex) -> regex.matcher(toClass(m).getSimpleName()).find());
-        regexSelector("canonicalName", (m, regex) -> regex.matcher(toClass(m).getCanonicalName()).find());
+        /**
+         * -
+         *
+         * * `extends ~ /regex/` is `true` if the canonical name of the
+         * superclass matches the regular expression. In other words if
+         * the class extends directly the class given in the regular
+         * expression.
+         */
         regexSelector("extends", (m, regex) -> regex.matcher(toClass(m).getSuperclass().getCanonicalName()).find());
+        /**
+         * -
+         *
+         * * `simpleName ~ /regex/` is `true` if the simple name of the
+         * class (the name without the package) matches the regular
+         * expression.
+         */
+        regexSelector("simpleName", (m, regex) -> regex.matcher(toClass(m).getSimpleName()).find());
+        /**
+         * -
+         *
+         * * `canonicalName ~ /regex/` is `true` if the canonical name of
+         * the class matches the regular expression.
+         */
+        regexSelector("canonicalName", (m, regex) -> regex.matcher(toClass(m).getCanonicalName()).find());
+        /**
+         * -
+         *
+         * * `implements ~ /regex/` is `true` if the type directly
+         * implements an interface whose name matches the regular
+         * expression. (Note: `implements` can also be used without a
+         * regular expression. In that case the checking is different.)
+         */
         regexSelector("implements", (m, regex) -> classImplements(toClass(m), regex));
     }
 
+    /**
+     * -
+     *
+     * ### Method checking selectors
+     *
+     * These conditions work on methods. If applied to anything else
+     * than a method the checking will throw an exception.
+     */
     private void methodOnlySelectors() {
+        /**
+         * -
+         *
+         * * `synthetic` is `true` if the method is synthetic. Synthetic
+         * methods are generated by the Javac compiler in some special
+         * situation. These methods do not appear in the source code.
+         */
         selector("synthetic", m -> only(m, Method.class) && (getModifiers(m) & SYNTHETIC) != 0);
+        /**
+         * -
+         *
+         * * `synchronized` is `true` if the method is synchronized.
+         */
         selector("synchronized", m -> only(m, Method.class) && Modifier.isSynchronized(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `native` is `true` if the method is native.
+         */
         selector("native", m -> only(m, Method.class) && Modifier.isNative(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `strict` is `true` if the method has the `strict` modifier.
+         * This is a rarely used modifier and affects the floating point
+         * calculation.
+         */
         selector("strict", m -> only(m, Method.class) && Modifier.isStrict(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `default` is `true` if the method is defined as a default
+         * method in an interface.
+         */
         selector("default", m -> only(m, Method.class) &&
                 ((Member) m).getDeclaringClass().isInterface() && !Modifier.isAbstract(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `bridge` is `true` if the method is a bridge method. Bridge
+         * methods are generated by the Javac compiler in some special
+         * situation. These methods do not appear in the source code.
+         */
+        selector("bridge", m -> only(m, Method.class) && ((Method) m).isBridge());
+        /**
+         * -
+         *
+         * * `vararg` is `true` if the method is a variable argument
+         * method.
+         */
         selector("vararg", m -> only(m, Method.class) && ((Method) m).isVarArgs());
+        /**
+         * -
+         *
+         * * `overrides` is `true` if the method is overriding another
+         * method in the superclass of the method's declaring method or
+         * a method in the superclass of the superclass and so on.
+         * Implementing a method declared in an interface alone will not
+         * result `true`, even though methods implementing an interface
+         * method are annotated using the compile time `@Override`
+         * annotation. This check is not the same.
+         */
         selector("overrides", m -> only(m, Method.class) && methodOverrides((Method) m));
+        /**
+         * -
+         *
+         * * `void` is `true` if the method has no return value.
+         */
         selector("void", m -> only(m, Method.class) && ((Method) m).getReturnType().equals(Void.TYPE));
-
+        /**
+         * -
+         *
+         * * `returns ~ /regex/` is `true` if the method return type's
+         * canonical name matches the regular expression.
+         */
         regexSelector("returns", (m, regex) -> only(m, Method.class) && regex.matcher(
                 ((Method) m).getReturnType().getCanonicalName()).find());
+        /**
+         * -
+         *
+         * * `throws ~ /regex/` is `true` if the method throws a declared
+         * exception that matches the regular expression.
+         */
         regexSelector("throws", (m, regex) -> only(m, Method.class) &&
                 Arrays.stream(((Method) m).getGenericExceptionTypes())
                         .anyMatch(exception -> regex.matcher(exception.getTypeName()).find()));
+        /**
+         * -
+         *
+         * * `signature ~ /regex/` checks that the signature of the method
+         * matches the regular expression. The signature of the method
+         * uses the formal argument names `arg0` ,`arg1`,...,`argN`.
+         */
         regexSelector("signature", (m, regex) ->
                 only(m, Method.class) && regex.matcher(MethodTool.methodSignature((Method) m)).find());
     }
 
+    /**
+     * -
+     *
+     * ### Field checking selectors
+     *
+     * These conditions work on fields. If applied to anything else
+     * than a field the checking will throw an exception.
+     */
     private void fieldOnlySelectors() {
+        /**
+         * -
+         *
+         * * `transient` is `true` if the field is transient.
+         */
         selector("transient", m -> only(m, Field.class) && Modifier.isTransient(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `volatile` is `true` if the field is declared volatile.
+         */
         selector("volatile", m -> only(m, Field.class) && Modifier.isVolatile(getModifiers(m)));
     }
 
+    /**
+     * -
+     *
+     * ### Universal selectors
+     *
+     * These conditions work on filds, classes and methods.
+     */
     private void universalSelectors() {
+        /**
+         * -
+         *
+         * * `true` is `true` always.
+         */
         selector("true", m -> true);
+        /**
+         * -
+         *
+         * * `false` is `false` always.
+         */
         selector("false", m -> false);
-
+        /**
+         * -
+         *
+         * * `private` is `true` if the examined member has private
+         * protection.
+         */
         selector("private", m -> Modifier.isPrivate(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `protected` is `true` if the examined member has protected
+         * protection.
+         */
         selector("protected", m -> Modifier.isProtected(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `package` is `true` if the examined member has package
+         * private protection.
+         */
         selector("package", m ->
                 !Modifier.isPublic(getModifiers(m)) &&
                         !Modifier.isProtected(getModifiers(m)) &&
                         !Modifier.isPrivate(getModifiers(m)));
-        selector("static", m -> Modifier.isStatic(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `public` is `true` if the examined member is public.
+         */
         selector("public", m -> Modifier.isPublic(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `static` is `true` if the examined member is static.
+         */
+        selector("static", m -> Modifier.isStatic(getModifiers(m)));
+        /**
+         * -
+         *
+         * * `static` is `true` if the examined member is final.
+         */
         selector("final", m -> Modifier.isFinal(getModifiers(m)));
 
+        /**
+         * -
+         *
+         * * `name ~ /regex/` is `true` if the examined member's name
+         * matches the regular expression.
+         */
         regexSelector("name", (m, regex) -> regex.matcher(getName(m)).find());
     }
 
@@ -209,14 +489,14 @@ public class Selector<T> {
      * interface extends directly or through transitive closure of the interfaces extending each other.
      */
     private boolean methodImplements(Method m) {
-        final var args = m.getParameterTypes();
-        final var name = m.getName();
         if (m.getDeclaringClass().isInterface() && !m.isDefault() || Modifier.isAbstract(m.getModifiers())) {
             return false;
         }
         final var interfaces = collectInterfaces(m.getDeclaringClass());
-        for (final var interfAce : interfaces) {
-            if (classHas(interfAce, name, args)) return true;
+        for (final var intarface : interfaces) {
+            final var args = m.getParameterTypes();
+            final var name = m.getName();
+            if (classHas(intarface, name, args)) return true;
         }
         return false;
     }
@@ -285,6 +565,14 @@ public class Selector<T> {
     }
 
 
+    /**
+     * Checks if this method overrides a method in one of the super
+     * classes.
+     *
+     * @param m the method to be checked
+     * @return {@code true} if the method is overriding a method in the
+     * superclass or in the superclass of the superclass and so on.
+     */
     private boolean methodOverrides(Method m) {
         final var args = m.getParameterTypes();
         final var name = m.getName();
@@ -294,6 +582,14 @@ public class Selector<T> {
         return false;
     }
 
+    /**
+     * @param klass the class in which we are looking for a declared method
+     * @param name  the name of the method
+     * @param args  the argument types of the method
+     * @return {@code true} is the class has a declared method that
+     * matches the name and the argument types. Otherwise it returns
+     * {@code false}.
+     */
     private boolean classHas(Class<?> klass, String name, Class<?>[] args) {
         try {
             klass.getDeclaredMethod(name, args);
@@ -318,11 +614,39 @@ public class Selector<T> {
     }
 
     /**
+     * Define a converter and allow redefinition.
+     * @param name the name of the converter
+     * @param function the function that performs the conversion
+     * @return {@code this}
+     */
+    public Selector converterRe(String name, Function<T, Object> function) {
+        converters.put(name, function);
+        return this;
+    }
+
+    /**
+     * Define a converter but it does not allow redefinition.
+     *
+     * @param name the name of the converter
+     * @param function the function that performs the conversion
+     * @return {@code this}
+     */
+    public Selector converter(String name, Function<T, Object> function) {
+        if (converters.containsKey(name)) {
+            throw new IllegalArgumentException("The converter '" + name + "' is already defined, can not be redefined");
+        }
+        return converterRe(name, function);
+    }
+
+    /**
      * Define a {@link Function} assigned to the name that can be referenced in the expression.
      *
-     * @param name     the name to be used in the expression referencing the function
-     * @param function the function that will be executed when evaluating {@code #name}, where {@code name} is actually
-     *                 the string provided in the argument {@code name}
+     * @param name     the name to be used in the expression referencing
+     *                 the function
+     * @param function the function that will be executed when
+     *                 evaluating {@code #name}, where {@code name} is
+     *                 actually the string provided in the argument
+     *                 {@code name}
      * @return {@code this} object to allow method chaining
      */
     @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
@@ -334,11 +658,14 @@ public class Selector<T> {
     }
 
     /**
-     * Define a {@link Function} assigned to the name that can be referenced in the expression. Essentially the same
-     * as {@link #selector(String, Function)} but this version will not throw an exception in case the function is
-     * already defined. It will overwrite the function assigned to the name.
+     * Define a {@link Function} assigned to the name that can be
+     * referenced in the expression. Essentially the same as {@link
+     * #selector(String, Function)} but this version will not throw an
+     * exception in case the function is already defined. It will
+     * overwrite the function assigned to the name.
      *
-     * @param name     the name to be used in the expression referencing the function
+     * @param name     the name to be used in the expression referencing
+     *                 the function
      * @param function the function that will be executed when evaluating {@code #name}, where {@code name} is actually
      *                 the string provided in the argument {@code name}
      * @return {@code this} object to allow method chaining
@@ -351,14 +678,23 @@ public class Selector<T> {
     /**
      * Define a {@link BiFunction} assigned to the name that can be referenced in the expression.
      *
-     * @param name     the name to be used in the expression referencing the function
-     * @param function the function that will be executed when evaluating {@code #name}, where {@code name} is actually
-     *                 the string provided in the argument {@code name}. The bi-function will get two arguments: 1.) the
-     *                 checked object and 2.) the regular expresison {@link Pattern}. It is up to the bi-function to decide
-     *                 if the pattern is used to find only or to match the whole string extracted from the object some
-     *                 way. It is also the responsibility of the bi-function to extract some string from the object
-     *                 calling getName, getSimpleName or whatever the object provides. For examples see the built-in
-     *                 bi-functions in the constructor of this class.
+     * @param name     the name to be used in the expression referencing
+     *                 the function
+     * @param function the function that will be executed when
+     *                 evaluating {@code #name}, where {@code name} is
+     *                 actually the string provided in the argument
+     *                 {@code name}. The bi-function will get two
+     *                 arguments: 1.) the checked object and 2.) the
+     *                 regular expression {@link Pattern}. It is up to
+     *                 the bi-function to decide if the pattern is used
+     *                 to find only or to match the whole string
+     *                 extracted from the object some way. It is also
+     *                 the responsibility of the bi-function to extract
+     *                 some string from the object calling getName,
+     *                 getSimpleName or whatever the object provides.
+     *                 For examples see the built-in bi-functions in the
+     *                 constructor of this class.
+     *
      * @return {@code this} object to allow method chaining
      */
     @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
@@ -403,6 +739,11 @@ public class Selector<T> {
         }
         if (node instanceof SelectorNode.And) {
             return matchAnd(m, (SelectorNode.And) node);
+        }
+        if (node instanceof SelectorNode.Converted) {
+            final var converter = ((SelectorNode.Converted) node).converter;
+            //TODO check that the converter exists and that the result after apply is not null
+            return match((T)converters.get(converter).apply(m), ((SelectorNode.Converted) node).subNode);
         }
         if (node instanceof SelectorNode.Not) {
             return !match(m, ((SelectorNode.Not) node).subNode);

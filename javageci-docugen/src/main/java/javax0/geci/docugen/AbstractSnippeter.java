@@ -92,11 +92,15 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
                 sourceParams.setConstraints(source, "'snip'", allowedKeys);
                 final var snippetName = sourceParams.get("snippet", name);
                 if (snippets == null) {
-                    throw new GeciException("The method class " + this.getClass().getName() + ".context() did not call 'super.context(context)'");
+                    throw new GeciException("There are no snippets. Probably the method class "
+                        + this.getClass().getName()
+                        + ".context() did not call 'super.context(context)'");
                 }
                 final var snippet = snippets.get(name, snippetName);
                 if (snippet == null) {
-                    throw new GeciException("The snippet '" + snippetName + "' is not defined but referenced in file '" + source.getAbsoluteFile() + "' in snippet");
+                    throw new GeciException("The snippet '" + snippetName
+                        + "' is not defined but referenced in file '" + source.getAbsoluteFile()
+                        + "' in snippet");
                 }
                 if (this instanceof NonConfigurable) {
                     modify(source, segment, snippet, null);

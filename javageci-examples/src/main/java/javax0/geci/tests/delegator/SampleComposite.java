@@ -2,7 +2,7 @@ package javax0.geci.tests.delegator;
 
 import javax0.geci.annotations.Geci;
 
-@Geci("delegator filter='name ~ /a/ | simpleName ~ /B/'")
+@Geci("delegator filter='name ~ /^a/ | simpleName ~ /^B/'")
 public class SampleComposite<K, V> {
 
     @Geci("delegator methods='!protected & !private'")

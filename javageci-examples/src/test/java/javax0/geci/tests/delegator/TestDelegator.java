@@ -9,6 +9,7 @@ import static javax0.geci.api.Source.maven;
 
 public class TestDelegator {
 
+    // snippet TestDelegator
     @Test
     public void testDelegator() throws Exception {
         final var geci = new Geci();
@@ -20,4 +21,5 @@ public class TestDelegator {
                         .generate(),
                 geci.failed());
     }
+    // end snippet
 }

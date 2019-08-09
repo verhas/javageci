@@ -9,12 +9,10 @@ import java.util.Arrays;
  * <ul>
  * <li>EXPRESSION ::= EXPRESSION1 ['|' EXPRESSION1 ]+ </li>
  * <li>EXPRESSION1 ::= EXPRESSION2 ['&amp;' EXPRESSION2] +</li>
- * <li>EXPRESSION2 :== TERMINAL | '!' EXPRESSION2 | '(' EXPRESSION ')' </li>
- * <li>TERMINAL ::= MODIFIER | PSEUDO_MODIFIER | name '~' REGEX | signature '~' REGEX |
- * annotation ~ REGEX | returns ~ REGEX | CALLER_DEFINED_SELECTOR</li>
- * <li>MODIFIER ::= private | protected | package | public | final | transient | volatile | static |
- * synthetic | synchronized | native | abstract | strict </li>
- * <li>PSEUDO_MODIFIER ::= default | implements | inherited | overrides | vararg | true | false </li>
+ * <li>EXPRESSION2 :== TERMINAL | '!' EXPRESSION2 | CONVERSION '->' EXPRESSION2 |'(' EXPRESSION ')' </li>
+ * <li>TERMINAL ::= TEST | REGEX_MATCH
+ * <li>TEST ::= registered word</li>
+ * <li>REGEX_MATCH ::= registered regex word '~' '/' regular expression '/'</li>
  * </ul>
  */
 class SelectorCompiler {
@@ -27,7 +25,7 @@ class SelectorCompiler {
         final var topNode = it.expression();
         if (it.lexer.rest().length() > 0) {
             throw new IllegalArgumentException("There are extra characters " +
-                "at the end of the selector expresison" + it.atRest());
+                "at the end of the selector expression" + it.atRest());
         }
         return topNode;
     }
@@ -83,6 +81,7 @@ class SelectorCompiler {
             lexer.get();
             return new SelectorNode.Not(expression2());
         }
+
         if (isSymbol("(")) {
             lexer.get();
             final var sub = expression();
@@ -95,6 +94,15 @@ class SelectorCompiler {
         }
         if (lexer.peek().type == Lexeme.Type.WORD) {
             final var name = lexer.get().string;
+            if( isSymbol("-")){
+                lexer.get();
+                if( isSymbol(">")) {
+                    lexer.get();
+                    return new SelectorNode.Converted(expression2(), name);
+                }else{
+                    throw new IllegalArgumentException("Conversion is missing -> " + atRest());
+                }
+            }
             if (isSymbol("~")) {
                 lexer.get();
                 if (lexer.peek().type != Lexeme.Type.REGEX) {
