@@ -68,63 +68,19 @@ then you should also specify a package with the `in` parameter.
 Let's say you have two modules `example-generators` and `example-annotations`.
 You put your generator (let's say `exampleGenerator`) in `example-generators` in the package `an.example.package`.
 
-<table>
-<thead>
-    <tr>
-        <td> <b>Annotation</b> </td>
-        <td> <b>Will result in</b> </td>
-    </tr>
-</thead>
-<tbody>
-    <tr>
-        <td><pre>@AnnotationBuilder</pre> </td>
-        <td>
-            module: example-generators <br/>
-            package: an.example.package.annotation
-        </td>
-    </tr>
-    <tr>
-        <td><pre>@AnnotationBuilder(module="example-annotations")</pre>
-        </td>
-        <td>
-            module: example-annotations <br/>
-            package: an.example.package.annotation
-        </td>
-    </tr>
-    <tr>
-        <td><pre>@AnnotationBuilder(in="other")</pre>
-        </td>
-        <td>
-            module: example-generators<br/>
-            package: an.example.package.other
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <pre>@AnnotationBuilder (
-    module="example-annotations",
-    in="other"
-)</pre>
-        </td>
-        <td>
-            module: example-annotations <br />
-            package: an.example.package.other
-        </td>
-    </tr>
-    <tr>
-        <td><pre>@AnnotationBuilder (
-    module="example-annotations", 
-    in="an.other.example", 
-    absolute="yes"
-)</pre>
-        </td>
-        <td>
-            module: example-annotations <br/>
-            package: an.other.example
-        </td>
-    </tr>
-</tbody>
-</table>
+| Annotation         | Will result in                         |
+| -------------------|--------------------------------------- |
+| @AnnotationBuilder | module: example-generators             |
+|                    | package: an.example.package.annotation |
+| @AnnotationBuilder(module="example-annotations") | module: example-annotations | 
+|                    |package: an.example.package.annotation |
+| @AnnotationBuilder(in="other") | module: example-generators |
+| |package: an.example.package.other |
+|@AnnotationBuilder(in="other", module="example-annotations")| module: example-annotations |  
+| | package: an.example.package.other |
+| @AnnotationBuilder (module="example-annotations", in="an.other.example", absolute="yes") | module: example-annotations |
+| | package: an.other.example |
+        
 
 If you have multiple generators in a module, for which you would like to put all 
 annotations in a common place, you can specify these parameters when registering 
