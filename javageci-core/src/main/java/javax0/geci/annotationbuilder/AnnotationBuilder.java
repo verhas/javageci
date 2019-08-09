@@ -27,12 +27,15 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
             final var keys = getImplementedKeysSorted(klass);
             final var annotation = CaseTools.ucase(mnemonic);
 
-            if(CompoundParams.toBoolean(local.absolute)) {
+            boolean isAbsolute = CompoundParams.toBoolean(local.absolute);
+            if (isAbsolute) {
                 local.in = "/" + local.in.replaceAll("[.]", "/");
             }
 
-            final var file = source.newSource(Source.Set.set(local.set), local.in + "/" + annotation + ".java");
-            writeContent(file, mnemonic, annotation, keys);
+            if (!local.in.isEmpty() || isAbsolute) {
+                final var file = source.newSource(Source.Set.set(local.set), local.in + "/" + annotation + ".java");
+                writeContent(file, mnemonic, annotation, keys);
+            }
         }
     }
 

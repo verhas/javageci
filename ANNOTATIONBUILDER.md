@@ -49,13 +49,17 @@ public @interface ExampleGenerator {
 
 ## `module='name-of-module'`
 
-Use `@AnnotationBuilder(module="name-of-module")` to generate the annotation
-into a different maven module (in this example into the module "name-of-module").
+Use `@AnnotationBuilder(module="name-of-source")` to generate the annotation
+into a different source (in this example into the source registered with "name-of-source").
+To use this feature, you have to add the destination source with the specified name.
 
 ## `in='name.of.package'`
 
 Use `@AnnotationBuilder(in="name.of.package")` to generate the annotation in a different
 (sub-)package.
+
+If you use `in=""` and not use `absolute="yes"`, the annotation generator will skip the file,
+to avoid overwriting the file for which you want to create the annotation.
  
 ## `absolute='true'`
  
@@ -67,8 +71,36 @@ then you should also specify a package with the `in` parameter.
 
 Let's say you have two modules `example-generators` and `example-annotations`.
 You put your generator (let's say `exampleGenerator`) in `example-generators` in the package `an.example.package`.
+Then, you add these sources when you register the annotation generator, using their names as identifiers, i.e.:
+```java
+package com.verhas.example.tests;
 
-All these examples use the `@AnnotationBuilder` annotation.
+import javax0.geci.engine.Geci;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import static javax0.geci.api.Source.maven;
+
+public class TestExampleGenerator {
+    @Test
+    void testExample() {
+        final var geci = new Geci();
+        Assertions.assertFalse(
+            geci.source(
+                Source.Set.set("example-generators"),
+                maven("example-generators").mainSource())
+            .source(
+                Source.Set.set("example-annotations"),
+                maven("example-annotations").mainSource()
+            )               
+            .register(AnnotationBuilder.builder().build())
+            .generate(),
+            geci.failed()
+        );
+    }
+}
+```
+Then you could use the `@AnnotationBuilder` annotation in the 'example-generators' module.
 
 | Parameters                                                            | Will result in                         |
 | --------------------------------------------------------------------- | -------------------------------------- |
