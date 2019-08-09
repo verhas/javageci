@@ -177,6 +177,8 @@ usually looks like the one that is used to create this documentation:
 ```java
 final var fragmentCollector = new Geci();
 fragmentCollector
+    .source(Source.maven().module("javageci-tools").mainSource())
+    .source(Source.maven().module("javageci-core").mainSource())
     .source(Source.maven().module("javageci-docugen").mainSource())
     .register(FragmentCollector.builder().build())
     .generate();
@@ -357,26 +359,28 @@ to create this documentation:
 ```java
 1. final var fragmentCollector = new Geci();
 2. fragmentCollector
-3.     .source(Source.maven().module("javageci-docugen").mainSource())
-4.     .register(FragmentCollector.builder().build())
-5.     .generate();
-6. 
-7. final var geci = new Geci();
-8. int i = 0;
-9. Assertions.assertFalse(
-10.     geci.context(fragmentCollector.context())
-11.         .source("..", ".").ignore("\\.git", "\\.(png|zip|class|jar|asc|graffle)$", "target")
-12.         .log(Geci.MODIFIED)
-13.         .register(SnippetCollector.builder().phase(i++).build())
-14.         .register(SnippetAppender.builder().phase(i++).build())
-15.         .register(SnippetRegex.builder().phase(i++).build())
-16.         .register(SnippetTrim.builder().phase(i++).build())
-17.         .register(SnippetNumberer.builder().phase(i++).build())
-18.         .register(SnipetLineSkipper.builder().phase(i++).build())
-19.         .register(MarkdownCodeInserter.builder().phase(i++).build())
-20.         .splitHelper("md", new MarkdownSegmentSplitHelper())
-21.         .generate(),
-22.     geci.failed());
+3.     .source(Source.maven().module("javageci-tools").mainSource())
+4.     .source(Source.maven().module("javageci-core").mainSource())
+5.     .source(Source.maven().module("javageci-docugen").mainSource())
+6.     .register(FragmentCollector.builder().build())
+7.     .generate();
+8. 
+9. final var geci = new Geci();
+10. int i = 0;
+11. Assertions.assertFalse(
+12.     geci.context(fragmentCollector.context())
+13.         .source("..", ".").ignore("\\.git", "\\.(png|zip|class|jar|asc|graffle)$", "target")
+14.         .log(Geci.MODIFIED)
+15.         .register(SnippetCollector.builder().phase(i++).build())
+16.         .register(SnippetAppender.builder().phase(i++).build())
+17.         .register(SnippetRegex.builder().phase(i++).build())
+18.         .register(SnippetTrim.builder().phase(i++).build())
+19.         .register(SnippetNumberer.builder().phase(i++).build())
+20.         .register(SnipetLineSkipper.builder().phase(i++).build())
+21.         .register(MarkdownCodeInserter.builder().phase(i++).build())
+22.         .splitHelper("md", new MarkdownSegmentSplitHelper())
+23.         .generate(),
+24.     geci.failed());
 ```
 
 we can have a look at line 14. It registers the
