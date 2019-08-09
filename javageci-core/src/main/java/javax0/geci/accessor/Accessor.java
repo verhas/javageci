@@ -31,6 +31,4 @@ public class Accessor extends AbstractAccessor {
     public static AbstractAccessor.Builder builder() {
         return new Accessor().new Builder();
     }
-
-    //<editor-fold id="annotationBuilder" />
 }

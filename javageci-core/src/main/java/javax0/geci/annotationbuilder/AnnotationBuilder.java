@@ -27,7 +27,7 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
             final var keys = getImplementedKeysSorted(klass);
             final var annotation = CaseTools.ucase(mnemonic);
 
-            boolean isAbsolute = CompoundParams.toBoolean(local.absolute);
+            boolean isAbsolute = javax0.geci.api.CompoundParams.toBoolean(local.absolute);
             if (isAbsolute) {
                 local.in = "/" + local.in.replaceAll("[.]", "/");
             }
@@ -121,6 +121,4 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
         return local;
     }
     //</editor-fold>
-
-    //<editor-fold id="annotationBuilder" />
 }
