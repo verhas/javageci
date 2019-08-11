@@ -13,7 +13,9 @@ public class FragmentCollector extends AbstractSnippeter implements Distant {
         // snippet FragmentCollector_config
         private Pattern snippetStart = Pattern.compile("^\\s*\\*\\s*-(?:\\s+(.*))?$");
         private Pattern snippetEnd = Pattern.compile("^\\s*\\*/\\s*$");
-        private Function<String,String> transform = line -> line.replaceAll("^\\s*\\*\\s?","");
+        private Function<String,String> transform = line ->
+            line.replaceAll("^\\s*\\*\\s?","")
+            .replaceAll("^\\s*</?p>\\s*$","");
         // end snippet
     }
 

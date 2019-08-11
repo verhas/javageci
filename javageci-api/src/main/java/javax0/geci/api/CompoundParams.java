@@ -99,6 +99,7 @@ public interface CompoundParams {
      * the list specified in the argument {@code defaults}.
      *
      * @param key we are looking for
+     * @param defaults is the list to be used if there are no values associated with the key
      * @return the list of string values associated to the key
      */
     List<String> getValueList(String key, List<String> defaults);

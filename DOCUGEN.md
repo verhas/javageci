@@ -277,7 +277,9 @@ default values are fitting Java:
 ```java
 snippetStart = "^\\s*\\*\\s*-(?:\\s+(.*))?$"
 snippetEnd   = "^\\s*\\*/\\s*$"
-transform = line -> line.replaceAll("^\\s*\\*\\s?","");
+transform = line ->
+   line.replaceAll("^\\s*\\*\\s?","")
+   .replaceAll("^\\s*</?p>\\s*$","");
 ```
 
 The snippets 
