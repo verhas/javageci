@@ -1,15 +1,15 @@
 package javax0.geci.accessor;
 
-import javax0.geci.api.Segment;
-
 import java.lang.reflect.Field;
+import javax0.geci.api.Segment;
+import javax0.geci.api.Source;
+import javax0.geci.core.annotations.AnnotationBuilder;
 
+@AnnotationBuilder(absolute = "yes")
 public class Accessor extends AbstractAccessor {
-
     public Accessor(){
         config.mnemonic = "accessor";
     }
-
 
     @Override
     protected void writeSetter(Field field, String name, String setterName,

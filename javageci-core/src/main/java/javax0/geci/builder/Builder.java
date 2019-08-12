@@ -3,6 +3,7 @@ package javax0.geci.builder;
 import javax0.geci.annotations.Generated;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
+import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.tools.AbstractFilteredFieldsGenerator;
 import javax0.geci.tools.CaseTools;
 import javax0.geci.tools.CompoundParams;
@@ -15,6 +16,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
+@AnnotationBuilder(absolute = "yes")
 public class Builder extends AbstractFilteredFieldsGenerator {
 
     private static class Config {
@@ -129,8 +131,7 @@ public class Builder extends AbstractFilteredFieldsGenerator {
         "id"
     );
 
-    @Override
-    protected java.util.Set<String> implementedKeys() {
+    @Override public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
     public class ConfBuilder {

@@ -114,7 +114,7 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
             var editorFoldParams = GeciAnnotationTools.getSegmentParameters(source, mnemonic());
             var global = new CompoundParams(annotationParams, editorFoldParams);
             global.setConstraints(source, mnemonic(), implementedKeys());
-            if (annotationParams != null || processAllClasses() ) {
+            if (annotationParams != null || processAllClasses()) {
                 source.allowDefaultSegment();
             }
             if (annotationParams != null || editorFoldParams != null || processAllClasses()) {
@@ -133,7 +133,7 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
      * @return {@code null}. Concrete implementations should return the
      * set of the keys that are accepted by the generator.
      */
-    protected Set<String> implementedKeys() {
+    public Set<String> implementedKeys() {
         return null;
     }
 

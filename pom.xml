@@ -6,7 +6,7 @@
     
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-parent</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.0-SNAPSHOT</version>
 
     <name>javageci-parent</name>
     <description>Java GEnerate Code Inline source code generation framework</description>
@@ -19,6 +19,7 @@
 <module>javageci-examples</module>
 <module>javageci-jamal</module>
 <module>javageci-docugen</module>
+<module>javageci-core-annotations</module>
 </modules>
     <licenses>
 <license>
@@ -146,32 +147,37 @@
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-api</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.0-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-core</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.0-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-tools</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.0-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-engine</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.0-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-annotation</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.0-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-docugen</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.0-SNAPSHOT</version>
+</dependency>
+<dependency>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-core-annotations</artifactId>
+    <version>1.2.0-SNAPSHOT</version>
 </dependency>
         
 <dependency>
