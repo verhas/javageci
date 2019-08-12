@@ -4,7 +4,10 @@ module geci.core {
     requires geci.annotation;
     requires jamal.engine;
     requires jamal.api;
+    requires geci.core.annotations;
 
+    exports javax0.geci.factory;
+    exports javax0.geci.annotationbuilder;
     exports javax0.geci.builder;
     exports javax0.geci.cloner;
     exports javax0.geci.config;

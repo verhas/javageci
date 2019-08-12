@@ -117,8 +117,7 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
         "id"
     );
 
-    @Override
-    protected java.util.Set<String> implementedKeys() {
+    @Override public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
     public class Builder {

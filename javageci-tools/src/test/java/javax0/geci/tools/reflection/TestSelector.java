@@ -9,6 +9,7 @@ import org.junit.jupiter.api.TestInfo;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -54,17 +55,56 @@ class TestSelector {
 
     @Test
     @DisplayName("List all private primitive fields")
-    void testStream(){
+    void testStream() {
         Set<Field> fields =
-                Arrays.stream(TestSelector.class.getDeclaredFields())
-                        .filter(Selector.compile("private & primitive")::match)
-                        .collect(Collectors.toSet());
-        Assertions.assertEquals(3,fields.size());
+            Arrays.stream(TestSelector.class.getDeclaredFields())
+                .filter(Selector.compile("private & primitive")::match)
+                .collect(Collectors.toSet());
+        Assertions.assertEquals(3, fields.size());
     }
 
     @Test
-    void testDeclaringClassDemo() throws Exception{
-        final var equals = this.getClass().getMethod("equals",Object.class);
+    @DisplayName("When the argument to match is null the return value has to be false except for 'null' and 'ture'")
+    void testNullIsFalse() throws Exception {
+        for (final var key : getFunctionMapKeys("selectors")) {
+            Assertions.assertEquals("null".equals(key) || "true".equals(key),
+                Selector.compile(key).match(null));
+        }
+    }
+
+    @Test
+    @DisplayName("When the argument to match is null then any conversion will return also null")
+    void testNullIsNull() throws Exception {
+        for (final var key : getFunctionMapKeys("converters")) {
+            Assertions.assertTrue(Selector.compile(key + " -> null").match(null));
+        }
+    }
+
+    @Test
+    @DisplayName("When the argument to match is null then any regular expression matching is false")
+    void testNullIsFalseInRegex() throws Exception {
+        for (final var key : getFunctionMapKeys("regexMemberSelectors")) {
+            Assertions.assertFalse(Selector.compile(key + " ~/.*/").match(null));
+        }
+    }
+
+    private Set<String> getFunctionMapKeys(final String fieldName) throws NoSuchFieldException, IllegalAccessException {
+        final var selectorObject = Selector.compile("true");
+        final var selectorsField = Selector.class.getDeclaredField(fieldName);
+        selectorsField.setAccessible(true);
+        return ((Map) selectorsField.get(selectorObject)).keySet();
+    }
+
+    @Test
+    @DisplayName("Test that Object.declaringClass returns null and that returns false when checked")
+    void testNoParent() {
+        Assertions.assertFalse(Selector.compile("declaringClass -> !null & simpleName ~ /^Test/").match(Object.class));
+        Assertions.assertFalse(Selector.compile("declaringClass -> simpleName ~ /^Test/").match(Object.class));
+    }
+
+    @Test
+    void testDeclaringClassDemo() throws Exception {
+        final var equals = this.getClass().getMethod("equals", Object.class);
         final var hashCode = this.getClass().getMethod("hashCode");
         final var matcher = Selector.compile("(simpleName ~ /boolean/ | simpleName ~ /int/) & declaringClass -> !simpleName ~ /Object/ ");
         Assertions.assertTrue(matcher.match(equals));
@@ -72,12 +112,12 @@ class TestSelector {
     }
 
     @Test
-    void testDeclaringClass() throws Exception{
+    void testDeclaringClass() throws Exception {
         Assertions.assertTrue(Selector.compile("declaringClass -> simpleName ~ /^Test/").match(TestSelector.class.getDeclaredMethod("testDeclaringClass")));
     }
 
     @Test
-    void testImplements(){
+    void testImplements() {
         Assertions.assertTrue(Selector.compile("implements ~ /Function/").match(X.class));
         Assertions.assertTrue(Selector.compile("implements").match(X.class));
         Assertions.assertFalse(Selector.compile("implements").match(TestSelector.class));
@@ -86,7 +126,7 @@ class TestSelector {
 
     @Test
     @DisplayName("tests that a class has a super class other than object")
-    void testExtends(){
+    void testExtends() {
         Assertions.assertFalse(Selector.compile("extends").match(Object.class));
         Assertions.assertFalse(Selector.compile("extends").match(TestSelector.class));
         Assertions.assertTrue(Selector.compile("extends").match(Integer.class));
@@ -110,7 +150,7 @@ class TestSelector {
     @DisplayName("throws IllegalArgumentException when we test something for 'blabla'")
     void testInvalidTest() {
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("blabla").match(IGNORED_MEMBER));
+            () -> Selector.compile("blabla").match(IGNORED_MEMBER));
     }
 
     @Test
@@ -421,14 +461,14 @@ class TestSelector {
     void testTransientMethod() throws NoSuchMethodException {
         final var f = this.getClass().getDeclaredMethod("method_static");
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("transient").match(f));
+            () -> Selector.compile("transient").match(f));
     }
 
     @Test
     void testVolatileMethod() throws NoSuchMethodException {
         final var f = this.getClass().getDeclaredMethod("method_static");
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("volatile").match(f));
+            () -> Selector.compile("volatile").match(f));
     }
 
     @Test
@@ -441,42 +481,42 @@ class TestSelector {
     void testSynchronizedField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("synchronized").match(f));
+            () -> Selector.compile("synchronized").match(f));
     }
 
     @Test
     void testAbstractField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("abstract").match(f));
+            () -> Selector.compile("abstract").match(f));
     }
 
     @Test
     void testStrictField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("strict").match(f));
+            () -> Selector.compile("strict").match(f));
     }
 
     @Test
     void testVarargField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("vararg").match(f));
+            () -> Selector.compile("vararg").match(f));
     }
 
     @Test
     void testNativeField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("native").match(f));
+            () -> Selector.compile("native").match(f));
     }
 
     @Test
     void testThrowingField() throws NoSuchFieldException {
         final var f = this.getClass().getDeclaredField("i");
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> Selector.compile("throws ~ /IllegalArgumentException/").match(f));
+            () -> Selector.compile("throws ~ /IllegalArgumentException/").match(f));
     }
 
     @Test

@@ -242,6 +242,9 @@ These conditions work on filds, classes and methods.
 
 * `false` is `false` always.
 
+* `null` is `true` when the tested something is null. This can be used to test when a field, class or method
+has a parent, enclosing class or something else that we can examine with a `->` operator.
+
 * `private` is `true` if the examined member has private
 protection.
 

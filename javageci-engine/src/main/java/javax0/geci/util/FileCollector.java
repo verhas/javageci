@@ -76,7 +76,7 @@ public class FileCollector {
      * @param s the not yet normalized directory name
      * @return the normalized directory name
      */
-    private static String normalized(String s) {
+    public static String normalized(String s) {
         s = normalize(s);
         if (!s.endsWith("/")) {
             s += "/";

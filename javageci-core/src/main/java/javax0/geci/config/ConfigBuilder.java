@@ -112,7 +112,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
                 .write_l(");")
                 .newline();
         segment.write_l("@Override")
-                .write_r("protected java.util.Set<String> implementedKeys() {")
+                .write_r("public java.util.Set<String> implementedKeys() {")
                 .write("return implementedKeys;")
                 .write_l("}");
     }
@@ -255,8 +255,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
             "id"
     );
 
-    @Override
-    protected java.util.Set<String> implementedKeys() {
+    @Override public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
 

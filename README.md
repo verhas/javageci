@@ -60,13 +60,13 @@ To do that with maven use the following dependencies:
     <!-- This is optional, you can use your own annotations or comment config -->
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-annotation</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.0-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-engine</artifactId>
     <scope>test</scope>
-    <version>1.2.0</version>
+    <version>1.2.0-SNAPSHOT</version>
 </dependency>
 ```
 

@@ -5,7 +5,7 @@
 <packaging>jar</packaging>
     
     
-    <artifactId>javageci-core</artifactId>
+    <artifactId>javageci-core-annotations</artifactId>
     <version>1.2.0-SNAPSHOT</version>
 
     <parent>
@@ -14,8 +14,8 @@
     <version>1.2.0-SNAPSHOT</version>
 
 </parent>
-    <name>javageci core</name>
-    <description>Javageci generator library core code generators</description>
+    <name>javageci core annotations</name>
+    <description>Javageci macro library annotation generator for core generators</description>
 
     <build><plugins>
         <plugin>
@@ -39,37 +39,6 @@
         
             
 <dependency>
-    <groupId>com.javax0.geci</groupId>
-    <artifactId>javageci-api</artifactId>
-    
-</dependency>
-            
-<dependency>
-    <groupId>com.javax0.geci</groupId>
-    <artifactId>javageci-tools</artifactId>
-    
-</dependency>
-            
-<dependency>
-    <groupId>com.javax0.geci</groupId>
-    <artifactId>javageci-annotation</artifactId>
-    
-</dependency>
-            
-<dependency>
-    <groupId>com.javax0.geci</groupId>
-    <artifactId>javageci-engine</artifactId>
-    
-</dependency>
-            
-<dependency>
-    <groupId>com.javax0.geci</groupId>
-    <artifactId>javageci-core-annotations</artifactId>
-    
-</dependency>
-        
-            
-<dependency>
     <groupId>org.junit.jupiter</groupId>
     <artifactId>junit-jupiter-api</artifactId>
     
@@ -88,7 +57,12 @@
     <artifactId>jamal-engine</artifactId>
     <version>1.0.3</version>
 </dependency>
-
+        
+<dependency>
+    <groupId>com.javax0.geci</groupId>
+    <artifactId>javageci-annotation</artifactId>
+    <version>1.2.0-SNAPSHOT</version>
+</dependency>
     </dependencies>
 </project>
 
