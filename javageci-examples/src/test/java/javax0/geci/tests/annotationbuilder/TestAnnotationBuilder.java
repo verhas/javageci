@@ -18,7 +18,6 @@ public class TestAnnotationBuilder {
         Assertions.assertFalse(
             geci.source(maven().module("javageci-core").mainSource())
                 .source(ANNOTATION_OUTPUT, maven().module("javageci-core-annotations").mainSource())
-                .only("AnnotationBuilder")
                 .register(AnnotationBuilder.builder()
                     .set(ANNOTATION_OUTPUT)
                     .in("javax0.geci.core.annotations")
