@@ -1,58 +1,52 @@
-
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-                            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-<modelVersion>4.0.0</modelVersion>
-<packaging>pom</packaging>
-    
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-parent</artifactId>
     <version>1.2.0-SNAPSHOT</version>
-
     <name>javageci-parent</name>
     <description>Java GEnerate Code Inline source code generation framework</description>
     <modules>
-<module>javageci-engine</module>
-<module>javageci-api</module>
-<module>javageci-tools</module>
-<module>javageci-core</module>
-<module>javageci-annotation</module>
-<module>javageci-examples</module>
-<module>javageci-jamal</module>
-<module>javageci-docugen</module>
-<module>javageci-core-annotations</module>
-</modules>
+        <module>javageci-engine</module>
+        <module>javageci-api</module>
+        <module>javageci-tools</module>
+        <module>javageci-core</module>
+        <module>javageci-annotation</module>
+        <module>javageci-examples</module>
+        <module>javageci-jamal</module>
+        <module>javageci-docugen</module>
+        <module> javageci-core-annotations</module>
+    </modules>
     <licenses>
-<license>
-    <name>The Apache License, Version 2.0</name>
-    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-</license>
-</licenses>
-       <developers>
-                                         <developer>
-                                             <name>Peter Verhas</name>
-                                             <email>peter@verhas.com</email>
-                                         </developer>
-                                     </developers>
-        <scm>
-                                             <connection>scm:git:git://github.com/verhas/javageci.git</connection>
-                                             <developerConnection>scm:git:ssh://github.com/verhas/javageci.git</developerConnection>
-                                             <url>https:/github.com/verhas/javageci/tree/master</url>
-                                         </scm>
-                                         <url>https:/github.com/verhas/javageci/tree/master</url>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Peter Verhas</name>
+            <email>peter@verhas.com</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git://github.com/verhas/javageci.git</connection>
+        <developerConnection>scm:git:ssh://github.com/verhas/javageci.git</developerConnection>
+        <url>https:/github.com/verhas/javageci/tree/master</url>
+    </scm>
+    <url>https:/github.com/verhas/javageci/tree/master</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <build><pluginManagement><plugins>
+    <build>
+        <pluginManagement>
+            <plugins>
                 <plugin>
-                    
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-surefire-plugin</artifactId>
-    <version>3.0.0-M3</version>
-
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M3</version>
                     <configuration>
-                    
-                    
-                    
                         <argLine>
                             --add-opens geci.api/javax0.geci.api=ALL-UNNAMED
                             --add-opens geci.tools/javax0.geci.tools=ALL-UNNAMED
@@ -87,20 +81,17 @@
                         </argLine>
                     </configuration>
                     <dependencies>
-                        
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter-engine</artifactId>
-    <version>5.5.1</version>
-</dependency>
+                        <dependency>
+                            <groupId>org.junit.jupiter</groupId>
+                            <artifactId>junit-jupiter-engine</artifactId>
+                            <version>5.5.1</version>
+                        </dependency>
                     </dependencies>
                 </plugin>
                 <plugin>
-                    
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-source-plugin</artifactId>
-    <version>3.0.1</version>
-
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.0.1</version>
                     <executions>
                         <execution>
                             <id>attach-sources</id>
@@ -111,30 +102,32 @@
                     </executions>
                 </plugin>
                 <plugin>
-                    
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-javadoc-plugin</artifactId>
-    <version>3.1.0</version>
-
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.1.0</version>
                     <configuration>
                         <detectLinks>false</detectLinks>
                     </configuration>
                     <dependencies>
-<dependency>
-    <groupId>org.ow2.asm</groupId>
-    <artifactId>asm</artifactId>
-    <version>7.0</version>
-</dependency></dependencies>
-                    <executions><execution>
+                        <dependency>
+                            <groupId>org.ow2.asm</groupId>
+                            <artifactId>asm</artifactId>
+                            <version>7.0</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
                             <id>attach-javadocs</id>
-                            <goals><goal>jar</goal></goals></execution></executions>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
-                    
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-compiler-plugin</artifactId>
-    <version>3.8.0</version>
-
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
                     <configuration>
                         <release>11</release>
                     </configuration>
@@ -142,56 +135,55 @@
             </plugins>
         </pluginManagement>
     </build>
-    <dependencyManagement><dependencies>
-        
-<dependency>
-    <groupId>com.javax0.geci</groupId>
-    <artifactId>javageci-api</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
-</dependency>
-<dependency>
-    <groupId>com.javax0.geci</groupId>
-    <artifactId>javageci-core</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
-</dependency>
-<dependency>
-    <groupId>com.javax0.geci</groupId>
-    <artifactId>javageci-tools</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
-</dependency>
-<dependency>
-    <groupId>com.javax0.geci</groupId>
-    <artifactId>javageci-engine</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
-</dependency>
-<dependency>
-    <groupId>com.javax0.geci</groupId>
-    <artifactId>javageci-annotation</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
-</dependency>
-<dependency>
-    <groupId>com.javax0.geci</groupId>
-    <artifactId>javageci-docugen</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
-</dependency>
-<dependency>
-    <groupId>com.javax0.geci</groupId>
-    <artifactId>javageci-core-annotations</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
-</dependency>
-        
-<dependency>
-<groupId>org.junit.jupiter</groupId>
-<artifactId>junit-jupiter-api</artifactId>
-<version>5.5.1</version>
-<scope>test</scope>
-</dependency>
-<dependency>
-<groupId>org.junit.jupiter</groupId>
-<artifactId>junit-jupiter-engine</artifactId>
-<version>5.5.1</version>
-<scope>test</scope>
-</dependency>
-        </dependencies></dependencyManagement>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.javax0.geci</groupId>
+                <artifactId>javageci-api</artifactId>
+                <version>1.2.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.javax0.geci</groupId>
+                <artifactId>javageci-core</artifactId>
+                <version>1.2.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.javax0.geci</groupId>
+                <artifactId>javageci-tools</artifactId>
+                <version>1.2.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.javax0.geci</groupId>
+                <artifactId>javageci-engine</artifactId>
+                <version>1.2.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.javax0.geci</groupId>
+                <artifactId>javageci-annotation</artifactId>
+                <version>1.2.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.javax0.geci</groupId>
+                <artifactId>javageci-docugen</artifactId>
+                <version>1.2.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.javax0.geci</groupId>
+                <artifactId>javageci-core-annotations</artifactId>
+                <version>1.2.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>5.5.1</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>5.5.1</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>
-
