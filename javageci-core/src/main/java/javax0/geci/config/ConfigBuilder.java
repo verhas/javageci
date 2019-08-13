@@ -3,6 +3,7 @@ package javax0.geci.config;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
+import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CaseTools;
 import javax0.geci.tools.CompoundParams;
@@ -21,6 +22,7 @@ import static javax0.geci.api.CompoundParams.toBoolean;
  * <p>
  * To use this generator the class has to contain a {@code private static class} named {@code Config}.
  */
+@AnnotationBuilder
 public class ConfigBuilder extends AbstractJavaGenerator {
 
     private static class Config {
@@ -111,7 +113,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         segment.write("\"id\"")
                 .write_l(");")
                 .newline();
-        segment.write_l("@Override")
+        segment.write("@Override")
                 .write_r("public java.util.Set<String> implementedKeys() {")
                 .write("return implementedKeys;")
                 .write_l("}");
@@ -238,27 +240,26 @@ public class ConfigBuilder extends AbstractJavaGenerator {
 
     //<editor-fold id="configBuilder">
     private final Config config = new Config();
-
     public static ConfigBuilder.Builder builder() {
         return new ConfigBuilder().new Builder();
     }
 
     private static final java.util.Set<String> implementedKeys = java.util.Set.of(
-            "buildMethod",
-            "builderFactoryMethod",
-            "builderName",
-            "configAccess",
-            "configurableMnemonic",
-            "filter",
-            "generateImplementedKeys",
-            "localConfigMethod",
-            "id"
+        "buildMethod",
+        "builderFactoryMethod",
+        "builderName",
+        "configAccess",
+        "configurableMnemonic",
+        "filter",
+        "generateImplementedKeys",
+        "localConfigMethod",
+        "id"
     );
 
-    @Override public java.util.Set<String> implementedKeys() {
+    @Override
+    public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
-
     public class Builder {
         public Builder buildMethod(String buildMethod) {
             config.buildMethod = buildMethod;
@@ -304,17 +305,16 @@ public class ConfigBuilder extends AbstractJavaGenerator {
             return ConfigBuilder.this;
         }
     }
-
-    private Config localConfig(CompoundParams params) {
+    private Config localConfig(CompoundParams params){
         final var local = new Config();
-        local.buildMethod = params.get("buildMethod", config.buildMethod);
-        local.builderFactoryMethod = params.get("builderFactoryMethod", config.builderFactoryMethod);
-        local.builderName = params.get("builderName", config.builderName);
-        local.configAccess = params.get("configAccess", config.configAccess);
-        local.configurableMnemonic = params.get("configurableMnemonic", config.configurableMnemonic);
-        local.filter = params.get("filter", config.filter);
-        local.generateImplementedKeys = params.get("generateImplementedKeys", config.generateImplementedKeys);
-        local.localConfigMethod = params.get("localConfigMethod", config.localConfigMethod);
+        local.buildMethod = params.get("buildMethod",config.buildMethod);
+        local.builderFactoryMethod = params.get("builderFactoryMethod",config.builderFactoryMethod);
+        local.builderName = params.get("builderName",config.builderName);
+        local.configAccess = params.get("configAccess",config.configAccess);
+        local.configurableMnemonic = params.get("configurableMnemonic",config.configurableMnemonic);
+        local.filter = params.get("filter",config.filter);
+        local.generateImplementedKeys = params.get("generateImplementedKeys",config.generateImplementedKeys);
+        local.localConfigMethod = params.get("localConfigMethod",config.localConfigMethod);
         return local;
     }
     //</editor-fold>

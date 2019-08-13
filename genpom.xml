@@ -10,7 +10,7 @@
             <plugin>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-maven-plugin</artifactId>
-                <version>1.0.2</version>
+                <version>1.0.4</version>
                 <executions>
                     <execution>
                         <id>execution</id>
@@ -27,6 +27,7 @@
                             <targetDirectory>.</targetDirectory>
                             <macroOpen>{</macroOpen>
                             <macroClose>}</macroClose>
+                            <formatOutput>true</formatOutput>
                         </configuration>
                     </execution>
                 </executions>

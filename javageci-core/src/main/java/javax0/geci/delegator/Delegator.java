@@ -3,6 +3,7 @@ package javax0.geci.delegator;
 import javax0.geci.annotations.Generated;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
+import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.tools.AbstractFilteredFieldsGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@AnnotationBuilder
 public class Delegator extends AbstractFilteredFieldsGenerator {
     private static class Config {
         /**
@@ -74,9 +76,6 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
         private String methods = "public & !static";
     }
 
-    private Delegator() {
-    }
-
     @Override
     public void process(Source source, Class<?> klass, CompoundParams params, Field field, Segment segment) {
         final var name = field.getName();
@@ -132,7 +131,8 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
         "id"
     );
 
-    @Override public java.util.Set<String> implementedKeys() {
+    @Override
+    public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
     public class Builder {

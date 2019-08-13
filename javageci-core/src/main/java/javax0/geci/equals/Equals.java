@@ -3,6 +3,7 @@ package javax0.geci.equals;
 import javax0.geci.annotations.Generated;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
+import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.tools.AbstractFilteredFieldsGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
  * (Note that in this case the last parameter is an array and not a
  * single field.)
  */
+@AnnotationBuilder
 public class Equals extends AbstractFilteredFieldsGenerator {
 
     private static class Config {
@@ -336,7 +338,8 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         "id"
     );
 
-    @Override public java.util.Set<String> implementedKeys() {
+    @Override
+    public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
     public class Builder {

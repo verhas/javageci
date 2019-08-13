@@ -231,7 +231,7 @@ parameter `filter` that may limit the fields that are processed.
 
 ## Configuration
 
-<!-- snip config snippet="epsilon" 
+<!-- snip Delegator_Config snippet="epsilon" 
               append="snippets='Delegator_Config_.*'" -->
 
 * `generatedAnnotation` can be used to define the annotation

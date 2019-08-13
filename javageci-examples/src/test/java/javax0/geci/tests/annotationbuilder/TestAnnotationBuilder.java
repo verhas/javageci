@@ -1,29 +1,30 @@
 package javax0.geci.tests.annotationbuilder;
 
 import javax0.geci.annotationbuilder.AnnotationBuilder;
-import javax0.geci.api.Source;
 import javax0.geci.engine.Geci;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static javax0.geci.api.Source.maven;
+
+// snippet TestAnnotationBuilder
 public class TestAnnotationBuilder {
+
+    public static final String ANNOTATION_OUTPUT = "annotation-output";
 
     @Test
     public void testAnnotationBuilder() throws Exception {
         final var geci = new Geci();
-         Assertions.assertFalse(
-            geci.source(
-                    "./javageci-core/src/main/java/",
-                    "../javageci-core/src/main/java/")
-                .source(Source.Set.set("annotation-output"),
-                    "./javageci-core-annotations/src/main/java",
-                    "../javageci-core-annotations/src/main/java")
+        Assertions.assertFalse(
+            geci.source(maven().module("javageci-core").mainSource())
+                .source(ANNOTATION_OUTPUT, maven().module("javageci-core-annotations").mainSource())
+                .only("AnnotationBuilder")
                 .register(AnnotationBuilder.builder()
-                    .set("annotation-output")
-                    .absolute("yes")
+                    .set(ANNOTATION_OUTPUT)
                     .in("javax0.geci.core.annotations")
                     .build())
                 .generate(),
             geci.failed());
     }
 }
+// end snippet

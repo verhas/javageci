@@ -4,9 +4,6 @@ import javax0.geci.api.GeciException;
 import javax0.geci.api.Generator;
 import javax0.geci.api.Source;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 /**
  * An abstract generator. Generators that do not want to implement the
  * interface {@link Generator} directly can extend this class and define

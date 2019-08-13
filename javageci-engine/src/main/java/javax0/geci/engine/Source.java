@@ -344,8 +344,10 @@ public class Source implements javax0.geci.api.Source {
                 originals.add(line);
             });
             inMemory = true;
+        }catch (IOException e){
+            throw e;
         } catch (Exception e) {
-            throw new GeciException("Cannot read the file " + absoluteFile + "\nIt is probably binary file. Use '.ignore()' to filter binary files out");
+            throw new GeciException("Cannot read the file " + absoluteFile + "\nIt is probably binary file. Use '.ignore()' to filter binary files out",e);
         }
     }
 

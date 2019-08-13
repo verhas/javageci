@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
  *
  * @param <T> the type of the member to test. Field, Class, Method etc.
  */
+@SuppressWarnings("DanglingJavadoc")
 public class Selector<T> {
 
     private static final int SYNTHETIC = 0x00001000;
@@ -73,7 +74,7 @@ public class Selector<T> {
          * Note that there is an `enclosingClass` that can be applied to
          * classes.
          */
-        converter("declaringClass", m -> getDeclaringClass(m));
+        converter("declaringClass", this::getDeclaringClass);
         converter("returnType", m -> only(m, Method.class) ? ((Method) m).getReturnType() : null);
         converter("type", m -> only(m, Field.class) ? ((Field) m).getType() : null);
         converter("superClass", m -> only(m, Class.class) ? ((Class) m).getSuperclass() : null);
@@ -432,7 +433,7 @@ public class Selector<T> {
          * * `null` is `true` when the tested something is null. This can be used to test when a field, class or method
          * has a parent, enclosing class or something else that we can examine with a `->` operator.
          */
-        selector("null", m -> m == null);
+        selector("null", Objects::isNull);
         /**
          * -
          *
