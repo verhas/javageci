@@ -9,3 +9,4 @@ version in a maven property because that cannot be used to reference the parent.
 {@define MAVEN_SOURCE_PLUGIN_VERSION=3.0.1}
 {@define MAVEN_COMPILER_PLUGIN_VERSION=3.8.0}
 {@define MAVEN_JAVADOC_PLUGIN_VERSION=3.1.0}
+{@define JAMAL_VERSION=1.0.3}
