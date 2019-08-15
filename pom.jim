@@ -10,6 +10,8 @@
 {#eval {@for _tag in (name,groupId,artifactId,version,scope,packaging,description,url,properties,build,pluginManagement,plugins,plugin,dependencyManagement,dependencies,scm,connection,developerConnection,executions,execution,id,goals,goal)=
 {tag/_tag}}}
 
+{@define JAMAL=com.javax0.jamal}
+
 {@define GAV(_groupId,_artifactId,_version)=
     {#if|_groupId|{groupId :_groupId}}
     {#if|_artifactId|{artifactId :_artifactId}}
