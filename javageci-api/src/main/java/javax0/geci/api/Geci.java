@@ -135,6 +135,36 @@ public interface Geci {
         return source(nameAndSet.set, nameAndSet.directories);
     }
 
+    /**
+     * Set the source set with the given name specified in the
+     * {@code set} parameter but use the array of directory
+     * names from the parameter {@code nameAndSet}. Using this method
+     * you can simply specify the source set as, for
+     * example {@code geci.source(set("otherName"), maven.mainSource());}.
+     *
+     * @param set the set that contains the name of the set
+     * @param nameAndSet the name of the set and the directories array
+     * @return {@code this}
+     */
+    default Geci source(Source.Set set, Source.NamedSourceSet nameAndSet) {
+        return source(set, nameAndSet.directories);
+    }
+
+    /**
+     * Set the source set with the given name specified in the
+     * {@code set} parameter but use the array of directory
+     * names from the parameter {@code nameAndSet}. Using this method
+     * you can simply specify the source set as, for
+     * example {@code geci.source("otherName", maven.mainSource());}.
+     *
+     * @param set the set name as string
+     * @param nameAndSet the name of the set and the directories array
+     * @return {@code this}
+     *
+     */
+    default Geci source(String set, Source.NamedSourceSet nameAndSet) {
+        return source(Source.Set.set(set), nameAndSet.directories);
+    }
 
     /**
      * Register the four standard maven directories as source sets. The source sets are also named with the

@@ -4,6 +4,7 @@ import javax0.geci.annotations.Geci;
 import javax0.geci.annotations.Generated;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
+import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
@@ -19,6 +20,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+@AnnotationBuilder
 @Geci("repeated values='preprocess,processField,processMethod,processClass," +
         "processMemberClass,processMethods,processClasses,processFields," +
         "postprocess,preprocessClass,postprocessClass'")
@@ -608,7 +610,8 @@ public class Templated extends AbstractJavaGenerator {
         "id"
     );
 
-    @Override public java.util.Set<String> implementedKeys() {
+    @Override
+    public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
     public class Builder {

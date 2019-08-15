@@ -16,7 +16,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
-@AnnotationBuilder(absolute = "yes")
+@AnnotationBuilder()
 public class Builder extends AbstractFilteredFieldsGenerator {
 
     private static class Config {
@@ -131,7 +131,8 @@ public class Builder extends AbstractFilteredFieldsGenerator {
         "id"
     );
 
-    @Override public java.util.Set<String> implementedKeys() {
+    @Override
+    public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
     public class ConfBuilder {

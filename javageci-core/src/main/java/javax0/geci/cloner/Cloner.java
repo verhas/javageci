@@ -3,6 +3,7 @@ package javax0.geci.cloner;
 import javax0.geci.annotations.Generated;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
+import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.tools.AbstractFilteredFieldsGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
@@ -23,6 +24,7 @@ import static javax0.geci.tools.CaseTools.ucase;
  * sample class `NeedCloner` has the fields
  * //end snippet
  */
+@AnnotationBuilder
 public class Cloner extends AbstractFilteredFieldsGenerator {
 
     public Cloner() {
@@ -239,7 +241,8 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         "id"
     );
 
-    @Override public java.util.Set<String> implementedKeys() {
+    @Override
+    public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
     public class Builder {

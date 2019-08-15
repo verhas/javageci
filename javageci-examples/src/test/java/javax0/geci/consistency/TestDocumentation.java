@@ -99,7 +99,7 @@ class TestDocumentation {
     }
 
     private void checkModuleParentVersion(String rootDir, String module, String projectVersion) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException {
-        final var pom = new File(rootDir + "/" + module + "/pom.xml");
+        final var pom = new File(rootDir + "/" + module.strip() + "/pom.xml");
         final var xml = Xml.from(pom);
         var version = xml.get("/project/parent/version");
         if (!projectVersion.equals(version)) {

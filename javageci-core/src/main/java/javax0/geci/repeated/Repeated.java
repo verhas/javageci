@@ -3,6 +3,7 @@ package javax0.geci.repeated;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
+import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.templated.Context;
 import javax0.geci.templated.Triplet;
 import javax0.geci.tools.AbstractJavaGenerator;
@@ -19,6 +20,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@AnnotationBuilder
 public class Repeated extends AbstractJavaGenerator {
     private class Config {
         private String start = ".*//\\s*START\\s*";
@@ -45,14 +47,14 @@ public class Repeated extends AbstractJavaGenerator {
         }
 
         private void setResolver(BiFunction<Context, String, String> resolver) {
-            if (resolverMap.containsKey(selector)) {
+            if (resolverMap.containsKey(selector.toString())) {
                 throw new GeciException("Selector '" + selector + "' already has a resolver");
             }
             resolverMap.put(selector.toString(), resolver);
         }
 
         private void setDefine(BiConsumer<Context, String> define) {
-            if (defineMap.containsKey(selector)) {
+            if (defineMap.containsKey(selector.toString())) {
                 throw new GeciException("Selector '" + selector + "' already has a define");
             }
             defineMap.put(selector.toString(), define);
@@ -193,7 +195,8 @@ public class Repeated extends AbstractJavaGenerator {
         "id"
     );
 
-    @Override public java.util.Set<String> implementedKeys() {
+    @Override
+    public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
     public class Builder {
