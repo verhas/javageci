@@ -196,6 +196,11 @@ public interface Source {
      * When calculating the class name the directory structure is used and the name of the source file
      * chopping off the {@code .java} or other extension.
      *
+     * Note: The seemingly weird decision to use 'K' in the name of the method provides some consistency. The method
+     * {@link #getKlass()} cannot be named {@code getClass()} because that would override the method of the same name
+     * in the class {@code Object}. Based on that all the methods that are returning the name or simple name of the
+     * "klass" uses the letter 'K' even though these two methods could be named with the letter 'C'.
+     *
      * @return the class name that was calculated from the file name
      */
     String getKlassName();

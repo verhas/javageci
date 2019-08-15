@@ -1,10 +1,13 @@
-package javax0.geci.util;
+package javax0.geci.engine;
 
 
 import javax0.geci.api.DirectoryLocator;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.engine.Source;
+import javax0.geci.util.DirectoryLocated;
+import javax0.geci.util.JavaSegmentSplitHelper;
+import javax0.geci.util.NullSegmentSplitHelper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class FileCollector {
+class FileCollector {
 
     private final Map<Source.Set, DirectoryLocator> directories;
     private final Map<Source.Set, DirectoryLocated> located = new HashMap<>();

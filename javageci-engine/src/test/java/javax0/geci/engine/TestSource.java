@@ -1,6 +1,5 @@
 package javax0.geci.engine;
 
-import javax0.geci.util.FileCollector;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

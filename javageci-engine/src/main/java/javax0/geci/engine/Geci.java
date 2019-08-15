@@ -8,7 +8,6 @@ import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.util.DirectoryLocator;
-import javax0.geci.util.FileCollector;
 
 import java.io.IOException;
 import java.nio.file.Path;

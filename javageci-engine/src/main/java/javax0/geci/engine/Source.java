@@ -3,7 +3,6 @@ package javax0.geci.engine;
 
 import javax0.geci.api.*;
 import javax0.geci.tools.GeciReflectionTools;
-import javax0.geci.util.FileCollector;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -47,7 +46,7 @@ public class Source implements javax0.geci.api.Source {
      * @param dir       the directory of the source
      * @param path      the path of the source
      */
-    public Source(FileCollector collector, String dir, Path path) {
+    Source(FileCollector collector, String dir, Path path) {
         this.collector = collector;
         this.dir = dir;
         className = FileCollector.calculateClassName(dir, path);
