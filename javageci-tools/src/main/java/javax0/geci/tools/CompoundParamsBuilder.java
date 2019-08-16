@@ -12,7 +12,7 @@ import java.util.Map;
 import static javax0.geci.javacomparator.lex.LexicalElement.Type.*;
 
 /**
- * Create a new CompoundParams object out of a string. The string shouéd
+ * Create a new CompoundParams object out of a string. The string should
  * start with the {@code id} and it is optionally followed by {@code
  * key=value} pairs, where {@code key} is an identifier and {@code
  * value} is a single or double quoted string.

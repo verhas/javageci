@@ -1,5 +1,6 @@
 package javax0.geci.tools;
 
+import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 
@@ -111,7 +112,8 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
             }
             var annotationParams = Optional.ofNullable(GeciReflectionTools.getParameters(klass, mnemonic())).orElseGet(() ->
                 GeciAnnotationTools.getParameters(source, mnemonic(), "//", CLASS_LINE));
-            var editorFoldParams = GeciAnnotationTools.getSegmentParameters(source, mnemonic());
+            var segment = source.open(mnemonic());
+            var editorFoldParams = segment == null ? null : (javax0.geci.tools.CompoundParams) segment.sourceParams();
             var global = new CompoundParams(annotationParams, editorFoldParams);
             global.setConstraints(source, mnemonic(), implementedKeys());
             if (annotationParams != null || processAllClasses()) {
