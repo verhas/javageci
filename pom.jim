@@ -3,7 +3,6 @@
                             xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 <modelVersion>4.0.0</modelVersion>
 <packaging>_packaging</packaging>_projectContent</project>
-
 }
 
 {@define tag(_x)={@define _x(_y)=<_x>_y</_x>}}
@@ -18,8 +17,11 @@
     {#if|_version|{version :_version}}
 }
 
-{@define parent(_id)=<parent>{GAV :{GROUPID}:_id:{VERSION}}
-</parent>}
+{@define parent(_id)=
+<parent>
+    {GAV :{GROUPID}:_id:{VERSION}}
+</parent>
+}
 
 {@define dependency(_groupId,_artifactId,_version,_scope)=
 <dependency>
@@ -27,31 +29,40 @@
     {#if|_artifactId|{artifactId :_artifactId}}
     {#if|_version|{version :_version}}
     {#if|_scope|{scope :_scope}}
-</dependency>}
+</dependency>
+}
 
-{@define modules(Z)=<modules>
+{@define modules(Z)=
+<modules>
 {@for MODULE in (Z)=<module>MODULE</module>
-}</modules>}
+}</modules>
+}
 
-{@define license(_name,_url)=<licenses>
-<license>
-    <name>_name</name>
-    <url>_url</url>
-</license>
-</licenses>}
+{@define license(_name,_url)=
+<licenses>
+    <license>
+        <name>_name</name>
+        <url>_url</url>
+    </license>
+</licenses>
+}
 
 {@define property(_name,_value)=<_name>_value</_name>}
 
-{@define developer(_name,_email)=   <developers>
-                                         <developer>
-                                             <name>_name</name>
-                                             <email>_email</email>
-                                         </developer>
-                                     </developers>}
+{@define developer(_name,_email)=
+<developers>
+    <developer>
+        <name>_name</name>
+        <email>_email</email>
+    </developer>
+</developers>
+}
 
-{@define github(_developer,_project)=    {scm|
-                                             {connection |scm:git:git://github.com/_developer/_project.git}
-                                             {developerConnection|scm:git:ssh://github.com/_developer/_project.git}
-                                             {url|https:/github.com/_developer/_project/tree/master}
-                                         }
-                                         {url|https:/github.com/_developer/_project/tree/master}}
+{@define github(_developer,_project)=
+    {scm|
+        {connection |scm:git:git://github.com/_developer/_project.git}
+        {developerConnection|scm:git:ssh://github.com/_developer/_project.git}
+        {url|https:/github.com/_developer/_project/tree/master}
+    }
+    {url|https:/github.com/_developer/_project/tree/master}
+}
