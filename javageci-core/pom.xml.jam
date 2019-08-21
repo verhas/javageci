@@ -9,10 +9,10 @@
 
     {dependencies#
         {@for MODULE in (api,tools,annotation,engine,core-annotations)=
-            {dependency :{GROUPID}:javageci-MODULE:}}
+            {dependency :{GROUPID}:javageci-MODULE::}}
         {@for MODULE in (api,engine)=
-            {dependency :org.junit.jupiter:junit-jupiter-MODULE:}}
-        {dependency :{JAMAL}:jamal-engine:}
+            {dependency :org.junit.jupiter:junit-jupiter-MODULE::}}
+        {dependency :{JAMAL}:jamal-engine::}
 
     }
 }

@@ -21,32 +21,12 @@
 {@define parent(_id)=<parent>{GAV :{GROUPID}:_id:{VERSION}}
 </parent>}
 
-{@define dependency(_groupId,_artifactId,_version)=
+{@define dependency(_groupId,_artifactId,_version,_scope)=
 <dependency>
     {#if|_groupId|{groupId :_groupId}}
     {#if|_artifactId|{artifactId :_artifactId}}
     {#if|_version|{version :_version}}
-</dependency>}
-
-{@define dependencyGA(_groupId,_artifactId)=<dependency>
-{groupId/_groupId}
-{artifactId/_artifactId}
-</dependency>}
-
-{@define testDependency(_groupId,_artifactId,_version)=
-<dependency>
-{groupId/_groupId}
-{artifactId/_artifactId}
-{#if|_version|{version/_version}}
-<scope>test</scope>
-</dependency>}
-
-{@define providedDependency(_groupId,_artifactId,_version)=
-<dependency>
-{groupId/_groupId}
-{artifactId/_artifactId}
-{version/_version}
-<scope>provided</scope>
+    {#if|_scope|{scope :_scope}}
 </dependency>}
 
 {@define modules(Z)=<modules>
