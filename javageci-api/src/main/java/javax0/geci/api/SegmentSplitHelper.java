@@ -32,7 +32,7 @@ import java.util.List;
  *
  * An instance of a class, which is the implementation of this interface
  * can be associated with a file name extension and the file collector
- * ({@code javax0.geci.util.FileCollector}) leColl}will provide the
+ * ({@code javax0.geci.util.FileCollector}) will provide the
  * source object (doing the actual splitting of the source into
  * segments) with the appropriate helper.
  *

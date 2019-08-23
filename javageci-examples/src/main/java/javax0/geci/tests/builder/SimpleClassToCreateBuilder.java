@@ -25,7 +25,7 @@ public class SimpleClassToCreateBuilder {
     private Habraka<Integer> habraka;
 
 
-    //<editor-fold id="builder">
+    //<editor-fold id="builder" desc="builder code generated">
     @javax0.geci.annotations.Generated("builder")
     public static SimpleClassToCreateBuilder.Builder builder() {
         return new SimpleClassToCreateBuilder().new Builder();
