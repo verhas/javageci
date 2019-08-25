@@ -830,7 +830,7 @@ public class Selector<T> {
     }
 
     private IllegalArgumentException illegalArgumentException(final String message){
-        final var exception = new IllegalArgumentException(message +" in '"+expression+"'");
+        final var exception = new IllegalArgumentException(message +" in expression '"+expression+"'");
         final var elements = exception.getStackTrace();
         final var trace = new StackTraceElement[elements.length-1];
         System.arraycopy(elements,1,trace,0,trace.length);
