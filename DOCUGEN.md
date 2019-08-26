@@ -187,7 +187,12 @@ final var geci = new Geci();
 int i = 0;
 Assertions.assertFalse(
     geci.context(fragmentCollector.context())
-        .source("..", ".").ignore("\\.git", "\\.(png|zip|class|jar|asc|graffle)$", "target")
+        .source("..", ".")
+        .ignore(
+            "\\.git",
+            "\\.(png|zip|class|jar|asc|graffle|eps|pdf|png)$",
+            "target",
+            "images")
         .log(Geci.MODIFIED)
         .register(SnippetCollector.builder().phase(i++).build())
         .register(SnippetAppender.builder().phase(i++).build())
@@ -371,18 +376,23 @@ to create this documentation:
 10. int i = 0;
 11. Assertions.assertFalse(
 12.     geci.context(fragmentCollector.context())
-13.         .source("..", ".").ignore("\\.git", "\\.(png|zip|class|jar|asc|graffle)$", "target")
-14.         .log(Geci.MODIFIED)
-15.         .register(SnippetCollector.builder().phase(i++).build())
-16.         .register(SnippetAppender.builder().phase(i++).build())
-17.         .register(SnippetRegex.builder().phase(i++).build())
-18.         .register(SnippetTrim.builder().phase(i++).build())
-19.         .register(SnippetNumberer.builder().phase(i++).build())
-20.         .register(SnipetLineSkipper.builder().phase(i++).build())
-21.         .register(MarkdownCodeInserter.builder().phase(i++).build())
-22.         .splitHelper("md", new MarkdownSegmentSplitHelper())
-23.         .generate(),
-24.     geci.failed());
+13.         .source("..", ".")
+14.         .ignore(
+15.             "\\.git",
+16.             "\\.(png|zip|class|jar|asc|graffle|eps|pdf|png)$",
+17.             "target",
+18.             "images")
+19.         .log(Geci.MODIFIED)
+20.         .register(SnippetCollector.builder().phase(i++).build())
+21.         .register(SnippetAppender.builder().phase(i++).build())
+22.         .register(SnippetRegex.builder().phase(i++).build())
+23.         .register(SnippetTrim.builder().phase(i++).build())
+24.         .register(SnippetNumberer.builder().phase(i++).build())
+25.         .register(SnipetLineSkipper.builder().phase(i++).build())
+26.         .register(MarkdownCodeInserter.builder().phase(i++).build())
+27.         .splitHelper("md", new MarkdownSegmentSplitHelper())
+28.         .generate(),
+29.     geci.failed());
 ```
 
 we can have a look at line 14. It registers the

@@ -24,7 +24,12 @@ public class TestGenerateJavageciDocumentation {
         int i = 0;
         Assertions.assertFalse(
             geci.context(fragmentCollector.context())
-                .source("..", ".").ignore("\\.git", "\\.(png|zip|class|jar|asc|graffle)$", "target")
+                .source("..", ".")
+                .ignore(
+                    "\\.git",
+                    "\\.(png|zip|class|jar|asc|graffle|eps|pdf|png)$",
+                    "target",
+                    "images")
                 .log(Geci.MODIFIED)
                 .register(SnippetCollector.builder().phase(i++).build())
                 .register(SnippetAppender.builder().phase(i++).build())
