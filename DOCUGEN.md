@@ -188,10 +188,9 @@ int i = 0;
 Assertions.assertFalse(
     geci.context(fragmentCollector.context())
         .source("..", ".")
+        .ignoreBinary()
         .ignore(
             "\\.git",
-            "\\.(png|zip|class|jar|asc|graffle)$",
-            "images",
             "target")
         .log(Geci.MODIFIED)
         .register(SnippetCollector.builder().phase(i++).build())
@@ -377,22 +376,21 @@ to create this documentation:
 11. Assertions.assertFalse(
 12.     geci.context(fragmentCollector.context())
 13.         .source("..", ".")
-14.         .ignore(
-15.             "\\.git",
-16.             "\\.(png|zip|class|jar|asc|graffle)$",
-17.             "images",
-18.             "target")
-19.         .log(Geci.MODIFIED)
-20.         .register(SnippetCollector.builder().phase(i++).build())
-21.         .register(SnippetAppender.builder().phase(i++).build())
-22.         .register(SnippetRegex.builder().phase(i++).build())
-23.         .register(SnippetTrim.builder().phase(i++).build())
-24.         .register(SnippetNumberer.builder().phase(i++).build())
-25.         .register(SnipetLineSkipper.builder().phase(i++).build())
-26.         .register(MarkdownCodeInserter.builder().phase(i++).build())
-27.         .splitHelper("md", new MarkdownSegmentSplitHelper())
-28.         .generate(),
-29.     geci.failed());
+14.         .ignoreBinary()
+15.         .ignore(
+16.             "\\.git",
+17.             "target")
+18.         .log(Geci.MODIFIED)
+19.         .register(SnippetCollector.builder().phase(i++).build())
+20.         .register(SnippetAppender.builder().phase(i++).build())
+21.         .register(SnippetRegex.builder().phase(i++).build())
+22.         .register(SnippetTrim.builder().phase(i++).build())
+23.         .register(SnippetNumberer.builder().phase(i++).build())
+24.         .register(SnipetLineSkipper.builder().phase(i++).build())
+25.         .register(MarkdownCodeInserter.builder().phase(i++).build())
+26.         .splitHelper("md", new MarkdownSegmentSplitHelper())
+27.         .generate(),
+28.     geci.failed());
 ```
 
 we can have a look at line 14. It registers the

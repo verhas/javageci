@@ -29,8 +29,8 @@ public class Geci implements javax0.geci.api.Geci {
      */
     public static final String FAILED = "Geci modified source code. Please compile and test again.";
     public static final int MODIFIED = ~0x01;
-    public static final int TOUCHED = ~0x02;
-    public static final int UNTOUCHED = ~0x04;
+    private static final int TOUCHED = ~0x02;
+    private static final int UNTOUCHED = ~0x04;
     public static final int NONE = 0xFF;
     private static final Logger LOG = LoggerFactory.getLogger();
     private final Map<Source.Set, javax0.geci.api.DirectoryLocator> directories = new HashMap<>();
@@ -45,6 +45,7 @@ public class Geci implements javax0.geci.api.Geci {
     private final BiPredicate<List<String>, List<String>> JAVA_COMPARATOR = new Comparator();
     private final Set<Source.Set> outputSet = new HashSet<>();
     private Source.Set lastSet = null;
+    private boolean ignoreBinary = false;
 
     @Override
     public Geci source(String... directory) {
@@ -218,6 +219,11 @@ public class Geci implements javax0.geci.api.Geci {
         return this;
     }
 
+    public Geci ignoreBinary() {
+        ignoreBinary = true;
+        return this;
+    }
+
     public Geci ignore(String... patterns) {
         Collections.addAll(this.ignores,
                 Arrays.stream(patterns)
@@ -266,7 +272,7 @@ public class Geci implements javax0.geci.api.Geci {
 
     @Override
     public boolean generate() throws IOException {
-
+        final var exceptions = new ArrayList<String>();
         injectContextIntoGenerators();
 
         final var phases = generators.stream()
@@ -288,11 +294,17 @@ public class Geci implements javax0.geci.api.Geci {
         collector.collect(onlys, ignores, outputSet);
         for (int phase = 0; phase < phases; phase++) {
             for (final var source : collector.getSources()) {
-                for (var generator : generators) {
-                    if (generator.activeIn(phase)) {
-                        source.allowDefaultSegment = false;
-                        source.currentGenerator = generator;
-                        generator.process(source);
+                if (!source.isBinary) {
+                    for (var generator : generators) {
+                        if (generator.activeIn(phase)) {
+                            source.allowDefaultSegment = false;
+                            source.currentGenerator = generator;
+                            try {
+                                generator.process(source);
+                            } catch (javax0.geci.engine.Source.SourceIsBinary e) {
+                                exceptions.add(e.getAbsoluteFile());
+                            }
+                        }
                     }
                 }
             }
@@ -301,6 +313,9 @@ public class Geci implements javax0.geci.api.Geci {
             if( generator instanceof GlobalGenerator ){
                 ((GlobalGenerator)generator).process();
             }
+        }
+        if (exceptions.size() > 0 && !ignoreBinary) {
+            throw new GeciException("Cannot read the files\n" + String.join("\n", exceptions) + "\nThey are probably binary file. Use '.ignore()' to filter binary files out");
         }
         if (!sourcesConsolidate(collector)) {
             if (generators.stream().anyMatch(g -> !(g instanceof Distant))) {

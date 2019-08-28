@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class TestGenerateJavageciDocumentation {
+class TestGenerateJavageciDocumentation {
 
     @Test
     @DisplayName("Run the different snippets and generate test.md")
@@ -25,10 +25,9 @@ public class TestGenerateJavageciDocumentation {
         Assertions.assertFalse(
             geci.context(fragmentCollector.context())
                 .source("..", ".")
+                .ignoreBinary()
                 .ignore(
                     "\\.git",
-                    "\\.(png|zip|class|jar|asc|graffle)$",
-                    "images",
                     "target")
                 .log(Geci.MODIFIED)
                 .register(SnippetCollector.builder().phase(i++).build())
