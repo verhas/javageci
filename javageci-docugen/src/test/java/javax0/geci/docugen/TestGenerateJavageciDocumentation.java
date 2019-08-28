@@ -28,6 +28,7 @@ public class TestGenerateJavageciDocumentation {
                 .ignore(
                     "\\.git",
                     "\\.(png|zip|class|jar|asc|graffle)$",
+                    "images",
                     "target")
                 .log(Geci.MODIFIED)
                 .register(SnippetCollector.builder().phase(i++).build())

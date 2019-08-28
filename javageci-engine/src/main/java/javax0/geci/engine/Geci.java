@@ -297,6 +297,11 @@ public class Geci implements javax0.geci.api.Geci {
                 }
             }
         }
+        for (var generator : generators) {
+            if( generator instanceof GlobalGenerator ){
+                ((GlobalGenerator)generator).process();
+            }
+        }
         if (!sourcesConsolidate(collector)) {
             if (generators.stream().anyMatch(g -> !(g instanceof Distant))) {
                 throw new GeciException("The generators did not touch any source");

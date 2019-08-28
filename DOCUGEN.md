@@ -190,9 +190,9 @@ Assertions.assertFalse(
         .source("..", ".")
         .ignore(
             "\\.git",
-            "\\.(png|zip|class|jar|asc|graffle|eps|pdf|png)$",
-            "target",
-            "images")
+            "\\.(png|zip|class|jar|asc|graffle)$",
+            "images",
+            "target")
         .log(Geci.MODIFIED)
         .register(SnippetCollector.builder().phase(i++).build())
         .register(SnippetAppender.builder().phase(i++).build())
@@ -379,9 +379,9 @@ to create this documentation:
 13.         .source("..", ".")
 14.         .ignore(
 15.             "\\.git",
-16.             "\\.(png|zip|class|jar|asc|graffle|eps|pdf|png)$",
-17.             "target",
-18.             "images")
+16.             "\\.(png|zip|class|jar|asc|graffle)$",
+17.             "images",
+18.             "target")
 19.         .log(Geci.MODIFIED)
 20.         .register(SnippetCollector.builder().phase(i++).build())
 21.         .register(SnippetAppender.builder().phase(i++).build())
