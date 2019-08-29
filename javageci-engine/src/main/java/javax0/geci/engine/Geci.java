@@ -28,9 +28,10 @@ public class Geci implements javax0.geci.api.Geci {
      * report that the code was changed.
      */
     public static final String FAILED = "Geci modified source code. Please compile and test again.";
+    public static final int ALL = 0x00;
     public static final int MODIFIED = ~0x01;
-    private static final int TOUCHED = ~0x02;
-    private static final int UNTOUCHED = ~0x04;
+    public static final int TOUCHED = ~0x02;
+    public static final int UNTOUCHED = ~0x04;
     public static final int NONE = 0xFF;
     private static final Logger LOG = LoggerFactory.getLogger();
     private final Map<Source.Set, javax0.geci.api.DirectoryLocator> directories = new HashMap<>();
