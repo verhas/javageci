@@ -3,8 +3,8 @@ package javax0.geci.engine;
 
 import javax0.geci.api.DirectoryLocator;
 import javax0.geci.api.GeciException;
+import javax0.geci.api.Logger;
 import javax0.geci.api.SegmentSplitHelper;
-import javax0.geci.engine.Source;
 import javax0.geci.util.DirectoryLocated;
 import javax0.geci.util.JavaSegmentSplitHelper;
 import javax0.geci.util.NullSegmentSplitHelper;
@@ -19,7 +19,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 class FileCollector {
-
+    private static final Logger log = new javax0.geci.log.Logger(FileCollector.class);
     private final Map<Source.Set, DirectoryLocator> directories;
     private final Map<Source.Set, DirectoryLocated> located = new HashMap<>();
     private final Set<Source> newSources = new HashSet<>();
@@ -189,36 +189,50 @@ class FileCollector {
      * only a one element array containing the name of the directory
      * that was used to collect the files.
      *
-     * @param onlys   limits the collected files to a subset that
-     *                matches at least one of the predicates. If the
-     *                set is empty or the parameter is {@code null}
-     *                then there is no filtering, all files are
-     *                collected that are otherwise collected from the
-     *                directory.
-     * @param ignores limits the collected files to a subset that
-     *                does not match any of the predicates. If the
-     *                set is empty or the parameter is {@code null}
-     *                then there is no filtering, all files are
-     *                collected that are otherwise collected from the
-     *                directory.
+     * @param onlys      limits the collected files to a subset that
+     *                   matches at least one of the predicates. If the
+     *                   set is empty or the parameter is {@code null}
+     *                   then there is no filtering, all files are
+     *                   collected that are otherwise collected from the
+     *                   directory.
+     * @param ignores    limits the collected files to a subset that
+     *                   does not match any of the predicates. If the
+     *                   set is empty or the parameter is {@code null}
+     *                   then there is no filtering, all files are
+     *                   collected that are otherwise collected from the
+     *                   directory.
+     * @param outputSets contains the output sets. It means that they
+     *                   are available for the generators to create new
+     *                   sources in the set, but the sources are not
+     *                   collected from these sets and no generator will
+     *                   be executed for any source file in these source
+     *                   sets.
      */
     public void collect(Set<Predicate<Path>> onlys, Set<Predicate<Path>> ignores, Set<Source.Set> outputSets) {
+        log.warning("File collecting started from cwd %s", getCwd());
         var processedSome = new AtomicBoolean(false);
         for (var entry : directories.entrySet()) {
+            log.warning("File collecting started for entry [%s]", entry.getValue().alternatives().collect(Collectors.joining(",")));
             var processed = new AtomicBoolean(false);
             final var locator = entry.getValue();
             locator.alternatives().takeWhile(x -> !processed.get())
                     .forEach(directory -> {
                         var dir = normalized(directory);
+                        log.warning("File collecting started for alternative '%s'", directory);
                         try {
                             if (locator.test(dir)) {
+                                log.warning("'%s' seems to be the right alternative", directory);
                                 if (!outputSets.contains(entry.getKey())) {
+                                    log.warning("'%s' is input, collecting files...", directory);
                                     Files.find(Paths.get(dir), MAX_DEPTH_UNLIMITED,
                                             (filePath, fileAttr) -> fileAttr.isRegularFile())
+                                            .peek( s -> log.warning("'%s' was found",s))
                                             .filter(path -> (onlys == null || onlys.isEmpty())
                                                     || onlys.stream().anyMatch(predicate -> predicate.test(path)))
+                                            .peek( s -> log.warning("'%s' matches \"only\" constraints",s))
                                             .filter(path -> (ignores == null || ignores.isEmpty())
                                                     || ignores.stream().noneMatch(negicate -> negicate.test(path)))
+                                            .peek( s -> log.warning("'%s' does not match \"ignore\" constraints",s))
                                             .forEach(path -> sources.add(
                                                     new Source(this,
                                                             dir,
@@ -226,6 +240,8 @@ class FileCollector {
                                     processed.set(true);
                                     processedSome.set(true);
                                     located.put(entry.getKey(), new DirectoryLocated(dir));
+                                }else{
+                                    log.warning("'%s' is an output location, files are not collected", directory);
                                 }
                             }
                         } catch (IOException ioex) {
@@ -255,6 +271,13 @@ class FileCollector {
         }
     }
 
+    private static String getCwd() {
+        try {
+            return new java.io.File(".").getCanonicalPath();
+        } catch (IOException ignored) {
+            return null;
+        }
+    }
     /**
      * Add a new source to the set of the new sources. The new sources.
      * The collection of the new sources contains those sources that are
