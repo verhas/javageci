@@ -7,6 +7,7 @@ import javax0.geci.javacomparator.Comparator;
 import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
 import javax0.geci.tools.AbstractJavaGenerator;
+import javax0.geci.tools.Tracer;
 import javax0.geci.util.DirectoryLocator;
 
 import java.io.IOException;
@@ -271,44 +272,79 @@ public class Geci implements javax0.geci.api.Geci {
         source(Source.maven());
     }
 
+    private void traceDirectories() {
+        Tracer.push("SourceSets to be collected");
+        for (final var directory : directories.entrySet()) {
+            final var set = directory.getKey();
+            final var locator = directory.getValue();
+            Tracer.log(set.toString() + " set with alternative directory locations ["
+                + locator.alternatives().collect(Collectors.joining(",")) + "]");
+        }
+        Tracer.pop();
+    }
+
     @Override
     public boolean generate() throws IOException {
         final var exceptions = new ArrayList<String>();
         injectContextIntoGenerators();
-
+        Tracer.push("Starting generation");
         final var phases = generators.stream()
                 .mapToInt(Generator::phases)
                 .max()
                 .orElse(1);
+        Tracer.log("There will be " + phases + " phases.");
         final FileCollector collector;
         if (directories.isEmpty()) {
+            Tracer.log("There are no configured directories, using the default");
             setDefaultDirectories();
             collector = new FileCollector(directories);
             collector.lenient();
         } else {
+            traceDirectories();
             collector = new FileCollector(directories);
             if (lenient) {
                 collector.lenient();
             }
         }
+        Tracer.push("Registering split helpers");
         collector.registerSplitHelpers(splitHelpers);
+        Tracer.pop();
+        Tracer.push("Collecting sources");
         collector.collect(onlys, ignores, outputSet);
+        Tracer.pop();
+
         for (int phase = 0; phase < phases; phase++) {
+            Tracer.push("Starting phase " + phase);
             for (final var source : collector.getSources()) {
+                Tracer.push("Processing " + source.getAbsoluteFile());
                 if (!source.isBinary) {
+                    Tracer.push("Starting the generators");
                     for (var generator : generators) {
+                        Tracer.push("generator " + generator.getClass());
                         if (generator.activeIn(phase)) {
+                            Tracer.log(generator.getClass() + " is active in this phase");
                             source.allowDefaultSegment = false;
                             source.currentGenerator = generator;
                             try {
+                                Tracer.push("starting the generator");
                                 generator.process(source);
+                                Tracer.pop();
                             } catch (javax0.geci.engine.Source.SourceIsBinary e) {
+                                Tracer.log("source processing failed, it is a binary file");
                                 exceptions.add(e.getAbsoluteFile());
                             }
+                        } else {
+                            Tracer.log(generator.getClass() + " is not active in this phase");
                         }
+                        Tracer.pop();
                     }
+                    Tracer.pop();
+                } else {
+                    Tracer.log(source.getAbsoluteFile() + " seems to be binary, skipped");
                 }
+                Tracer.pop();
             }
+            Tracer.pop();
         }
         for (var generator : generators) {
             if( generator instanceof GlobalGenerator ){
@@ -323,6 +359,7 @@ public class Geci implements javax0.geci.api.Geci {
                 throw new GeciException("The generators did not touch any source");
             }
         }
+        Tracer.pop();
         return sourcesModifiedAndSave(collector);
     }
 

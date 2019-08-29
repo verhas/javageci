@@ -40,6 +40,7 @@
                             {opens/examples/tests.builder}
                             {opens/examples/tests.cloner}
                             {opens/examples/tests.configBuilder}
+                            {opens/docugen/docugen}
                             {exportsTo/examples/tutorials.simple/core}
                             {exportsTo/examples/tests.fluent/tools}
                             {exportsTo/examples/tests.fluent/core}

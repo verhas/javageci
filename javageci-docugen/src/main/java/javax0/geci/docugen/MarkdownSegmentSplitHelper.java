@@ -8,6 +8,11 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class MarkdownSegmentSplitHelper extends RegexBasedSegmentSplitHelper {
+
+    public MarkdownSegmentSplitHelper(Pattern startPattern, Pattern endPattern, Pattern defaultPattern) {
+        super(startPattern, endPattern, defaultPattern);
+    }
+
     public MarkdownSegmentSplitHelper() {
         super(
 // snippet MarkdownSegmentSplitHelper_patterns
@@ -36,6 +41,15 @@ public class MarkdownSegmentSplitHelper extends RegexBasedSegmentSplitHelper {
         defaultOffset = 4;
     }
 
+    /**
+     * If the line starts with {@code <!-- } then the lines following it are appended to the line until one line is
+     * finished using {@code -->}. This makes the use of multi-line segment start possible where the snippets are used.
+     * In any other case the call is just falling over to the {@code super.match()}
+     *
+     * @param lines the list of lines
+     * @param i     the index of the current line
+     * @return a new matcher just like {@link #match(String)}.
+     */
     @Override
     public SegmentSplitHelper.Matcher match(List<String> lines, int i) {
         final var line = lines.get(i);
@@ -54,7 +68,7 @@ public class MarkdownSegmentSplitHelper extends RegexBasedSegmentSplitHelper {
         }
     }
 
-    private static class Matcher implements SegmentSplitHelper.Matcher {
+    protected static class Matcher implements SegmentSplitHelper.Matcher {
 
         private final SegmentSplitHelper.Matcher matcher;
         private final int headerLength;

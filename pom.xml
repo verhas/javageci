@@ -70,6 +70,7 @@
                             --add-opens geci.examples/javax0.geci.tests.builder=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tests.cloner=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tests.configBuilder=ALL-UNNAMED
+                            --add-opens geci.docugen/javax0.geci.docugen=ALL-UNNAMED
                             --add-exports geci.examples/javax0.geci.tutorials.simple=geci.core
                             --add-exports geci.examples/javax0.geci.tests.fluent=geci.tools
                             --add-exports geci.examples/javax0.geci.tests.fluent=geci.core
