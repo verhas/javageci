@@ -44,11 +44,16 @@ public class TemplateLoader {
                 return "/* template '" + template + "' was not loaded */";
             }
         } catch (IOException e) {
-            final var sw = new PrintWriter(new StringWriter());
-            e.printStackTrace(sw);
-            return "/* template '" + template + "' was not loaded : \n"
-                    + sw.toString()
-                    + "*/";
+            try (final var sw = new StringWriter();
+                 final var pw = new PrintWriter(sw)) {
+                e.printStackTrace(pw);
+                return "/* template '" + template + "' was not loaded : \n"
+                        + sw.toString()
+                        + "*/";
+            } catch (IOException ioegnored) {
+                return "/* template '" + template + "' was not loaded\n"
+                        + "*/";
+            }
         }
     }
 

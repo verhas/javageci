@@ -220,21 +220,21 @@ class FileCollector {
         Tracer.log("Current Working Directory is '" + getCwd() + "'");
         var processedSome = new AtomicBoolean(false);
         for (var entry : directories.entrySet()) {
-            Tracer.push("File collecting started for entry [" + entry.getValue().alternatives().collect(Collectors.joining(",")) + "]");
+            Tracer.push("Entry","File collecting started for entry [" + entry.getValue().alternatives().collect(Collectors.joining(",")) + "]");
             var processed = new AtomicBoolean(false);
             final var locator = entry.getValue();
             locator.alternatives().takeWhile(x -> !processed.get())
                 .forEach(directory -> {
                     var dir = normalized(directory);
-                    try (final var ignored = Tracer.push("File collecting started for alternative '" + directory + "'")) {
+                    try (final var tracePosition = Tracer.push("Alternative","File collecting started for alternative '" + directory + "'")) {
                         if (locator.test(dir)) {
                             Tracer.log("'" + directory + "' seems to be the right alternative");
                             if (!outputSets.contains(entry.getKey())) {
                                 Tracer.log("'" + directory + "' is input, collecting files...");
                                 Files.find(Paths.get(dir), MAX_DEPTH_UNLIMITED,
                                         (filePath, fileAttr) -> fileAttr.isRegularFile())
-                                        .peek(s -> Tracer.log("'" + s + "' was found"))
-                                        .peek(s -> Tracer.push("Checking only predicates"))
+                                        .peek(s -> Tracer.log("File","'" + s + "' was found"))
+                                        .peek(s -> Tracer.push("Only","Checking predicates"))
                                         .filter(path -> {
                                             if (onlys == null || onlys.isEmpty()) {
                                                 Tracer.log("There are no 'only' predicates");
@@ -250,7 +250,7 @@ class FileCollector {
                                             return false;
                                         })
                                         .peek(s -> Tracer.pop())
-                                        .peek(s -> Tracer.push("Checking 'ignore' predicates"))
+                                        .peek(s -> Tracer.push("Ignore","Checking predicates"))
                                         .filter(path -> {
                                                     if (ignores == null || ignores.isEmpty()) {
                                                         Tracer.log("There are no 'ignore' predicates");

@@ -108,8 +108,20 @@ public interface Segment extends AutoCloseable {
      */
     Segment param(String... keyValuePairs);
 
+    /**
+     * @return the set of the keys that are defined in this segment for templating.
+     */
     Set<String> paramKeySet();
 
+    /**
+     * Trace the parameters
+     */
+    public void traceParams();
+
+    /**
+     * Trace the lines of the segment.
+     */
+    public void traceLines();
 
     /**
      * Delete the previously defined parameters.

@@ -9,6 +9,7 @@ import javax0.geci.templated.Triplet;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.TemplateLoader;
+import javax0.geci.tools.Tracer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @AnnotationBuilder
 public class Repeated extends AbstractJavaGenerator {
@@ -69,84 +71,131 @@ public class Repeated extends AbstractJavaGenerator {
         final var endPattern = Pattern.compile(local.end);
         final var templateStartPattern = Pattern.compile(local.templateStart);
         final var templateEndPattern = Pattern.compile(local.templateEnd);
+        try (final var pos = Tracer.push("Config", null)) {
+            Tracer.log("startPattern", "" + startPattern);
+            Tracer.log("matchLinePattern", "" + matchLinePattern);
+            Tracer.log("endPattern", "" + endPattern);
+            Tracer.log("templateStartPattern", "" + templateStartPattern);
+            Tracer.log("templateEndPattern", "" + templateEndPattern);
+        }
         boolean switchOn = false;
         boolean templateOn = false;
         final var loopVars = new ArrayList<String>();
         final var parsed = new StringBuilder();
         var selector = "";
         int templateTabbing = 0;
-        for (final var line : source.getLines()) {
-            if (!templateOn && !switchOn) {
-                if (startPattern.matcher(line).matches()) {
-                    switchOn = true;
-                    continue;
+        try (final var x = Tracer.push("TemplateSearch", "searching...")) {
+            for (final var line : source.getLines()) {
+                if (templateOn) {
+                    Tracer.push("TemplateLine", line.substring(line.length() > templateTabbing ? templateTabbing : 0));
+                } else if (switchOn) {
+                    Tracer.push("ValueLine", line.substring(line.length() > templateTabbing ? templateTabbing : 0));
+                } else {
+                    Tracer.push("Line", line);
                 }
-                final var templateStartMatcher = templateStartPattern.matcher(line);
-                if (templateStartMatcher.matches()) {
-                    templateOn = true;
-                    selector = templateStartMatcher.group(1);
-                    templateTabbing = countSpacesAtStart(line);
-                    continue;
-                }
-            }
-
-            if (switchOn && endPattern.matcher(line).matches()) {
-                switchOn = false;
-                continue;
-            }
-
-            if (!switchOn && templateOn && templateEndPattern.matcher(line).matches()) {
-                templateOn = false;
-                deleteTrailingNewLine(parsed);
-                config.templatesMap.put(selector, TemplateLoader.quote(parsed.toString()));
-                parsed.delete(0, parsed.length());
-                continue;
-            }
-
-            if (templateOn) {
-                if (line.length() > templateTabbing) {
-                    parsed.append(line.substring(templateTabbing));
-                }
-                parsed.append("\n");
-                continue;
-            }
-
-            if (switchOn) {
-                final Matcher matcher = matchLinePattern.matcher(line);
-                if (matcher.find()) {
-                    if (matcher.groupCount() != 1) {
-                        throw new GeciException("matchLine does not contain any group between ( and )");
+                if (!templateOn && !switchOn) {
+                    if (startPattern.matcher(line).matches()) {
+                        Tracer.prepend("[START VALUES]");
+                        switchOn = true;
+                        continue;
                     }
-                    loopVars.add(matcher.group(1));
+                    final var templateStartMatcher = templateStartPattern.matcher(line);
+                    if (templateStartMatcher.matches()) {
+                        Tracer.prepend("[START TEMPLATE]");
+                        templateOn = true;
+                        selector = templateStartMatcher.group(1);
+                        templateTabbing = countSpacesAtStart(line);
+                        Tracer.log("TAB=" + templateTabbing + " SELECTOR=" + selector);
+                        continue;
+                    }
                 }
+
+                if (switchOn && endPattern.matcher(line).matches()) {
+                    Tracer.prepend("[STOP]");
+                    switchOn = false;
+                    Tracer.pop();
+                    Tracer.pop();
+                    continue;
+                }
+
+                if (!switchOn && templateOn && templateEndPattern.matcher(line).matches()) {
+                    Tracer.prepend("[STOP]");
+                    templateOn = false;
+                    deleteTrailingNewLine(parsed);
+                    config.templatesMap.put(selector, TemplateLoader.quote(parsed.toString()));
+                    parsed.delete(0, parsed.length());
+                    Tracer.pop();
+                    Tracer.pop();
+                    continue;
+                }
+
+                if (templateOn) {
+                    if (line.length() > templateTabbing) {
+                        parsed.append(line.substring(templateTabbing));
+                    }
+                    parsed.append("\n");
+                    Tracer.pop();
+                    continue;
+                }
+
+                if (switchOn) {
+                    final Matcher matcher = matchLinePattern.matcher(line);
+                    if (matcher.find()) {
+                        Tracer.log("Line contains a value");
+                        if (matcher.groupCount() != 1) {
+                            Tracer.log("Pattern did not return the value... GECI EXCEPTION is thrown");
+                            throw new GeciException("matchLine does not contain any group between ( and )");
+                        }
+                        final var value = matcher.group(1);
+                        Tracer.log("value=" + value);
+                        loopVars.add(value);
+                    } else {
+                        Tracer.log("There is no value on the line");
+                    }
+                }
+                Tracer.pop();
             }
         }
         if (local.values != null) {
+            Tracer.log("Adding configured values [" + local.values + "]");
             loopVars.addAll(List.of(local.values.split(",")));
         }
         if (local.valuesSupplier != null) {
+            Tracer.log("Adding values from configured values supplier");
             loopVars.addAll(local.valuesSupplier.apply(klass));
         }
+        Tracer.log("final list of values: [" + loopVars.stream().collect(Collectors.joining(",")) + "]");
         for (final var key : config.templatesMap.keySet()) {
-            final Segment segment;
-            if (key.isEmpty()) {
-                segment = source.open(global.id());
-            } else {
-                segment = source.open(key);
-            }
-            final var template = config.templatesMap.get(key);
-            if (template != null) {
-                config.ctx.triplet(source, klass, segment);
-                final var resolver = config.resolverMap.get(key);
-                final var define = config.defineMap.get(key);
-                for (final var loopVar : loopVars) {
+            try (final var pos = Tracer.push("Segment", key)) {
+                final Segment segment;
+                if (key.isEmpty()) {
+                    Tracer.log("This is the ID segment named '" + global.id() + "'");
+                    segment = source.open(global.id());
+                } else {
+                    segment = source.open(key);
+                }
+                final var template = config.templatesMap.get(key);
+                if (template != null) {
+                    Tracer.log("Template", null, template);
+                    config.ctx.triplet(source, klass, segment);
+                    final var resolver = config.resolverMap.get(key);
+                    final var define = config.defineMap.get(key);
                     final var templateContent = TemplateLoader.getTemplateContent(template);
+                    Tracer.log("TemplateContent", null, templateContent);
                     final var resolvedTemplate = resolver == null ? templateContent : resolver.apply(config.ctx, templateContent);
-                    segment.param("value", loopVar);
-                    if (define != null) {
-                        define.accept(config.ctx, loopVar);
+                    for (final var loopVar : loopVars) {
+                        segment.param("value", loopVar);
+                        if (define != null) {
+                            define.accept(config.ctx, loopVar);
+                        }
+                        try (final var segmentParamsPos = Tracer.push("SegmentParams", null)) {
+                            segment.traceParams();
+                            segment.write(resolvedTemplate);
+                        }
                     }
-                    segment.write(resolvedTemplate);
+                    segment.traceLines();
+                } else {
+                    Tracer.log("Template " + key + " does not exist");
                 }
             }
         }
@@ -176,36 +225,38 @@ public class Repeated extends AbstractJavaGenerator {
     private String configuredMnemonic = "repeated";
 
     @Override
-    public String mnemonic(){
+    public String mnemonic() {
         return configuredMnemonic;
     }
 
     private final Config config = new Config();
+
     public static Repeated.Builder builder() {
         return new Repeated().new Builder();
     }
 
     private static final java.util.Set<String> implementedKeys = java.util.Set.of(
-        "end",
-        "matchLine",
-        "start",
-        "templateEnd",
-        "templateStart",
-        "values",
-        "id"
+            "end",
+            "matchLine",
+            "start",
+            "templateEnd",
+            "templateStart",
+            "values",
+            "id"
     );
 
     @Override
     public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
+
     public class Builder {
         public Builder ctx(javax0.geci.templated.Context ctx) {
             config.ctx = ctx;
             return this;
         }
 
-        public Builder define(java.util.function.BiConsumer<javax0.geci.templated.Context,String> define) {
+        public Builder define(java.util.function.BiConsumer<javax0.geci.templated.Context, String> define) {
             config.setDefine(define);
             return this;
         }
@@ -220,7 +271,7 @@ public class Repeated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder resolver(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> resolver) {
+        public Builder resolver(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> resolver) {
             config.setResolver(resolver);
             return this;
         }
@@ -255,7 +306,7 @@ public class Repeated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder valuesSupplier(java.util.function.Function<Class,java.util.List<String>> valuesSupplier) {
+        public Builder valuesSupplier(java.util.function.Function<Class, java.util.List<String>> valuesSupplier) {
             config.valuesSupplier = valuesSupplier;
             return this;
         }
@@ -269,19 +320,20 @@ public class Repeated extends AbstractJavaGenerator {
             return Repeated.this;
         }
     }
-    private Config localConfig(CompoundParams params){
+
+    private Config localConfig(CompoundParams params) {
         final var local = new Config();
         local.ctx = config.ctx;
         local.setDefine(config.define);
-        local.end = params.get("end",config.end);
-        local.matchLine = params.get("matchLine",config.matchLine);
+        local.end = params.get("end", config.end);
+        local.matchLine = params.get("matchLine", config.matchLine);
         local.setResolver(config.resolver);
         local.selector = config.selector;
-        local.start = params.get("start",config.start);
+        local.start = params.get("start", config.start);
         local.setTemplate(config.template);
-        local.templateEnd = params.get("templateEnd",config.templateEnd);
-        local.templateStart = params.get("templateStart",config.templateStart);
-        local.values = params.get("values",config.values);
+        local.templateEnd = params.get("templateEnd", config.templateEnd);
+        local.templateStart = params.get("templateStart", config.templateStart);
+        local.values = params.get("values", config.values);
         local.valuesSupplier = config.valuesSupplier;
         return local;
     }

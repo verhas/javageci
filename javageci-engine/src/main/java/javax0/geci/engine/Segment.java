@@ -3,6 +3,7 @@ package javax0.geci.engine;
 import javax0.geci.api.CompoundParams;
 import javax0.geci.api.GeciException;
 import javax0.geci.tools.Template;
+import javax0.geci.tools.Tracer;
 
 import java.util.*;
 
@@ -55,6 +56,25 @@ public class Segment implements javax0.geci.api.Segment {
     @Override
     public Set<String> paramKeySet() {
         return params.keySet();
+    }
+
+    @Override
+    public void traceParams() {
+        for (final var key : paramKeySet()) {
+            Tracer.log(key, params.get(key));
+        }
+    }
+
+    @Override
+    public void traceLines() {
+        try (final var pos = Tracer.push("SegmentContent",null)) {
+            try (final var lines = Tracer.push("Originals",null)) {
+                originals.forEach(line -> Tracer.log("Line", line));
+            }
+            try (final var linesPos = Tracer.push("Updated",null)) {
+                lines.forEach(line -> Tracer.log("Line", line));
+            }
+        }
     }
 
     @Override

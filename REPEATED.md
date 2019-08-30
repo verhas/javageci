@@ -193,8 +193,9 @@ text is inserted into the generated segment.
 ### `ctx`
 
 This configuration can only be used in the builder to pass an object
-that implements the `Context` interface. In case there is no such object
-configured 
+that implements the `javax0.geci.templated.Context` interface. In case
+there is no such object configured then a default implementation will be
+used.
 
 A context passed as a first argument to the lambda expressions when
 invoked that are used to define segment parameters referenced in the

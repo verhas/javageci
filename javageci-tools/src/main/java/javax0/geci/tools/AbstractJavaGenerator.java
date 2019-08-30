@@ -6,9 +6,9 @@ import javax0.geci.api.Source;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Generators that work on Java source files that already have their
@@ -81,7 +81,7 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
     protected final List<Class<?>> classes = new ArrayList<>();
 
     /**
-     * Chlid classes can override this method to return {@code true} in case they want to process a source class and
+     * Child classes can override this method to return {@code true} in case they want to process a source class and
      * source code even if the class is not annotated, there is no annotation before the class line in a comment and
      * there is no editor-fold segment with the mnemonic of the generator.
      *
@@ -138,18 +138,30 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
             }
 
             var global = new CompoundParams(annotationParams, editorFoldParams);
-
-            Tracer.push("setting the constraint on the parameters");
-            global.setConstraints(source, mnemonic(), implementedKeys());
+            Tracer.push("Composed effective parameter set");
+            global.trace();
             Tracer.pop();
+
+            try (final var pos = Tracer.push("setting the constraint on the parameters keys=[" + (implementedKeys() == null ? "" : implementedKeys().stream().collect(Collectors.joining(","))) + "]")) {
+                global.setConstraints(source, mnemonic(), implementedKeys());
+            }
             if (nullableAannotationParams != null || processAllClasses()) {
                 Tracer.log("Allowing default segment");
                 source.allowDefaultSegment();
             }
             if (nullableAannotationParams != null || editorFoldParams != null || processAllClasses()) {
-                Tracer.push("Invoking process on the concrete class, that is " + this.getClass().getName());
-                process(source, klass, global);
-                Tracer.pop();
+                try (final var tracePosition = Tracer.push("Start", this.getClass().getName() + ".process( source=" + klass.getName() + " )")) {
+                    process(source, klass, global);
+                }
+                Tracer.prepend("Source","[PROCESSED] ");
+            }else{
+                Tracer.log("NotExecuted","There are no annotations, no editor-fold with id='"+mnemonic()+"' and this generator processAllCasses() returns false");
+            }
+        } else {
+            if (source.getAbsoluteFile().endsWith("module-info.java")) {
+                Tracer.log("ModuleInfo", source.getAbsoluteFile() + " has no class, it is not processed.");
+            } else {
+                Tracer.log("ERROR", "There is no class for " + source.getAbsoluteFile() + " skipping ");
             }
         }
     }

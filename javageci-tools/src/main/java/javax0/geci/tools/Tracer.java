@@ -1,11 +1,10 @@
 package javax0.geci.tools;
 
+import javax0.geci.api.GeciException;
 import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
@@ -23,26 +22,30 @@ import java.util.ArrayList;
  * one of them should use tracing. Why would anyone want to debug multiple unit tests running parallel?</p>
  *
  * <p>The typical use us </p>
- *
  */
 public class Tracer implements AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger();
+    private static final String DEFAULT_TAG = "log";
     private static Tracer root;
     private static Tracer current;
     private static Tracer last;
-    private static final Tracer FAKE = new Tracer(null, null);
+    private static final Tracer FAKE = new Tracer(null, null, null, null);
 
     private final Tracer parent;
     private final ArrayList<Tracer> children = new ArrayList<>();
     private String message;
+    private final String tag;
+    private final String cData;
 
-    private Tracer(Tracer parent, String message) {
+    private Tracer(Tracer parent, String message, String tag, String cData) {
         this.parent = parent;
         this.message = message;
+        this.tag = tag;
+        this.cData = cData;
     }
 
     public static void on() {
-        root = new Tracer(null, "tracer root");
+        root = new Tracer(null, "tracer root", "trace", null);
         current = root;
         last = root;
     }
@@ -53,27 +56,83 @@ public class Tracer implements AutoCloseable {
         last = root;
     }
 
+    private static Tracer walkUpTo(final String tag) {
+        var walk = last;
+        while (walk != null && !walk.tag.equals(tag)) {
+            walk = walk.parent;
+        }
+        if( walk == null ){
+            final var e = new GeciException("Walking upward in trace there is no tag '"+tag+"'");
+            log(e);
+        }
+        return walk;
+    }
+
+    public static void prepend(final String tag, final String msg) {
+        if (last == null) return;
+        final var my = walkUpTo(tag);
+        if (my != null) {
+            my.message = msg + my.message;
+        }
+    }
+
+    public static void append(final String tag, final String msg) {
+        if (last == null) return;
+        final var my = walkUpTo(tag);
+        if (my != null) {
+            my.message = my.message + msg;
+        }
+    }
+
+    public static void prepend(final String msg) {
+        if (last == null) return;
+        last.message = msg + last.message;
+    }
+
     public static void append(final String msg) {
         if (last == null) return;
-        last .message = last.message + msg;
+        last.message = last.message + msg;
     }
 
     public static void log(final String msg) {
+        log(DEFAULT_TAG, msg);
+    }
+
+    public static void log(final String tag, final String msg) {
+        log(tag, msg, null);
+    }
+
+    public static void log(final String tag, final String msg, String cData) {
         if (root == null) return;
-        current.children.add(last = new Tracer(current, msg));
+        current.children.add(last = new Tracer(current, msg, tag, cData));
     }
 
     public static Tracer push(String msg) {
+        return push(DEFAULT_TAG, msg);
+    }
+
+    public static Tracer push(String tag, String msg) {
         if (root == null) return FAKE;
-        last = new Tracer(current, msg);
+        final var actual = current;
+        last = new Tracer(current, msg, tag, null);
         current.children.add(last);
         current = last;
-        return current;
+        return actual;
     }
 
     public static void pop() {
-        if (current == null) return;
-        current = current.parent;
+        if (root == null) return;
+        if (current.parent != null) {
+            current = current.parent;
+        } else {
+            final var e = new GeciException("Too many Tracer.pop() calls");
+            log(e);
+        }
+    }
+
+    public static void pop(Tracer actual) {
+        if (root == null) return;
+        current = actual;
     }
 
     public static void dumpXML(String fileName) throws IOException {
@@ -87,12 +146,19 @@ public class Tracer implements AutoCloseable {
     }
 
     private static void dumpXML(Tracer node, StringBuilder sb, int tab) {
+        final String messageTag = node.message != null ? " msg=\"" + escape(node.message) + "\"" : "";
         if (node.children.isEmpty()) {
-            sb.append(" ".repeat(tab)).append("<log msg=\"").append(escape(node.message)).append("\"/>").append("\n");
+            if (node.cData == null) {
+                sb.append(" ".repeat(tab)).append("<" + node.tag).append(messageTag).append("/>").append("\n");
+            } else {
+                sb.append(" ".repeat(tab)).append("<" + node.tag).append(messageTag).append(">").append("\n");
+                sb.append("<![CDATA[").append(node.cData).append("]]>\n");
+                sb.append(" ".repeat(tab)).append("</" + node.tag + ">\n");
+            }
         } else {
-            sb.append(" ".repeat(tab)).append("<log msg=\"").append(escape(node.message)).append("\">").append("\n");
+            sb.append(" ".repeat(tab)).append("<" + node.tag).append(messageTag).append(">").append("\n");
             node.children.forEach(c -> dumpXML(c, sb, tab + 2));
-            sb.append(" ".repeat(tab)).append("</log>\n");
+            sb.append(" ".repeat(tab)).append("</" + node.tag + ">\n");
         }
     }
 
@@ -102,8 +168,16 @@ public class Tracer implements AutoCloseable {
 
     @Override
     public void close() {
-        pop();
+        pop(this);
+    }
 
+    public static void log(Throwable e){
+        try (final var sw = new StringWriter();
+             final var pw = new PrintWriter(sw)) {
+            e.printStackTrace(pw);
+            log("ERROR", null, sw.toString());
+        } catch (IOException ioegnored) {
+        }
     }
 
 }

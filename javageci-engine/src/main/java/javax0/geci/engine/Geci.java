@@ -304,7 +304,7 @@ public class Geci implements javax0.geci.api.Geci {
             final var set = directory.getKey();
             final var locator = directory.getValue();
             Tracer.log(set.toString() + " set with alternative directory locations ["
-                + locator.alternatives().collect(Collectors.joining(",")) + "]");
+                    + locator.alternatives().collect(Collectors.joining(",")) + "]");
         }
         Tracer.pop();
     }
@@ -318,13 +318,13 @@ public class Geci implements javax0.geci.api.Geci {
 
     @Override
     public boolean generate() throws IOException {
-        try (final var tr = Tracer.push("Starting generation")) {
+        try {
             final var exceptions = new ArrayList<String>();
             injectContextIntoGenerators();
             final var phases = generators.stream()
-                .mapToInt(Generator::phases)
-                .max()
-                .orElse(1);
+                    .mapToInt(Generator::phases)
+                    .max()
+                    .orElse(1);
             Tracer.log("There will be " + phases + " phases.");
             final FileCollector collector;
             if (directories.isEmpty()) {
@@ -342,49 +342,54 @@ public class Geci implements javax0.geci.api.Geci {
             Tracer.push("Registering split helpers");
             collector.registerSplitHelpers(splitHelpers);
             Tracer.pop();
-            Tracer.push("Collecting sources");
+            Tracer.push("SourceCollect", "Collecting sources");
             collector.collect(onlys, ignores, outputSet);
             Tracer.pop();
 
             for (int phase = 0; phase < phases; phase++) {
-                Tracer.push("Starting phase " + phase);
-                for (final var source : collector.getSources()) {
-                    Tracer.push("Processing " + source.getAbsoluteFile());
-                    if (!source.isBinary) {
-                        Tracer.push("Starting the generators");
-                        for (var generator : generators) {
-                            Tracer.push("generator " + generator.getClass());
-                            if (generator.activeIn(phase)) {
-                                Tracer.log(generator.getClass() + " is active in this phase");
-                                source.allowDefaultSegment = false;
-                                source.currentGenerator = generator;
-                                try {
-                                    Tracer.push("starting the generator");
-                                    generator.process(source);
-                                    Tracer.pop();
-                                } catch (javax0.geci.engine.Source.SourceIsBinary e) {
-                                    Tracer.log("source processing failed, it is a binary file");
-                                    exceptions.add(e.getAbsoluteFile());
+                try (final var posPhase = Tracer.push("Phase", "Starting phase " + phase)) {
+                    for (final var source : collector.getSources()) {
+                        try (final var posSource = Tracer.push("Source", source.getAbsoluteFile())) {
+                            if (!source.isBinary) {
+                                try (final var posGenerators = Tracer.push("Generators", null)) {
+                                    for (var generator : generators) {
+                                        try (final var posGenerator = Tracer.push("Generator." + generator.getClass().getSimpleName(), generator.getClass().getName())) {
+                                            if (generator.activeIn(phase)) {
+                                                Tracer.log("ACTIVE");
+                                                source.allowDefaultSegment = false;
+                                                source.currentGenerator = generator;
+                                                try {
+                                                    generator.process(source);
+                                                } catch (javax0.geci.engine.Source.SourceIsBinary e) {
+                                                    Tracer.log("source processing failed, it is a binary file");
+                                                    exceptions.add(e.getAbsoluteFile());
+                                                }
+                                            } else {
+                                                Tracer.log("INACTIVE");
+                                            }
+                                        }
+                                    }
                                 }
                             } else {
-                                Tracer.log(generator.getClass() + " is not active in this phase");
+                                Tracer.log(source.getAbsoluteFile() + " seems to be binary, skipped");
                             }
-                            Tracer.pop();
                         }
-                        Tracer.pop();
-                    } else {
-                        Tracer.log(source.getAbsoluteFile() + " seems to be binary, skipped");
                     }
-                    Tracer.pop();
                 }
-                Tracer.pop();
             }
-            for (var generator : generators) {
-                if (generator instanceof GlobalGenerator) {
-                    ((GlobalGenerator) generator).process();
+            try (final var pos1 = Tracer.push("GlobalGenerators", null)) {
+                for (var generator : generators) {
+                    if (generator instanceof GlobalGenerator) {
+                        try (final var pos2 = Tracer.push("GlobalGenerator." + generator.getClass().getSimpleName(), generator.getClass().getName())) {
+                            ((GlobalGenerator) generator).process();
+                        }
+                    }
                 }
             }
             if (exceptions.size() > 0 && !ignoreBinary) {
+                try (final var pos = Tracer.push("Exceptions")) {
+                    exceptions.forEach(e -> Tracer.log(e));
+                }
                 throw new GeciException("Cannot read the files\n" + String.join("\n", exceptions) + "\nThey are probably binary file. Use '.ignore()' to filter binary files out");
             }
             if (!sourcesConsolidate(collector)) {
@@ -394,7 +399,6 @@ public class Geci implements javax0.geci.api.Geci {
             }
             return sourcesModifiedAndSave(collector);
         } finally {
-            Tracer.pop();
             if (traceFileName != null) {
                 try {
                     Tracer.dumpXML(traceFileName);
@@ -405,40 +409,53 @@ public class Geci implements javax0.geci.api.Geci {
         }
     }
 
+    /**
+     * Save the sources that were modified and return true if there was
+     * any source that was modified and thus saved.
+     *
+     * @param collector that provides the sources
+     * @return {@code true} if there was something saved
+     * @throws IOException when some file cannot be written
+     */
     private boolean sourcesModifiedAndSave(FileCollector collector) throws IOException {
-        var generated = false;
-        var allSources = Stream.concat(
-                collector.getSources().stream(),
-                collector.getNewSources().stream()
-        ).collect(Collectors.toSet());
-        for (var source : allSources) {
-            if (source.isTouched() && source.isModified(getSourceComparator(source))) {
-                source.save();
-                modifiedSources.add(source);
-                generated = true;
-            }
-        }
-        for (var source : Stream.concat(collector.getSources().stream(), collector.getNewSources().stream()).collect(Collectors.toSet())) {
-            if (modifiedSources.contains(source)) {
-                if ((whatToLog & ~MODIFIED) == 0) {
-                    LOG.info("MODIFIED  '%s'", source.getAbsoluteFile());
-                    logSourceMessages(source);
+        try(final var pos = Tracer.push("Save",null)) {
+            var generated = false;
+            var allSources = Stream.concat(
+                    collector.getSources().stream(),
+                    collector.getNewSources().stream()
+            ).collect(Collectors.toSet());
+            for (var source : allSources) {
+                if (source.isTouched() && source.isModified(getSourceComparator(source))) {
+                    Tracer.log("SaveSource",source.getAbsoluteFile());
+                    source.save();
+                    modifiedSources.add(source);
+                    generated = true;
+                }else{
+                    Tracer.log("SourceUnchanged",source.getAbsoluteFile());
                 }
-            } else {
-                if (source.isTouched()) {
-                    if ((whatToLog & ~TOUCHED) == 0) {
-                        LOG.info("TOUCHED   '%s'", source.getAbsoluteFile());
+            }
+            for (var source : Stream.concat(collector.getSources().stream(), collector.getNewSources().stream()).collect(Collectors.toSet())) {
+                if (modifiedSources.contains(source)) {
+                    if ((whatToLog & ~MODIFIED) == 0) {
+                        LOG.info("MODIFIED  '%s'", source.getAbsoluteFile());
                         logSourceMessages(source);
                     }
                 } else {
-                    if ((whatToLog & ~UNTOUCHED) == 0) {
-                        LOG.info("UNTOUCHED '%s'", source.getAbsoluteFile());
-                        logSourceMessages(source);
+                    if (source.isTouched()) {
+                        if ((whatToLog & ~TOUCHED) == 0) {
+                            LOG.info("TOUCHED   '%s'", source.getAbsoluteFile());
+                            logSourceMessages(source);
+                        }
+                    } else {
+                        if ((whatToLog & ~UNTOUCHED) == 0) {
+                            LOG.info("UNTOUCHED '%s'", source.getAbsoluteFile());
+                            logSourceMessages(source);
+                        }
                     }
                 }
             }
+            return generated;
         }
-        return generated;
     }
 
     private void logSourceMessages(javax0.geci.engine.Source source) {
@@ -454,16 +471,25 @@ public class Geci implements javax0.geci.api.Geci {
     }
 
     private boolean sourcesConsolidate(FileCollector collector) {
-        var touched = false;
-        for (var source : collector.getSources()) {
-            source.consolidate();
-            touched = touched || source.isTouched();
+        try (final var pos1 = Tracer.push("SourceConsolidation", null)) {
+            var touched = false;
+            try (final var pos2 = Tracer.push("OldSources", null)) {
+                for (var source : collector.getSources()) {
+                    source.consolidate();
+                    touched = touched || source.isTouched();
+                    Tracer.log("Source", (source.isTouched() ? "[TOUCHED]" : "") +source.getAbsoluteFile());
+                }
+            }
+            try (final var pos2 = Tracer.push("NewSources", null)) {
+                for (var source : collector.getNewSources()) {
+                    source.consolidate();
+                    touched = touched || source.isTouched();
+                    Tracer.log("Source", (source.isTouched() ? "[TOUCHED]" : "") +source.getAbsoluteFile());
+                }
+            }
+            Tracer.log("Result", "some sources are " + (touched ? "touched" : "virgin"));
+            return touched;
         }
-        for (var source : collector.getNewSources()) {
-            source.consolidate();
-            touched = touched || source.isTouched();
-        }
-        return touched;
     }
 
 
