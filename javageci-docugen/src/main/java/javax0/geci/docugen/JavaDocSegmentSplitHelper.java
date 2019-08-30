@@ -5,7 +5,7 @@ import javax0.geci.api.SegmentSplitHelper;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class JavaDocSegmentSplitHelper extends MarkdownSegmentSplitHelper {
+public class JavaDocSegmentSplitHelper extends AbstractXMLSegmentSplitHelper {
     public JavaDocSegmentSplitHelper() {
         super(
             Pattern.compile(
@@ -23,21 +23,11 @@ public class JavaDocSegmentSplitHelper extends MarkdownSegmentSplitHelper {
         );
     }
 
-    @Override
-    public SegmentSplitHelper.Matcher match(List<String> lines, int i) {
-        final var line = lines.get(i);
-        if (line.stripLeading().startsWith("<!--")) {
-            final var sb = new StringBuilder();
-            int j;
-            for (j = i; j < lines.size(); j++) {
-                sb.append(lines.get(j));
-                if (lines.get(j).stripTrailing().endsWith("-->")) {
-                    break;
-                }
-            }
-            return new Matcher(match(sb.toString()), j - i + 1);
-        } else {
-            return match(line);
-        }
+    protected String stripLine(String line) {
+        return line.stripLeading().replaceAll("^\\*","");
+    }
+
+    protected String stripContinuationLine(String line) {
+        return line.replaceAll("^\\s*\\*","");
     }
 }

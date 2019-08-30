@@ -26,6 +26,20 @@ public interface Geci {
     Geci source(String... directory);
 
     /**
+     * <p>Instruct the framework to create a trace file for this instance and
+     * save the trace information into the file named by the argument.</p>
+     *
+     * <p>If the file already exists it will be overwritten.</p>
+     *
+     * <p>It is a good practice to save the trace file into the {@code target}
+     * folder when a maven structure is used.</p>
+     *
+     * @param fileName the name of the file where the trace will be written.
+     * @return {@code this}
+     */
+    Geci trace(final String fileName);
+
+    /**
      * Add a new directory to the list of source directories that Geci
      * should process. See {@link #source(String...)} and also {@link
      * #source(Source.Set, Predicate, String...)} on the use of the
