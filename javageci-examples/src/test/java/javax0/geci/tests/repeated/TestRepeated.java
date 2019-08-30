@@ -33,7 +33,11 @@ public class TestRepeated {
                                         }
                                 )
                                 //
-                                .build()).generate()
+                                .build())
+                        .only(".*","\\.")
+                        .ignore("\\.git")
+                        .trace("target/trace.xml")
+                        .generate()
                 , geci.failed()
         );
     }

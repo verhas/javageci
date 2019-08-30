@@ -4,7 +4,6 @@ import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +29,7 @@ public class Tracer implements AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger();
     private static Tracer root;
     private static Tracer current;
+    private static Tracer last;
     private static final Tracer FAKE = new Tracer(null, null);
 
     private final Tracer parent;
@@ -44,23 +44,30 @@ public class Tracer implements AutoCloseable {
     public static void on() {
         root = new Tracer(null, "tracer root");
         current = root;
+        last = root;
     }
 
     public static void off() {
         root = null;
         current = root;
+        last = root;
+    }
+
+    public static void append(final String msg) {
+        if (last == null) return;
+        last .message = last.message + msg;
     }
 
     public static void log(final String msg) {
         if (root == null) return;
-        current.children.add(new Tracer(current, msg));
+        current.children.add(last = new Tracer(current, msg));
     }
 
     public static Tracer push(String msg) {
         if (root == null) return FAKE;
-        final var down = new Tracer(current, msg);
-        current.children.add(down);
-        current = down;
+        last = new Tracer(current, msg);
+        current.children.add(last);
+        current = last;
         return current;
     }
 

@@ -1,12 +1,8 @@
 package javax0.geci.engine;
 
 import javax0.geci.api.Context;
-import javax0.geci.api.Distant;
-import javax0.geci.api.GeciException;
-import javax0.geci.api.Generator;
-import javax0.geci.api.GlobalGenerator;
-import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.api.Source;
+import javax0.geci.api.*;
 import javax0.geci.javacomparator.Comparator;
 import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
@@ -16,14 +12,7 @@ import javax0.geci.util.DirectoryLocator;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -212,8 +201,7 @@ public class Geci implements javax0.geci.api.Geci {
     public Geci only(String... patterns) {
         Collections.addAll(this.onlys,
                 Arrays.stream(patterns)
-                        .map(Pattern::compile)
-                        .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
+                        .map(PatternPredicate::new)
                         .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
     }
@@ -241,10 +229,36 @@ public class Geci implements javax0.geci.api.Geci {
     public Geci ignore(String... patterns) {
         Collections.addAll(this.ignores,
                 Arrays.stream(patterns)
-                        .map(Pattern::compile)
-                        .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
+                        .map(PatternPredicate::new)
                         .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
+    }
+
+    /**
+     * A simple utility class that converts the regular expression into
+     * a predicate and the same time the {@code toString()} of the
+     * object returns the regular expression itself to aid debugging.
+     */
+    private static class PatternPredicate implements Predicate<Path> {
+        private final Predicate<Path> predicate;
+        private final String regex;
+        private final Pattern pattern;
+
+        private PatternPredicate(String regex) {
+            this.pattern = Pattern.compile(regex);
+            this.predicate = s -> pattern.matcher(FileCollector.toAbsolute(s)).find();
+            this.regex = regex;
+        }
+
+        @Override
+        public boolean test(Path path) {
+            return predicate.test(path);
+        }
+
+        @Override
+        public String toString() {
+            return regex;
+        }
     }
 
     @Override

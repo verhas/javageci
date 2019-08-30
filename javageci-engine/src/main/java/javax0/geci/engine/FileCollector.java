@@ -14,12 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -237,24 +232,53 @@ class FileCollector {
                             if (!outputSets.contains(entry.getKey())) {
                                 Tracer.log("'" + directory + "' is input, collecting files...");
                                 Files.find(Paths.get(dir), MAX_DEPTH_UNLIMITED,
-                                    (filePath, fileAttr) -> fileAttr.isRegularFile())
-                                    .peek(s -> Tracer.log("'" + s + "' was found"))
-                                    .filter(path -> (onlys == null || onlys.isEmpty())
-                                        || onlys.stream().anyMatch(predicate -> predicate.test(path)))
-                                    .peek(s -> Tracer.log("'" + s + "' matches 'only' constraints"))
-                                    .filter(path -> (ignores == null || ignores.isEmpty())
-                                        || ignores.stream().noneMatch(negicate -> negicate.test(path)))
-                                    .peek(s -> Tracer.log("'" + s + "' does not match 'ignore' constraints"))
-                                    .forEach(path -> sources.add(
-                                        new Source(this,
-                                            dir,
-                                            path)));
+                                        (filePath, fileAttr) -> fileAttr.isRegularFile())
+                                        .peek(s -> Tracer.log("'" + s + "' was found"))
+                                        .peek(s -> Tracer.push("Checking only predicates"))
+                                        .filter(path -> {
+                                            if (onlys == null || onlys.isEmpty()) {
+                                                Tracer.log("There are no 'only' predicates");
+                                                return true;
+                                            }
+                                            if (onlys.stream()
+                                                    .peek(p -> Tracer.log("Checking 'only' predicate " + p))
+                                                    .anyMatch(predicate -> predicate.test(path))) {
+                                                Tracer.append(", predicate matched");
+                                                return true;
+                                            }
+                                            Tracer.log("No 'only' predicate match, file is skipped.");
+                                            return false;
+                                        })
+                                        .peek(s -> Tracer.pop())
+                                        .peek(s -> Tracer.push("Checking 'ignore' predicates"))
+                                        .filter(path -> {
+                                                    if (ignores == null || ignores.isEmpty()) {
+                                                        Tracer.log("There are no 'ignore' predicates");
+                                                        return true;
+                                                    }
+                                                    if (ignores.stream()
+                                                            .peek(p -> Tracer.log("Checking 'ignore' predicate " + p))
+                                                            .noneMatch(negicate -> negicate.test(path))) {
+                                                        Tracer.log("None of the  predicates matched");
+                                                        return true;
+                                                    }
+                                                    Tracer.append(", predicate matched, file is skipped");
+                                                    return false;
+                                                }
+                                        )
+                                        .peek(s -> Tracer.pop())
+                                        .forEach(path -> sources.add(
+                                                new Source(this,
+                                                        dir,
+                                                        path)));
                                 processed.set(true);
                                 processedSome.set(true);
                                 located.put(entry.getKey(), new DirectoryLocated(dir));
                             } else {
                                 Tracer.log("'" + directory + "' is an output location, files are not collected");
                             }
+                        } else {
+                            Tracer.log("'" + directory + "' is not the right alternative");
                         }
                     } catch (IOException ioex) {
                         throw new GeciException("The directory '"
