@@ -1,7 +1,7 @@
 {@comment This file defines the version of the project. This is more effective than defining the project
 version in a maven property because that cannot be used to reference the parent.
 }
-{@define VERSION=1.2.0-SNAPSHOT}
+{@define VERSION=1.2.1-SNAPSHOT}
 {@define JAVA_RELEASE=11}
 {@define GROUPID=com.javax0.geci}
 {@define JUPITER_VERSION=5.5.1}

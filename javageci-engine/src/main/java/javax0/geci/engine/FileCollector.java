@@ -3,8 +3,9 @@ package javax0.geci.engine;
 
 import javax0.geci.api.DirectoryLocator;
 import javax0.geci.api.GeciException;
+import javax0.geci.api.Logger;
 import javax0.geci.api.SegmentSplitHelper;
-import javax0.geci.engine.Source;
+import javax0.geci.tools.Tracer;
 import javax0.geci.util.DirectoryLocated;
 import javax0.geci.util.JavaSegmentSplitHelper;
 import javax0.geci.util.NullSegmentSplitHelper;
@@ -19,31 +20,19 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 class FileCollector {
-
+    private static final Logger log = new javax0.geci.log.Logger(FileCollector.class);
+    private final static SegmentSplitHelper nullSegmentSplitHelper = new NullSegmentSplitHelper();
+    private static final SegmentSplitHelper javaSegmentSplitHelper = new JavaSegmentSplitHelper();
+    private static final int MAX_DEPTH_UNLIMITED = Integer.MAX_VALUE;
     private final Map<Source.Set, DirectoryLocator> directories;
     private final Map<Source.Set, DirectoryLocated> located = new HashMap<>();
     private final Set<Source> newSources = new HashSet<>();
     private final Set<Source> sources = new HashSet<>();
+    private final Map<String, SegmentSplitHelper> splitHelpers = new HashMap<>();
     private boolean lenient = false;
 
     public FileCollector(Map<Source.Set, javax0.geci.api.DirectoryLocator> directories) {
         this.directories = new HashMap<>(directories);
-    }
-
-    public void registerSplitHelpers(Map<String, SegmentSplitHelper> splitHelpers) {
-        this.splitHelpers.putAll(splitHelpers);
-    }
-
-    public String getDirectory(Source.Set sourceSet) {
-        return located.get(sourceSet).getDirectory();
-    }
-
-    public Set<Source> getNewSources() {
-        return newSources;
-    }
-
-    public Set<Source> getSources() {
-        return sources;
     }
 
     /**
@@ -62,14 +51,14 @@ class FileCollector {
             changed = false;
             for (int i = 0; i < pathElements.size() - 1; i++) {
                 if (!pathElements.get(i).equals("..") && pathElements.get(i + 1).equals("..")) {
-                    pathElements.remove(i+1);
+                    pathElements.remove(i + 1);
                     pathElements.remove(i);
                     changed = true;
                     break;
                 }
             }
         } while (changed);
-        return String.join("/",pathElements);
+        return String.join("/", pathElements);
     }
 
     /**
@@ -125,6 +114,31 @@ class FileCollector {
         return normalize(path.toAbsolutePath().toString());
     }
 
+    private static String getCwd() {
+        try {
+            return new java.io.File(".").getCanonicalPath();
+        } catch (IOException ignored) {
+            return null;
+        }
+    }
+
+    public void registerSplitHelpers(Map<String, SegmentSplitHelper> splitHelpers) {
+        splitHelpers.entrySet().forEach(e -> Tracer.log("Helper " + e.getKey() + " = " + e.getValue().getClass().getName()));
+        this.splitHelpers.putAll(splitHelpers);
+    }
+
+    public String getDirectory(Source.Set sourceSet) {
+        return located.get(sourceSet).getDirectory();
+    }
+
+    public Set<Source> getNewSources() {
+        return newSources;
+    }
+
+    public Set<Source> getSources() {
+        return sources;
+    }
+
     /**
      * When the sources are configured by default, simply not specifying
      * any source then Geci will automatically configure all the four
@@ -154,10 +168,6 @@ class FileCollector {
         lenient = true;
     }
 
-    private final static SegmentSplitHelper nullSegmentSplitHelper = new NullSegmentSplitHelper();
-    private final Map<String, SegmentSplitHelper> splitHelpers = new HashMap<>();
-    private static final SegmentSplitHelper javaSegmentSplitHelper = new JavaSegmentSplitHelper();
-
     /**
      * Get the segment split helper that is to be used for this source.
      *
@@ -180,8 +190,6 @@ class FileCollector {
         }
     }
 
-    private static final int MAX_DEPTH_UNLIMITED = Integer.MAX_VALUE;
-
     /**
      * Collect the names of the files that are in the directories given
      * in the sources. Also modify the global {@code directories} map so
@@ -189,57 +197,101 @@ class FileCollector {
      * only a one element array containing the name of the directory
      * that was used to collect the files.
      *
-     * @param onlys   limits the collected files to a subset that
-     *                matches at least one of the predicates. If the
-     *                set is empty or the parameter is {@code null}
-     *                then there is no filtering, all files are
-     *                collected that are otherwise collected from the
-     *                directory.
-     * @param ignores limits the collected files to a subset that
-     *                does not match any of the predicates. If the
-     *                set is empty or the parameter is {@code null}
-     *                then there is no filtering, all files are
-     *                collected that are otherwise collected from the
-     *                directory.
+     * @param onlys      limits the collected files to a subset that
+     *                   matches at least one of the predicates. If the
+     *                   set is empty or the parameter is {@code null}
+     *                   then there is no filtering, all files are
+     *                   collected that are otherwise collected from the
+     *                   directory.
+     * @param ignores    limits the collected files to a subset that
+     *                   does not match any of the predicates. If the
+     *                   set is empty or the parameter is {@code null}
+     *                   then there is no filtering, all files are
+     *                   collected that are otherwise collected from the
+     *                   directory.
+     * @param outputSets contains the output sets. It means that they
+     *                   are available for the generators to create new
+     *                   sources in the set, but the sources are not
+     *                   collected from these sets and no generator will
+     *                   be executed for any source file in these source
+     *                   sets.
      */
     public void collect(Set<Predicate<Path>> onlys, Set<Predicate<Path>> ignores, Set<Source.Set> outputSets) {
+        Tracer.log("Current Working Directory is '" + getCwd() + "'");
         var processedSome = new AtomicBoolean(false);
         for (var entry : directories.entrySet()) {
+            Tracer.push("File collecting started for entry [" + entry.getValue().alternatives().collect(Collectors.joining(",")) + "]");
             var processed = new AtomicBoolean(false);
             final var locator = entry.getValue();
             locator.alternatives().takeWhile(x -> !processed.get())
-                    .forEach(directory -> {
-                        var dir = normalized(directory);
-                        try {
-                            if (locator.test(dir)) {
-                                if (!outputSets.contains(entry.getKey())) {
-                                    Files.find(Paths.get(dir), MAX_DEPTH_UNLIMITED,
-                                            (filePath, fileAttr) -> fileAttr.isRegularFile())
-                                            .filter(path -> (onlys == null || onlys.isEmpty())
-                                                    || onlys.stream().anyMatch(predicate -> predicate.test(path)))
-                                            .filter(path -> (ignores == null || ignores.isEmpty())
-                                                    || ignores.stream().noneMatch(negicate -> negicate.test(path)))
-                                            .forEach(path -> sources.add(
-                                                    new Source(this,
-                                                            dir,
-                                                            path)));
-                                    processed.set(true);
-                                    processedSome.set(true);
-                                    located.put(entry.getKey(), new DirectoryLocated(dir));
-                                }
+                .forEach(directory -> {
+                    var dir = normalized(directory);
+                    try (final var ignored = Tracer.push("File collecting started for alternative '" + directory + "'")) {
+                        if (locator.test(dir)) {
+                            Tracer.log("'" + directory + "' seems to be the right alternative");
+                            if (!outputSets.contains(entry.getKey())) {
+                                Tracer.log("'" + directory + "' is input, collecting files...");
+                                Files.find(Paths.get(dir), MAX_DEPTH_UNLIMITED,
+                                        (filePath, fileAttr) -> fileAttr.isRegularFile())
+                                        .peek(s -> Tracer.log("'" + s + "' was found"))
+                                        .peek(s -> Tracer.push("Checking only predicates"))
+                                        .filter(path -> {
+                                            if (onlys == null || onlys.isEmpty()) {
+                                                Tracer.log("There are no 'only' predicates");
+                                                return true;
+                                            }
+                                            if (onlys.stream()
+                                                    .peek(p -> Tracer.log("Checking 'only' predicate " + p))
+                                                    .anyMatch(predicate -> predicate.test(path))) {
+                                                Tracer.append(", predicate matched");
+                                                return true;
+                                            }
+                                            Tracer.log("No 'only' predicate match, file is skipped.");
+                                            return false;
+                                        })
+                                        .peek(s -> Tracer.pop())
+                                        .peek(s -> Tracer.push("Checking 'ignore' predicates"))
+                                        .filter(path -> {
+                                                    if (ignores == null || ignores.isEmpty()) {
+                                                        Tracer.log("There are no 'ignore' predicates");
+                                                        return true;
+                                                    }
+                                                    if (ignores.stream()
+                                                            .peek(p -> Tracer.log("Checking 'ignore' predicate " + p))
+                                                            .noneMatch(negicate -> negicate.test(path))) {
+                                                        Tracer.log("None of the  predicates matched");
+                                                        return true;
+                                                    }
+                                                    Tracer.append(", predicate matched, file is skipped");
+                                                    return false;
+                                                }
+                                        )
+                                        .peek(s -> Tracer.pop())
+                                        .forEach(path -> sources.add(
+                                                new Source(this,
+                                                        dir,
+                                                        path)));
+                                processed.set(true);
+                                processedSome.set(true);
+                                located.put(entry.getKey(), new DirectoryLocated(dir));
+                            } else {
+                                Tracer.log("'" + directory + "' is an output location, files are not collected");
                             }
-                        } catch (IOException ioex) {
-                            throw new GeciException("The directory '"
-                                    + dir
-                                    + "' was selected but no files can be collected from it.",
-                                    ioex);
+                        } else {
+                            Tracer.log("'" + directory + "' is not the right alternative");
                         }
-                    });
-
+                    } catch (IOException ioex) {
+                        throw new GeciException("The directory '"
+                            + dir
+                            + "' was selected but no files can be collected from it.",
+                            ioex);
+                    }
+                });
+            Tracer.pop();
             if (!processed.get() && !lenient) {
                 throw new GeciException("Source directory [" +
-                        locator.alternatives().collect(Collectors.joining(","))
-                        + "] is not found");
+                    locator.alternatives().collect(Collectors.joining(","))
+                    + "] is not found");
             }
         }
         if (!processedSome.get()) {
@@ -248,7 +300,7 @@ class FileCollector {
                     .map(entry -> "\"" +
                         entry.getKey() +
                         " : " + "[" +
-                            entry.getValue().alternatives().collect(Collectors.joining(","))
+                        entry.getValue().alternatives().collect(Collectors.joining(","))
                         + "]")
                     .collect(Collectors.joining(",\n"))
                 + "} are found.");

@@ -2,6 +2,8 @@
 
 Java Generate Code Inline
 
+<img src="images/logo.svg" width="100px"/>
+
 Java::Geci is a library for generating Java code. Code generation programs
 implemented using Java::Geci can be executed to generate new source code
 or modify existing Java source files. This way the programmer can use
@@ -60,13 +62,13 @@ To do that with maven use the following dependencies:
     <!-- This is optional, you can use your own annotations or comment config -->
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-annotation</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.1-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-engine</artifactId>
     <scope>test</scope>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.1-SNAPSHOT</version>
 </dependency>
 ```
 

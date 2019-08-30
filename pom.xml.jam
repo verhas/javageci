@@ -40,6 +40,7 @@
                             {opens/examples/tests.builder}
                             {opens/examples/tests.cloner}
                             {opens/examples/tests.configBuilder}
+                            {opens/docugen/docugen}
                             {exportsTo/examples/tutorials.simple/core}
                             {exportsTo/examples/tests.fluent/tools}
                             {exportsTo/examples/tests.fluent/core}
@@ -51,7 +52,7 @@
                         </argLine>
                     </configuration>
                     {dependencies|
-                        {dependency :org.junit.jupiter:junit-jupiter-engine:{JUPITER_VERSION}}
+                        {dependency :org.junit.jupiter:junit-jupiter-engine:{JUPITER_VERSION}:}
                     }
                 }
                 {plugin|
@@ -70,7 +71,7 @@
                     <configuration>
                         <detectLinks>false</detectLinks>
                     </configuration>
-                    {dependencies|{dependency :org.ow2.asm:asm:7.0}}
+                    {dependencies|{dependency :org.ow2.asm:asm:7.0:}}
                     {executions|{execution|
                             {id|attach-javadocs}
                             {goals|{goal|jar}}}}
@@ -84,8 +85,12 @@
             }
         }
     }
-    {dependencyManagement|{dependencies|
-        {@for MODULE in (api,core,tools,engine,annotation,docugen,core-annotations)={dependency :{GROUPID}:javageci-MODULE:{VERSION}}}
-        {@for MODULE in (api,engine)={testDependency :org.junit.jupiter:junit-jupiter-MODULE:{JUPITER_VERSION}}}
-        }}
+    {dependencyManagement|
+        {dependencies|
+            {@for MODULE in (api,core,tools,engine,annotation,docugen,core-annotations)={dependency :{GROUPID}:javageci-MODULE:{VERSION}:}}
+            {@for MODULE in (api,engine)={dependency :org.junit.jupiter:junit-jupiter-MODULE:{JUPITER_VERSION}:test}}
+            {dependency :com.javax0.jamal:jamal-engine:{JAMAL_VERSION}:}
+            {dependency :com.javax0.jamal:jamal-testsupport:{JAMAL_VERSION}:test}
+        }
+    }
 }

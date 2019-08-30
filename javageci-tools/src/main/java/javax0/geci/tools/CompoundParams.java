@@ -121,6 +121,14 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
         }
     }
 
+    public void trace() {
+        Tracer.push("CompoundParam keys and values");
+        for (final var key : keySet()) {
+            Tracer.log(key + " = " + get(key));
+        }
+        Tracer.pop();
+    }
+
     /**
      * <ol>
      *

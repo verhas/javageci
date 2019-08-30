@@ -1,5 +1,6 @@
 package javax0.geci.tools.reflection;
 
+import javax0.geci.api.GeciException;
 import javax0.geci.tools.MethodTool;
 
 import java.lang.reflect.*;
@@ -21,8 +22,13 @@ public class Selector<T> {
     private final Map<String, Function<T, Object>> converters = new HashMap<>();
     private final Map<String, BiFunction<T, Pattern, Boolean>> regexMemberSelectors = new HashMap<>();
     private SelectorNode top = null;
+    /**
+     * Store the original expression to be used in exceptions.
+     */
+    private final String expression;
 
-    private Selector() {
+    private Selector(String expression) {
+        this.expression = expression;
 
         defineConversions();
 
@@ -91,7 +97,7 @@ public class Selector<T> {
      * @return {@code this} object to allow method chaining
      */
     public static Selector compile(String expression) {
-        final var it = new Selector();
+        final var it = new Selector(expression);
         it.top = SelectorCompiler.compile(expression);
         return it;
     }
@@ -109,7 +115,7 @@ public class Selector<T> {
         if( m == null ){
             return null;
         }
-        throw new IllegalArgumentException("Selector cannot be applied to " + m.getClass());
+        throw illegalArgumentException("Selector cannot be applied to " + m.getClass());
     }
 
     private Class<?> toClass(T m) {
@@ -122,7 +128,7 @@ public class Selector<T> {
         if (m instanceof Field) {
             return ((Field) m).getType();
         }
-        throw new IllegalArgumentException("Selector cannot be applied to " + (m == null ? "null " : m.getClass()));
+        throw illegalArgumentException("Selector cannot be applied to " + (m == null ? "null " : m.getClass()));
     }
 
     /**
@@ -494,7 +500,7 @@ public class Selector<T> {
         if (m instanceof Class) {
             return ((Class) m).getName();
         }
-        throw new IllegalArgumentException("Cannot get the name for " + m.getClass().getCanonicalName());
+        throw illegalArgumentException("Cannot get the name for " + m.getClass().getCanonicalName());
     }
 
     private int getModifiers(T m) {
@@ -504,7 +510,7 @@ public class Selector<T> {
         if (m instanceof Class) {
             return ((Class) m).getModifiers();
         }
-        throw new IllegalArgumentException("Cannot get the modifiers for " + m.getClass().getCanonicalName());
+        throw illegalArgumentException("Cannot get the modifiers for " + m.getClass().getCanonicalName());
     }
 
     /**
@@ -646,7 +652,7 @@ public class Selector<T> {
         for (final var klass : classes) {
             if (klass.isAssignableFrom(m.getClass())) return true;
         }
-        throw new IllegalArgumentException("Selector cannot be applied to " + m.getClass());
+        throw illegalArgumentException("Selector cannot be applied to " + m.getClass());
     }
 
     /**
@@ -670,7 +676,7 @@ public class Selector<T> {
      */
     public Selector converter(String name, Function<T, Object> function) {
         if (converters.containsKey(name)) {
-            throw new IllegalArgumentException("The converter '" + name + "' is already defined, can not be redefined");
+            throw illegalArgumentException("The converter '" + name + "' is already defined, can not be redefined");
         }
         return converterRe(name, function);
     }
@@ -689,7 +695,7 @@ public class Selector<T> {
     @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
     public Selector selector(String name, Function<T, Boolean> function) {
         if (selectors.containsKey(name)) {
-            throw new IllegalArgumentException("The selector '" + name + "' is already defined, can not be redefined");
+            throw illegalArgumentException("The selector '" + name + "' is already defined, can not be redefined");
         }
         return selectorRe(name, function);
     }
@@ -778,8 +784,12 @@ public class Selector<T> {
         }
         if (node instanceof SelectorNode.Converted) {
             final var converter = ((SelectorNode.Converted) node).converter;
-            //TODO check that the converter exists and that the result after apply is not null
-            return match((T) converters.get(converter).apply(m), ((SelectorNode.Converted) node).subNode);
+            final Function<T, Object> function = converters.get(converter);
+            if (function == null) {
+                throw illegalArgumentException("There is no converted for '" + converter + "'");
+            } else {
+                return match((T) function.apply(m), ((SelectorNode.Converted) node).subNode);
+            }
         }
         if (node instanceof SelectorNode.Not) {
             return !match(m, ((SelectorNode.Not) node).subNode);
@@ -787,18 +797,18 @@ public class Selector<T> {
         if (node instanceof SelectorNode.Regex) {
             final var regexNode = (SelectorNode.Regex) node;
             if (!regexMemberSelectors.containsKey(regexNode.name)) {
-                throw new IllegalArgumentException("There is no regex matcher functionality for '" + regexNode.name + "'");
+                throw illegalArgumentException("There is no regex matcher functionality for '" + regexNode.name + "'");
             }
             return regexMemberSelectors.get(regexNode.name).apply(m, regexNode.regex);
         }
         if (node instanceof SelectorNode.Terminal) {
             final var terminalNode = (SelectorNode.Terminal) node;
             if (!selectors.containsKey(terminalNode.terminal)) {
-                throw new IllegalArgumentException("The selector '" + terminalNode.terminal + "' is not known.");
+                throw illegalArgumentException("The selector '" + terminalNode.terminal + "' is not known.");
             }
             return selectors.get(terminalNode.terminal).apply(m);
         }
-        throw new IllegalArgumentException("Invalid node type in the compiled structure");
+        throw illegalArgumentException("Invalid node type in the compiled structure");
     }
 
     private boolean hasAnnotations(AnnotatedElement m) {
@@ -817,5 +827,14 @@ public class Selector<T> {
     private boolean matchAnnotations(AnnotatedElement m, Pattern pattern) {
         return Arrays.stream(m.getAnnotations()).anyMatch(a ->
             pattern.matcher(a.annotationType().getCanonicalName()).find());
+    }
+
+    private IllegalArgumentException illegalArgumentException(final String message){
+        final var exception = new IllegalArgumentException(message +" in expression '"+expression+"'");
+        final var elements = exception.getStackTrace();
+        final var trace = new StackTraceElement[elements.length-1];
+        System.arraycopy(elements,1,trace,0,trace.length);
+        exception.setStackTrace(trace);
+        return exception;
     }
 }

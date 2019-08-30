@@ -89,9 +89,9 @@ class TestSelector {
     }
 
     private Set<String> getFunctionMapKeys(final String fieldName) throws NoSuchFieldException, IllegalAccessException {
-        final var selectorObject = Selector.compile("true");
         final var selectorsField = Selector.class.getDeclaredField(fieldName);
         selectorsField.setAccessible(true);
+        final var selectorObject = Selector.compile("true");
         return ((Map) selectorsField.get(selectorObject)).keySet();
     }
 

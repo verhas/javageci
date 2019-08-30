@@ -5,6 +5,7 @@ import javax0.geci.api.*;
 import javax0.geci.tools.GeciReflectionTools;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,9 +27,22 @@ public class Source implements javax0.geci.api.Source {
     private Segment globalSegment = null;
     private boolean touched = false;
     boolean allowDefaultSegment = false;
+    boolean isBinary = false;
 
     Generator currentGenerator = null;
 
+    static class SourceIsBinary extends GeciException {
+        String getAbsoluteFile() {
+            return absoluteFile;
+        }
+
+        final String absoluteFile;
+
+        SourceIsBinary(String absoluteFile) {
+            super();
+            this.absoluteFile = absoluteFile;
+        }
+    }
 
     private void assertTouching() {
         if (currentGenerator != null && currentGenerator instanceof Distant) {
@@ -64,7 +78,7 @@ public class Source implements javax0.geci.api.Source {
      *
      * @return true when the source was touched
      */
-    public boolean isTouched() {
+    boolean isTouched() {
         return touched;
     }
 
@@ -345,6 +359,9 @@ public class Source implements javax0.geci.api.Source {
             inMemory = true;
         }catch (IOException e){
             throw e;
+        } catch (UncheckedIOException e) {
+            isBinary = true;
+            throw new SourceIsBinary(absoluteFile);
         } catch (Exception e) {
             throw new GeciException("Cannot read the file " + absoluteFile + "\nIt is probably binary file. Use '.ignore()' to filter binary files out",e);
         }

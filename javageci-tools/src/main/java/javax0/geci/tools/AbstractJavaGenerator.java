@@ -109,17 +109,48 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
             if (phase == 0) {
                 classes.add(klass);
             }
-            var annotationParams = Optional.ofNullable(GeciReflectionTools.getParameters(klass, mnemonic())).orElseGet(() ->
-                GeciAnnotationTools.getParameters(source, mnemonic(), "//", CLASS_LINE));
+
+            final CompoundParams annotationParams;
+            var nullableAannotationParams = GeciReflectionTools.getParameters(klass, mnemonic());
+            if (nullableAannotationParams == null) {
+                Tracer.log("Parameters were not found in annotation");
+                var commentParams = GeciAnnotationTools.getParameters(source, mnemonic(), "//", CLASS_LINE);
+                if (commentParams == null) {
+                    Tracer.log("Parameters were not found in annotation like comment");
+                    annotationParams = null;
+                } else {
+                    annotationParams = commentParams;
+                    Tracer.push("Parameters collected from the comment");
+                }
+            } else {
+                Tracer.push("Parameters collected from the annotation");
+                annotationParams = nullableAannotationParams;
+            }
+            if (annotationParams != null) {
+                annotationParams.trace();
+                Tracer.pop();
+            }
+
             var segment = source.open(mnemonic());
             var editorFoldParams = segment == null ? null : (javax0.geci.tools.CompoundParams) segment.sourceParams();
+            if (editorFoldParams != null) {
+                Tracer.push("Parameters collected from the editor fold header");
+                editorFoldParams.trace();
+                Tracer.pop();
+            }
             var global = new CompoundParams(annotationParams, editorFoldParams);
+
+            Tracer.push("setting the constraint on the parameters");
             global.setConstraints(source, mnemonic(), implementedKeys());
-            if (annotationParams != null || processAllClasses()) {
+            Tracer.pop();
+            if (nullableAannotationParams != null || processAllClasses()) {
+                Tracer.log("Allowing default segment");
                 source.allowDefaultSegment();
             }
-            if (annotationParams != null || editorFoldParams != null || processAllClasses()) {
+            if (nullableAannotationParams != null || editorFoldParams != null || processAllClasses()) {
+                Tracer.push("Invoking process on the concrete class, that is " + this.getClass().getName());
                 process(source, klass, global);
+                Tracer.pop();
             }
         }
     }

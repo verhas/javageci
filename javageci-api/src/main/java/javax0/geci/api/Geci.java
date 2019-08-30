@@ -26,6 +26,20 @@ public interface Geci {
     Geci source(String... directory);
 
     /**
+     * <p>Instruct the framework to create a trace file for this instance and
+     * save the trace information into the file named by the argument.</p>
+     *
+     * <p>If the file already exists it will be overwritten.</p>
+     *
+     * <p>It is a good practice to save the trace file into the {@code target}
+     * folder when a maven structure is used.</p>
+     *
+     * @param fileName the name of the file where the trace will be written.
+     * @return {@code this}
+     */
+    Geci trace(final String fileName);
+
+    /**
      * Add a new directory to the list of source directories that Geci
      * should process. See {@link #source(String...)} and also {@link
      * #source(Source.Set, Predicate, String...)} on the use of the
@@ -242,6 +256,31 @@ public interface Geci {
      * @return {@code this}
      */
     Geci ignore(String... patterns);
+
+    /**
+     * Ignore the files that cannot be read as text files.
+     *
+     * <p>The project directory may contain files that are not text
+     * files, like png, pdf and so on. These files cannot be processed
+     * by the framework, because the files are read in text mode. By
+     * default in cases like that the source that cannot be read will be
+     * excluded from the processing and at the end of the processing an
+     * exception will be thrown listing all the files that were binary.
+     * </p>
+     *
+     * <p>Using this method the exception can be suppressed. In that
+     * case having a non-processable binary file in the source directory
+     * will silently be ignored. </p>
+     *
+     * <p>Note that there is an inherent risk ignoring all files that
+     * seem to be binary for the framework. It may happen that a file
+     * that was not supposed to be ignored will silently be ignored. A
+     * safer approach is to use the {@link #ignore(String...)} method
+     * and explicitly exclude patterns like {@code "\.png$"}.</p>
+     *
+     * @return {@code this}
+     */
+    Geci ignoreBinary();
 
     /**
      * This method declares that certain sets are output sets. It means

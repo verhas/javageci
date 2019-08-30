@@ -7,6 +7,7 @@ import javax0.geci.javacomparator.Comparator;
 import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
 import javax0.geci.tools.AbstractJavaGenerator;
+import javax0.geci.tools.Tracer;
 import javax0.geci.util.DirectoryLocator;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class Geci implements javax0.geci.api.Geci {
      * report that the code was changed.
      */
     public static final String FAILED = "Geci modified source code. Please compile and test again.";
+    public static final int ALL = 0x00;
     public static final int MODIFIED = ~0x01;
     public static final int TOUCHED = ~0x02;
     public static final int UNTOUCHED = ~0x04;
@@ -45,6 +47,8 @@ public class Geci implements javax0.geci.api.Geci {
     private final BiPredicate<List<String>, List<String>> JAVA_COMPARATOR = new Comparator();
     private final Set<Source.Set> outputSet = new HashSet<>();
     private Source.Set lastSet = null;
+    private boolean ignoreBinary = false;
+    private String traceFileName = null;
 
     @Override
     public Geci source(String... directory) {
@@ -197,8 +201,7 @@ public class Geci implements javax0.geci.api.Geci {
     public Geci only(String... patterns) {
         Collections.addAll(this.onlys,
                 Arrays.stream(patterns)
-                        .map(Pattern::compile)
-                        .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
+                        .map(PatternPredicate::new)
                         .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
     }
@@ -218,13 +221,44 @@ public class Geci implements javax0.geci.api.Geci {
         return this;
     }
 
+    public Geci ignoreBinary() {
+        ignoreBinary = true;
+        return this;
+    }
+
     public Geci ignore(String... patterns) {
         Collections.addAll(this.ignores,
                 Arrays.stream(patterns)
-                        .map(Pattern::compile)
-                        .map(pattern -> (Predicate<Path>) path -> pattern.matcher(FileCollector.toAbsolute(path)).find())
+                        .map(PatternPredicate::new)
                         .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
+    }
+
+    /**
+     * A simple utility class that converts the regular expression into
+     * a predicate and the same time the {@code toString()} of the
+     * object returns the regular expression itself to aid debugging.
+     */
+    private static class PatternPredicate implements Predicate<Path> {
+        private final Predicate<Path> predicate;
+        private final String regex;
+        private final Pattern pattern;
+
+        private PatternPredicate(String regex) {
+            this.pattern = Pattern.compile(regex);
+            this.predicate = s -> pattern.matcher(FileCollector.toAbsolute(s)).find();
+            this.regex = regex;
+        }
+
+        @Override
+        public boolean test(Path path) {
+            return predicate.test(path);
+        }
+
+        @Override
+        public String toString() {
+            return regex;
+        }
     }
 
     @Override
@@ -264,45 +298,111 @@ public class Geci implements javax0.geci.api.Geci {
         source(Source.maven());
     }
 
+    private void traceDirectories() {
+        Tracer.push("SourceSets to be collected");
+        for (final var directory : directories.entrySet()) {
+            final var set = directory.getKey();
+            final var locator = directory.getValue();
+            Tracer.log(set.toString() + " set with alternative directory locations ["
+                + locator.alternatives().collect(Collectors.joining(",")) + "]");
+        }
+        Tracer.pop();
+    }
+
+    @Override
+    public Geci trace(final String fileName) {
+        Tracer.on();
+        traceFileName = fileName;
+        return this;
+    }
+
     @Override
     public boolean generate() throws IOException {
-
-        injectContextIntoGenerators();
-
-        final var phases = generators.stream()
+        try (final var tr = Tracer.push("Starting generation")) {
+            final var exceptions = new ArrayList<String>();
+            injectContextIntoGenerators();
+            final var phases = generators.stream()
                 .mapToInt(Generator::phases)
                 .max()
                 .orElse(1);
-        final FileCollector collector;
-        if (directories.isEmpty()) {
-            setDefaultDirectories();
-            collector = new FileCollector(directories);
-            collector.lenient();
-        } else {
-            collector = new FileCollector(directories);
-            if (lenient) {
+            Tracer.log("There will be " + phases + " phases.");
+            final FileCollector collector;
+            if (directories.isEmpty()) {
+                Tracer.log("There are no configured directories, using the default");
+                setDefaultDirectories();
+                collector = new FileCollector(directories);
                 collector.lenient();
+            } else {
+                traceDirectories();
+                collector = new FileCollector(directories);
+                if (lenient) {
+                    collector.lenient();
+                }
             }
-        }
-        collector.registerSplitHelpers(splitHelpers);
-        collector.collect(onlys, ignores, outputSet);
-        for (int phase = 0; phase < phases; phase++) {
-            for (final var source : collector.getSources()) {
-                for (var generator : generators) {
-                    if (generator.activeIn(phase)) {
-                        source.allowDefaultSegment = false;
-                        source.currentGenerator = generator;
-                        generator.process(source);
+            Tracer.push("Registering split helpers");
+            collector.registerSplitHelpers(splitHelpers);
+            Tracer.pop();
+            Tracer.push("Collecting sources");
+            collector.collect(onlys, ignores, outputSet);
+            Tracer.pop();
+
+            for (int phase = 0; phase < phases; phase++) {
+                Tracer.push("Starting phase " + phase);
+                for (final var source : collector.getSources()) {
+                    Tracer.push("Processing " + source.getAbsoluteFile());
+                    if (!source.isBinary) {
+                        Tracer.push("Starting the generators");
+                        for (var generator : generators) {
+                            Tracer.push("generator " + generator.getClass());
+                            if (generator.activeIn(phase)) {
+                                Tracer.log(generator.getClass() + " is active in this phase");
+                                source.allowDefaultSegment = false;
+                                source.currentGenerator = generator;
+                                try {
+                                    Tracer.push("starting the generator");
+                                    generator.process(source);
+                                    Tracer.pop();
+                                } catch (javax0.geci.engine.Source.SourceIsBinary e) {
+                                    Tracer.log("source processing failed, it is a binary file");
+                                    exceptions.add(e.getAbsoluteFile());
+                                }
+                            } else {
+                                Tracer.log(generator.getClass() + " is not active in this phase");
+                            }
+                            Tracer.pop();
+                        }
+                        Tracer.pop();
+                    } else {
+                        Tracer.log(source.getAbsoluteFile() + " seems to be binary, skipped");
                     }
+                    Tracer.pop();
+                }
+                Tracer.pop();
+            }
+            for (var generator : generators) {
+                if (generator instanceof GlobalGenerator) {
+                    ((GlobalGenerator) generator).process();
+                }
+            }
+            if (exceptions.size() > 0 && !ignoreBinary) {
+                throw new GeciException("Cannot read the files\n" + String.join("\n", exceptions) + "\nThey are probably binary file. Use '.ignore()' to filter binary files out");
+            }
+            if (!sourcesConsolidate(collector)) {
+                if (generators.stream().anyMatch(g -> !(g instanceof Distant))) {
+                    throw new GeciException("The generators did not touch any source");
+                }
+            }
+            return sourcesModifiedAndSave(collector);
+        } finally {
+            Tracer.pop();
+            if (traceFileName != null) {
+                try {
+                    Tracer.dumpXML(traceFileName);
+                } catch (IOException e) {
+                    LoggerFactory.getLogger().error("Trace cannot be written into '" + traceFileName + "'", e);
                 }
             }
         }
-        if (!sourcesConsolidate(collector)) {
-            if (generators.stream().anyMatch(g -> !(g instanceof Distant))) {
-                throw new GeciException("The generators did not touch any source");
-            }
-        }
-        return sourcesModifiedAndSave(collector);
     }
 
     private boolean sourcesModifiedAndSave(FileCollector collector) throws IOException {
