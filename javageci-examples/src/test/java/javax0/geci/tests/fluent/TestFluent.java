@@ -21,7 +21,8 @@ public class TestFluent {
 
     public static FluentBuilder regex() {
         var t = FluentBuilder.from(Regex.class).start("pattern").cloner("copy");
-        return t.oneOrMore(t.oneOf("terminal", "set", "optional", "zeroOrMore", "oneOrMore", "more")).oneOf("get");
+        return t.syntax("(terminal | set | optional | zeroOrMore | oneOrMore | more)+ get");
+        //oneOrMore(t.oneOf("terminal", "set", "optional", "zeroOrMore", "oneOrMore", "more")).oneOf("get");
     }
 
     public static FluentBuilder xml() {

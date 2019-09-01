@@ -91,7 +91,7 @@ public class Regex {
             return that.get();
         }
     }
-    public interface Aduf{
+    public interface Aduf extends WrapperInterface {
         java.util.regex.Pattern get();
     }
     public interface Ohug{

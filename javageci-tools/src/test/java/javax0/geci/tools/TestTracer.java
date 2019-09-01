@@ -150,7 +150,9 @@ public class TestTracer {
                 "  <ERROR>\n" +
                 "<![CDATA[javax0.geci.api.GeciException: Hooppa"));
             Assertions.assertTrue(content.endsWith("]]>\n  </ERROR>\n</trace>\n"));
-            Assertions.assertTrue(content.contains("at javax0.geci.tools.TestTracer.testExceptionLogging(TestTracer.java:"));
+            Assertions.assertTrue(content
+                .replaceAll("geci.tools/","")
+                .contains("at javax0.geci.tools.TestTracer.testExceptionLogging(TestTracer.java:"));
         }
     }
 
@@ -185,7 +187,8 @@ public class TestTracer {
             Tracer.log("top level");
             Tracer.dumpXML(testFile.name());
             final var content = testFile.content();
-            Assertions.assertTrue(content.startsWith("<trace msg=\"tracer root\">\n" +
+            Assertions.assertTrue(content.replaceAll("geci.tools/","")
+                .startsWith("<trace msg=\"tracer root\">\n" +
                 "  <log msg=\"Start level\">\n" +
                 "    <log msg=\"Hooppa\"/>\n" +
                 "  </log>\n" +
@@ -239,7 +242,9 @@ public class TestTracer {
                 "    </PopTrace>\n" +
                 "    <log msg=\"top level\"/>\n" +
                 "  </log>\n" + // remove the line numbers as they may change when altering the unit test
-                "</trace>\n", content.replaceAll(":\\d+", ":000"));
+                "</trace>\n", content
+                .replaceAll(":\\d+", ":000")
+                .replaceAll("geci.tools/",""));
         }
     }
 
