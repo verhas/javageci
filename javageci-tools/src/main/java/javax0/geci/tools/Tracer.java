@@ -54,11 +54,14 @@ import java.util.ArrayList;
  *
  */
 public class Tracer implements AutoCloseable {
+    private static class TracerPop extends RuntimeException {
+    }
     private static final Logger log = LoggerFactory.getLogger();
     private static final String DEFAULT_TAG = "log";
     private static Tracer root;
     private static Tracer current;
     private static Tracer last;
+    private String popTrace;
     private static final Tracer FAKE = new Tracer(null, null, null, null);
 
     private final Tracer parent;
@@ -122,6 +125,9 @@ public class Tracer implements AutoCloseable {
         if (last == null) return;
         final var my = walkUpTo(tag);
         if (my != null) {
+            if( my.message == null ){
+                my.message = "";
+            }
             my.message = msg + my.message;
         }
     }
@@ -136,6 +142,9 @@ public class Tracer implements AutoCloseable {
         if (last == null) return;
         final var my = walkUpTo(tag);
         if (my != null) {
+            if( my.message == null ){
+                my.message = "";
+            }
             my.message = my.message + msg;
         }
     }
@@ -147,6 +156,9 @@ public class Tracer implements AutoCloseable {
      */
     public static void prepend(final String msg) {
         if (last == null) return;
+        if( last.message == null ){
+            last.message = "";
+        }
         last.message = msg + last.message;
     }
 
@@ -157,6 +169,9 @@ public class Tracer implements AutoCloseable {
      */
     public static void append(final String msg) {
         if (last == null) return;
+        if( last.message == null ){
+            last.message = "";
+        }
         last.message = last.message + msg;
     }
 
@@ -224,6 +239,7 @@ public class Tracer implements AutoCloseable {
     public static void pop() {
         if (root == null) return;
         if (current.parent != null) {
+            current.popTrace = new TracerPop().getStackTrace()[1].toString();
             current = current.parent;
         } else {
             final var e = new GeciException("Too many Tracer.pop() calls");
@@ -232,13 +248,38 @@ public class Tracer implements AutoCloseable {
     }
 
     /**
-     * Return to the level specified as argument.
+     * Return to the level specified as argument. If there were too many pops and the current pointer is above where
+     * it should be then it will put exception cdata messages for all the pops that has happened from the deepest level
+     * to this point.
      *
      * @param actual the node that was returned by {@link #push(String)} or {@link #push(String, String)}
      */
     public static void pop(Tracer actual) {
         if (root == null) return;
+        Tracer stepper;
+        for (stepper = current.parent; stepper != null && stepper != actual; stepper = stepper.parent) ;
+        if (stepper == null) {
+            stepper = actual;
+            Tracer child;
+            while ((child = lastChild(stepper)) != null && child.popTrace != null) {
+                stepper = child;
+            }
+            current = actual;
+            try (final var tracer = push("PopTrace", null)) {
+                while (stepper != null && stepper.popTrace != null) {
+                    log("Pop",stepper.popTrace);
+                    stepper = stepper.parent;
+                }
+            }
+        }
         current = actual;
+    }
+
+    private static Tracer lastChild(Tracer tracer) {
+        if (tracer.children.isEmpty()) {
+            return null;
+        }
+        return tracer.children.get(tracer.children.size() - 1);
     }
 
     /**
@@ -256,12 +297,18 @@ public class Tracer implements AutoCloseable {
      * @param e the exceptin to append to the trace
      */
     public static void log(Throwable e){
+        log("ERROR", null, exceptionToString(e));
+    }
+
+    private static String exceptionToString(Throwable e) {
+        String result = "";
         try (final var sw = new StringWriter();
              final var pw = new PrintWriter(sw)) {
             e.printStackTrace(pw);
-            log("ERROR", null, sw.toString());
+            result = sw.toString();
         } catch (IOException ioegnored) {
         }
+        return result;
     }
 
     /**
