@@ -5,30 +5,29 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
+class TestTracer {
 
-public class TestTracer {
-
-    final byte[] b = new byte[102400];
-
-    private class TestFile implements AutoCloseable {
+    private class TestOutput implements AutoCloseable {
         final StringBuilder sb = new StringBuilder();
 
-        TestFile() {
+        TestOutput() {
         }
 
-        public StringBuilder stringBuilder() {
+        StringBuilder stringBuilder() {
             return sb;
         }
 
-        public String content() {
+        String content() {
             return sb.toString();
         }
 
         @Override
         public void close() {
         }
+    }
 
+    private TestOutput testOutput() {
+        return TestTracer.this.new TestOutput();
     }
 
     private static void assertStartsWith(final String expectedStart, final String actual) {
@@ -41,14 +40,11 @@ public class TestTracer {
         Assertions.assertEquals(expectedEnd, normalized.substring(normalized.length() - expectedEnd.length()));
     }
 
-    private TestFile testFile() throws IOException {
-        return TestTracer.this.new TestFile();
-    }
 
     @Test
     @DisplayName("Nothing is traced when tracing is switched off")
-    void testSwitchedOff() throws Exception {
-        try (final var testFile = testFile()) {
+    void testSwitchedOff() {
+        try (final var testFile = testOutput()) {
             Tracer.off();
             Tracer.log("Abraka dabra");
             Tracer.dumpXML(testFile.stringBuilder());
@@ -58,8 +54,8 @@ public class TestTracer {
 
     @Test
     @DisplayName("A simple log trace is created using a Tracer.log() call.")
-    void testSimpleLogging() throws Exception {
-        try (final var testFile = testFile()) {
+    void testSimpleLogging() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             Tracer.log("Abraka dabra");
             Tracer.dumpXML(testFile.stringBuilder());
@@ -71,8 +67,8 @@ public class TestTracer {
 
     @Test
     @DisplayName("A simple log trace is created using a Tracer.log() call with a tag.")
-    void testSimpleLoggingWithTag() throws Exception {
-        try (final var testFile = testFile()) {
+    void testSimpleLoggingWithTag() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             Tracer.log("TAG", "Abraka dabra");
             Tracer.dumpXML(testFile.stringBuilder());
@@ -84,8 +80,8 @@ public class TestTracer {
 
     @Test
     @DisplayName("A simple log trace is created using a Tracer.log() call with a cData.")
-    void testSimpleLoggingWithCDATA() throws Exception {
-        try (final var testFile = testFile()) {
+    void testSimpleLoggingWithCDATA() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             Tracer.log("TAG", "Abraka dabra", "cdata");
             Tracer.dumpXML(testFile.stringBuilder());
@@ -99,8 +95,8 @@ public class TestTracer {
 
     @Test
     @DisplayName("A hierarchical log trace is created using a Tracer.push() / pop() calls.")
-    void testHierarchicalLogging() throws Exception {
-        try (final var testFile = testFile()) {
+    void testHierarchicalLogging() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             Tracer.log("UP", "This is an up message");
             Tracer.push("TOP", "Abraka dabra");
@@ -128,8 +124,8 @@ public class TestTracer {
 
     @Test
     @DisplayName("An exception can be logged and it will become CDATA.")
-    void testExceptionLogging() throws Exception {
-        try (final var testFile = testFile()) {
+    void testExceptionLogging() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             Tracer.log(new GeciException("Hooppa"));
             Tracer.dumpXML(testFile.stringBuilder());
@@ -146,8 +142,8 @@ public class TestTracer {
 
     @Test
     @DisplayName("When using it in try-with-resources it closes the level automatically.")
-    void testAutoclose() throws Exception {
-        try (final var testFile = testFile()) {
+    void testAutoclose() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             try (final var tracer = Tracer.push("Start level")) {
                 Tracer.log("Hooppa");
@@ -165,8 +161,8 @@ public class TestTracer {
 
     @Test
     @DisplayName("When doing too many pops an exception will be traced.")
-    void testTooManyPops() throws Exception {
-        try (final var testFile = testFile()) {
+    void testTooManyPops() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             try (final var tracer = Tracer.push("Start level")) {
                 Tracer.log("Hooppa");
@@ -192,8 +188,8 @@ public class TestTracer {
 
     @Test
     @DisplayName("When doing too many pops all pops will be traced")
-    void testTooManyPopsTraced() throws Exception {
-        try (final var testFile = testFile()) {
+    void testTooManyPopsTraced() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             Tracer.push("Just to get one level deeper");
             try (final var tracer = Tracer.push("Start level")) {
@@ -238,8 +234,8 @@ public class TestTracer {
 
     @Test
     @DisplayName("Can append text to the last log message")
-    void testSimpleAppend() throws Exception {
-        try (final var testFile = testFile()) {
+    void testSimpleAppend() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             Tracer.log("Abraka dabra");
             Tracer.append(" kadabra");
@@ -252,8 +248,8 @@ public class TestTracer {
 
     @Test
     @DisplayName("Can append text to the last log message even if message is null")
-    void testSimpleAppendToNull() throws Exception {
-        try (final var testFile = testFile()) {
+    void testSimpleAppendToNull() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             Tracer.log((String) null);
             Tracer.append(" kadabra");
@@ -266,8 +262,8 @@ public class TestTracer {
 
     @Test
     @DisplayName("Can prepend text to the last log message")
-    void testSimplePrepend() throws Exception {
-        try (final var testFile = testFile()) {
+    void testSimplePrepend() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             Tracer.log("Abraka dabra");
             Tracer.prepend(" kadabra");
@@ -280,8 +276,8 @@ public class TestTracer {
 
     @Test
     @DisplayName("Can prepend text to the last log message even if message is null")
-    void testSimplePrependToNull() throws Exception {
-        try (final var testFile = testFile()) {
+    void testSimplePrependToNull() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             Tracer.log((String) null);
             Tracer.prepend(" kadabra");
@@ -295,8 +291,8 @@ public class TestTracer {
 
     @Test
     @DisplayName("Can append text to the last log message with given tag")
-    void testHierarchicalAppend() throws Exception {
-        try (final var testFile = testFile()) {
+    void testHierarchicalAppend() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             Tracer.push("tag", "Abraka");
             Tracer.push("");
@@ -324,8 +320,8 @@ public class TestTracer {
 
     @Test
     @DisplayName("Can append text to the last log message with given tag even if message is null")
-    void testHierarchicalAppendToNull() throws Exception {
-        try (final var testFile = testFile()) {
+    void testHierarchicalAppendToNull() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             Tracer.push("tag", null);
             Tracer.push("");
@@ -350,8 +346,8 @@ public class TestTracer {
 
     @Test
     @DisplayName("Can prepend text to the last log message with given tag")
-    void testHierarchicalPrepend() throws Exception {
-        try (final var testFile = testFile()) {
+    void testHierarchicalPrepend() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             Tracer.push("tag", "Abraka");
             Tracer.push("");
@@ -379,8 +375,8 @@ public class TestTracer {
 
     @Test
     @DisplayName("Can prepend text to the last log message with given tag even if message is null")
-    void testHierarchicalPrependToNull() throws Exception {
-        try (final var testFile = testFile()) {
+    void testHierarchicalPrependToNull() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             Tracer.push("tag", null);
             Tracer.push("");
@@ -403,11 +399,10 @@ public class TestTracer {
         }
     }
 
-
     @Test
     @DisplayName("Can prepend text to the last log message with given tag fails if there is no such tag")
-    void testHierarchicalPrependFail() throws Exception {
-        try (final var testFile = testFile()) {
+    void testHierarchicalPrependFail() {
+        try (final var testFile = testOutput()) {
             Tracer.on();
             Tracer.push("tag", null);
             Tracer.push("");
