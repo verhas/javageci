@@ -483,7 +483,12 @@ public class GeciAnnotationTools {
      * the segments that have the {@code id="mnemonic"} or {@code null}
      * if there is no appropriate segment starting line that would match
      * the syntax and the mnemonic
+     *
+     * @deprecated
+     * The parameters of a segment should be accessed directly
+     * through the Segment object representing it.
      */
+    @Deprecated(since="1.2.0")
     public static CompoundParams getSegmentParameters(Source source,
                                                       String mnemonic) {
         for (var line : source.getLines()) {

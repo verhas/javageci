@@ -109,6 +109,7 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
             if (phase == 0) {
                 classes.add(klass);
             }
+
             final CompoundParams annotationParams;
             var nullableAannotationParams = GeciReflectionTools.getParameters(klass, mnemonic());
             if (nullableAannotationParams == null) {
@@ -130,13 +131,13 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
                 Tracer.pop();
             }
 
-            var editorFoldParams = GeciAnnotationTools.getSegmentParameters(source, mnemonic());
+            var segment = source.open(mnemonic());
+            var editorFoldParams = segment == null ? null : (javax0.geci.tools.CompoundParams) segment.sourceParams();
             if (editorFoldParams != null) {
                 Tracer.push("Parameters collected from the editor fold header");
                 editorFoldParams.trace();
                 Tracer.pop();
             }
-
             var global = new CompoundParams(annotationParams, editorFoldParams);
             Tracer.push("Composed effective parameter set");
             global.trace();

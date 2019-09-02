@@ -1,5 +1,6 @@
 package javax0.geci.engine;
 
+import java.util.List;
 import javax0.geci.api.CompoundParams;
 import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.tools.CompoundParamsBuilder;
@@ -11,9 +12,10 @@ import java.util.regex.Pattern;
  * segment using regular expressions.
  */
 public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
-    final Pattern startPattern;
-    final Pattern endPattern;
-    final Pattern defaultPattern;
+    private final Pattern startPattern;
+    private final Pattern endPattern;
+    private final Pattern defaultPattern;
+    private final List<String> excludedKeys;
     protected int defaultOffset = 0;
     private String[] segmentPreface = new String[]{""};
     private String[] segmentPostface = new String[]{""};
@@ -76,6 +78,14 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
         this.startPattern = startPattern;
         this.endPattern = endPattern;
         this.defaultPattern = defaultPattern;
+        this.excludedKeys = List.of();
+    }
+
+    public RegexBasedSegmentSplitHelper(Pattern startPattern, Pattern endPattern, Pattern defaultPattern, List<String> excludedKeys) {
+        this.startPattern = startPattern;
+        this.endPattern = endPattern;
+        this.defaultPattern = defaultPattern;
+        this.excludedKeys = excludedKeys;
     }
 
     @Override
@@ -93,7 +103,7 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
                     + startMatcher
                     + "\ndoes not give a second matching group. This is probably a coding error in that class.");
             }
-            attrs = new CompoundParamsBuilder(paramsDef).redefineId().build();
+            attrs = new CompoundParamsBuilder(paramsDef).exclude(excludedKeys.toArray(String[]::new)).redefineId().build();
             final var startSpaces = getGroup(1, startMatcher);
             if (startSpaces == null) {
                 throw new IllegalArgumentException("Start pattern in "
