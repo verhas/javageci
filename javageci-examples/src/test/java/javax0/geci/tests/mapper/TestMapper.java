@@ -14,7 +14,7 @@ class TestMapper {
     void testMapper() throws Exception {
         final var geci = new Geci();
         Assertions.assertFalse(
-                geci.source(maven().module("javageci-examples").mainSource()).register(new Mapper()).generate(),
+                geci.source(maven().module("javageci-examples").mainSource()).register(Mapper.builder().build()).generate(),
                 geci.failed());
     }
 
@@ -22,7 +22,7 @@ class TestMapper {
     void testEquals() throws Exception {
         final var geci = new Geci();
         Assertions.assertFalse(
-                geci.source(maven().module("javageci-examples").mainSource()).register(new Equals()).generate(),
+                geci.source(maven().module("javageci-examples").mainSource()).register(Equals.builder().build()).generate(),
                 geci.failed());
     }
 }

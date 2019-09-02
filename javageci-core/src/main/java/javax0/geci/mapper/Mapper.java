@@ -1,12 +1,12 @@
 package javax0.geci.mapper;
 
+import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
+import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.reflection.Selector;
-import javax0.jamal.Format;
-import javax0.jamal.api.BadSyntax;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -22,94 +22,41 @@ import java.util.function.Function;
  * in the Geci annotation of the class, or else it just tries to use the default constructor of the class.
  *
  */
+@AnnotationBuilder
 public class Mapper extends AbstractJavaGenerator {
 
     private static final String DEFAULTS = "!transient & !static";
-    private final Class<? extends Annotation> generatedAnnotation;
-    private final Function<String, String> field2MapKeyMapper;
 
-    /**
-     * Default constructor that creates a mapper that uses the default 'generated' annotation and the field names
-     * are used as they are as keys in the map.
-     */
-    public Mapper() {
-        generatedAnnotation = javax0.geci.annotations.Generated.class;
-        field2MapKeyMapper = s -> s;
-    }
-
-    /**
-     * Constructor with which you can specify the annotation used to decorate generated methods. The field names
-     * are used as they are as keys in the map.
-     *
-     * @param generatedAnnotation the annotation to be used to decorate the generated methods.
-     */
-    public Mapper(Class<? extends Annotation> generatedAnnotation) {
-        this.generatedAnnotation = generatedAnnotation;
-        field2MapKeyMapper = s -> s;
-    }
-
-    /**
-     * Create a new mapper object specifying the annotation to decorate the generated methods and also a field name
-     * mapper.
-     *
-     * @param generatedAnnotation the annotation to be used to decorate the generated methods.
-     * @param field2MapKeyMapper  the function used to calculate the name of the key in the Map for each field name
-     */
-    public Mapper(Class<? extends Annotation> generatedAnnotation, Function<String, String> field2MapKeyMapper) {
-        this.generatedAnnotation = generatedAnnotation;
-        this.field2MapKeyMapper = field2MapKeyMapper;
-    }
-
-    /**
-     * Create a new mapper object specifying the field name to map key mapper. The annotation used to decorate the
-     * generated methods is the default.
-     *
-     * @param field2MapKeyMapper the function used to calculate the name of the key in the Map for each field name
-     */
-    public Mapper(Function<String, String> field2MapKeyMapper) {
-        this.generatedAnnotation = javax0.geci.annotations.Generated.class;
-        this.field2MapKeyMapper = field2MapKeyMapper;
-    }
-
-    @Override
-    public String mnemonic() {
-        return "mapper";
+    public static class Config {
+        private String filter = DEFAULTS;
+        private Class<? extends Annotation> generatedAnnotation = javax0.geci.annotations.Generated.class;
+        private Function<String, String> field2MapKeyMapper = s -> s;
+        private String factory;
     }
 
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
         final var gid = global.get("id");
-        var segment = source.open(gid);
-        generateToMap(source, klass, global);
-        generateFromMap(source, klass, global);
-
-        final var factory = global.get("factory", "new {{class}}()");
-        final var placeHolders = Map.of(
-                "mnemonic", mnemonic(),
-                "generatedBy", generatedAnnotation.getCanonicalName(),
-                "class", klass.getSimpleName(),
-                "factory", factory,
-                "Map", "java.util.Map",
-                "HashMap", "java.util.HashMap"
+        final var segment = source.open(gid);
+        final var factory = localConfig(global).factory;
+        segment.param("mnemonic", mnemonic(),
+            "generatedBy", config.generatedAnnotation.getCanonicalName(),
+            "class", klass.getSimpleName(),
+            "factory", factory,
+            "Map", "java.util.Map",
+            "HashMap", "java.util.HashMap"
         );
-        final var rawContent = segment.getContent();
-        try {
-            segment.setContent(Format.format(rawContent, placeHolders));
-        } catch (BadSyntax badSyntax) {
-            throw new IOException(badSyntax);
-        }
+        generateToMap(segment, source, klass, global);
+        generateFromMap(segment, source, klass, global);
     }
 
-    private void generateToMap(Source source, Class<?> klass, CompoundParams global) throws Exception {
+    private void generateToMap(Segment segment, Source source, Class<?> klass, CompoundParams global) throws Exception {
         final var fields = GeciReflectionTools.getAllFieldsSorted(klass);
-        final var gid = global.get("id");
-        var segment = source.open(gid);
         segment.write_r(getResourceString("tomap.jam"));
         for (final var field : fields) {
-            final var local = GeciReflectionTools.getParameters(field, mnemonic());
-            final var params = new CompoundParams(local, global);
-            final var filter = params.get("filter", DEFAULTS);
-            if (Selector.compile(filter).match(field)) {
+            final var params = GeciReflectionTools.getParameters(field, mnemonic());
+            final var local = localConfig(new CompoundParams(params, global));
+            if (Selector.compile(local.filter).match(field)) {
                 final var name = field.getName();
                 if (hasToMap(field.getType())) {
                     segment.write("map.put(\"%s\", %s == null ? null : %s.toMap0(cache));", field2MapKey(name), name, name);
@@ -128,7 +75,7 @@ public class Mapper extends AbstractJavaGenerator {
     }
 
     private String field2MapKey(String name) {
-        return field2MapKeyMapper.apply(name);
+        return config.field2MapKeyMapper.apply(name);
     }
 
     private boolean hasToMap(Class<?> type) {
@@ -152,17 +99,13 @@ public class Mapper extends AbstractJavaGenerator {
 
     }
 
-    private void generateFromMap(Source source, Class<?> klass, CompoundParams global) throws IOException {
+    private void generateFromMap(Segment segment, Source source, Class<?> klass, CompoundParams global) throws IOException {
         final var fields = GeciReflectionTools.getAllFieldsSorted(klass);
-        final var gid = global.get("id");
-        var segment = source.open(gid);
-
         segment.write_r(getResourceString("frommap.jam"));
         for (final var field : fields) {
-            final var local = GeciReflectionTools.getParameters(field, mnemonic());
-            final var params = new CompoundParams(local, global);
-            final var filter = params.get("filter", DEFAULTS);
-            if (Selector.compile(filter).match(field)) {
+            final var params = GeciReflectionTools.getParameters(field, mnemonic());
+            final var local = localConfig(new CompoundParams(params, global));
+            if (Selector.compile(local.filter).match(field)) {
                 final var name = field.getName();
                 if (hasFromMap(field.getType())) {
                     segment.write("it.%s = %s.fromMap0(({{Map}}<String,Object>)map.get(\"%s\"),cache);",
@@ -179,4 +122,71 @@ public class Mapper extends AbstractJavaGenerator {
         }
         segment.write("return it;")._l("}");
     }
+
+    //<editor-fold id="configBuilder" configurableMnemonic="mapper">
+    private String configuredMnemonic = "mapper";
+
+    @Override
+    public String mnemonic() {
+        return configuredMnemonic;
+    }
+
+    private final Config config = new Config();
+
+    public static Mapper.Builder builder() {
+        return new Mapper().new Builder();
+    }
+
+    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+        "factory",
+        "filter",
+        "id"
+    );
+
+    @Override
+    public java.util.Set<String> implementedKeys() {
+        return implementedKeys;
+    }
+
+    public class Builder {
+        public Builder factory(String factory) {
+            config.factory = factory;
+            return this;
+        }
+
+        public Builder field2MapKeyMapper(java.util.function.Function<String, String> field2MapKeyMapper) {
+            config.field2MapKeyMapper = field2MapKeyMapper;
+            return this;
+        }
+
+        public Builder filter(String filter) {
+            config.filter = filter;
+            return this;
+        }
+
+        public Builder generatedAnnotation(Class<? extends java.lang.annotation.Annotation> generatedAnnotation) {
+            config.generatedAnnotation = generatedAnnotation;
+            return this;
+        }
+
+        public Builder mnemonic(String mnemonic) {
+            configuredMnemonic = mnemonic;
+            return this;
+        }
+
+        public Mapper build() {
+            return Mapper.this;
+        }
+    }
+
+    private Config localConfig(CompoundParams params) {
+        final var local = new Config();
+        local.factory = params.get("factory", config.factory);
+        local.field2MapKeyMapper = config.field2MapKeyMapper;
+        local.filter = params.get("filter", config.filter);
+        local.generatedAnnotation = config.generatedAnnotation;
+        return local;
+    }
+    //</editor-fold>
+
 }
