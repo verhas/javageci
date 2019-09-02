@@ -320,11 +320,21 @@ public class Tracer implements AutoCloseable {
     public static void dumpXML(String fileName) throws IOException {
         if (root == null) return;
         final var sb = new StringBuilder();
-        dumpXML(root, sb, 0);
+        dumpXML(sb);
         final var file = new File(fileName);
         try (final var fos = new FileOutputStream(file)) {
             fos.write(sb.toString().getBytes(StandardCharsets.UTF_8));
         }
+    }
+
+    /**
+     * Convert the current trace to xml formatted text and write it into a StringBuilder.
+     *
+     * @param sb the output where the string will be put
+     */
+    public static void dumpXML(StringBuilder sb) {
+        if (root == null) return;
+        dumpXML(root, sb, 0);
     }
 
     private static void dumpXML(Tracer node, StringBuilder sb, int tab) {
