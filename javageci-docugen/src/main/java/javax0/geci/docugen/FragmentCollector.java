@@ -1,15 +1,24 @@
 package javax0.geci.docugen;
 
 import javax0.geci.annotations.Geci;
-import javax0.geci.api.*;
+import javax0.geci.api.CompoundParams;
+import javax0.geci.api.Distant;
+import javax0.geci.api.GeciException;
+import javax0.geci.api.Segment;
+import javax0.geci.api.Source;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
 @Geci("configBuilder localConfigMethod='' configurableMnemonic='fragmentCollector'")
 public class FragmentCollector extends AbstractSnippeter implements Distant {
 
+
     private static class Config extends AbstractSnippeter.Config {
+        private final Map<String, Pattern> patternMap = new HashMap<>();
         // snippet FragmentCollector_config
         private Pattern snippetStart = Pattern.compile("^\\s*\\*\\s*-(?:\\s+(.*))?$");
         private Pattern snippetEnd = Pattern.compile("^\\s*\\*/\\s*$");
@@ -17,6 +26,20 @@ public class FragmentCollector extends AbstractSnippeter implements Distant {
             line.replaceAll("^\\s*\\*\\s?","")
             .replaceAll("^\\s*</?p>\\s*$","");
         // end snippet
+        private String param = null;
+        private String regex = null;
+
+        private void setRegex(String regex) {
+            final var pattern = Pattern.compile(regex);
+            if (param == null) {
+                throw new GeciException("Regular expression for parameter extraction must have a name");
+            }
+            if (patternMap.containsKey(param)) {
+                throw new GeciException("The parameter '" + param + "' has already have an extracting regular expression");
+            }
+            patternMap.put(param, pattern);
+            param = null;
+        }
     }
 
     @Override
@@ -33,11 +56,11 @@ public class FragmentCollector extends AbstractSnippeter implements Distant {
         var snippetSubName = "";
         var snippetCounter = 1;
         SnippetBuilder builder = null;
-        Snippet lastSnippet = null;
+        Snippet snippetToResolv = null;
         for (final var line : source.getLines()) {
-            if (lastSnippet != null) {
-                resolveReferences(lastSnippet, line);
-                lastSnippet = null;
+            if (snippetToResolv != null) {
+                resolveReferences(snippetToResolv, line);
+                snippetToResolv = null;
             }
             final var starter = config.snippetStart.matcher(line);
             if (builder == null && starter.find()) {
@@ -50,8 +73,8 @@ public class FragmentCollector extends AbstractSnippeter implements Distant {
                 final var stopper = config.snippetEnd.matcher(line);
                 // skip
                 if (stopper.find()) {
-                    lastSnippet = builder.build();
-                    snippets.put(builder.snippetName(), lastSnippet, source);
+                    snippetToResolv = builder.build();
+                    snippets.put(builder.snippetName(), snippetToResolv, source);
                     builder = null;
                 } else {
                     final var convertedLine = config.transform.apply(line);
@@ -66,7 +89,22 @@ public class FragmentCollector extends AbstractSnippeter implements Distant {
     }
 
     private void resolveReferences(final Snippet snippet, String line){
-//TODO implement search
+        final var resolved = new ArrayList<String>();
+        for (final var snippetLine : snippet.lines()) {
+            String resolvedLine = snippetLine;
+            for (final var entry : config.patternMap.entrySet()) {
+                final var placeHolder = "{{" + entry.getKey() + "}}";
+                if (snippetLine.contains(placeHolder)) {
+                    final var matcher = entry.getValue().matcher(line);
+                    if (matcher.find() && matcher.groupCount() >= 1) {
+                        resolvedLine = resolvedLine.replaceAll(Pattern.quote(placeHolder), matcher.group(1));
+                    }
+                }
+            }
+            resolved.add(resolvedLine);
+        }
+        snippet.lines().clear();
+        snippet.lines().addAll(resolved);
     }
 
     //<editor-fold id="configBuilder">
@@ -83,6 +121,16 @@ public class FragmentCollector extends AbstractSnippeter implements Distant {
     }
 
     public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder {
+        public Builder param(String param) {
+            config.param = param;
+            return this;
+        }
+
+        public Builder regex(String regex) {
+            config.setRegex(regex);
+            return this;
+        }
+
         public Builder snippetEnd(java.util.regex.Pattern snippetEnd) {
             config.snippetEnd = snippetEnd;
             return this;

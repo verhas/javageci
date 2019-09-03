@@ -17,7 +17,10 @@ class TestGenerateJavageciDocumentation {
             .source(Source.maven().module("javageci-tools").mainSource())
             .source(Source.maven().module("javageci-core").mainSource())
             .source(Source.maven().module("javageci-docugen").mainSource())
-            .register(FragmentCollector.builder().build())
+            .register(FragmentCollector.builder()
+                .param("configVariableName").regex("\\w+\\s+.*?(\\w+)\\s*=")
+                .param("configDefaultValue").regex("=\\s*\"?(.*?)\"?;")
+                .build())
             .generate();
 
         final var geci = new Geci();

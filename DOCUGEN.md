@@ -180,7 +180,10 @@ fragmentCollector
     .source(Source.maven().module("javageci-tools").mainSource())
     .source(Source.maven().module("javageci-core").mainSource())
     .source(Source.maven().module("javageci-docugen").mainSource())
-    .register(FragmentCollector.builder().build())
+    .register(FragmentCollector.builder()
+        .param("configVariableName").regex("\\w+\\s+.*?(\\w+)\\s*=")
+        .param("configDefaultValue").regex("=\\s*\"?(.*?)\"?;")
+        .build())
     .generate();
 
 final var geci = new Geci();
@@ -265,12 +268,12 @@ from Java source files. It is easier to use a bit than the general
 purpose snippet collector to collect documentation fragments that are
 not code samples. The collected snippets start with a line that has a
 star `*` and a dash `-` character with optional space between them (this
-is usually inside some code fragment) and end with the end of the
-comment, which is `*/` on its own line. The regular expression patterns
-matching the start and the end of the snippets are configurable in the
-builder of the generator. There is also a configurable transformation,
-which is applied to each line before appending to the snippet. The
-default values are fitting Java:
+is usually inside some code JavaDoc fragment) and end with the end of
+the comment, which is `*/` on its own line. The regular expression
+patterns matching the start and the end of the snippets are configurable
+in the builder of the generator. There is also a configurable
+transformation, which is applied to each line before appending to the
+snippet. The default values are fitting Java:
 
 <!-- snip FragmentCollector_config trim="to=0" 
                                    regex="replace='/snippetEnd/snippetEnd  /' 
@@ -286,12 +289,10 @@ transform = line ->
    .replaceAll("^\\s*</?p>\\s*$","");
 ```
 
-The snippets 
-
-The capture group after the `*-` can specify part of the name of the
-snippet. In the code this part of the name is called sub-name. The full
-name of the snippet is calculated automatically using the following
-format:
+The regular expression capture group after the `*-` can specify part of
+the name of the snippet. In the code this part of the name is called
+sub-name. The full name of the snippet is calculated automatically using
+the following format:
 
     FileName_subName_nnnnnn
 
@@ -313,12 +314,31 @@ documentation fragments to be collected by `FragmentCollector`. If there
 is no sub-name defined then there will be two underscore characters
 between the `FileName` and `nnnnnn` part.
 
-The transformation is applied on each line of the snippet. The default
+There is transformation is applied on each line of the snippet. The default
 is to remove all spaces, the `*` character and optionally a space after
 that. When a line does not start with `*` character (after the spaces)
 then this default transformation will not touch it. Also only one space
 is removed after the `*` character so that indentation and code
 fragments that are indented in markdown are not ruined.
+
+In addition to this transformation the collector collects the line after
+the snippet to extract characters out of it. In the configuration you
+can specify several 
+
+```java
+.param("parameterName").regex("regular expreesion pattern with a single (capture group)")
+```
+
+parameters. The line after the snippet is matched against the regular
+expression and in case it matches and there are at least one capture
+group captured then the captured character will replace the
+`{{parameterName}}` placeholder on each and every line of the of the
+snippet.
+
+This transformation can be used to avoid the copy/paste of the variable
+names, values etc. that is defined in the code. In case a variable is
+renamed, a value is changed the documentation will automatically be
+updated.
 
 ## Modifiers
 
@@ -368,29 +388,32 @@ to create this documentation:
 3.     .source(Source.maven().module("javageci-tools").mainSource())
 4.     .source(Source.maven().module("javageci-core").mainSource())
 5.     .source(Source.maven().module("javageci-docugen").mainSource())
-6.     .register(FragmentCollector.builder().build())
-7.     .generate();
-8. 
-9. final var geci = new Geci();
-10. int i = 0;
-11. Assertions.assertFalse(
-12.     geci.context(fragmentCollector.context())
-13.         .source("..", ".")
-14.         .ignoreBinary()
-15.         .ignore(
-16.             "\\.git",
-17.             "target")
-18.         .log(Geci.MODIFIED)
-19.         .register(SnippetCollector.builder().phase(i++).build())
-20.         .register(SnippetAppender.builder().phase(i++).build())
-21.         .register(SnippetRegex.builder().phase(i++).build())
-22.         .register(SnippetTrim.builder().phase(i++).build())
-23.         .register(SnippetNumberer.builder().phase(i++).build())
-24.         .register(SnipetLineSkipper.builder().phase(i++).build())
-25.         .register(MarkdownCodeInserter.builder().phase(i++).build())
-26.         .splitHelper("md", new MarkdownSegmentSplitHelper())
-27.         .generate(),
-28.     geci.failed());
+6.     .register(FragmentCollector.builder()
+7.         .param("configVariableName").regex("\\w+\\s+.*?(\\w+)\\s*=")
+8.         .param("configDefaultValue").regex("=\\s*\"?(.*?)\"?;")
+9.         .build())
+10.     .generate();
+11. 
+12. final var geci = new Geci();
+13. int i = 0;
+14. Assertions.assertFalse(
+15.     geci.context(fragmentCollector.context())
+16.         .source("..", ".")
+17.         .ignoreBinary()
+18.         .ignore(
+19.             "\\.git",
+20.             "target")
+21.         .log(Geci.MODIFIED)
+22.         .register(SnippetCollector.builder().phase(i++).build())
+23.         .register(SnippetAppender.builder().phase(i++).build())
+24.         .register(SnippetRegex.builder().phase(i++).build())
+25.         .register(SnippetTrim.builder().phase(i++).build())
+26.         .register(SnippetNumberer.builder().phase(i++).build())
+27.         .register(SnipetLineSkipper.builder().phase(i++).build())
+28.         .register(MarkdownCodeInserter.builder().phase(i++).build())
+29.         .splitHelper("md", new MarkdownSegmentSplitHelper())
+30.         .generate(),
+31.     geci.failed());
 ```
 
 we can have a look at line 14. It registers the

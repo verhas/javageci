@@ -272,5 +272,8 @@ needed to be delegated are filter expressions. The
 configuration parameter `filter` is already used to filter
 the methods that need delegation, thus the methods in the
 target class or interface should use a different
-configuration parameter: `methods`.
+configuration parameter: `methods`. The default
+value for this parameter is `public & !static`.
+
+
 <!-- end snip -->
