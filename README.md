@@ -1,3 +1,5 @@
+<img src="https://api.travis-ci.org/verhas/javageci.svg?branch=master"/>
+
 # Java::Geci
 
 Java Generate Code Inline
