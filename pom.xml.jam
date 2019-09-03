@@ -13,10 +13,7 @@
     {build|{pluginManagement|{plugins|
                 {plugin|
                     {GAV :org.apache.maven.plugins:maven-surefire-plugin:{SUREFIRE_VERSION}}
-                    <configuration>
-                    {@define opens(module,package)=--add-opens geci.module/javax0.geci.package=ALL-UNNAMED}
-                    {@define opensTo(module,package,to)=--add-opens geci.module/javax0.geci.package=geci.to}
-                    {@define exportsTo(module,package,to)=--add-exports geci.module/javax0.geci.package=geci.to}
+                    {configuration|
                         <argLine>
                             {opens/api/api}
                             {opens/tools/tools}
@@ -50,37 +47,38 @@
                             {opens/examples/jamal.util}
                             --add-exports geci.examples/javax0.geci.jamal.reflection=ALL-UNNAMED
                         </argLine>
-                    </configuration>
+                    }
                     {dependencies|
                         {dependency :org.junit.jupiter:junit-jupiter-engine:{JUPITER_VERSION}:}
                     }
                 }
                 {plugin|
                     {GAV :org.apache.maven.plugins:maven-source-plugin:{MAVEN_SOURCE_PLUGIN_VERSION}}
-                    <executions>
-                        <execution>
-                            <id>attach-sources</id>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
+                    {executions|
+                        {execution|
+                            {id|attach-sources}
+                            {goals|{goal|jar}}
+                        }
+                    }
                 }
                 {plugin|
                     {GAV :org.apache.maven.plugins:maven-javadoc-plugin:{MAVEN_JAVADOC_PLUGIN_VERSION}}
-                    <configuration>
+                    {configuration|
                         <detectLinks>false</detectLinks>
-                    </configuration>
+                    }
                     {dependencies|{dependency :org.ow2.asm:asm:7.0:}}
-                    {executions|{execution|
+                    {executions|
+                        {execution|
                             {id|attach-javadocs}
-                            {goals|{goal|jar}}}}
+                            {goals|{goal|jar}}
+                        }
+                    }
                 }
                 {plugin|
                     {GAV :org.apache.maven.plugins:maven-compiler-plugin:{MAVEN_COMPILER_PLUGIN_VERSION}}
-                    <configuration>
+                    {configuration|
                         <release>{JAVA_RELEASE}</release>
-                    </configuration>
+                    }
                 }
             }
         }
