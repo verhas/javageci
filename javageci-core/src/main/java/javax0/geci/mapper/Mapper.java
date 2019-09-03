@@ -52,7 +52,7 @@ public class Mapper extends AbstractJavaGenerator {
 
     private void generateToMap(Segment segment, Source source, Class<?> klass, CompoundParams global) throws Exception {
         final var fields = GeciReflectionTools.getAllFieldsSorted(klass);
-        segment.write_r(getResourceString("tomap.jam"));
+        segment.write_r(getResourceString("tomap.template"));
         for (final var field : fields) {
             final var params = GeciReflectionTools.getParameters(field, mnemonic());
             final var local = localConfig(new CompoundParams(params, global));
@@ -69,6 +69,15 @@ public class Mapper extends AbstractJavaGenerator {
                 ._l("}");
     }
 
+    /**
+     * Get the resource from the resouce file and remove all \r
+     * characters in case it is Windows style.
+     *
+     * @param resource the name of the resurce in the same JAR directory
+     *                 where the class is.
+     * @return the content of the resource file
+     * @throws IOException if the file was not found
+     */
     private String getResourceString(String resource) throws IOException {
         return new String(getClass().getResourceAsStream(resource).readAllBytes(), StandardCharsets.UTF_8)
                 .replaceAll("\r", "");
@@ -101,7 +110,7 @@ public class Mapper extends AbstractJavaGenerator {
 
     private void generateFromMap(Segment segment, Source source, Class<?> klass, CompoundParams global) throws IOException {
         final var fields = GeciReflectionTools.getAllFieldsSorted(klass);
-        segment.write_r(getResourceString("frommap.jam"));
+        segment.write_r(getResourceString("frommap.template"));
         for (final var field : fields) {
             final var params = GeciReflectionTools.getParameters(field, mnemonic());
             final var local = localConfig(new CompoundParams(params, global));
