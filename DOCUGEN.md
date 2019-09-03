@@ -747,7 +747,7 @@ the default means no limit.
 <!-- snip SnippetAppender_doc regex="replace='/^~s*~*~s?//' escape='~'"-->
 
 Snippet appender can be used to append multiple snippets together. This is useful when the content of the
-documentation is in different places and it would be inconvinient to include the individual snippets one by one
+documentation is in different places and it would be inconvenient to include the individual snippets one by one
 into the documentation. The snippets can be referenced using their name and the reference can also contain regular
 expression. In that case all the snippets that match the regular expression will be joined together and added to the
 actual snippet in alphabetical order.

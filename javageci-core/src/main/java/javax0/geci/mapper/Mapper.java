@@ -25,13 +25,47 @@ import java.util.function.Function;
 @AnnotationBuilder
 public class Mapper extends AbstractJavaGenerator {
 
-    private static final String DEFAULTS = "!transient & !static";
-
+    /**
+     * - Config
+     */
     public static class Config {
-        private String filter = DEFAULTS;
+        /**
+         * -
+         *
+         * * `filter` can be used to to select the define the selector
+         * expression to select the fields that will be taken into
+         * account for the map conversion.
+         */
+        private String filter = "!transient & !static";
+        /**
+         * -
+         *
+         * * `generatedAnnotation` can ge used to specify the annotation
+         * that is used to annotate the generated methods. By default it
+         * is the `javax0.geci.annotations.Generated` class.
+         */
         private Class<? extends Annotation> generatedAnnotation = javax0.geci.annotations.Generated.class;
+        /**
+         * -
+         *
+         * * `field2MapKeyMapper` is a function that converts the name of
+         * the field, which is already a string into another string. It
+         * is useful in case you want to use different key names in the
+         * map. You can, for example convert the field names to all
+         * capital or insert a prefix before the names. The default is
+         * not to change the name and use the key, which is the field
+         * name.
+         */
         private Function<String, String> field2MapKeyMapper = s -> s;
-        private String factory;
+        /**
+         * -
+         *
+         * * `factory` is a string that is the code to create a new
+         * instance of the class. The default is a "new {{ClassName}}()"
+         * like expression where the actual class name is used after the
+         * keyword `new`.
+         */
+        private String factory = null;
     }
 
     @Override
@@ -42,7 +76,7 @@ public class Mapper extends AbstractJavaGenerator {
         segment.param("mnemonic", mnemonic(),
             "generatedBy", config.generatedAnnotation.getCanonicalName(),
             "class", klass.getSimpleName(),
-            "factory", factory,
+            "factory", factory == null ? "new "+klass.getSimpleName()+"()" : factory,
             "Map", "java.util.Map",
             "HashMap", "java.util.HashMap"
         );
