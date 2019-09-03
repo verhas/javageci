@@ -108,13 +108,13 @@ public class SnippetRegex extends AbstractSnippeter {
      * <p>The string should have the syntax {@code /search/replace/} and
      * you can just use any character instead of {@code /}. The
      * requirement is that the string starts and ends with the same
-     * character and the search part ends at the second occurence of the
-     * character. Thus {@code asearchareplacea} is totally legit. The
-     * first and last character is {@code a}, the search string is
-     * {@code se} the replacement string is {@code rchareplace}. It is
-     * recommended to use {@code /} if it does not appear in the search
-     * string and if {@code /} is not usable then use some other special
-     * character like {@code |} or {@code :}.
+     * character and the search part ends at the second occurrence of
+     * the character. Thus {@code asearchareplacea} is totally legit
+     * although unreadable. The first and last character is {@code a},
+     * the search string is {@code se} the replacement string is {@code
+     * rchareplace}. It is recommended to use {@code /} if it does not
+     * appear in the search string and if {@code /} is not usable then
+     * use some other special character like {@code |} or {@code :}.
      *
      * <p>The search part of the string is interpreted later as a
      * regular expression. Because the place where these expressions are

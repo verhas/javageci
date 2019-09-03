@@ -33,7 +33,12 @@ public class FragmentCollector extends AbstractSnippeter implements Distant {
         var snippetSubName = "";
         var snippetCounter = 1;
         SnippetBuilder builder = null;
+        Snippet lastSnippet = null;
         for (final var line : source.getLines()) {
+            if (lastSnippet != null) {
+                resolveReferences(lastSnippet, line);
+                lastSnippet = null;
+            }
             final var starter = config.snippetStart.matcher(line);
             if (builder == null && starter.find()) {
                 if (starter.group(1) != null ) {
@@ -45,7 +50,8 @@ public class FragmentCollector extends AbstractSnippeter implements Distant {
                 final var stopper = config.snippetEnd.matcher(line);
                 // skip
                 if (stopper.find()) {
-                    snippets.put(builder.snippetName(), builder.build(), source);
+                    lastSnippet = builder.build();
+                    snippets.put(builder.snippetName(), lastSnippet, source);
                     builder = null;
                 } else {
                     final var convertedLine = config.transform.apply(line);
@@ -57,6 +63,10 @@ public class FragmentCollector extends AbstractSnippeter implements Distant {
         if (builder != null) {
             throw new GeciException("Snippet " + builder.snippetName() + " was not finished before end of the file " + source.getAbsoluteFile());
         }
+    }
+
+    private void resolveReferences(final Snippet snippet, String line){
+//TODO implement search
     }
 
     //<editor-fold id="configBuilder">

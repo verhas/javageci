@@ -16,10 +16,30 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
+/**
+ * - ClassDescription
+ *
+ * # Builder
+ *
+ * The builder generator generates an inner class into the target source
+ * file. The Builder class has methods to configure the filtered fields
+ * of the target class. There is also a static method `builder()`
+ * created that returns the builder for the class. The `Builder` inner
+ * class also has a method `build()` that returns the built class.
+ *
+ */
 @AnnotationBuilder()
 public class Builder extends AbstractFilteredFieldsGenerator {
 
+    /**
+     * - Config
+     */
     private static class Config {
+        /**
+         * -
+         *
+         * `generatedAnnotation` can define the class that will be used to mark the generated methods and classes as generated. By default it is the
+         */
         private Class<? extends Annotation> generatedAnnotation = Generated.class;
         private String filter = "private & !static & !final";
         private String builderName = "Builder";
