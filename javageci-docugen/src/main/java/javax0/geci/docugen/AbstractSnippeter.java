@@ -16,10 +16,9 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
     private static final Object SNIPPET_CONTEXT_KEY = new Object();
 
     protected static class Config {
-        protected int phase = 1;
         /*
          * - config
-         * #### `phase = 1`
+         * #### `{{configVariableName}} = {{configDefaultValue}}`
          *
          *
          * The phase parameter defines the phase that the snippet
@@ -31,12 +30,12 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
          * active in a phase it will return `true` if the actual phase is
          * the same as the one configured.
          */
+        protected int phase = 1;
 
-        protected CharSequence files = "\\.md$";
         /*
-         *-
+         * -
          *
-         * #### `files = "\\.md$"`
+         * #### `{{configVariableName}} = "{{configDefaultValue}}"`
          *
          *
          * This configuration parameter can limit the file name pattern
@@ -46,6 +45,7 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
          * in the builder interface.
          *
          */
+        protected CharSequence files = "\\.md$";
     }
 
     protected SnippetStore snippets;

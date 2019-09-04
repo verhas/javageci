@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 /**
- *- doc
+ * - doc
  *
  * The `regex` snippet generator goes through each line of the snippet
  * and does regular expression based search and replace and it also

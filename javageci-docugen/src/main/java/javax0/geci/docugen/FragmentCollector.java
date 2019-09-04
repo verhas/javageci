@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Geci("configBuilder localConfigMethod='' configurableMnemonic='fragmentCollector'")
@@ -97,7 +98,7 @@ public class FragmentCollector extends AbstractSnippeter implements Distant {
                 if (snippetLine.contains(placeHolder)) {
                     final var matcher = entry.getValue().matcher(line);
                     if (matcher.find() && matcher.groupCount() >= 1) {
-                        resolvedLine = resolvedLine.replaceAll(Pattern.quote(placeHolder), matcher.group(1));
+                        resolvedLine = resolvedLine.replaceAll(Pattern.quote(placeHolder), Matcher.quoteReplacement(matcher.group(1)));
                     }
                 }
             }

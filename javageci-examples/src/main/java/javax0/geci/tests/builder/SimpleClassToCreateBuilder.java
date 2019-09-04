@@ -9,11 +9,19 @@ import java.util.List;
 @Geci("builder")
 public class SimpleClassToCreateBuilder {
 
+    private static class MyAggregated<T> {
+        void add(int z){
+
+        }
+    }
     private final String willNotGetSetterBecauseFinal = "apple";
-    @Geci("builder filter='true'")
+    @Geci("builder filter=true")
     private final List<String> willGetAggregatorOnly = new ArrayList<>();
     private Collection<Integer> willGetBoth;
+    @Geci("builder filter=true checkNullInAggregator=false")
+    private final MyAggregated<String> specialAggregator = new MyAggregated<>();
     private int z;
+    @Geci("builder  setterPrefix='with'")
     private Double d;
     private SimpleClassToCreateBuilder selfWhyNot;
 
@@ -33,7 +41,7 @@ public class SimpleClassToCreateBuilder {
 
     public class Builder {
         @javax0.geci.annotations.Generated("builder")
-        public Builder d(Double d) {
+        public Builder withD(Double d) {
             SimpleClassToCreateBuilder.this.d = d;
             return this;
         }
@@ -65,6 +73,12 @@ public class SimpleClassToCreateBuilder {
         @javax0.geci.annotations.Generated("builder")
         public Builder selfWhyNot(SimpleClassToCreateBuilder selfWhyNot) {
             SimpleClassToCreateBuilder.this.selfWhyNot = selfWhyNot;
+            return this;
+        }
+
+        @javax0.geci.annotations.Generated("builder")
+        public Builder addSpecialAggregator(int x) {
+            SimpleClassToCreateBuilder.this.specialAggregator.add(x);
             return this;
         }
 
