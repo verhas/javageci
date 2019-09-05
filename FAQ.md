@@ -64,9 +64,13 @@ it up and running within a day.
 
 ## What happens if I reformat the generated code?
 
-No problem. Since Java::Geci 1.2.0 Java source code is compared after
-a simplified "lexical analysis", so the framework will realize that the
+No problem. Since Java::Geci 1.2.0 Java source code is compared after a
+simplified "lexical analysis", so the framework will realize that the
 generated code is the same as the version that is already in the file.
+This comparator does not treat the code different if there is a change
+in the Java comments only and also does not care if you happen to change
+a decimal constant to hexadecimal or to octal or just the other way
+around so long as long the value of the constant is the same.
 
 There are some special cases.
 
