@@ -68,28 +68,28 @@ public class Factory extends AbstractFilteredFieldsGenerator {
     }
 
     public class BuilderBuilder {
-        public BuilderBuilder buildMethod(String buildMethod) {
-            Factory.this.buildMethod = buildMethod;
+        public BuilderBuilder buildMethod(final String x) {
+            Factory.this.buildMethod = x;
             return this;
         }
 
-        public BuilderBuilder builderFactoryMethod(String builderFactoryMethod) {
-            Factory.this.builderFactoryMethod = builderFactoryMethod;
+        public BuilderBuilder builderFactoryMethod(final String x) {
+            Factory.this.builderFactoryMethod = x;
             return this;
         }
 
-        public BuilderBuilder builderName(String builderName) {
-            Factory.this.builderName = builderName;
+        public BuilderBuilder builderName(final String x) {
+            Factory.this.builderName = x;
             return this;
         }
 
-        public BuilderBuilder filter(String filter) {
-            Factory.this.filter = filter;
+        public BuilderBuilder filter(final String x) {
+            Factory.this.filter = x;
             return this;
         }
 
-        public BuilderBuilder generatedAnnotation(Class generatedAnnotation) {
-            Factory.this.generatedAnnotation = generatedAnnotation;
+        public BuilderBuilder generatedAnnotation(final Class x) {
+            Factory.this.generatedAnnotation = x;
             return this;
         }
 

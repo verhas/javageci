@@ -13,7 +13,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.HashSet;
 
 import static javax0.geci.api.CompoundParams.toBoolean;
@@ -23,11 +22,29 @@ import static javax0.geci.api.CompoundParams.toBoolean;
  *
  * # Builder
  *
- * The builder generator generates an inner class into the target source
- * file. The Builder class has methods to configure the filtered fields
- * of the target class. There is also a static method `builder()`
- * created that returns the builder for the class. The `Builder` inner
- * class also has a method `build()` that returns the built class.
+ * The builder generator generates a builder as an inner class into a
+ * class. The builder class will have a method to specify the values of
+ * the fields. The fields taken into account are filtered the usual way
+ * using the `filter` configuration field. Usually (by default) only
+ * `private` fields will have a builder method, which are not `private`
+ * and not `static`.
+ *
+ * The generator is also capable generating aggregator methods when the
+ * field is a collection or some other type that can aggregate/collect
+ * several values. A field is considered to be an aggregator type if the
+ * class of the field has at least one method named `add(x)` that has
+ * one argument. The actual name is `add` by default but this is
+ * configurable. For example if a field is of type `List` then then it
+ * will be treated as aggregator type because the class `List` has a
+ * method `add`. The name of the corresponding aggregator method in the
+ * builder will be `add` plus the name of the field with capitalized
+ * first letter.
+ *
+ * There are several values that can be configured for the generator in
+ * the generators builder pattern (in the test code, where the generator
+ * is registered into the `Geci` object or on the class level using
+ * annotation and also on the field level.
+ *
  *
  */
 @AnnotationBuilder()
@@ -37,6 +54,13 @@ public class Builder extends AbstractFilteredFieldsGenerator {
      * - Config
      *
      * # Configuration
+     *
+     * The configuration values can be configured on the builder of the
+     * generator in the test code where the generator object is
+     * registered into the `Geci` object that is used to run the
+     * generation. The configuration items that are `String` can be
+     * configured on the target class and also on the fields
+     * individually.
      */
     private static class Config {
         /**
@@ -54,6 +78,18 @@ public class Builder extends AbstractFilteredFieldsGenerator {
          * * `{{configVariableName}}` can define the filter expression for
          * the fields that will be included in the builder. The default
          * is `{{configDefaultValue}}`.
+         *
+         * If there is a field that you want to include into the builder
+         * individually in spite of the fact that the "global" filter
+         * expression excludes the field then you can annotate the field
+         * with `@Geci("builder filter=true")`. This can be a good
+         * practice in case the field is a collection or some other
+         * aggregator and you want to have the aggregator methods, but
+         * the field itself is final initialized on the declaration line
+         * or in the constructor of the target class. If a field is
+         * final the generator never generates a builder method that
+         * sets the field itself because that is not possible and would
+         * result a code that does not compile.
          */
         private String filter = "private & !static & !final";
 
@@ -92,6 +128,18 @@ public class Builder extends AbstractFilteredFieldsGenerator {
          * aggregator method. The aggregator method is the one that can
          * add a new value to a field that is a collection type. The
          * default value is `{{configDefaultValue}}`.
+         *
+         * In the standard collection types this method is called `add`
+         * therefore the default value is `{{configDefaultValue}}`.
+         * There can be two reasons to configure this value for a
+         * specific field to be different. One reason is the obvious,
+         * when the method that aggregates values is named differently.
+         * The other reason when the aggregating method is named
+         * `{{configDefaultValue}}` but you do not want the builder to
+         * create aggregator methods for this fields into the builder.
+         * In this case the field should be defined to be an empty
+         * string, because it is certain that the class will not have a
+         * method that has empty name.
          */
         private String aggregatorMethod = "add";
 
@@ -99,11 +147,16 @@ public class Builder extends AbstractFilteredFieldsGenerator {
          * -
          *
          * * When an aggregator is generated the generated code checks
-         * that the argument is not `null` if `{{configVariableName}}`
-         * is "true". The default value is `"{{configDefaultValue}}"`.
-         * If this value is configured to be false then this check will
-         * be skipped and the generated code will call the underlying
-         * aggregator method even when the argument is null.
+         * that the field to which we want to add the argument value is
+         * not `null` if `{{configVariableName}}` is "true". The default
+         * value is `"{{configDefaultValue}}"`. If this value is
+         * configured to be false then this check will be skipped and
+         * the generated code will call the underlying aggregator method
+         * even when the field is null. In this case there will be a
+         * {code NullPointerException} thrown. If the value is true,
+         * then the check is done and in case the field is `null`
+         * then the generated code will throw {@code
+         * IllegalArgumentException} naming the field.
          */
         private String checkNullInAggregator = "true";
 
@@ -112,11 +165,42 @@ public class Builder extends AbstractFilteredFieldsGenerator {
          *
          * * `{{configVariableName}}` can define a setter prefix. The
          * default value is `"{{configDefaultValue}}"`. If this value is
-         * not null and not an empty string then the name of the setter
+         * not `null` and not an empty string then the name of the setter
          * method will start with this prefix and the name of the field
          * will be added with the first character capitalized.
          */
         private String setterPrefix = "";
+
+        /**
+         * -
+         *
+         * The created `builder()` method returns a `Builder` instance.
+         * The `Builder` class is a non-static inner class of the target
+         * class, because the build process needs to access the fields
+         * of the target class during the build process. Because of this
+         * the method `builder()` (or whatever it is named in the
+         * configuration `builderFactoryMethod`) needs to create a new
+         * instance of the target class. The default is to invoke the
+         * default constructor. It is applied when
+         * `{{configVariableName}}` is null or empty string. If this
+         * configuration value is anything else then this string will be
+         * used as it is to create a new instance of the target class.
+         * For example if there is a static method called `factory()`
+         * that returns a new instance of the target class then this
+         * configuration parameter can be set to `"factory()". The
+         * default values is `"{{configDefaultValue}}"`.
+         */
+        private String factory = "";
+
+        /**
+         * -
+         *
+         * In the setter and aggregator methods the argument is
+         * `{{configDefaultValue}}`. If you do not like this naming then
+         * you can use this configuration value to specify a different
+         * name.
+         */
+        private String argumentVariable = "x";
     }
 
     @Override
@@ -127,9 +211,16 @@ public class Builder extends AbstractFilteredFieldsGenerator {
     @Override
     public void preprocess(Source source, Class<?> klass, CompoundParams global, Segment segment) {
         final var local = localConfig(global);
+        segment.param("class", klass.getSimpleName());
+        final String factory;
+        if (local.factory != null && !local.factory.isEmpty()) {
+            factory = local.factory;
+        } else {
+            factory = "new " + klass.getSimpleName() + "()";
+        }
         writeGenerated(segment, config.generatedAnnotation);
         segment.write_r("public static %s.%s %s() {", klass.getSimpleName(), local.builderName, local.builderFactoryMethod)
-                .write("return new %s().new %s();", klass.getSimpleName(), local.builderName)
+                .write("return %s.new %s();", factory, local.builderName)
                 .write_l("}")
                 .newline()
                 .write_r("public class %s {", local.builderName);
@@ -140,11 +231,16 @@ public class Builder extends AbstractFilteredFieldsGenerator {
         final var local = localConfig(params);
         final var name = field.getName();
         final var type = GeciReflectionTools.normalizeTypeName(field.getType().getName(), klass);
+        segment.param(
+                "field", name,
+                "type", type,
+                "Builder", local.builderName,
+                "x", local.argumentVariable);
         if (!Modifier.isFinal(field.getModifiers())) {
-            generateSetter(klass, segment, local.builderName, name, type, local.setterPrefix);
+            generateSetter(klass, segment, name, local.setterPrefix);
         }
-        if (config.aggregatorMethod != null && config.aggregatorMethod.length() > 0) {
-            generateAggregators(klass, segment, local.builderName, name, field, toBoolean(local.checkNullInAggregator));
+        if (local.aggregatorMethod != null && local.aggregatorMethod.length() > 0) {
+            generateAggregators(klass, segment, field, local);
         }
     }
 
@@ -186,38 +282,40 @@ public class Builder extends AbstractFilteredFieldsGenerator {
      *                  used to normalize the type.
      * @param segment   the segment into which the code will be
      *                  generated.
-     * @param builder   the name of the builder class
-     * @param name      the name of the aggregator method
      * @param field     the field for which we generate an aggregator
      *                  method
-     * @param checkNull if {@code true} the generated code will throw
-     *                  {@link IllegalArgumentException} if the value is
-     *                  {@code null}
+     * @param local     the local configuration
      */
-    private void generateAggregators(Class<?> klass, Segment segment, String builder, String name, Field field, boolean checkNull) {
-        final var aggMethod = config.aggregatorMethod + CaseTools.ucase(name);
+    private void generateAggregators(Class<?> klass, Segment segment, Field field, Config local) {
         final var argumentTypesDone = new HashSet<String>();
-        Arrays.stream(GeciReflectionTools.getDeclaredMethodsSorted(field.getType()))
-                .filter(m -> m.getName().equals(config.aggregatorMethod) && m.getParameterTypes().length == 1)
-                .forEach(
-                        method -> {
-                            final String argumentTypeName = calculateTypeName(klass, field, method.getParameterTypes()[0]);
-                            if (argumentTypeName != null && !argumentTypesDone.contains(argumentTypeName)) {
-                                argumentTypesDone.add(argumentTypeName);
-                                writeGenerated(segment, config.generatedAnnotation);
-                                segment.write_r("public %s %s(%s x) {", builder, aggMethod, argumentTypeName);
-                                if (checkNull) {
-                                    segment.write_r("if( %s.this.%s == null ) {", klass.getSimpleName(), name)
-                                            .write("throw new IllegalArgumentException(\"Collection field %s is null\");", name)
-                                            .write_l("}");
-                                }
-                                segment.write("%s.this.%s.%s(x);", klass.getSimpleName(), name, config.aggregatorMethod)
-                                        .write("return this;")
-                                        .write_l("}")
-                                        .newline();
-                            }
-                        }
-                );
+        final var name = field.getName();
+        segment.param(
+                "aggregatorMethod", local.aggregatorMethod + CaseTools.ucase(name),
+                "remoteAggregatorMethod", local.aggregatorMethod);
+        for (final var method : GeciReflectionTools.getDeclaredMethodsSorted(field.getType())) {
+            if (method.getName().equals(local.aggregatorMethod) &&
+                    method.getParameterTypes().length == 1) {
+                final String argumentTypeName = calculateTypeName(klass, field, method.getParameterTypes()[0]);
+                if (argumentTypeName != null && !argumentTypesDone.contains(argumentTypeName)) {
+
+                    argumentTypesDone.add(argumentTypeName);
+                    segment.param("argumentType", argumentTypeName);
+                    writeGenerated(segment, local.generatedAnnotation);
+                    segment.write_r("public {{Builder}} {{aggregatorMethod}}(final {{argumentType}} {{x}}) {");
+
+                    if (toBoolean(local.checkNullInAggregator)) {
+                        segment.write_r("if( {{class}}.this.{{field}} == null ) {")
+                                .write("throw new IllegalArgumentException(\"Collection field {{field}} is null\");")
+                                .write_l("}");
+                    }
+
+                    segment.write("{{class}}.this.{{field}}.{{remoteAggregatorMethod}}({{x}});")
+                            .write("return this;")
+                            .write_l("}")
+                            .newline();
+                }
+            }
+        }
     }
 
     /**
@@ -264,15 +362,11 @@ public class Builder extends AbstractFilteredFieldsGenerator {
      *
      * @param klass       in which the builder is created
      * @param segment     the segment where the builder code is created
-     * @param builderName the name of the builder class
      * @param name        the name of the field
-     * @param type        is the type of the field that will also be the type of the setter argument
      */
     private void generateSetter(Class<?> klass,
                                 Segment segment,
-                                String builderName,
                                 String name,
-                                String type,
                                 String prefix) {
         writeGenerated(segment, config.generatedAnnotation);
         final String setterName;
@@ -281,8 +375,11 @@ public class Builder extends AbstractFilteredFieldsGenerator {
         } else {
             setterName = name;
         }
-        segment.write_r("public %s %s(%s %s) {", builderName, setterName, type, name)
-                .write("%s.this.%s = %s;", klass.getSimpleName(), name, name)
+        segment.param(
+                "setter", setterName,
+                "field", name);
+        segment.write_r("public {{Builder}} {{setter}}(final {{type}} {{x}}) {")
+                .write("{{class}}.this.{{field}} = {{x}};")
                 .write("return this;")
                 .write_l("}")
                 .newline();
@@ -311,10 +408,12 @@ public class Builder extends AbstractFilteredFieldsGenerator {
 
     private static final java.util.Set<String> implementedKeys = java.util.Set.of(
         "aggregatorMethod",
+            "argumentVariable",
         "buildMethod",
         "builderFactoryMethod",
         "builderName",
             "checkNullInAggregator",
+            "factory",
         "filter",
             "setterPrefix",
         "id"
@@ -327,6 +426,11 @@ public class Builder extends AbstractFilteredFieldsGenerator {
     public class ConfBuilder {
         public ConfBuilder aggregatorMethod(String aggregatorMethod) {
             config.aggregatorMethod = aggregatorMethod;
+            return this;
+        }
+
+        public ConfBuilder argumentVariable(String argumentVariable) {
+            config.argumentVariable = argumentVariable;
             return this;
         }
 
@@ -347,6 +451,11 @@ public class Builder extends AbstractFilteredFieldsGenerator {
 
         public ConfBuilder checkNullInAggregator(String checkNullInAggregator) {
             config.checkNullInAggregator = checkNullInAggregator;
+            return this;
+        }
+
+        public ConfBuilder factory(String factory) {
+            config.factory = factory;
             return this;
         }
 
@@ -371,12 +480,14 @@ public class Builder extends AbstractFilteredFieldsGenerator {
     }
     private Config localConfig(CompoundParams params){
         final var local = new Config();
-        local.aggregatorMethod = params.get("aggregatorMethod",config.aggregatorMethod);
-        local.buildMethod = params.get("buildMethod",config.buildMethod);
-        local.builderFactoryMethod = params.get("builderFactoryMethod",config.builderFactoryMethod);
-        local.builderName = params.get("builderName",config.builderName);
+        local.aggregatorMethod = params.get("aggregatorMethod", config.aggregatorMethod);
+        local.argumentVariable = params.get("argumentVariable", config.argumentVariable);
+        local.buildMethod = params.get("buildMethod", config.buildMethod);
+        local.builderFactoryMethod = params.get("builderFactoryMethod", config.builderFactoryMethod);
+        local.builderName = params.get("builderName", config.builderName);
         local.checkNullInAggregator = params.get("checkNullInAggregator", config.checkNullInAggregator);
-        local.filter = params.get("filter",config.filter);
+        local.factory = params.get("factory", config.factory);
+        local.filter = params.get("filter", config.filter);
         local.generatedAnnotation = config.generatedAnnotation;
         local.setterPrefix = params.get("setterPrefix", config.setterPrefix);
         return local;
