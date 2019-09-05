@@ -75,21 +75,20 @@ public class Builder extends AbstractFilteredFieldsGenerator {
         /**
          * -
          *
-         * * `{{configVariableName}}` can define the filter expression for
-         * the fields that will be included in the builder. The default
-         * is `{{configDefaultValue}}`.
-         *
-         * If there is a field that you want to include into the builder
-         * individually in spite of the fact that the "global" filter
-         * expression excludes the field then you can annotate the field
-         * with `@Geci("builder filter=true")`. This can be a good
-         * practice in case the field is a collection or some other
-         * aggregator and you want to have the aggregator methods, but
-         * the field itself is final initialized on the declaration line
-         * or in the constructor of the target class. If a field is
-         * final the generator never generates a builder method that
-         * sets the field itself because that is not possible and would
-         * result a code that does not compile.
+         * * `{{configVariableName}}` can define the filter expression
+         * for the fields that will be included in the builder. The
+         * default is `{{configDefaultValue}}`. If there is a field that
+         * you want to include into the builder individually in spite of
+         * the fact that the "global" filter expression excludes the
+         * field then you can annotate the field with `@Geci("builder
+         * filter=true")`. This can be a good practice in case the field
+         * is a collection or some other aggregator and you want to have
+         * the aggregator methods, but the field itself is final
+         * initialized on the declaration line or in the constructor of
+         * the target class. If a field is final the generator never
+         * generates a builder method that sets the field itself because
+         * that is not possible and would result a code that does not
+         * compile.
          */
         private String filter = "private & !static & !final";
 
@@ -127,19 +126,17 @@ public class Builder extends AbstractFilteredFieldsGenerator {
          * * `{{configVariableName}}` can define the name of the
          * aggregator method. The aggregator method is the one that can
          * add a new value to a field that is a collection type. The
-         * default value is `{{configDefaultValue}}`.
-         *
-         * In the standard collection types this method is called `add`
-         * therefore the default value is `{{configDefaultValue}}`.
-         * There can be two reasons to configure this value for a
-         * specific field to be different. One reason is the obvious,
-         * when the method that aggregates values is named differently.
-         * The other reason when the aggregating method is named
-         * `{{configDefaultValue}}` but you do not want the builder to
-         * create aggregator methods for this fields into the builder.
-         * In this case the field should be defined to be an empty
-         * string, because it is certain that the class will not have a
-         * method that has empty name.
+         * default value is `{{configDefaultValue}}`. In the standard
+         * collection types this method is called `add` therefore the
+         * default value is `{{configDefaultValue}}`. There can be two
+         * reasons to configure this value for a specific field to be
+         * different. One reason is the obvious, when the method that
+         * aggregates values is named differently. The other reason when
+         * the aggregating method is named `{{configDefaultValue}}` but
+         * you do not want the builder to create aggregator methods for
+         * this fields into the builder. In this case the field should
+         * be defined to be an empty string, because it is certain that
+         * the class will not have a method that has empty name.
          */
         private String aggregatorMethod = "add";
 
@@ -154,9 +151,9 @@ public class Builder extends AbstractFilteredFieldsGenerator {
          * the generated code will call the underlying aggregator method
          * even when the field is null. In this case there will be a
          * {code NullPointerException} thrown. If the value is true,
-         * then the check is done and in case the field is `null`
-         * then the generated code will throw {@code
-         * IllegalArgumentException} naming the field.
+         * then the check is done and in case the field is `null` then
+         * the generated code will throw `IllegalArgumentException`
+         * naming the field.
          */
         private String checkNullInAggregator = "true";
 
@@ -174,14 +171,14 @@ public class Builder extends AbstractFilteredFieldsGenerator {
         /**
          * -
          *
-         * The created `builder()` method returns a `Builder` instance.
-         * The `Builder` class is a non-static inner class of the target
-         * class, because the build process needs to access the fields
-         * of the target class during the build process. Because of this
-         * the method `builder()` (or whatever it is named in the
-         * configuration `builderFactoryMethod`) needs to create a new
-         * instance of the target class. The default is to invoke the
-         * default constructor. It is applied when
+         * * The created `builder()` method returns a `Builder`
+         * instance. The `Builder` class is a non-static inner class of
+         * the target class, because the build process needs to access
+         * the fields of the target class during the build process.
+         * Because of this the method `builder()` (or whatever it is
+         * named in the configuration `builderFactoryMethod`) needs to
+         * create a new instance of the target class. The default is to
+         * invoke the default constructor. It is applied when
          * `{{configVariableName}}` is null or empty string. If this
          * configuration value is anything else then this string will be
          * used as it is to create a new instance of the target class.
@@ -195,9 +192,9 @@ public class Builder extends AbstractFilteredFieldsGenerator {
         /**
          * -
          *
-         * In the setter and aggregator methods the argument is
+         * * In the setter and aggregator methods the argument is
          * `{{configDefaultValue}}`. If you do not like this naming then
-         * you can use this configuration value to specify a different
+         * you can use `{{configVariableName}}` to specify a different
          * name.
          */
         private String argumentVariable = "x";
