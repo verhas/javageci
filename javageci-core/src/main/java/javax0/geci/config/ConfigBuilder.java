@@ -130,9 +130,9 @@ public class ConfigBuilder extends AbstractJavaGenerator {
             final var hasSetter = doesTheFieldHaveSetter(configClass, field, setterName);
             if (fields.contains(field)) {
                 if (hasSetter) {
-                    segment.write("local.{{setterName}}(params.get(\"{{name}}\",config.{{name}}));");
+                    segment.write("local.{{setterName}}(params.get(\"{{name}}\", config.{{name}}));");
                 } else {
-                    segment.write("local.{{name}} = params.get(\"{{name}}\",config.{{name}});");
+                    segment.write("local.{{name}} = params.get(\"{{name}}\", config.{{name}});");
                 }
             } else {
                 if (hasSetter) {
