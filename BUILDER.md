@@ -36,8 +36,8 @@ The configuration values can be configured on the builder of the
 generator in the test code where the generator object is
 registered into the `Geci` object that is used to run the
 generation. The configuration items that are `String` can be
-configured on the target class and also on the fields
-individually.
+configured on the [target class](TERMINOLOGY.md) and also on the
+fields individually.
 
 * `generatedAnnotation` can define the class that will be
 used to mark the generated methods and classes as generated.
@@ -53,10 +53,10 @@ filter=true")`. This can be a good practice in case the field
 is a collection or some other aggregator and you want to have
 the aggregator methods, but the field itself is final
 initialized on the declaration line or in the constructor of
-the target class. If a field is final the generator never
-generates a builder method that sets the field itself because
-that is not possible and would result a code that does not
-compile.
+the [target class](TERMINOLOGY.md). If a field is final the
+generator never generates a builder method that sets the
+field itself because that is not possible and would result a
+code that does not compile.
 
 * `builderName` can define the name of the inner
 class that implements the builder functionality. The default
@@ -100,25 +100,27 @@ naming the field.
 
 * `setterPrefix` can define a setter prefix. The
 default value is `""`. If this value is
-not `null` and not an empty string then the name of the setter
-method will start with this prefix and the name of the field
-will be added with the first character capitalized.
+not `null` and not an empty string then the name of the
+setter method will start with this prefix and the name of the
+field will be added with the first character capitalized.
 
 * The created `builder()` method returns a `Builder`
 instance. The `Builder` class is a non-static inner class of
-the target class, because the build process needs to access
-the fields of the target class during the build process.
-Because of this the method `builder()` (or whatever it is
-named in the configuration `builderFactoryMethod`) needs to
-create a new instance of the target class. The default is to
-invoke the default constructor. It is applied when
+the [target class](TERMINOLOGY.md), because the build process
+needs to access the fields of the [target
+class](TERMINOLOGY.md) during the build process. Because of
+this the method `builder()` (or whatever it is named in the
+configuration `builderFactoryMethod`) needs to create a new
+instance of the [target class](TERMINOLOGY.md). The default
+is to invoke the default constructor. It is applied when
 `factory` is null or empty string. If this
 configuration value is anything else then this string will be
-used as it is to create a new instance of the target class.
-For example if there is a static method called `factory()`
-that returns a new instance of the target class then this
-configuration parameter can be set to `"factory()". The
-default values is `""`.
+used as it is to create a new instance of the [target
+class](TERMINOLOGY.md). For example if there is a static
+method called `factory()` that returns a new instance of the
+[target class](TERMINOLOGY.md) then this configuration
+parameter can be set to `"factory()". The default values is
+`""`.
 
 * In the setter and aggregator methods the argument is
 `x`. If you do not like this naming then

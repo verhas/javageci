@@ -498,6 +498,23 @@ changed. The arguments to the bi-predicate are the lists of strings that
 contain the source code as it was read from the disk (first argument)
 and as it is after the code generation (second argument).
 
+#### Tracing the execution
+
+When the code generation does not work the way as expected then there is
+a trace functionality to debug the situation. In some cases the
+generators do not touch some file, in other cases they may alter some
+file that they were not supposed to. To get detailed trace information
+about the actual actions the framework and the generators do you can
+specify a file calling the `trace("fileName")` method on the `Geci`
+object before calling generate.
+
+The trace information will ba saved into the trace file in XML format.
+Although the XML format is not too sexy it is extremely practical. If
+you look at it using some editor that supports XML then you can not only
+search in it like in case of standard log files, but you can also
+navigate hierarchically exploding and closing levels of trace
+information.
+
 #### Generate
 
 The last call after the chain of configuration calls has to be
@@ -506,7 +523,7 @@ The last call after the chain of configuration calls has to be
 asserted to be `false` in the tests and fail in case there was new code
 generated.
 
-## Writing Generator
+## Writing a Generator
 
 A generator is a class that implements the interface
 `javax0.geci.api.Generator`. This interface defines a single method

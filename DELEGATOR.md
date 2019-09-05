@@ -263,17 +263,18 @@ the simplest strategy is to set this parameter to `false` on
 the class annotation and `true` on each individual field that
 needs delegation.
 
-* `methods` is a filter expression that selects the methods
-that are to be delegated. Because the methods themselves may
-not be annotated and configured because they may happen to be
-in a class for which the source code is not there (e.g.: Map
-in the JDK) the only way to select the methods that are
-needed to be delegated are filter expressions. The
-configuration parameter `filter` is already used to filter
-the methods that need delegation, thus the methods in the
-target class or interface should use a different
-configuration parameter: `methods`. The default
-value for this parameter is `public & !static`.
+* `methods` is a filter expression that
+selects the methods that are to be delegated. Because the
+methods themselves may not be annotated and configured
+because they may happen to be in a class, the delegated class
+for which the source code is not there (e.g.: Map in the JDK)
+the only way to select the methods that are needed to be
+delegated are filter expressions. The configuration parameter
+`filter` is already used to filter the methods that need
+delegation, thus the methods in the delegated class or
+interface should use a different configuration parameter:
+`methods`. The default value for this
+parameter is `public & !static`.
 
 
 <!-- end snip -->
