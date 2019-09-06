@@ -1,3 +1,4 @@
+{@options lenient}
 {@import pom.jim}
 {project |pom|
     {GAV :{GROUPID}:javageci-parent:{VERSION}}
@@ -27,7 +28,7 @@
                             {opens/core/fluent.syntax}
                             {opens/examples/tutorials.simple}
                             {opens/examples/tutorials.hello}
-                            {opensTo/examples/tutorials.hello/tools}
+                            {opens/examples/tutorials.hello/tools}
                             {opens/examples/tests.templated}
                             {opens/examples/tests.repeated}
                             {opens/examples/tests.mapper}
@@ -38,11 +39,11 @@
                             {opens/examples/tests.cloner}
                             {opens/examples/tests.configBuilder}
                             {opens/docugen/docugen}
-                            {exportsTo/examples/tutorials.simple/core}
-                            {exportsTo/examples/tests.fluent/tools}
-                            {exportsTo/examples/tests.fluent/core}
-                            {exportsTo/examples/buildfluent/core}
-                            {exportsTo/examples/buildfluent/core}
+                            {exports/examples/tutorials.simple/core}
+                            {exports/examples/tests.fluent/tools}
+                            {exports/examples/tests.fluent/core}
+                            {exports/examples/buildfluent/core}
+                            {exports/examples/buildfluent/core}
                             {opens/examples/jamal}
                             {opens/examples/jamal.util}
                             --add-exports geci.examples/javax0.geci.jamal.reflection=ALL-UNNAMED

@@ -32,10 +32,10 @@
 </dependency>
 }
 
-{@define modules(Z)=
-<modules>
-{@for MODULE in (Z)=<module>MODULE</module>
-}</modules>
+{@define modules($Z)=
+  <modules>
+    {@for MODULE in ($Z)=<module>MODULE</module>}
+  </modules>
 }
 
 {@define license(_name,_url)=
@@ -66,10 +66,9 @@
     }
     {url|https:/github.com/_developer/_project/tree/master}
 }
-{@define opens(module,package)=--add-opens geci.module/javax0.geci.package=ALL-UNNAMED}
-{@define opensTo(module,package,to)=--add-opens geci.module/javax0.geci.package=geci.to}
-{@define exportsTo(module,package,to)=--add-exports geci.module/javax0.geci.package=geci.to}
-{@define configuration(data)=<configuration>
-    data
+{@define opens($module,$package,$to)=--add-opens geci.$module/javax0.geci.$package={#if/$to/geci.$to/ALL-UNNAMED}}
+{@define exports($module,$package,$to)=--add-exports geci.$module/javax0.geci.$package={#if/$to/geci.$to/ALL-UNNAMED}}
+{@define configuration($data)=<configuration>
+    $data
 </configuration>
 }
