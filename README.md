@@ -1,4 +1,4 @@
-<img src="https://api.travis-ci.org/verhas/javageci.svg?branch=master"/>
+<a href="https://travis-ci.com/verhas/javageci"><img src="https://api.travis-ci.org/verhas/javageci.svg?branch=master" border="0"/></a>
 
 # Java::Geci
 
