@@ -40,7 +40,7 @@ class TestGenerateJavageciDocumentation {
                 .register(SnippetNumberer.builder().phase(i++).build())
                 .register(SnipetLineSkipper.builder().phase(i++).build())
                 .register(MarkdownCodeInserter.builder().phase(i++).build())
-                .register(JavaDocSnippetInserter.builder().files("\\.java$").phase(i++).build())
+                .register(JavaDocSnippetInserter.builder().phase(i++).build())
                 .splitHelper("md", new MarkdownSegmentSplitHelper())
                 .splitHelper("java", new JavaDocSegmentSplitHelper())
                 .generate(),

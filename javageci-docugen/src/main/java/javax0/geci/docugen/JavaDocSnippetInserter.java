@@ -9,9 +9,11 @@ import javax0.geci.api.Source;
 public class JavaDocSnippetInserter extends AbstractSnippeter implements NonConfigurable {
 
     private static class Config extends AbstractSnippeter.Config {
-        {
-            files = "\\.java$";
-        }
+    }
+
+
+    private JavaDocSnippetInserter(){
+        new Builder().files("\\.java$");
     }
 
     @Override

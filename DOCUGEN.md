@@ -203,7 +203,7 @@ Assertions.assertFalse(
         .register(SnippetNumberer.builder().phase(i++).build())
         .register(SnipetLineSkipper.builder().phase(i++).build())
         .register(MarkdownCodeInserter.builder().phase(i++).build())
-        .register(JavaDocSnippetInserter.builder().files("\\.java$").phase(i++).build())
+        .register(JavaDocSnippetInserter.builder().phase(i++).build())
         .splitHelper("md", new MarkdownSegmentSplitHelper())
         .splitHelper("java", new JavaDocSegmentSplitHelper())
         .generate(),
@@ -413,7 +413,7 @@ to create this documentation:
 26.         .register(SnippetNumberer.builder().phase(i++).build())
 27.         .register(SnipetLineSkipper.builder().phase(i++).build())
 28.         .register(MarkdownCodeInserter.builder().phase(i++).build())
-29.         .register(JavaDocSnippetInserter.builder().files("\\.java$").phase(i++).build())
+29.         .register(JavaDocSnippetInserter.builder().phase(i++).build())
 30.         .splitHelper("md", new MarkdownSegmentSplitHelper())
 31.         .splitHelper("java", new JavaDocSegmentSplitHelper())
 32.         .generate(),
