@@ -177,7 +177,9 @@ usually looks like the one that is used to create this documentation:
 ```java
 final var fragmentCollector = new Geci();
 fragmentCollector
+    .trace("target/trace.xml")
     .source(Source.maven().module("javageci-tools").mainSource())
+    .source(Source.maven().module("javageci-engine").mainSource())
     .source(Source.maven().module("javageci-core").mainSource())
     .source(Source.maven().module("javageci-docugen").mainSource())
     .register(FragmentCollector.builder()
@@ -386,36 +388,38 @@ to create this documentation:
 ```java
 1. final var fragmentCollector = new Geci();
 2. fragmentCollector
-3.     .source(Source.maven().module("javageci-tools").mainSource())
-4.     .source(Source.maven().module("javageci-core").mainSource())
-5.     .source(Source.maven().module("javageci-docugen").mainSource())
-6.     .register(FragmentCollector.builder()
-7.         .param("configVariableName").regex("\\w+\\s+.*?(\\w+)\\s*=")
-8.         .param("configDefaultValue").regex("=\\s*\"?(.*?)\"?;")
-9.         .build())
-10.     .generate();
-11. 
-12. final var geci = new Geci();
-13. Assertions.assertFalse(
-14.     geci.context(fragmentCollector.context())
-15.         .source("..", ".")
-16.         .ignoreBinary()
-17.         .ignore(
-18.             "\\.git",
-19.             "target")
-20.         .log(Geci.MODIFIED)
-21.         .orderedRegister(SnippetCollector.builder(),
-22.             SnippetAppender.builder(),
-23.             SnippetRegex.builder(),
-24.             SnippetTrim.builder(),
-25.             SnippetNumberer.builder(),
-26.             SnipetLineSkipper.builder(),
-27.             MarkdownCodeInserter.builder(),
-28.             JavaDocSnippetInserter.builder())
-29.         .splitHelper("md", new MarkdownSegmentSplitHelper())
-30.         .splitHelper("java", new JavaDocSegmentSplitHelper())
-31.         .generate(),
-32.     geci.failed());
+3.     .trace("target/trace.xml")
+4.     .source(Source.maven().module("javageci-tools").mainSource())
+5.     .source(Source.maven().module("javageci-engine").mainSource())
+6.     .source(Source.maven().module("javageci-core").mainSource())
+7.     .source(Source.maven().module("javageci-docugen").mainSource())
+8.     .register(FragmentCollector.builder()
+9.         .param("configVariableName").regex("\\w+\\s+.*?(\\w+)\\s*=")
+10.         .param("configDefaultValue").regex("=\\s*\"?(.*?)\"?;")
+11.         .build())
+12.     .generate();
+13. 
+14. final var geci = new Geci();
+15. Assertions.assertFalse(
+16.     geci.context(fragmentCollector.context())
+17.         .source("..", ".")
+18.         .ignoreBinary()
+19.         .ignore(
+20.             "\\.git",
+21.             "target")
+22.         .log(Geci.MODIFIED)
+23.         .orderedRegister(SnippetCollector.builder(),
+24.             SnippetAppender.builder(),
+25.             SnippetRegex.builder(),
+26.             SnippetTrim.builder(),
+27.             SnippetNumberer.builder(),
+28.             SnipetLineSkipper.builder(),
+29.             MarkdownCodeInserter.builder(),
+30.             JavaDocSnippetInserter.builder())
+31.         .splitHelper("md", new MarkdownSegmentSplitHelper())
+32.         .splitHelper("java", new JavaDocSegmentSplitHelper())
+33.         .generate(),
+34.     geci.failed());
 ```
 
 we can have a look at line 14. It registers the
