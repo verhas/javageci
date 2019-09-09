@@ -225,38 +225,36 @@ public class Repeated extends AbstractJavaGenerator {
     private String configuredMnemonic = "repeated";
 
     @Override
-    public String mnemonic() {
+    public String mnemonic(){
         return configuredMnemonic;
     }
 
     private final Config config = new Config();
-
     public static Repeated.Builder builder() {
         return new Repeated().new Builder();
     }
 
     private static final java.util.Set<String> implementedKeys = java.util.Set.of(
-            "end",
-            "matchLine",
-            "start",
-            "templateEnd",
-            "templateStart",
-            "values",
-            "id"
+        "end",
+        "matchLine",
+        "start",
+        "templateEnd",
+        "templateStart",
+        "values",
+        "id"
     );
 
     @Override
     public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
-
-    public class Builder {
+    public class Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder ctx(javax0.geci.templated.Context ctx) {
             config.ctx = ctx;
             return this;
         }
 
-        public Builder define(java.util.function.BiConsumer<javax0.geci.templated.Context, String> define) {
+        public Builder define(java.util.function.BiConsumer<javax0.geci.templated.Context,String> define) {
             config.setDefine(define);
             return this;
         }
@@ -271,7 +269,7 @@ public class Repeated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder resolver(java.util.function.BiFunction<javax0.geci.templated.Context, String, String> resolver) {
+        public Builder resolver(java.util.function.BiFunction<javax0.geci.templated.Context,String,String> resolver) {
             config.setResolver(resolver);
             return this;
         }
@@ -306,7 +304,7 @@ public class Repeated extends AbstractJavaGenerator {
             return this;
         }
 
-        public Builder valuesSupplier(java.util.function.Function<Class, java.util.List<String>> valuesSupplier) {
+        public Builder valuesSupplier(java.util.function.Function<Class,java.util.List<String>> valuesSupplier) {
             config.valuesSupplier = valuesSupplier;
             return this;
         }
@@ -320,8 +318,7 @@ public class Repeated extends AbstractJavaGenerator {
             return Repeated.this;
         }
     }
-
-    private Config localConfig(CompoundParams params) {
+    private Config localConfig(CompoundParams params){
         final var local = new Config();
         local.ctx = config.ctx;
         local.setDefine(config.define);

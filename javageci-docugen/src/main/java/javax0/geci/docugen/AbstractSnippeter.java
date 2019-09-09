@@ -141,8 +141,7 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
 
     //<editor-fold id="configBuilder">
     private final Config config = new Config();
-
-    public class Builder {
+    public class Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder files(CharSequence files) {
             config.files = files;
             return this;

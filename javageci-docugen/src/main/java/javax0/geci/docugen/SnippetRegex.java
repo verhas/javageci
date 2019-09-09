@@ -270,7 +270,7 @@ public class SnippetRegex extends AbstractSnippeter {
         return new SnippetRegex().new Builder();
     }
 
-    public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder {
+    public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder escape(String escape) {
             config.escape = escape;
             return this;

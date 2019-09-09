@@ -134,7 +134,7 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
     public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
-    public class Builder {
+    public class Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder in(String in) {
             config.in = in;
             return this;
@@ -151,8 +151,8 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
     }
     private Config localConfig(CompoundParams params){
         final var local = new Config();
-        local.in = params.get("in",config.in);
-        local.set = params.get("set",config.set);
+        local.in = params.get("in", config.in);
+        local.set = params.get("set", config.set);
         return local;
     }
     //</editor-fold>

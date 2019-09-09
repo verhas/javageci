@@ -170,12 +170,11 @@ public class Mapper extends AbstractJavaGenerator {
     private String configuredMnemonic = "mapper";
 
     @Override
-    public String mnemonic() {
+    public String mnemonic(){
         return configuredMnemonic;
     }
 
     private final Config config = new Config();
-
     public static Mapper.Builder builder() {
         return new Mapper().new Builder();
     }
@@ -190,14 +189,13 @@ public class Mapper extends AbstractJavaGenerator {
     public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
-
-    public class Builder {
+    public class Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder factory(String factory) {
             config.factory = factory;
             return this;
         }
 
-        public Builder field2MapKeyMapper(java.util.function.Function<String, String> field2MapKeyMapper) {
+        public Builder field2MapKeyMapper(java.util.function.Function<String,String> field2MapKeyMapper) {
             config.field2MapKeyMapper = field2MapKeyMapper;
             return this;
         }
@@ -221,8 +219,7 @@ public class Mapper extends AbstractJavaGenerator {
             return Mapper.this;
         }
     }
-
-    private Config localConfig(CompoundParams params) {
+    private Config localConfig(CompoundParams params){
         final var local = new Config();
         local.factory = params.get("factory", config.factory);
         local.field2MapKeyMapper = config.field2MapKeyMapper;

@@ -614,7 +614,7 @@ public class Templated extends AbstractJavaGenerator {
     public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
-    public class Builder {
+    public class Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder classFilter(String classFilter) {
             config.classFilter = classFilter;
             return this;
@@ -826,47 +826,47 @@ public class Templated extends AbstractJavaGenerator {
     }
     private Config localConfig(CompoundParams params){
         final var local = new Config();
-        local.classFilter = params.get("classFilter",config.classFilter);
+        local.classFilter = params.get("classFilter", config.classFilter);
         local.ctx = config.ctx;
         local.declaredOnly = config.declaredOnly;
-        local.fieldFilter = params.get("fieldFilter",config.fieldFilter);
+        local.fieldFilter = params.get("fieldFilter", config.fieldFilter);
         local.generatedAnnotation = config.generatedAnnotation;
-        local.memberClassFilter = params.get("memberClassFilter",config.memberClassFilter);
-        local.methodFilter = params.get("methodFilter",config.methodFilter);
-        local.setPostprocess(params.get("postprocess",config.postprocess));
-        local.setPostprocessClass(params.get("postprocessClass",config.postprocessClass));
+        local.memberClassFilter = params.get("memberClassFilter", config.memberClassFilter);
+        local.methodFilter = params.get("methodFilter", config.methodFilter);
+        local.setPostprocess(params.get("postprocess", config.postprocess));
+        local.setPostprocessClass(params.get("postprocessClass", config.postprocessClass));
         local.postprocessClassParams = config.postprocessClassParams;
         local.postprocessClassResolv = config.postprocessClassResolv;
         local.postprocessParams = config.postprocessParams;
         local.postprocessResolv = config.postprocessResolv;
-        local.setPreprocess(params.get("preprocess",config.preprocess));
-        local.setPreprocessClass(params.get("preprocessClass",config.preprocessClass));
+        local.setPreprocess(params.get("preprocess", config.preprocess));
+        local.setPreprocessClass(params.get("preprocessClass", config.preprocessClass));
         local.preprocessClassParams = config.preprocessClassParams;
         local.preprocessClassResolv = config.preprocessClassResolv;
         local.preprocessParams = config.preprocessParams;
         local.preprocessResolv = config.preprocessResolv;
-        local.setProcessClass(params.get("processClass",config.processClass));
+        local.setProcessClass(params.get("processClass", config.processClass));
         local.processClassParams = config.processClassParams;
         local.processClassResolv = config.processClassResolv;
-        local.setProcessClasses(params.get("processClasses",config.processClasses));
+        local.setProcessClasses(params.get("processClasses", config.processClasses));
         local.processClassesParams = config.processClassesParams;
         local.processClassesResolv = config.processClassesResolv;
-        local.setProcessField(params.get("processField",config.processField));
+        local.setProcessField(params.get("processField", config.processField));
         local.processFieldParams = config.processFieldParams;
         local.processFieldResolv = config.processFieldResolv;
-        local.setProcessFields(params.get("processFields",config.processFields));
+        local.setProcessFields(params.get("processFields", config.processFields));
         local.processFieldsParams = config.processFieldsParams;
         local.processFieldsResolv = config.processFieldsResolv;
-        local.setProcessMemberClass(params.get("processMemberClass",config.processMemberClass));
+        local.setProcessMemberClass(params.get("processMemberClass", config.processMemberClass));
         local.processMemberClassParams = config.processMemberClassParams;
         local.processMemberClassResolv = config.processMemberClassResolv;
-        local.setProcessMethod(params.get("processMethod",config.processMethod));
+        local.setProcessMethod(params.get("processMethod", config.processMethod));
         local.processMethodParams = config.processMethodParams;
         local.processMethodResolv = config.processMethodResolv;
-        local.setProcessMethods(params.get("processMethods",config.processMethods));
+        local.setProcessMethods(params.get("processMethods", config.processMethods));
         local.processMethodsParams = config.processMethodsParams;
         local.processMethodsResolv = config.processMethodsResolv;
-        local.selector = params.get("selector",config.selector);
+        local.selector = params.get("selector", config.selector);
         return local;
     }
     //</editor-fold>

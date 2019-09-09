@@ -121,7 +121,7 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
     public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
-    public class Builder {
+    public class Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder access(String access) {
             config.access = access;
             return this;
@@ -178,15 +178,15 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
     }
     private Config localConfig(CompoundParams params){
         final var local = new Config();
-        local.access = params.get("access",config.access);
-        local.filter = params.get("filter",config.filter);
-        local.getter = params.get("getter",config.getter);
+        local.access = params.get("access", config.access);
+        local.filter = params.get("filter", config.filter);
+        local.getter = params.get("getter", config.getter);
         local.getterNameGenerator = config.getterNameGenerator;
         local.getterReturnValueDecorator = config.getterReturnValueDecorator;
-        local.mnemonic = params.get("mnemonic",config.mnemonic);
-        local.only = params.get("only",config.only);
+        local.mnemonic = params.get("mnemonic", config.mnemonic);
+        local.only = params.get("only", config.only);
         local.processAllClasses = config.processAllClasses;
-        local.setter = params.get("setter",config.setter);
+        local.setter = params.get("setter", config.setter);
         local.setterNameGenerator = config.setterNameGenerator;
         return local;
     }

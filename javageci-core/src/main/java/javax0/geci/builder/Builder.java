@@ -407,14 +407,14 @@ public class Builder extends AbstractFilteredFieldsGenerator {
 
     private static final java.util.Set<String> implementedKeys = java.util.Set.of(
         "aggregatorMethod",
-            "argumentVariable",
+        "argumentVariable",
         "buildMethod",
         "builderFactoryMethod",
         "builderName",
-            "checkNullInAggregator",
-            "factory",
+        "checkNullInAggregator",
+        "factory",
         "filter",
-            "setterPrefix",
+        "setterPrefix",
         "id"
     );
 
@@ -422,7 +422,7 @@ public class Builder extends AbstractFilteredFieldsGenerator {
     public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
-    public class ConfBuilder {
+    public class ConfBuilder implements javax0.geci.api.GeneratorBuilder {
         public ConfBuilder aggregatorMethod(String aggregatorMethod) {
             config.aggregatorMethod = aggregatorMethod;
             return this;

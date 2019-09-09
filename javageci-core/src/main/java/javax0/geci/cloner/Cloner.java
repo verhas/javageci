@@ -245,7 +245,7 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
     public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
-    public class Builder {
+    public class Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder cloneMethod(String cloneMethod) {
             config.cloneMethod = cloneMethod;
             return this;
@@ -307,16 +307,16 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
     }
     private Config localConfig(CompoundParams params){
         final var local = new Config();
-        local.cloneMethod = params.get("cloneMethod",config.cloneMethod);
-        local.cloneMethodProtection = params.get("cloneMethodProtection",config.cloneMethodProtection);
-        local.cloneWith = params.get("cloneWith",config.cloneWith);
-        local.copyCallsSuper = params.get("copyCallsSuper",config.copyCallsSuper);
-        local.copyMethod = params.get("copyMethod",config.copyMethod);
-        local.copyMethodProtection = params.get("copyMethodProtection",config.copyMethodProtection);
+        local.cloneMethod = params.get("cloneMethod", config.cloneMethod);
+        local.cloneMethodProtection = params.get("cloneMethodProtection", config.cloneMethodProtection);
+        local.cloneWith = params.get("cloneWith", config.cloneWith);
+        local.copyCallsSuper = params.get("copyCallsSuper", config.copyCallsSuper);
+        local.copyMethod = params.get("copyMethod", config.copyMethod);
+        local.copyMethodProtection = params.get("copyMethodProtection", config.copyMethodProtection);
         local.setDeclaredOnly(config.declaredOnly);
-        local.filter = params.get("filter",config.filter);
+        local.filter = params.get("filter", config.filter);
         local.generatedAnnotation = config.generatedAnnotation;
-        local.superCopyMethod = params.get("superCopyMethod",config.superCopyMethod);
+        local.superCopyMethod = params.get("superCopyMethod", config.superCopyMethod);
         return local;
     }
     //</editor-fold>

@@ -214,6 +214,26 @@ public interface Geci {
     Geci register(Generator... generatorArr);
 
     /**
+     * This is a convenience version of the register method that simply
+     * calls the {@code build()} on the arguments and then registers the
+     * generators. This is simply to make the code less repetitive
+     * not requiring to write {@code .build()} at the end of the builder
+     * chain when registering a generator created using a builder.
+     *
+     * @param generatorBuilders the builders that contain a built
+     *                          generator waiting only to call the
+     *                          {@code build()} method on them
+     * @return {@code this}
+     */
+    default Geci register(GeneratorBuilder ...generatorBuilders){
+        final var generators = new Generator[generatorBuilders.length];
+        for( int i = 0 ; i < generatorBuilders.length ; i++){
+            generators[i] = generatorBuilders[i].build();
+        }
+        return register(generators);
+    }
+
+    /**
      * Set filters to filter the sources. The absolute file names of the
      * files are matched against the patterns and a file is only
      * processed by the generators if at least one regular expression

@@ -102,17 +102,16 @@ public class SnippetAppender extends AbstractSnippeter {
     private String configuredMnemonic = "append";
 
     @Override
-    public String mnemonic() {
+    public String mnemonic(){
         return configuredMnemonic;
     }
 
     private final Config config = new Config();
-
     public static SnippetAppender.Builder builder() {
         return new SnippetAppender().new Builder();
     }
 
-    public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder {
+    public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder escape(String escape) {
             config.escape = escape;
             return this;

@@ -139,7 +139,7 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
     public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
-    public class Builder {
+    public class Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder filter(String filter) {
             config.filter = filter;
             return this;
@@ -166,9 +166,9 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
     }
     private Config localConfig(CompoundParams params){
         final var local = new Config();
-        local.filter = params.get("filter",config.filter);
+        local.filter = params.get("filter", config.filter);
         local.generatedAnnotation = config.generatedAnnotation;
-        local.methods = params.get("methods",config.methods);
+        local.methods = params.get("methods", config.methods);
         return local;
     }
     //</editor-fold>

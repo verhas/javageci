@@ -64,17 +64,16 @@ public class SnippetTrim extends AbstractSnippeter {
     private String configuredMnemonic = "trim";
 
     @Override
-    public String mnemonic() {
+    public String mnemonic(){
         return configuredMnemonic;
     }
 
     private final Config config = new Config();
-
     public static SnippetTrim.Builder builder() {
         return new SnippetTrim().new Builder();
     }
 
-    public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder {
+    public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder to(String to) {
             config.to = to;
             return this;

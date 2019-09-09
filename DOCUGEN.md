@@ -196,14 +196,16 @@ Assertions.assertFalse(
             "\\.git",
             "target")
         .log(Geci.MODIFIED)
-        .register(SnippetCollector.builder().phase(i++).build())
+        .register(SnippetCollector.builder().phase(i++))
         .register(SnippetAppender.builder().phase(i++).build())
         .register(SnippetRegex.builder().phase(i++).build())
         .register(SnippetTrim.builder().phase(i++).build())
         .register(SnippetNumberer.builder().phase(i++).build())
         .register(SnipetLineSkipper.builder().phase(i++).build())
         .register(MarkdownCodeInserter.builder().phase(i++).build())
+        .register(JavaDocSnippetInserter.builder().files("\\.java$").phase(i++).build())
         .splitHelper("md", new MarkdownSegmentSplitHelper())
+        .splitHelper("java", new JavaDocSegmentSplitHelper())
         .generate(),
     geci.failed());
 ```
@@ -404,16 +406,18 @@ to create this documentation:
 19.             "\\.git",
 20.             "target")
 21.         .log(Geci.MODIFIED)
-22.         .register(SnippetCollector.builder().phase(i++).build())
+22.         .register(SnippetCollector.builder().phase(i++))
 23.         .register(SnippetAppender.builder().phase(i++).build())
 24.         .register(SnippetRegex.builder().phase(i++).build())
 25.         .register(SnippetTrim.builder().phase(i++).build())
 26.         .register(SnippetNumberer.builder().phase(i++).build())
 27.         .register(SnipetLineSkipper.builder().phase(i++).build())
 28.         .register(MarkdownCodeInserter.builder().phase(i++).build())
-29.         .splitHelper("md", new MarkdownSegmentSplitHelper())
-30.         .generate(),
-31.     geci.failed());
+29.         .register(JavaDocSnippetInserter.builder().files("\\.java$").phase(i++).build())
+30.         .splitHelper("md", new MarkdownSegmentSplitHelper())
+31.         .splitHelper("java", new JavaDocSegmentSplitHelper())
+32.         .generate(),
+33.     geci.failed());
 ```
 
 we can have a look at line 14. It registers the

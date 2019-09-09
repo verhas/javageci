@@ -6,18 +6,17 @@ import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 
 @Geci("configBuilder localConfigMethod=''")
-public class MarkdownCodeInserter extends AbstractSnippeter implements NonConfigurable {
+public class JavaDocSnippetInserter extends AbstractSnippeter implements NonConfigurable {
 
     private static class Config extends AbstractSnippeter.Config {
+        {
+            files = "\\.java$";
+        }
     }
 
     @Override
     public void modify(Source source, Segment segment, Snippet snippet, CompoundParams params) {
-        final var originalLines = segment.originalLines();
-        if (originalLines.size() > 0 && originalLines.get(0).startsWith("```")) {
-            segment.write(originalLines.get(0));
-        }
-        snippet.lines().forEach(l -> segment.write(l));
+        snippet.lines().forEach(line -> segment.write("* " + line));
     }
 
     /**
@@ -32,18 +31,20 @@ public class MarkdownCodeInserter extends AbstractSnippeter implements NonConfig
      * @return {@code null}
      */
     @Override
-    public String mnemonic(){
+    public String mnemonic() {
         return null;
     }
+
     //<editor-fold id="configBuilder">
     private final Config config = new Config();
-    public static MarkdownCodeInserter.Builder builder() {
-        return new MarkdownCodeInserter().new Builder();
+
+    public static JavaDocSnippetInserter.Builder builder() {
+        return new JavaDocSnippetInserter().new Builder();
     }
 
     public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder implements javax0.geci.api.GeneratorBuilder {
-        public MarkdownCodeInserter build() {
-            return MarkdownCodeInserter.this;
+        public JavaDocSnippetInserter build() {
+            return JavaDocSnippetInserter.this;
         }
     }
     //</editor-fold>

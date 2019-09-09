@@ -189,7 +189,7 @@ public class SnipetLineSkipper extends AbstractSnippeter {
         return new SnipetLineSkipper().new Builder();
     }
 
-    public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder {
+    public class Builder extends javax0.geci.docugen.AbstractSnippeter.Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder skip(java.util.regex.Pattern skip) {
             config.skip = skip;
             return this;

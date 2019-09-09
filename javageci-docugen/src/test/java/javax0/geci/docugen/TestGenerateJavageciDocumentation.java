@@ -33,14 +33,16 @@ class TestGenerateJavageciDocumentation {
                     "\\.git",
                     "target")
                 .log(Geci.MODIFIED)
-                .register(SnippetCollector.builder().phase(i++).build())
+                .register(SnippetCollector.builder().phase(i++))
                 .register(SnippetAppender.builder().phase(i++).build())
                 .register(SnippetRegex.builder().phase(i++).build())
                 .register(SnippetTrim.builder().phase(i++).build())
                 .register(SnippetNumberer.builder().phase(i++).build())
                 .register(SnipetLineSkipper.builder().phase(i++).build())
                 .register(MarkdownCodeInserter.builder().phase(i++).build())
+                .register(JavaDocSnippetInserter.builder().files("\\.java$").phase(i++).build())
                 .splitHelper("md", new MarkdownSegmentSplitHelper())
+                .splitHelper("java", new JavaDocSegmentSplitHelper())
                 .generate(),
             geci.failed());
         // end snippet

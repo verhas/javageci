@@ -189,9 +189,9 @@ public class ConfigBuilder extends AbstractJavaGenerator {
     private void startBuilderClass(Segment segment, Class klass) {
         try {
             final var superBuilder = Class.forName(klass.getSuperclass().getName() + "$Builder");
-            segment.write_r("public class {{Builder}} extends %s {", superBuilder.getCanonicalName());
+            segment.write_r("public class {{Builder}} extends %s implements javax0.geci.api.GeneratorBuilder {", superBuilder.getCanonicalName());
         } catch (ClassNotFoundException cnfe) {
-            segment.write_r("public class {{Builder}} {");
+            segment.write_r("public class {{Builder}} implements javax0.geci.api.GeneratorBuilder {");
         }
     }
 
@@ -260,7 +260,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
     public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
-    public class Builder {
+    public class Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder buildMethod(String buildMethod) {
             config.buildMethod = buildMethod;
             return this;
@@ -307,14 +307,14 @@ public class ConfigBuilder extends AbstractJavaGenerator {
     }
     private Config localConfig(CompoundParams params){
         final var local = new Config();
-        local.buildMethod = params.get("buildMethod",config.buildMethod);
-        local.builderFactoryMethod = params.get("builderFactoryMethod",config.builderFactoryMethod);
-        local.builderName = params.get("builderName",config.builderName);
-        local.configAccess = params.get("configAccess",config.configAccess);
-        local.configurableMnemonic = params.get("configurableMnemonic",config.configurableMnemonic);
-        local.filter = params.get("filter",config.filter);
-        local.generateImplementedKeys = params.get("generateImplementedKeys",config.generateImplementedKeys);
-        local.localConfigMethod = params.get("localConfigMethod",config.localConfigMethod);
+        local.buildMethod = params.get("buildMethod", config.buildMethod);
+        local.builderFactoryMethod = params.get("builderFactoryMethod", config.builderFactoryMethod);
+        local.builderName = params.get("builderName", config.builderName);
+        local.configAccess = params.get("configAccess", config.configAccess);
+        local.configurableMnemonic = params.get("configurableMnemonic", config.configurableMnemonic);
+        local.filter = params.get("filter", config.filter);
+        local.generateImplementedKeys = params.get("generateImplementedKeys", config.generateImplementedKeys);
+        local.localConfigMethod = params.get("localConfigMethod", config.localConfigMethod);
         return local;
     }
     //</editor-fold>
