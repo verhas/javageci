@@ -234,6 +234,21 @@ public interface Geci {
     }
 
     /**
+     * <p>Register the generators using their builder in an ordered manner.</p>
+     *
+     * <p>When this registration method is called then the generator builder
+     * {@code phase(i++)} and the {@code build()} methods are automatically invoked.
+     * The argument to {@code phase(int)} is zero for the first generator and it is
+     * increased by one for every new generator. This ensures that the generators
+     * wil be invoked in the order they are registered.</p>
+     *
+     * @param generatorBuilders the builders for the generators without invoking
+     *                          {@code phase(int)} and {@code build()}.
+     * @return {@code this}
+     */
+    Geci orderedRegister(GeneratorBuilder... generatorBuilders);
+
+    /**
      * Set filters to filter the sources. The absolute file names of the
      * files are matched against the patterns and a file is only
      * processed by the generators if at least one regular expression

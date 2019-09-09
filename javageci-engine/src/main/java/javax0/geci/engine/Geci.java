@@ -1,18 +1,32 @@
 package javax0.geci.engine;
 
 import javax0.geci.api.Context;
+import javax0.geci.api.Distant;
+import javax0.geci.api.GeciException;
+import javax0.geci.api.Generator;
+import javax0.geci.api.GeneratorBuilder;
+import javax0.geci.api.GlobalGenerator;
+import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.api.Source;
-import javax0.geci.api.*;
 import javax0.geci.javacomparator.Comparator;
 import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
 import javax0.geci.tools.AbstractJavaGenerator;
+import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.Tracer;
 import javax0.geci.util.DirectoryLocator;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -49,6 +63,7 @@ public class Geci implements javax0.geci.api.Geci {
     private Source.Set lastSet = null;
     private boolean ignoreBinary = false;
     private String traceFileName = null;
+    private int phaseCounter = 0;
 
     @Override
     public Geci source(String... directory) {
@@ -189,6 +204,20 @@ public class Geci implements javax0.geci.api.Geci {
         lenient = true;
         lastSet = null;
         return this;
+    }
+
+
+    @Override
+    public Geci orderedRegister(GeneratorBuilder... generatorBuilders) {
+        for (final var builder : generatorBuilders) {
+            try {
+                GeciReflectionTools.invoke("phase").on(builder).types(int.class).args(phaseCounter++);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException nsme) {
+                throw new GeciException("Cannot register " + builder.getClass()
+                    + " ordered when there is no phase() method or it cannot be invoked.");
+            }
+        }
+        return (Geci) register(generatorBuilders);
     }
 
     @Override

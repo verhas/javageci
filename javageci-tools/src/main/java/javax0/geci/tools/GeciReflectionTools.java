@@ -1,19 +1,38 @@
 package javax0.geci.tools;
 
-import java.util.stream.Stream;
 import javax0.geci.annotations.Geci;
 import javax0.geci.api.GeciException;
 import javax0.geci.tools.reflection.ModifiersBuilder;
 import javax0.geci.tools.reflection.Selector;
 
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static java.lang.reflect.Modifier.*;
+import static java.lang.reflect.Modifier.isPrivate;
+import static java.lang.reflect.Modifier.isProtected;
+import static java.lang.reflect.Modifier.isPublic;
 
 public class GeciReflectionTools {
 
@@ -50,6 +69,49 @@ public class GeciReflectionTools {
             }
         }
         return null;
+    }
+
+    public static class Invoker {
+        private String methodName;
+        private Object target;
+        Class[] types;
+
+        public Invoker1 on(Object target) {
+            this.target = target;
+            return new Invoker1();
+        }
+
+        public class Invoker1 {
+            public Invoker2 types(Class... types) {
+                Invoker.this.types = types;
+                return new Invoker2();
+            }
+        }
+
+        public class Invoker2 {
+            public Object args(Object... args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+                final var method = target.getClass().getMethod(methodName, types);
+                method.setAccessible(true);
+                return method.invoke(target, args);
+            }
+        }
+    }
+
+    /**
+     * <p>Reflectively invoke the method specified by the name using the arguments on the target object. The way
+     * to invoke the method is:</p>
+     *
+     * <pre>{@code
+     *    invoke(methodName).on(targetObject).types(argument classes listed).args(arguments listed);
+     * }</pre>
+     *
+     * @param methodName the name of the method to invoke
+     * @return the chaning class to call {@code on()} on.
+     */
+    public static Invoker invoke(String methodName) {
+        final var invoker = new Invoker();
+        invoker.methodName = methodName;
+        return invoker;
     }
 
     /**

@@ -187,7 +187,6 @@ fragmentCollector
     .generate();
 
 final var geci = new Geci();
-int i = 0;
 Assertions.assertFalse(
     geci.context(fragmentCollector.context())
         .source("..", ".")
@@ -196,14 +195,14 @@ Assertions.assertFalse(
             "\\.git",
             "target")
         .log(Geci.MODIFIED)
-        .register(SnippetCollector.builder().phase(i++))
-        .register(SnippetAppender.builder().phase(i++).build())
-        .register(SnippetRegex.builder().phase(i++).build())
-        .register(SnippetTrim.builder().phase(i++).build())
-        .register(SnippetNumberer.builder().phase(i++).build())
-        .register(SnipetLineSkipper.builder().phase(i++).build())
-        .register(MarkdownCodeInserter.builder().phase(i++).build())
-        .register(JavaDocSnippetInserter.builder().phase(i++).build())
+        .orderedRegister(SnippetCollector.builder(),
+            SnippetAppender.builder(),
+            SnippetRegex.builder(),
+            SnippetTrim.builder(),
+            SnippetNumberer.builder(),
+            SnipetLineSkipper.builder(),
+            MarkdownCodeInserter.builder(),
+            JavaDocSnippetInserter.builder())
         .splitHelper("md", new MarkdownSegmentSplitHelper())
         .splitHelper("java", new JavaDocSegmentSplitHelper())
         .generate(),
@@ -397,27 +396,26 @@ to create this documentation:
 10.     .generate();
 11. 
 12. final var geci = new Geci();
-13. int i = 0;
-14. Assertions.assertFalse(
-15.     geci.context(fragmentCollector.context())
-16.         .source("..", ".")
-17.         .ignoreBinary()
-18.         .ignore(
-19.             "\\.git",
-20.             "target")
-21.         .log(Geci.MODIFIED)
-22.         .register(SnippetCollector.builder().phase(i++))
-23.         .register(SnippetAppender.builder().phase(i++).build())
-24.         .register(SnippetRegex.builder().phase(i++).build())
-25.         .register(SnippetTrim.builder().phase(i++).build())
-26.         .register(SnippetNumberer.builder().phase(i++).build())
-27.         .register(SnipetLineSkipper.builder().phase(i++).build())
-28.         .register(MarkdownCodeInserter.builder().phase(i++).build())
-29.         .register(JavaDocSnippetInserter.builder().phase(i++).build())
-30.         .splitHelper("md", new MarkdownSegmentSplitHelper())
-31.         .splitHelper("java", new JavaDocSegmentSplitHelper())
-32.         .generate(),
-33.     geci.failed());
+13. Assertions.assertFalse(
+14.     geci.context(fragmentCollector.context())
+15.         .source("..", ".")
+16.         .ignoreBinary()
+17.         .ignore(
+18.             "\\.git",
+19.             "target")
+20.         .log(Geci.MODIFIED)
+21.         .orderedRegister(SnippetCollector.builder(),
+22.             SnippetAppender.builder(),
+23.             SnippetRegex.builder(),
+24.             SnippetTrim.builder(),
+25.             SnippetNumberer.builder(),
+26.             SnipetLineSkipper.builder(),
+27.             MarkdownCodeInserter.builder(),
+28.             JavaDocSnippetInserter.builder())
+29.         .splitHelper("md", new MarkdownSegmentSplitHelper())
+30.         .splitHelper("java", new JavaDocSegmentSplitHelper())
+31.         .generate(),
+32.     geci.failed());
 ```
 
 we can have a look at line 14. It registers the

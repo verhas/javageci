@@ -24,7 +24,6 @@ class TestGenerateJavageciDocumentation {
             .generate();
 
         final var geci = new Geci();
-        int i = 0;
         Assertions.assertFalse(
             geci.context(fragmentCollector.context())
                 .source("..", ".")
@@ -33,14 +32,14 @@ class TestGenerateJavageciDocumentation {
                     "\\.git",
                     "target")
                 .log(Geci.MODIFIED)
-                .register(SnippetCollector.builder().phase(i++))
-                .register(SnippetAppender.builder().phase(i++).build())
-                .register(SnippetRegex.builder().phase(i++).build())
-                .register(SnippetTrim.builder().phase(i++).build())
-                .register(SnippetNumberer.builder().phase(i++).build())
-                .register(SnipetLineSkipper.builder().phase(i++).build())
-                .register(MarkdownCodeInserter.builder().phase(i++).build())
-                .register(JavaDocSnippetInserter.builder().phase(i++).build())
+                .orderedRegister(SnippetCollector.builder(),
+                    SnippetAppender.builder(),
+                    SnippetRegex.builder(),
+                    SnippetTrim.builder(),
+                    SnippetNumberer.builder(),
+                    SnipetLineSkipper.builder(),
+                    MarkdownCodeInserter.builder(),
+                    JavaDocSnippetInserter.builder())
                 .splitHelper("md", new MarkdownSegmentSplitHelper())
                 .splitHelper("java", new JavaDocSegmentSplitHelper())
                 .generate(),
