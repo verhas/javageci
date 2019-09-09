@@ -105,6 +105,11 @@ public class GeciReflectionTools {
      *    invoke(methodName).on(targetObject).types(argument classes listed).args(arguments listed);
      * }</pre>
      *
+     * <p>For exmaple:</p>
+     *
+     * <!-- snip Geci_GeciReflectionTools_invoke_sample -->
+     * <!-- end snip -->
+     *
      * @param methodName the name of the method to invoke
      * @return the chaning class to call {@code on()} on.
      */

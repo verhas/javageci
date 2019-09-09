@@ -14,7 +14,9 @@ class TestGenerateJavageciDocumentation {
         // snippet TestGenerateJavageciDocumentation
         final var fragmentCollector = new Geci();
         fragmentCollector
+            .trace("target/trace.xml")
             .source(Source.maven().module("javageci-tools").mainSource())
+            .source(Source.maven().module("javageci-engine").mainSource())
             .source(Source.maven().module("javageci-core").mainSource())
             .source(Source.maven().module("javageci-docugen").mainSource())
             .register(FragmentCollector.builder()

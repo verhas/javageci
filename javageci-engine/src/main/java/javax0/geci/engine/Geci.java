@@ -211,7 +211,9 @@ public class Geci implements javax0.geci.api.Geci {
     public Geci orderedRegister(GeneratorBuilder... generatorBuilders) {
         for (final var builder : generatorBuilders) {
             try {
+                // snippet Geci_GeciReflectionTools_invoke_sample
                 GeciReflectionTools.invoke("phase").on(builder).types(int.class).args(phaseCounter++);
+                // end snippet
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException nsme) {
                 throw new GeciException("Cannot register " + builder.getClass()
                     + " ordered when there is no phase() method or it cannot be invoked.");

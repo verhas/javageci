@@ -16,7 +16,7 @@ public class JavaDocSegmentSplitHelper extends AbstractXMLSegmentSplitHelper {
                     "|" +
                     "^(\\s*)\\[//]:\\s*#\\s*\\(\\s*end\\s+snip\\s*(.*)\\)\\s*$" +
                     "|" +
-                    "^(\\s*)<!--\\s*end\\s+snip\\s*(.*)-->\\s*$"
+                    "^(\\s*)\\*?\\s*<!--\\s*end\\s+snip\\s*(.*)-->\\s*$"
             ),
             Pattern.compile("DEFAULT SEGMENT") // probably will not match ever, if yes, c'mon!
 
