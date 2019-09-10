@@ -193,10 +193,10 @@ Assertions.assertFalse(
         .source("..", ".")
         .ignoreBinary()
         .ignore(
-            "\\.git",
+            "\\.git", "\\.idea", "\\.iml$",
             "target")
         .log(Geci.MODIFIED)
-        .register(Register.register().ordered().fileExtensions("md","java").allSnippetGenerators())
+        .register(Register.register().ordered().fileExtensions("md", "java").allSnippetGenerators())
         .splitHelper("md", new MarkdownSegmentSplitHelper())
         .splitHelper("java", new JavaDocSegmentSplitHelper())
         .generate(),
@@ -396,10 +396,10 @@ to create this documentation:
 16.         .source("..", ".")
 17.         .ignoreBinary()
 18.         .ignore(
-19.             "\\.git",
+19.             "\\.git", "\\.idea", "\\.iml$",
 20.             "target")
 21.         .log(Geci.MODIFIED)
-22.         .register(Register.register().ordered().fileExtensions("md","java").allSnippetGenerators())
+22.         .register(Register.register().ordered().fileExtensions("md", "java").allSnippetGenerators())
 23.         .splitHelper("md", new MarkdownSegmentSplitHelper())
 24.         .splitHelper("java", new JavaDocSegmentSplitHelper())
 25.         .generate(),

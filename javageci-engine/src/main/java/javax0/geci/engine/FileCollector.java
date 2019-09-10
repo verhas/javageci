@@ -14,7 +14,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -233,7 +238,7 @@ class FileCollector {
                                 Tracer.log("'" + directory + "' is input, collecting files...");
                                 Files.find(Paths.get(dir), MAX_DEPTH_UNLIMITED,
                                         (filePath, fileAttr) -> fileAttr.isRegularFile())
-                                        .peek(s -> Tracer.log("File","'" + s + "' was found"))
+                                    .peek(s -> Tracer.push("File", "'" + s + "' was found"))
                                         .peek(s -> Tracer.push("Only","Checking predicates"))
                                         .filter(path -> {
                                             if (onlys == null || onlys.isEmpty()) {
@@ -247,6 +252,7 @@ class FileCollector {
                                                 return true;
                                             }
                                             Tracer.log("No 'only' predicate match, file is skipped.");
+                                            Tracer.pop();
                                             Tracer.pop();
                                             return false;
                                         })
@@ -265,10 +271,14 @@ class FileCollector {
                                                     }
                                                     Tracer.append(", predicate matched, file is skipped");
                                                     Tracer.pop();
+                                            Tracer.pop();
                                                     return false;
                                                 }
                                         )
-                                        .peek(s -> Tracer.pop())
+                                    .peek(s -> {
+                                        Tracer.pop();
+                                        Tracer.pop();
+                                    })
                                         .forEach(path -> sources.add(
                                                 new Source(this,
                                                         dir,

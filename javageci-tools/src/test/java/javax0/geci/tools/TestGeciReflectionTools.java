@@ -1,7 +1,11 @@
 package javax0.geci.tools;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import javax0.geci.api.Logger;
+import javax0.geci.api.Source;
+import javax0.geci.tools.basepackage.childpackage.ChildClass;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
@@ -11,12 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import javax0.geci.api.Logger;
-import javax0.geci.api.Source;
-import javax0.geci.tools.basepackage.childpackage.ChildClass;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TestGeciReflectionTools {
     @javax0.geci.annotations.Geci("aaa a='b' b='c' c='d' a$='dollared' b3='bthree' _='-'")
@@ -30,6 +31,18 @@ public class TestGeciReflectionTools {
 
     private static java.util.Map.Entry<? extends String, ? super Integer>[] m2() {
         return null;
+    }
+
+    @Test
+    void testInvokeOnExistingMethod() throws Exception {
+        final var tempi = new Template(Map.of());
+        // snippet Geci_GeciReflectionTools_invoke_sample
+        String resolver = (String) GeciReflectionTools
+            .invoke("resolve")
+            .on(tempi)
+            .types(String.class)
+            .args("this is a template test with no parameters");
+        // end snippet
     }
 
     @Test

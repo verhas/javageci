@@ -108,7 +108,11 @@ public class GeciReflectionTools {
      * <p>For example:</p>
      *
      * <!-- snip Geci_GeciReflectionTools_invoke_sample trim="to=0" -->
-     * GeciReflectionTools.invoke("phase").on(builder).types(int.class).args(phaseCounter++);
+     * String resolver = (String) GeciReflectionTools
+     *     .invoke("resolve")
+     *     .on(tempi)
+     *     .types(String.class)
+     *     .args("this is a template test with no parameters");
      * <!-- end snip -->
      *
      * @param methodName the name of the method to invoke

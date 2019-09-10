@@ -30,10 +30,10 @@ class TestGenerateJavageciDocumentation {
                 .source("..", ".")
                 .ignoreBinary()
                 .ignore(
-                    "\\.git",
+                    "\\.git", "\\.idea", "\\.iml$",
                     "target")
                 .log(Geci.MODIFIED)
-                .register(Register.register().ordered().fileExtensions("md","java").allSnippetGenerators())
+                .register(Register.register().ordered().fileExtensions("md", "java").allSnippetGenerators())
                 .splitHelper("md", new MarkdownSegmentSplitHelper())
                 .splitHelper("java", new JavaDocSegmentSplitHelper())
                 .generate(),
