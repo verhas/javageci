@@ -33,14 +33,7 @@ class TestGenerateJavageciDocumentation {
                     "\\.git",
                     "target")
                 .log(Geci.MODIFIED)
-                .orderedRegister(SnippetCollector.builder(),
-                    SnippetAppender.builder(),
-                    SnippetRegex.builder(),
-                    SnippetTrim.builder(),
-                    SnippetNumberer.builder(),
-                    SnipetLineSkipper.builder(),
-                    MarkdownCodeInserter.builder(),
-                    JavaDocSnippetInserter.builder())
+                .register(Register.register().ordered().fileExtensions("md","java").allSnippetGenerators())
                 .splitHelper("md", new MarkdownSegmentSplitHelper())
                 .splitHelper("java", new JavaDocSegmentSplitHelper())
                 .generate(),

@@ -105,10 +105,10 @@ public class GeciReflectionTools {
      *    invoke(methodName).on(targetObject).types(argument classes listed).args(arguments listed);
      * }</pre>
      *
-     * <p>For exmaple:</p>
+     * <p>For example:</p>
      *
-     * <!-- snip Geci_GeciReflectionTools_invoke_sample -->
-     *     TODO fix the code to create here the JAVADOC
+     * <!-- snip Geci_GeciReflectionTools_invoke_sample trim="to=0" -->
+     * GeciReflectionTools.invoke("phase").on(builder).types(int.class).args(phaseCounter++);
      * <!-- end snip -->
      *
      * @param methodName the name of the method to invoke

@@ -27,7 +27,7 @@ public class StringLiteral implements LexEater {
         if (sb.length() == 0 || sb.charAt(0) != enclosing) {
             return null;
         }
-        final StringBuilder output = createOutput(sb, STRING);
+        final var output = createOutput(sb, STRING);
         sb.deleteCharAt(0);
         while (sb.length() > 0 && sb.charAt(0) != enclosing) {
             final char ch = sb.charAt(0);

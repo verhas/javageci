@@ -1,6 +1,7 @@
 package javax0.geci.engine;
 
 import javax0.geci.api.Context;
+import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.api.*;
 import javax0.geci.javacomparator.Comparator;
@@ -45,8 +46,9 @@ public class Geci implements javax0.geci.api.Geci {
     private final Set<Predicate<Path>> ignores = new HashSet<>();
     private int whatToLog = MODIFIED & TOUCHED;
     private BiPredicate<List<String>, List<String>> sourceComparator = null;
-    private final BiPredicate<List<String>, List<String>> EQUALS_COMPARATOR = (orig, gen) -> !orig.equals(gen);
-    private final BiPredicate<List<String>, List<String>> JAVA_COMPARATOR = new Comparator();
+    public static final BiPredicate<List<String>, List<String>> EQUALS_COMPARATOR = (orig, gen) -> !orig.equals(gen);
+    public static final BiPredicate<List<String>, List<String>> JAVA_COMPARATOR = new Comparator();
+    public static final BiPredicate<List<String>, List<String>> JAVA_COMPARATOR_COMMENT = new Comparator().checkComments();
     private final Set<Source.Set> outputSet = new HashSet<>();
     private Source.Set lastSet = null;
     private boolean ignoreBinary = false;
@@ -194,22 +196,6 @@ public class Geci implements javax0.geci.api.Geci {
         return this;
     }
 
-
-    @Override
-    public Geci orderedRegister(GeneratorBuilder... generatorBuilders) {
-        for (final var builder : generatorBuilders) {
-            try {
-                // snippet Geci_GeciReflectionTools_invoke_sample
-                GeciReflectionTools.invoke("phase").on(builder).types(int.class).args(phaseCounter++);
-                // end snippet
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException nsme) {
-                throw new GeciException("Cannot register " + builder.getClass()
-                    + " ordered when there is no phase() method or it cannot be invoked.");
-            }
-        }
-        return (Geci) register(generatorBuilders);
-    }
-
     @Override
     public Geci register(Generator... generatorArr) {
         Collections.addAll(generators, generatorArr);
@@ -297,7 +283,11 @@ public class Geci implements javax0.geci.api.Geci {
     private BiPredicate<List<String>, List<String>> getSourceComparator(Source source) {
         if (sourceComparator == null) {
             if (source.getAbsoluteFile().endsWith(".java")) {
-                return JAVA_COMPARATOR;
+                if (isCommentTouched(source)) {
+                    return JAVA_COMPARATOR_COMMENT;
+                } else {
+                    return JAVA_COMPARATOR;
+                }
             } else {
                 return EQUALS_COMPARATOR;
             }
@@ -306,6 +296,14 @@ public class Geci implements javax0.geci.api.Geci {
         }
     }
 
+
+    private static boolean isCommentTouched(final Source source) {
+        if (source instanceof javax0.geci.engine.Source) {
+            final var src = (javax0.geci.engine.Source) source;
+            return (src.getTouchBits() & Segment.COMMENT_TOUCH) > 0;
+        }
+        return false;
+    }
 
     @Override
     public Geci comparator(BiPredicate<List<String>, List<String>> sourceComparator) {

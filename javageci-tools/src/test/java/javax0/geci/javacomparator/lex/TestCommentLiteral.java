@@ -9,23 +9,27 @@ public class TestCommentLiteral {
         return new StringBuilder(s);
     }
 
+    private static void testAndAssert(String comment, String expected, String ...rest){
+        final var sut = new CommentLiteral();
+        final var sb = comment(comment);
+        final var result = sut.apply(sb);
+        Assertions.assertEquals(result.type, LexicalElement.Type.COMMENT);
+        Assertions.assertEquals(expected,result.lexeme);
+        if( rest.length == 1) {
+            Assertions.assertEquals(rest[0], sb.toString());
+        }else {
+            Assertions.assertEquals("", sb.toString());
+        }
+
+    }
+
     @Test
     void testGoodComments() {
-        final var sut = new CommentLiteral();
-        StringBuilder sb;
-        sb = comment("/* vouw */");
-        Assertions.assertEquals(LexicalElement.IGNORED,sut.apply(sb));
-        sb = comment("/* vo\nuw */");
-        Assertions.assertEquals(LexicalElement.IGNORED,sut.apply(sb));
-        Assertions.assertEquals("", sb.toString());
-        sb = comment("/** vouw */");
-        Assertions.assertEquals(LexicalElement.IGNORED,sut.apply(sb));
-        Assertions.assertEquals("", sb.toString());
-        sb = comment("// vouw */");
-        Assertions.assertEquals(LexicalElement.IGNORED,sut.apply(sb));
-        Assertions.assertEquals("", sb.toString());
-        sb = comment("// vouw\n");
-        Assertions.assertEquals(LexicalElement.IGNORED,sut.apply(sb));
-        Assertions.assertEquals("\n", sb.toString());
+
+        testAndAssert("// vouw\n"," vouw","\n");
+        testAndAssert("/* vouw */"," vouw ");
+        testAndAssert("/* vo\nuw */"," vo\nuw ");
+        testAndAssert("/** vouw */","* vouw ");
+        testAndAssert("// vouw */"," vouw */");
     }
 }

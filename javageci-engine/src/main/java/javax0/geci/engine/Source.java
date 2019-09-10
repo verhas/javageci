@@ -26,6 +26,7 @@ public class Source implements javax0.geci.api.Source {
     boolean inMemory = false;
     private Segment globalSegment = null;
     private boolean touched = false;
+    private long touchBits = 0;
     boolean allowDefaultSegment = false;
     boolean isBinary = false;
 
@@ -70,16 +71,23 @@ public class Source implements javax0.geci.api.Source {
     }
 
     /**
-     * A source is touched if the generator was writing to it. It is even touched if the generator was writing the same
-     * content to it what there was originally. This flag is used to identify the situation when a generator does not
-     * touch any source When a generator is executed and does not touch any source it throws an exception because it
-     * certainly means that there is a configuration error. Either it is supposed to touch something or it should
-     * not be executed, the test should just be disabled.
+     * A source is touched if the generator was writing to it. It is
+     * even touched if the generator was writing the same content to it
+     * what there was originally. This flag is used to identify the
+     * situation when a generator does not touch any source When a
+     * generator is executed and does not touch any source it throws an
+     * exception because it certainly means that there is a
+     * configuration error. Either it is supposed to touch something or
+     * it should not be executed, the test should just be disabled.
      *
      * @return true when the source was touched
      */
     boolean isTouched() {
         return touched;
+    }
+
+    long getTouchBits(){
+        return touchBits;
     }
 
     @Override
@@ -293,7 +301,8 @@ public class Source implements javax0.geci.api.Source {
             for (var entry : segments.entrySet()) {
                 touched = true;
                 var id = entry.getKey();
-                var segment = entry.getValue();
+                Segment segment = entry.getValue();
+                touchBits |= segment.touch(0);
                 var segmentLocation = findSegment(id);
                 if (segmentLocation == null) {
                     segmentLocation = findDefaultSegment();

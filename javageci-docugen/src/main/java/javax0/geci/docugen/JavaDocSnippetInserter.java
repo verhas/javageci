@@ -4,6 +4,7 @@ import javax0.geci.annotations.Geci;
 import javax0.geci.api.CompoundParams;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
+import javax0.geci.tools.Tracer;
 
 @Geci("configBuilder localConfigMethod=''")
 public class JavaDocSnippetInserter extends AbstractSnippeter implements NonConfigurable {
@@ -12,13 +13,23 @@ public class JavaDocSnippetInserter extends AbstractSnippeter implements NonConf
     }
 
 
-    private JavaDocSnippetInserter(){
+    private JavaDocSnippetInserter() {
         new Builder().files("\\.java$");
     }
 
     @Override
     public void modify(Source source, Segment segment, Snippet snippet, CompoundParams params) {
-        snippet.lines().forEach(line -> segment.write("* " + line));
+        try (final var tracer1 = Tracer.push("JavaDocInsert", "inserting lines")) {
+            Tracer.log("source",source.getAbsoluteFile());
+            Tracer.log("snippet",snippet.name());
+            try (final var tracer2 = Tracer.push("lines")) {
+                snippet.lines().forEach(line -> {
+                    Tracer.log("line", line);
+                    segment.write("* " + line);
+                });
+                segment.touch(Segment.COMMENT_TOUCH);
+            }
+        }
     }
 
     /**

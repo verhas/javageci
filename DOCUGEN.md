@@ -196,14 +196,7 @@ Assertions.assertFalse(
             "\\.git",
             "target")
         .log(Geci.MODIFIED)
-        .orderedRegister(SnippetCollector.builder(),
-            SnippetAppender.builder(),
-            SnippetRegex.builder(),
-            SnippetTrim.builder(),
-            SnippetNumberer.builder(),
-            SnipetLineSkipper.builder(),
-            MarkdownCodeInserter.builder(),
-            JavaDocSnippetInserter.builder())
+        .register(Register.register().ordered().fileExtensions("md","java").allSnippetGenerators())
         .splitHelper("md", new MarkdownSegmentSplitHelper())
         .splitHelper("java", new JavaDocSegmentSplitHelper())
         .generate(),
@@ -406,18 +399,11 @@ to create this documentation:
 19.             "\\.git",
 20.             "target")
 21.         .log(Geci.MODIFIED)
-22.         .orderedRegister(SnippetCollector.builder(),
-23.             SnippetAppender.builder(),
-24.             SnippetRegex.builder(),
-25.             SnippetTrim.builder(),
-26.             SnippetNumberer.builder(),
-27.             SnipetLineSkipper.builder(),
-28.             MarkdownCodeInserter.builder(),
-29.             JavaDocSnippetInserter.builder())
-30.         .splitHelper("md", new MarkdownSegmentSplitHelper())
-31.         .splitHelper("java", new JavaDocSegmentSplitHelper())
-32.         .generate(),
-33.     geci.failed());
+22.         .register(Register.register().ordered().fileExtensions("md","java").allSnippetGenerators())
+23.         .splitHelper("md", new MarkdownSegmentSplitHelper())
+24.         .splitHelper("java", new JavaDocSegmentSplitHelper())
+25.         .generate(),
+26.     geci.failed());
 ```
 
 we can have a look at line 14. It registers the

@@ -17,6 +17,7 @@ public class Segment implements javax0.geci.api.Segment {
     private final Map<String, String> params = new HashMap<>();
     private final CompoundParams cparams;
     private final List<String> originals;
+    private long touchBits = 0;
 
     public Segment(int tabStop) {
         this.openingTabStop = tabStop;
@@ -30,6 +31,11 @@ public class Segment implements javax0.geci.api.Segment {
         this.tabStop = tabStop;
         this.cparams = cparams;
         this.originals = originals;
+    }
+
+    @Override
+    public long touch(long value){
+        return touchBits |= value;
     }
 
     @Override
@@ -67,11 +73,11 @@ public class Segment implements javax0.geci.api.Segment {
 
     @Override
     public void traceLines() {
-        try (final var pos = Tracer.push("SegmentContent",null)) {
-            try (final var lines = Tracer.push("Originals",null)) {
+        try (final var pos = Tracer.push("SegmentContent", null)) {
+            try (final var lines = Tracer.push("Originals", null)) {
                 originals.forEach(line -> Tracer.log("Line", line));
             }
-            try (final var linesPos = Tracer.push("Updated",null)) {
+            try (final var linesPos = Tracer.push("Updated", null)) {
                 lines.forEach(line -> Tracer.log("Line", line));
             }
         }

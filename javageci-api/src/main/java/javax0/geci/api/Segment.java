@@ -11,6 +11,56 @@ import java.util.Set;
  * segment.
  */
 public interface Segment extends AutoCloseable {
+    long COMMENT_TOUCH = 0x00000001L;
+
+    /**
+     * <p>A {@code Source} object, as implemented in the engine (not in
+     * the API though) is touched when a generator has written anything
+     * into any segment. It is touched even if the generator was writing
+     * the same code as the already existing text in the segment. This
+     * is discovered during source consolidation and it is used to check
+     * that the generators have touched at least one source object. If
+     * no generator touched none of the source objects then there is no
+     * point to run the generators, and this is probably a configuration
+     * error. (Unless the generator implements the interface {@link
+     * Distant}.)</p>
+     *
+     * <p>Some generators do certain things that may need "special
+     * touch". The generator can call this method on a segment to signal
+     * that it was touching the text of the segment in a special
+     * way. There are 64bits in a long to signal the different ways.</p>
+     *
+     * <p>At the introduction of this feature there is only one bit used
+     * and there is a constant {@link #COMMENT_TOUCH} defined for this
+     * type of touch. The generators may call this method passing this
+     * constant to signal that the generator was writing some text into
+     * a comment into the Java code.</p>
+     *
+     * <p>Later, when the framework checks if the source is intact or
+     * was modified looks at this bit. If any of the generators
+     * signalled that it touched the comments then the comparison will
+     * take comment literals into account. If the generators did not
+     * touch the comments then the comments are ignored when the change
+     * is asserted.</p>
+     *
+     * <p>When a source object is consolidated (the final set of lines
+     * is generated from the original lines and from the contents of the
+     * segments) then the source inherits the special touch bits of the
+     * segments. Any of the 64bits will be set in the source object if
+     * that bit is set in any of the segments in the source object.</p>
+     *
+     * <p>The generators should use this method to set a certain bit in
+     * the segment special touch bits. There is no possibility to reset
+     * a bit.</p>
+     *
+     * @param touchValue is a long value with certain bits set. The
+     *                   touch bits will be OR-ed together with the
+     *                   already set bits. If you just want to query the
+     *                   current bit values then pass {@code 0} as
+     *                   argument.
+     * @return the new touch bits value.
+     */
+    long touch(long touchValue);
 
     /**
      * Get the lines of the segment as it is at the moment. This is the

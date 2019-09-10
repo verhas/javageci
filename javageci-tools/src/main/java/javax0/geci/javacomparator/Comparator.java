@@ -1,5 +1,6 @@
 package javax0.geci.javacomparator;
 
+import javax0.geci.javacomparator.lex.CommentLiteral;
 import javax0.geci.javacomparator.lex.Lexer;
 import javax0.geci.javacomparator.lex.LexicalElement;
 
@@ -22,9 +23,16 @@ import java.util.function.BiPredicate;
  * and/or difference is only in content of comments, or comments are
  * missing or new comments are added, and/or numbers are expressed
  * differently but they still have the same value.
- *
  */
 public class Comparator implements BiPredicate<List<String>, List<String>> {
+    private boolean checkComments = false;
+
+
+    public Comparator checkComments(){
+        checkComments = true;
+        return this;
+    }
+
     /**
      * Evaluates this predicate on the given arguments.
      *
@@ -43,8 +51,10 @@ public class Comparator implements BiPredicate<List<String>, List<String>> {
             return true;
         }
         for (int i = 0; i < elements1.length; i++) {
-            if (!elements1[i].equals(elements2[i])) {
-                return true;
+            if ((checkComments || elements1[i].type != LexicalElement.Type.COMMENT)) {
+                if (!elements1[i].equals(elements2[i])) {
+                    return true;
+                }
             }
         }
         return false;
