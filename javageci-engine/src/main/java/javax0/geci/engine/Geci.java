@@ -1,13 +1,8 @@
 package javax0.geci.engine;
 
 import javax0.geci.api.Context;
-import javax0.geci.api.Distant;
-import javax0.geci.api.GeciException;
-import javax0.geci.api.Generator;
-import javax0.geci.api.GeneratorBuilder;
-import javax0.geci.api.GlobalGenerator;
-import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.api.Source;
+import javax0.geci.api.*;
 import javax0.geci.javacomparator.Comparator;
 import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
@@ -19,14 +14,7 @@ import javax0.geci.util.DirectoryLocator;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -154,8 +142,8 @@ public class Geci implements javax0.geci.api.Geci {
         sb.append(FAILED).append('\n');
         sb.append('\n');
         sb.append(String.format("The file%s that %s modified:",
-                modifiedSources.size() > 1 ? "s" : "",
-                modifiedSources.size() > 1 ? "were" : "was")).append('\n');
+            modifiedSources.size() > 1 ? "s" : "",
+            modifiedSources.size() > 1 ? "were" : "was")).append('\n');
         for (final var source : modifiedSources) {
             sb.append(source.getAbsoluteFile()).append('\n');
         }
@@ -231,9 +219,9 @@ public class Geci implements javax0.geci.api.Geci {
     @Override
     public Geci only(String... patterns) {
         Collections.addAll(this.onlys,
-                Arrays.stream(patterns)
-                        .map(PatternPredicate::new)
-                        .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
+            Arrays.stream(patterns)
+                .map(PatternPredicate::new)
+                .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
     }
 
@@ -259,9 +247,9 @@ public class Geci implements javax0.geci.api.Geci {
 
     public Geci ignore(String... patterns) {
         Collections.addAll(this.ignores,
-                Arrays.stream(patterns)
-                        .map(PatternPredicate::new)
-                        .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
+            Arrays.stream(patterns)
+                .map(PatternPredicate::new)
+                .toArray((IntFunction<Predicate<Path>[]>) Predicate[]::new));
         return this;
     }
 
@@ -335,7 +323,7 @@ public class Geci implements javax0.geci.api.Geci {
             final var set = directory.getKey();
             final var locator = directory.getValue();
             Tracer.log(set.toString() + " set with alternative directory locations ["
-                    + locator.alternatives().collect(Collectors.joining(",")) + "]");
+                + locator.alternatives().collect(Collectors.joining(",")) + "]");
         }
         Tracer.pop();
     }
@@ -353,9 +341,9 @@ public class Geci implements javax0.geci.api.Geci {
             final var exceptions = new ArrayList<String>();
             injectContextIntoGenerators();
             final var phases = generators.stream()
-                    .mapToInt(Generator::phases)
-                    .max()
-                    .orElse(1);
+                .mapToInt(Generator::phases)
+                .max()
+                .orElse(1);
             Tracer.log("There will be " + phases + " phases.");
             final FileCollector collector;
             if (directories.isEmpty()) {
@@ -449,20 +437,20 @@ public class Geci implements javax0.geci.api.Geci {
      * @throws IOException when some file cannot be written
      */
     private boolean sourcesModifiedAndSave(FileCollector collector) throws IOException {
-        try(final var pos = Tracer.push("Save",null)) {
+        try (final var pos = Tracer.push("Save", null)) {
             var generated = false;
             var allSources = Stream.concat(
-                    collector.getSources().stream(),
-                    collector.getNewSources().stream()
+                collector.getSources().stream(),
+                collector.getNewSources().stream()
             ).collect(Collectors.toSet());
             for (var source : allSources) {
                 if (source.isTouched() && source.isModified(getSourceComparator(source))) {
-                    Tracer.log("SaveSource",source.getAbsoluteFile());
+                    Tracer.log("SaveSource", source.getAbsoluteFile());
                     source.save();
                     modifiedSources.add(source);
                     generated = true;
-                }else{
-                    Tracer.log("SourceUnchanged",source.getAbsoluteFile());
+                } else {
+                    Tracer.log("SourceUnchanged", source.getAbsoluteFile());
                 }
             }
             for (var source : Stream.concat(collector.getSources().stream(), collector.getNewSources().stream()).collect(Collectors.toSet())) {
@@ -508,14 +496,14 @@ public class Geci implements javax0.geci.api.Geci {
                 for (var source : collector.getSources()) {
                     source.consolidate();
                     touched = touched || source.isTouched();
-                    Tracer.log("Source", (source.isTouched() ? "[TOUCHED]" : "") +source.getAbsoluteFile());
+                    Tracer.log("Source", (source.isTouched() ? "[TOUCHED]" : "") + source.getAbsoluteFile());
                 }
             }
             try (final var pos2 = Tracer.push("NewSources", null)) {
                 for (var source : collector.getNewSources()) {
                     source.consolidate();
                     touched = touched || source.isTouched();
-                    Tracer.log("Source", (source.isTouched() ? "[TOUCHED]" : "") +source.getAbsoluteFile());
+                    Tracer.log("Source", (source.isTouched() ? "[TOUCHED]" : "") + source.getAbsoluteFile());
                 }
             }
             Tracer.log("Result", "some sources are " + (touched ? "touched" : "virgin"));
@@ -531,6 +519,7 @@ public class Geci implements javax0.geci.api.Geci {
     }
 
     public Geci context(Context context) {
+        Tracer.log("Setting context for Geci engine");
         this.context = context;
         return this;
     }

@@ -338,6 +338,10 @@ public class Tracer implements AutoCloseable {
     }
 
     private static void dumpXML(Tracer node, StringBuilder sb, int tab) {
+        if( tab > 200 ){
+            sb.append(" ".repeat(tab)).append("<FATAL message=\"Nesting of trace messages is too deep, probably internal error.\"/>");
+            return;
+        }
         final String messageTag = node.message != null ? " msg=\"" + escape(node.message) + "\"" : "";
         if (node.children.isEmpty()) {
             if (node.cData == null) {
@@ -355,7 +359,10 @@ public class Tracer implements AutoCloseable {
     }
 
     private static String escape(String s) {
-        return s.replace("\"", "&quot;");
+        return s.replace("&","&amp;")
+            .replace("<","&lt;")
+            .replace(">","&gt;")
+            .replace("\"", "&quot;");
     }
 
 

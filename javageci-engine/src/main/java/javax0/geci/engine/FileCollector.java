@@ -247,6 +247,7 @@ class FileCollector {
                                                 return true;
                                             }
                                             Tracer.log("No 'only' predicate match, file is skipped.");
+                                            Tracer.pop();
                                             return false;
                                         })
                                         .peek(s -> Tracer.pop())
@@ -263,6 +264,7 @@ class FileCollector {
                                                         return true;
                                                     }
                                                     Tracer.append(", predicate matched, file is skipped");
+                                                    Tracer.pop();
                                                     return false;
                                                 }
                                         )

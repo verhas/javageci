@@ -2,6 +2,7 @@ package javax0.geci.docugen;
 
 import javax0.geci.annotations.Geci;
 import javax0.geci.api.*;
+import javax0.geci.tools.Tracer;
 
 import java.util.regex.Pattern;
 
@@ -41,32 +42,44 @@ public class SnippetCollector extends AbstractSnippeter implements Distant {
 
     @Override
     protected void modify(Source source, Segment segment, Snippet snippet, CompoundParams params) throws Exception {
-        throw new IllegalArgumentException("This method should never be invoked");
+        final var iae = new IllegalArgumentException("This method should never be invoked");
+        Tracer.log(iae);
+        throw iae;
     }
 
     //snippet SnippetCollectorProcessExCode skipper="true"
     @Override
     public void processEx(Source source) throws Exception {
+        Tracer.log("SnippetCollector", "Starting snippet collector for source '" + source.getAbsoluteFile() + "'");
         SnippetBuilder builder = null;
-        for (final var line : source.getLines()) {
-            final var starter = config.snippetStart.matcher(line);
-            if (builder == null && starter.find()) {
-                builder = new SnippetBuilder(starter.group(1));
-            } else if (builder != null) {
-                final var stopper = config.snippetEnd.matcher(line);
-                // skip
-                if (stopper.find()) {
-                    snippets.put(builder.snippetName(), builder.build(),source);
-                    builder = null;
+        try (final var tracer = Tracer.push("Lines", "Collecting from source lines")) {
+            for (final var line : source.getLines()) {
+                Tracer.log("line", line);
+                final var starter = config.snippetStart.matcher(line);
+                if (builder == null && starter.find()) {
+                    builder = new SnippetBuilder(starter.group(1));
+                    Tracer.prepend("START[" +builder.snippetName() + "]:");
+                } else if (builder != null) {
+                    final var stopper = config.snippetEnd.matcher(line);
+                    // skip
+                    if (stopper.find()) {
+                        Tracer.prepend( "END["+builder.snippetName()+"]:");
+                        snippets.put(builder.snippetName(), builder.build(), source);
+                        builder = null;
+                    } else {
+                        Tracer.prepend("SNIPPET:");
+                        builder.add(line);
+                    }
+                    // skip end
                 } else {
-                    builder.add(line);
+                    Tracer.prepend( "IGNORE:");
                 }
-                // skip end
             }
         }
         if (builder != null) {
             throw new GeciException("Snippet " + builder.snippetName() + " was not finished before end of the file " + source.getAbsoluteFile());
         }
+        Tracer.log("SnippetCollector", "Finishing snippet collector for source '" + source.getAbsoluteFile() + "'");
     }
     //end snippet
 
@@ -74,11 +87,12 @@ public class SnippetCollector extends AbstractSnippeter implements Distant {
     private String configuredMnemonic = "snippetCollector";
 
     @Override
-    public String mnemonic(){
+    public String mnemonic() {
         return configuredMnemonic;
     }
 
     private final Config config = new Config();
+
     public static SnippetCollector.Builder builder() {
         return new SnippetCollector().new Builder();
     }
