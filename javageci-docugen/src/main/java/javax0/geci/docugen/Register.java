@@ -107,7 +107,7 @@ public class Register {
      * <p>The generators for which the builders are used in the order as they will be in the output array:</p>
      *
      * <ol>
-     * <!-- snip List_of_All_Generators_in_Register regex="replace='|::builder,|</li>|' replace='|^~s*|<li>|' escape='~'"-->
+     * <!-- snip List_of_All_Generators_in_Register regex="replace='|::builder,?|</li>|' replace='|^~s*|<li>|' escape='~'"-->
      * <li>SnippetCollector</li>
      * <li>SnippetAppender</li>
      * <li>SnippetRegex</li>
@@ -115,7 +115,7 @@ public class Register {
      * <li>SnippetNumberer</li>
      * <li>SnipetLineSkipper</li>
      * <li>MarkdownCodeInserter</li>
-     * <li>JavaDocSnippetInserter::builder
+     * <li>JavaDocSnippetInserter</li>
      * <!-- end snip -->
      * </ol>
      *

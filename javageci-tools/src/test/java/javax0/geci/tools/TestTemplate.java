@@ -22,29 +22,37 @@ public class TestTemplate {
     @Test
     @DisplayName("When there are params they are replaced")
     void goodTest(){
+        // snippet Template_test_01
         final var sut = new Template(Map.of("a","b", "huhh","spooky"));
             Assertions.assertEquals("this is a spooky baboon", sut.resolve("this is a {{huhh}} {{a}}a{{a}}oon"));
+        // end snippet
     }
 
     @Test
     @DisplayName("Parameters replaces also at the start")
     void startTest(){
-        final var sut = new Template(Map.of("a","b", "huhh","spooky"));
+        // snippet Template_test_02
+        final var sut = new Template(Map.of("a", "b", "huhh", "spooky"));
         Assertions.assertEquals("bthis is {{a...}} spooky bab{{oon", sut.resolve("{{a}}this is {{a...}} {{huhh}} {{a}}a{{a}}{{oon"));
+        // end snippet
     }
 
     @Test
     @DisplayName("When there are params they are replaced but not the undefined")
     void goodTestStill(){
+        // snippet Template_test_03
         final var sut = new Template(Map.of("a","b", "huhh","spooky"));
         Assertions.assertEquals("this is {{a...}} spooky baboon", sut.resolve("this is {{a...}} {{huhh}} {{a}}a{{a}}oon"));
+        // end snippet
     }
 
     @Test
     @DisplayName("Unterminated placeholders are handled gracefully")
     void unterminatedTest(){
+        // snippet Template_test_04
         final var sut = new Template(Map.of("a","b", "huhh","spooky"));
         Assertions.assertEquals("this is {{a...}} spooky bab{{oon", sut.resolve("this is {{a...}} {{huhh}} {{a}}a{{a}}{{oon"));
+        // end snippet
     }
 
 }
