@@ -1,0 +1,65 @@
+= Using Java::Geci
+Peter Verhas <peter@verhas.com>
+v1.0, 2019-09-11
+:doctype: book
+
+== Introduction, What is Java::Geci
+
+****
+
+In this chapter we will talk about what Java::Geci really is without too much background or technical details. After
+reading this chapter you will understand the basic architecture, where Java::Geci runs in the build process and what are
+the advantages using it compared to other code generation approaches.
+
+****
+
+include::introduction.adoc[]
+
+== Code Generation 123: why, how, when
+
+****
+
+In this chapter we will discuss why source code generation is needed at all in modern programming. After reading this
+chapter you will understand why source code generation is needed, why it cannot be avoided and this will also make it
+clearer how and when to generate code and why Java::Geci is doing what it does.
+
+****
+
+include::whyhowwhen.adoc[]
+
+== Using Readily Available Generators
+
+****
+
+In this chapter we will discuss the usage of the generators that are shipped readily available with the Java::Geci
+framework. After reading this chapter you will know how to invoke a generator when it is used, how the configuration of
+generators work. This will also present a solid knowledge base for the topic when you will learn how to write your own
+code generator classes.
+
+****
+
+include::usingreadygens.adoc[]
+
+== Creating a Code Generators
+
+****
+
+In this chapter we will discuss the different possibilities to create code generators. After reading this chapter
+you will be able to create code generators that serve the purpose of your domain specific needs.
+
+****
+
+include::generategenerator.adoc[]
+
+== Using the Snippeters
+
+****
+
+In this chapter we will discuss the snippet handling code generators that help to reduce the redundancy in the
+documentation and keep the documentation up-to-date automatically. After reading this chapter you will be able to use
+the snippet handlers to create documentation of your programs that contain automatically updated code snippets and other
+information that can be automatically extracted from the source code.
+
+****
+
+include::snippeters.adoc[]
