@@ -188,3 +188,14 @@ level, on the other hand, this is not acceptable. If you have the choice to gene
 to choose the latter. You must learn and develop yourself so that you can develop better code.
 
 == What Redundancy to Attack with Java::Geci?
+
+As we said earlier some of the redundancy levels should not be, or they cannot be removed removed. They serve their
+purpose and they are good.
+
+1. __Natural,__
+2. __Language Intrinsic,__ and
+3. __Structural__ are good redundancies, and are not to be managed.
+4. **Domain induced** and
+5. **Language Evolution** are good candidates for source code generation.
+6. __Programmer induced__ must be handled, but with education and not using code generation if possible.
+
