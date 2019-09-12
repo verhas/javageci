@@ -227,7 +227,51 @@ There are many code generators which are addressing domain induced redundancy. T
 before mentioned ANTLR syntax analysis generator. It generates a parser out of a syntax definition. This is a special
 domain: language analysis.
 
+Another example is Mapstruct that generates code to move data between Java beans. This is a task, which is not domain
+specific in the sense that it is not specific to banking, finance, telecom or some other industry. On the other hand
+this task is needed in many enterprise application.
 
+There are many other domain specific code generators and they are all developed from scratch. There is no code
+generation framework supporting the easy development of source generators. This is the niche that Java::Geci fills.
+
+== What is Java::Geci
+
+First of all Java::Geci is a framework that can accomodate the development of source code generators. It provides services
+to perform tasks that are common for all generators. These include
+
+* scanning the directories and discovering the souce code files,
+* reading them into memory,
+* locating the segment where the generated source code is to be inserted,
+* asserting that there was change in the generated code,
+* writing back new generated code if different from already existing one,
+* providing templating and formatting tools to create program source code.
+
+These services support source code generation in general and not only domain specific code generators. The real strength
+of Java::Geci is when you need a domain specific source code generation. The simple reason is that these do not exist
+and you cannot expect IDEs to support a specific domain need with code generation. On the other hand there are also
+advantages that may favor Java::Geci over other code generations in case of language evolution induced source code
+generation needs. For this reason there are some sample code generators in the ``core`` module of the framework.
+
+These include (list may not be up-to-date):
+
+* builder pattern
+* equals and hashCode
+* setter and getter
+* mapper
+* fluent API
+
+generators. There are two sample generators that are domain specific. These are the
+
+* annotation builder
+* configuration
+
+source code generators. The domain is source code generation. First one generates an annotation interface that meets
+the configurability of a Geci generator. The second generates configuration management code based on the list of
+configuration parameters of a generator. (The list is given by the fields of a ``Configuration`` static inner class
+in the generator class.)
+
+Although these generators are readily available, highly configurable and not only demo generators their main purpose is
+to demonstrate the way and the ease of source code generator development using Java::Geci.
 
 
 
