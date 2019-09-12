@@ -190,12 +190,50 @@ to choose the latter. You must learn and develop yourself so that you can develo
 == What Redundancy to Attack with Java::Geci?
 
 As we said earlier some of the redundancy levels should not be, or they cannot be removed removed. They serve their
-purpose and they are good.
+purpose and they are good that way.
+
+.good redundancies, and are not to be managed
 
 1. __Natural,__
 2. __Language Intrinsic,__ and
-3. __Structural__ are good redundancies, and are not to be managed.
-4. **Domain induced** and
-5. **Language Evolution** are good candidates for source code generation.
-6. __Programmer induced__ must be handled, but with education and not using code generation if possible.
+3. __Structural__
+
+---
+[start=4]
+
+.good candidates for source code generation
+
+1. **Domain induced** and
+2. **Language Evolution**
+
+---
+[start=6]
+
+.must be handled, but with education and not using code generation if
+.possible
+
+6. __Programmer induced__
+
+If we look at the language evolution and domain induced redundancy we
+can see that there are many tools that already address these issues
+using code generation.
+
+If you look at what Lombok does you recognize that all the features
+introduced by it are addressing a redundancy that comes from the lagging
+language evolution. ``@EqualsAndHashCode`` generates `equals()`` and
+``hashCode()``.``@Getter/@Setter`` generates getters and setters.
+``@Cleanup`` does something that is now introduced to the language as
+try-with-resources.
+
+The different versions of IDEs also support similar code generation.
+These all address language evolution caused needs.
+
+There are many code generators which are addressing domain induced
+redundancy. The most well known, perhaps, is the before mentioned ANTLR
+syntax analysis generator. It generates a parser out of a syntax
+definition. This is a special domain: language analysis.
+
+
+
+
 
