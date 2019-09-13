@@ -1,5 +1,3 @@
-:javageci_version: 1.3.0
-
 Java::Geci is a source code generation framework but it comes with some
 readily available code generators. The main purpose of these generators
 is to be a showcase that demonstrate how you can create your own code
@@ -101,6 +99,7 @@ The use of these annotations is optional and you can totally avoid using
 annotations or you can use your own annotations. We will discuss this
 possibility later.
 
+[source,xml]
     <dependencies>
         <dependency>
             <groupId>com.javax0.geci</groupId>
@@ -117,8 +116,16 @@ possibility later.
         <dependency>
             <groupId>com.javax0.geci</groupId>
             <artifactId>javageci-annotation</artifactId>
+            <version>${javageci_version}</version>
         </dependency>
     </dependencies>
+
+Even though your code will use other modules, like the `api` module you
+do not need to have explicit dependency on it in the pom file, because
+these modules have a dependency on them.
+
+The different modules are released in synchron.
+
 
 === Configuring the framework
 

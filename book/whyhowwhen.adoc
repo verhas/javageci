@@ -271,7 +271,7 @@ that way.
 
 .must be handled, but with education and not using code generation if possible
 
-6. __Programmer induced__
+1. __Programmer induced__
 
 If we look at the language evolution and domain induced redundancy we
 can see that there are many tools that already address these issues

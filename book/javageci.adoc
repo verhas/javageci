@@ -2,6 +2,7 @@
 Peter Verhas <peter@verhas.com>
 v1.0, 2019-09-11
 :doctype: book
+:javageci_version: 1.3.0
 
 == Introduction, What is Java::Geci
 
