@@ -2,8 +2,6 @@ module geci.core {
     requires geci.api;
     requires geci.tools;
     requires geci.annotation;
-    requires jamal.engine;
-    requires jamal.api;
     requires geci.core.annotations;
 
     exports javax0.geci.factory;

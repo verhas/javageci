@@ -5,108 +5,136 @@ Like democracy according to Churchill.
 .Churchill (House of Commons, 11 November 1947)
 ====
 
-__"Many forms of Government have been tried, and will be tried in this world of sin and woe. No one pretends that
-democracy is perfect or all-wise. Indeed it has been said that democracy is the worst form of Government except for all
-those other forms that have been tried from time to time."__
+__"Many forms of Government have been tried, and will be tried in this
+world of sin and woe. No one pretends that democracy is perfect or
+all-wise. Indeed it has been said that democracy is the worst form of
+Government except for all those other forms that have been tried from
+time to time."__
 
 ====
 
-== What is Wrong with ...
+=== What is Wrong with ...
 
-When we do code generation we have to face that something is wrong, or at least something is not as perfect as ideally
-could be. The "something" that is not perfect can be
+When we do code generation we have to face that something is wrong, or
+at least something is not as perfect as ideally could be. The
+"something" that is not perfect can be
 
 * the programming language,
 * the framework we use or even
 * the programmer.
 
-Java does not support setters and getters the way as Swift, Kotlin, C#. We have to write them or we can have a generator
-that writes them for us. The generator can be the IDE built-in code that creates these methods when we press the
-appropriate key combinations or select the matching menu. It can be a tool, like Lombok or it can even be Java::Geci
-sample accessor generator.
+Java does not support setters and getters the way as Swift, Kotlin, C#.
+We have to write them or we can have a generator that writes them for
+us. The generator can be the IDE built-in code that creates these
+methods when we press the appropriate key combinations or select the
+matching menu. It can be a tool, like Lombok or it can even be
+Java::Geci sample accessor generator.
 
-The good news is that the language, Java will evolv and some time in the future we will have good setter and getter
-support, or we learn how to implement proper encapsulation and to use the open/close principle and thus to live without
-setters and getters. Until then we need the redundant setter and getter codes in our programs.
+The good news is that the language, Java will evolve and some time in
+the future we will have good setter and getter support, or we learn how
+to implement proper encapsulation and to use the open/close principle
+and thus to live without setters and getters. Until then we need the
+redundant setter and getter codes in our programs.
 
-The framework may require code generation. For exmple JAXB implementation Apache CXF will generate Java classes out of
-WSDL files. The bad news is that it is not likely that there will be a version of Java that will support on language
-level WSDL. Until then (a.k.a. forever) we need the redundant and long generated Java code that contains no more
-information than what is already there in a WSDL.
+The framework may require code generation. For exmple JAXB
+implementation Apache CXF will generate Java classes out of WSDL files.
+The bad news is that it is not likely that there will be a version of
+Java that will support on language level WSDL. Until then (a.k.a.
+forever) we need the redundant and long generated Java code that
+contains no more information than what is already there in a WSDL.
 
-Finally the programmer can also be sub-optimal. This is actually very likely. An optimal programmer, called a unicorn,
-or 10x developer or some other BS (barely standard) name is rare. The average programmer is ... surprise!! ... average.
-Average programmers can understand a certain complexity of program structures and if you want to create an application
-that will be maintained successfully by average programmers later on then you should not use "brilliant" code
-structures. Many times the best code will contain more or less (rather more than less) redundant, usually copy-paste
-code. Such a code in some situations can be generated.
+Finally the programmer can also be sub-optimal. This is actually very
+likely. An optimal programmer, called a unicorn, or 10x developer or
+some other BS (barely standard) name is rare. The average programmer is
+... surprise!! ... average. Average programmers can understand a certain
+complexity of program structures and if you want to create an
+application that will be maintained successfully by average programmers
+later on then you should not use "brilliant" code structures. Many times
+the best code will contain more or less (rather more than less)
+redundant, usually copy-paste code. Such a code in some situations can
+be generated.
 
 [NOTE]
 .Legend of the sub-par developer
 ====
 
-There was and application that needed different DTO objects to be converted to ``Map``s. The conversion was done
-implementing a `toMap()` and a `fromMap()` method in each class. This was manual work.
+There was and application that needed different DTO objects to be
+converted to ``Map``s. The conversion was done implementing a `toMap()`
+and a `fromMap()` method in each class. This was manual work.
 
-A clever developer being fed up creating the manual code in an error prone way created a utility that just did the
-conversion between any object and a `Map` back and forth using reflection. The solution was discussed by the development
-team and based on the suggestion of an even cleverer developer it was refused.
+A clever developer being fed up creating the manual code in an error
+prone way created a utility that just did the conversion between any
+object and a `Map` back and forth using reflection. The solution was
+discussed by the development team and based on the suggestion of an even
+cleverer developer it was refused.
 
-The even cleverer developer pointed out that the application using reflection was too complex and although most of the
-team was able to understand after the author of the code explained what the code does but a few years alter an average
-Joe/Jane will not be able. The project went on manually adding the fields to the `toMap()` and `fromMap()` methods. If
-only Java::Geci existed that time.
-
-====
-
-== The Root Cause of Wrong
-
-As we could see whatever was wrong, language, framework, programmer, the end was some redundant code. Not in the meaning
-as the WikiPedia page https://en.wikipedia.org/wiki/Redundant_code says:
+The even cleverer developer pointed out that the application using
+reflection was too complex and although most of the team was able to
+understand after the author of the code explained what the code does but
+a few years alter an average Joe/Jane will not be able. The project went
+on manually adding the fields to the `toMap()` and `fromMap()` methods.
+If only Java::Geci existed that time.
 
 ====
 
-In computer programming, redundant code is source code or compiled code in a computer program that is unnecessary, such
-as:
+=== The Root Cause of Wrong
 
-* recomputing a value that has previously been calculated[1] and is still available,
+As we could see whatever was wrong, language, framework, programmer, the
+end was some redundant code. Not in the meaning as the WikiPedia page
+https://en.wikipedia.org/wiki/Redundant_code says:
+
+====
+
+In computer programming, redundant code is source code or compiled code
+in a computer program that is unnecessary, such as:
+
+* recomputing a value that has previously been calculated[1] and is
+  still available,
 
 * code that is never executed (known as unreachable code),
 
-* code which is executed but has no external effect (e.g., does not change the output produced by a program; known as
-dead code).
+* code which is executed but has no external effect (e.g., does not
+  change the output produced by a program; known as dead code).
 
 ====
 
-This is the popular interpretation of redundant code. This interpretation does not fit our purpose. Setter and getters
-are not redundant in this sense. And still they are redundant in the sense that they are prorgam code that do not
-contain information that is not already there in the code. This is the information theory definition of redundancy. The
-other WikiPeadi page https://en.wikipedia.org/wiki/Redundancy_(information_theory) says:
+This is the popular interpretation of redundant code. This
+interpretation does not fit our purpose. Setter and getters are not
+redundant in this sense. And still they are redundant in the sense that
+they are prorgam code that do not contain information that is not
+already there in the code. This is the information theory definition of
+redundancy. The other WikiPeadi page
+https://en.wikipedia.org/wiki/Redundancy_(information_theory) says:
 
 .Do not read it!
 ====
 
-In Information theory, redundancy measures the fractional difference between the entropy H(X) of an ensemble X, and its
-maximum possible value log(|A pass:[<sub>X</sub>]|)
+In Information theory, redundancy measures the fractional difference
+between the entropy H(X) of an ensemble X, and its maximum possible
+value log(|A pass:[<sub>X</sub>]|)
 
 ====
 
-This definition is too theoretical and too complex. We cannot use it. Fortunately the definition continues and says:
+This definition is too theoretical and too complex. We cannot use it.
+Fortunately the definition continues and says:
 
 .Read this
 ====
 
-Informally, it is the amount of wasted "space" used to transmit certain data. Data compression is a way to reduce or
-eliminate unwanted redundancy, while checksums are a way of adding desired redundancy for purposes of error detection
-when communicating over a noisy channel of limited capacity.
+Informally, it is the amount of wasted "space" used to transmit certain
+data. Data compression is a way to reduce or eliminate unwanted
+redundancy, while checksums are a way of adding desired redundancy for
+purposes of error detection when communicating over a noisy channel of
+limited capacity.
 
 ====
 
 In short: __If it is redundant, it can be compressed.__
 
-Examining why a program can be compressed, for example using the the ZIP program (or using the jar Java command line
-utility, after all this is a book about a Java tool) then we can identify six different reasons and levels of
-redundancy:
+Examining why a program can be compressed, for example using the the ZIP
+program (or using the jar Java command line utility, after all this is a
+book about a Java tool) then we can identify six different reasons and
+levels of redundancy:
 
 1. Natural
 2. Language Intrinsic
@@ -115,82 +143,114 @@ redundancy:
 5. Language Evolution
 6. Programmer induced
 
-In the following sections we will examine these different redundancy levels. It will help us understand what type of
-problems can be solved using code generation with Java::Geci.
+In the following sections we will examine these different redundancy
+levels. It will help us understand what type of problems can be solved
+using code generation with Java::Geci.
 
-=== Natural
+==== Natural
 
-This is the redundancy of the English language or just any other natural language. This redundancy is natural and we got
-used to it. The redundancy evolved with the language and it was needed to help the understanding in a noisy environment.
-We do not want to eliminate this redundancy, because if we do we may end up reading some binary code. For most of us,
-this is not really appealing. This is how human and programmer brain works.
+This is the redundancy of the English language or just any other natural
+language. This redundancy is natural and we got used to it. The
+redundancy evolved with the language and it was needed to help the
+understanding in a noisy environment. We do not want to eliminate this
+redundancy, because if we do we may end up reading some binary code. For
+most of us, this is not really appealing. This is how human and
+programmer brain works.
 
-=== Language Intrinsic
+==== Language Intrinsic
 
-The programming language is also redundant. It is even more redundant than the natural language it is built on. The
-extra redundancy is because the number of keywords is very limited. That makes the compression ratio from 60% percent
-up to 80% in the case of Java. Other languages, like Perl, are denser and alas they are less readable. However, this is
-also a redundancy that we do not want to fight. Decreasing the redundancy coming from the programming language
-redundancy certainly would decrease readability and thus maintainability.
+The programming language is also redundant. It is even more redundant
+than the natural language it is built on. The extra redundancy is
+because the number of keywords is very limited. That makes the
+compression ratio from 60% percent up to 80% in the case of Java. Other
+languages, like Perl, are denser and alas they are less readable.
+However, this is also a redundancy that we do not want to fight.
+Decreasing the redundancy coming from the programming language
+redundancy certainly would decrease readability and thus
+maintainability.
 
-=== Structural
+==== Structural
 
-There is another source of redundancy that is independent of the language. This is the code structure redundancy. For
-example when we have a method that has one argument then the code fragments that call this method should also use one
-argument. If the method changes for more arguments then all the places that call the method also have to change. This is
-a redundancy that comes from the program structure and this is not only something that we do not want to avoid, but it
-is impossible to avoid without losing information and that way code structure.
+There is another source of redundancy that is independent of the
+language. This is the code structure redundancy. For example when we
+have a method that has one argument then the code fragments that call
+this method should also use one argument. If the method changes for more
+arguments then all the places that call the method also have to change.
+This is a redundancy that comes from the program structure and this is
+not only something that we do not want to avoid, but it is impossible to
+avoid without losing information and that way code structure.
 
-=== Domain induced
+==== Domain induced
 
-We talk about domain induced redundancy when the business domain can be described in a clear and concise manner but the
-programming language does not support such a description. A good example can be a compiler. This example is in a
-technical domain that most programmers are familiar with. A context-free syntax grammar can be written in a clear and
-nice form using BNF format. If we create the parser in Java it certainly will be longer. Since the BNF form and the Java
-code hold essentially the same information but the Java code is significantly longer we can be sure that the Java code
-is redundant from the information theory point of view. That is the reason why we have tools for this example domain,
+We talk about domain induced redundancy when the business domain can be
+described in a clear and concise manner but the programming language
+does not support such a description. A good example can be a compiler.
+This example is in a technical domain that most programmers are familiar
+with. A context-free syntax grammar can be written in a clear and nice
+form using BNF format. If we create the parser in Java it certainly will
+be longer. Since the BNF form and the Java code hold essentially the
+same information but the Java code is significantly longer we can be
+sure that the Java code is redundant from the information theory point
+of view. That is the reason why we have tools for this example domain,
 like ANTLR, Yacc and Lex and a few other tools.
 
-Another example is the Fluent API. A fluent API can be programmed implementing several interfaces that guide the
-programmer through the possible sequences of chained method calls. It is a long and hard to maintain way to code a
-fluent API. The same time a fluent API grammar can be neatly described with a regular expression because fluent APIs are
-described by finite-state grammars. The regular expression listing the methods describing alternatives, sequences,
-optional calls, and repetitions is more readable, shorter and less redundant than the Java implementation of the
-same. That is the reason why we have tools like Java::Geci Fluent API generators that convert a regular expression of
+Another example is the Fluent API. A fluent API can be programmed
+implementing several interfaces that guide the programmer through the
+possible sequences of chained method calls. It is a long and hard to
+maintain way to code a fluent API. The same time a fluent API grammar
+can be neatly described with a regular expression because fluent APIs
+are described by finite-state grammars. The regular expression listing
+the methods describing alternatives, sequences, optional calls, and
+repetitions is more readable, shorter and less redundant than the Java
+implementation of the same. That is the reason why we have tools like
+Java::Geci Fluent API generators that convert a regular expression of
 method calls to fluent API implementation.
 
-This is an area where decreasing the redundancy can be desirable and may result in easier to maintain and more readable
-code.
+This is an area where decreasing the redundancy can be desirable and may
+result in easier to maintain and more readable code.
 
-=== Language Evolution
+==== Language Evolution
 
-Language evolution redundancy is similar to the domain induced redundancy but it is independent of the actual
-programming domain. The source of this redundancy is a weakness of the programming language. For example, Java does not
-automatically provide getters and setters for fields. If you look at C# or Swift, they do. If we need them in Java, we
-have to write the code for it. It is boilerplate code and it is a weakness in the language. Also, in Java, there is no
-declarative way to define `equals()` and `hashCode()` methods. There may be a later version of
-Java that will provide something for that issue. Looking at past versions of Java it was certainly more redundant to
-create an anonymous class than writing a lambda expression. Java evolved and this was introduced into the language.
+Language evolution redundancy is similar to the domain induced
+redundancy but it is independent of the actual programming domain. The
+source of this redundancy is a weakness of the programming language. For
+example, Java does not automatically provide getters and setters for
+fields. If you look at C# or Swift, they do. If we need them in Java, we
+have to write the code for it. It is boilerplate code and it is a
+weakness in the language. Also, in Java, there is no declarative way to
+define `equals()` and `hashCode()` methods. There may be a later version
+of Java that will provide something for that issue. Looking at past
+versions of Java it was certainly more redundant to create an anonymous
+class than writing a lambda expression. Java evolved and this was
+introduced into the language.
 
-The major difference between domain induced redundancy and language evolution caused redundancy is that while it is
-impossible to address all programming domains in a general-purpose programming language, the language evolution will
-certainly eliminate the redundancy enforced by language shortages. While the language evolves we have code generators in
-the IDEs and in programs like Lombok that address these issues.
+The major difference between domain induced redundancy and language
+evolution caused redundancy is that while it is impossible to address
+all programming domains in a general-purpose programming language, the
+language evolution will certainly eliminate the redundancy enforced by
+language shortages. While the language evolves we have code generators
+in the IDEs and in programs like Lombok that address these issues.
 
-=== Programmer induced
+==== Programmer induced
 
-This kind of redundancy correlates with the classical meaning of code redundancy. This is when the programmer cannot
-generate good enough code and there are unnecessary and excessive code structures or even copy-paste code in the
-program. The typical example is the before mentioned "Legend of the sub-par developer". In this case, code generation
-can be a compromise but it is usually a bad choice. On a high level, from the project manager point of view, it may be
-okay. They care about the cost of the developers and they may decide to hire only cheaper developers. On the programmer
-level, on the other hand, this is not acceptable. If you have the choice to generate code or write better code you have
-to choose the latter. You must learn and develop yourself so that you can develop better code.
+This kind of redundancy correlates with the classical meaning of code
+redundancy. This is when the programmer cannot generate good enough code
+and there are unnecessary and excessive code structures or even
+copy-paste code in the program. The typical example is the before
+mentioned "Legend of the sub-par developer". In this case, code
+generation can be a compromise but it is usually a bad choice. On a high
+level, from the project manager point of view, it may be okay. They care
+about the cost of the developers and they may decide to hire only
+cheaper developers. On the programmer level, on the other hand, this is
+not acceptable. If you have the choice to generate code or write better
+code you have to choose the latter. You must learn and develop yourself
+so that you can develop better code.
 
-== What Redundancy to Attack with Java::Geci?
+=== What Redundancy to Attack with Java::Geci?
 
-As we said earlier some of the redundancy levels should not be, or they cannot be removed removed. They serve their
-purpose and they are good that way.
+As we said earlier some of the redundancy levels should not be, or they
+cannot be removed removed. They serve their purpose and they are good
+that way.
 
 .good redundancies, and are not to be managed
 
@@ -213,31 +273,41 @@ purpose and they are good that way.
 
 6. __Programmer induced__
 
-If we look at the language evolution and domain induced redundancy we can see that there are many tools that already
-address these issues using code generation.
+If we look at the language evolution and domain induced redundancy we
+can see that there are many tools that already address these issues
+using code generation.
 
-If you look at what Lombok does you recognize that all the features introduced by it are addressing a redundancy that
-comes from the lagging language evolution. ``@EqualsAndHashCode`` generates `equals()`` and
-``hashCode()``.``@Getter/@Setter`` generates getters and setters. ``@Cleanup`` does something that is now introduced to
-the language as try-with-resources.
+If you look at what Lombok does you recognize that all the features
+introduced by it are addressing a redundancy that comes from the lagging
+language evolution. `@EqualsAndHashCode` generates `equals()` and
+``hashCode()``. `@Getter/@Setter` generates getters and setters.
+`@Cleanup` does something that is now introduced to the language as
+try-with-resources.
 
-The different versions of IDEs also support similar code generation. These all address language evolution caused needs.
+The different versions of IDEs also support similar code generation.
+These all address language evolution caused needs.
 
-There are many code generators which are addressing domain induced redundancy. The most well known, perhaps, is the
-before mentioned ANTLR syntax analysis generator. It generates a parser out of a syntax definition. This is a special
-domain: language analysis.
+There are many code generators which are addressing domain induced
+redundancy. The most well known, perhaps, is the before mentioned ANTLR
+syntax analysis generator. It generates a parser out of a syntax
+definition. This is a special domain: language analysis.
 
-Another example is Mapstruct that generates code to move data between Java beans. This is a task, which is not domain
-specific in the sense that it is not specific to banking, finance, telecom or some other industry. On the other hand
-this task is needed in many enterprise application.
+Another example is Mapstruct that generates code to move data between
+Java beans. This is a task, which is not domain specific in the sense
+that it is not specific to banking, finance, telecom or some other
+industry. On the other hand this task is needed in many enterprise
+application.
 
-There are many other domain specific code generators and they are all developed from scratch. There is no code
-generation framework supporting the easy development of source generators. This is the niche that Java::Geci fills.
+There are many other domain specific code generators and they are all
+developed from scratch. There is no code generation framework supporting
+the easy development of source generators. This is the niche that
+Java::Geci fills.
 
-== What is Java::Geci
+=== What is Java::Geci
 
-First of all Java::Geci is a framework that can accomodate the development of source code generators. It provides services
-to perform tasks that are common for all generators. These include
+First of all Java::Geci is a framework that can accomodate the
+development of source code generators. It provides services to perform
+tasks that are common for all generators. These include
 
 * scanning the directories and discovering the souce code files,
 * reading them into memory,
@@ -246,11 +316,15 @@ to perform tasks that are common for all generators. These include
 * writing back new generated code if different from already existing one,
 * providing templating and formatting tools to create program source code.
 
-These services support source code generation in general and not only domain specific code generators. The real strength
-of Java::Geci is when you need a domain specific source code generation. The simple reason is that these do not exist
-and you cannot expect IDEs to support a specific domain need with code generation. On the other hand there are also
-advantages that may favor Java::Geci over other code generations in case of language evolution induced source code
-generation needs. For this reason there are some sample code generators in the ``core`` module of the framework.
+These services support source code generation in general and not only
+domain specific code generators. The real strength of Java::Geci is when
+you need a domain specific source code generation. The simple reason is
+that these do not exist and you cannot expect IDEs to support a specific
+domain need with code generation. On the other hand there are also
+advantages that may favor Java::Geci over other code generations in case
+of language evolution induced source code generation needs. For this
+reason there are some sample code generators in the ``core`` module of
+the framework.
 
 These include (list may not be up-to-date):
 
@@ -260,18 +334,22 @@ These include (list may not be up-to-date):
 * mapper
 * fluent API
 
-generators. There are two sample generators that are domain specific. These are the
+generators. There are two sample generators that are domain specific.
+These are the
 
 * annotation builder
 * configuration
 
-source code generators. The domain is source code generation. First one generates an annotation interface that meets
-the configurability of a Geci generator. The second generates configuration management code based on the list of
-configuration parameters of a generator. (The list is given by the fields of a ``Configuration`` static inner class
-in the generator class.)
+source code generators. The domain is source code generation. First one
+generates an annotation interface that meets the configurability of a
+Geci generator. The second generates configuration management code based
+on the list of configuration parameters of a generator. (The list is
+given by the fields of a ``Configuration`` static inner class in the
+generator class.)
 
-Although these generators are readily available, highly configurable and not only demo generators their main purpose is
-to demonstrate the way and the ease of source code generator development using Java::Geci.
+Although these generators are readily available, highly configurable and
+not only demo generators their main purpose is to demonstrate the way
+and the ease of source code generator development using Java::Geci.
 
 
 

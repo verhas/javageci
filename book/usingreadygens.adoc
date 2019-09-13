@@ -1,0 +1,174 @@
+:javageci_version: 1.3.0
+
+Java::Geci is a source code generation framework but it comes with some
+readily available code generators. The main purpose of these generators
+is to be a showcase that demonstrate how you can create your own code
+generators. At the same time these generators are commercial grade tools
+that you can readily use.
+
+Using them is also a good way to get acquainted with the framework as a
+first step and it also helps you understand the way how your own
+generators will be used in the future.
+
+In this chapter we will first discuss the general structure and workflow
+of the framework and how to use it during development. This will include
+the discussion of the library dependencies to be used, framework
+configuration and also how to configure the individual generators.
+
+Towards the second part of this chapter we will discuss the different
+readily available generators that generate Java source code. We will not
+discuss the snippet handling generators. These generators help to
+maintain documentation and they deserve and actually get their own
+chapter.
+
+=== The modules of Java::Geci
+
+There are several modules in Java::Geci. The most important modules are
+
+* `api` containing the interfaces of the framework. Having the
+  interfaces in a separate module keeps the code cleaner and it also
+  makes possible to create other implementations that provide and use
+  the same API. Although such an implementation is not likely in this
+  case, still having the API separate makes the project structure
+  cleaner.
+
+* `engine` is the implementation of the framework. The classes in this
+  module implement the interfaces defined in the module `api`.
+
+* `core` module contains the sample source code generators.
+
+* `annotations` contain a few annotation interfaces. Logically these
+  interfaces belong to the API of the framework. They are in a separate
+  module because these annotations, when used become a run-time
+  dependency (in Maven ``compile``, default scope), while the other
+  modules are all `test` scope dependencies.
+
+* `examples` contain sample codes that use the generators and the same
+  time they also serve as end-to-end tests for the generators in the
+  `core` and `docugen` module.
+
+* `docugen` contains generators that serve special purpose. They can be
+  used to keep documentation up-to-date. These generators collect
+  information from the source files, store them as snippets; some of
+  them modify/format the snippets and finally some of them insert the
+  final format into some source code, usually Markdown or JavaDoc.
+
+* `core-annotations` contain the annotations that are generator specific
+  and help to write easier-to-maintain and more readable code.
+
+* `tools` contain auxilliary classes and methods that help the
+  generators to perform their task. When using readily available
+  generators you will not meet this module directly.
+
+* `jamal` is an already deprecated module that uses the Jamal macro
+  language to provide a general code generation possibility without
+  Java coding. Later it was decided that the use of Jamal is an
+  overkill, the tool is too complex and the generator `repeated` will
+  serve the same purpose in a simpler way.
+
+image::../images/module-dependency.svg[]
+
+=== Maven Coordinates
+
+When you want to use a source code generator then you have to have a
+dependency on the library/module that contains the generator. In
+addition to that you also need the Java::Geci engine that will execute
+the generator or generators for you. In this case the generators are in
+the library `com.javax0.geci:javageci-core:{javageci_version}`. The
+engine is in the library
+`com.javax0.geci:javageci-engine:{javageci_version}`
+
+These are the libraries that you have to depend on in your maven
+project. The scope of these dependencies are `test` because the code
+generation runs from tests only and there is no, and also there should
+not be any run time dependency on a development tool. The only unfortunate
+exception is the annotation library, though there is also a remedy in case
+you want to get rid of this dependency for the run-time.
+
+This dependency is run-time (`compile` in maven) because code generators
+use parameters of the annotations which are on the classes, fields,
+method that are enriched with generated code. The code generation runs
+when the unit tests run. If the code generators want to read these
+annotations then these annotations have to be in the byte-code. This is
+the reason why these annotations have a
+`@Retention(RetentionPolicy.RUNTIME)` annotation. Even though the
+production code does not rely on these annotations and does not use
+these annotations they are in the production code and the JVM will not
+be able to load the class unless the annotation interfaces are also
+available.
+
+The use of these annotations is optional and you can totally avoid using
+annotations or you can use your own annotations. We will discuss this
+possibility later.
+
+    <dependencies>
+        <dependency>
+            <groupId>com.javax0.geci</groupId>
+            <artifactId>javageci-core</artifactId>
+            <version>${javageci_version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.javax0.geci</groupId>
+            <artifactId>javageci-engine</artifactId>
+            <version>${javageci_version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.javax0.geci</groupId>
+            <artifactId>javageci-annotation</artifactId>
+        </dependency>
+    </dependencies>
+
+=== Configuring the framework
+
+=== Configuring Individual Generators
+
+=== Using your own Annotations
+
+=== Sample Generators
+
+These generators are readily available. Most of them are also available
+in other frameworks or the functionality is provided using the
+appropriate menus of the IDE. Using these generators provide some
+advantages. These are the followings.
+
+* These generators run automatically and compilation fails if the code
+  is not up-to-date. That way it is not possible to have for example an
+  `equals()` and `hashCode()` method that does not take into account
+  some of the fields that were introduced into the code after the last
+  time the code generator was executed.
+
+* The code that generates the code is very simple after you get
+  acquainted with the framework and it is possible to tune the actual
+  generator to your specific needs.
+
+
+==== Accessor Generator
+
+==== Builder Generator
+
+==== Equals Generator
+
+==== Cloner Generator
+
+==== Fluent API Generator
+
+==== Mapper Generator
+
+==== Repeated Generator (a Java "preprocessor")
+
+=== Java::Geci Domain Generators
+
+There are two generators that were developed to generate code while
+creating generators in the Java::Geci framework. These are domain
+specific generators.
+
+The configuration generator creates configuration handling code into a
+generator. The annotation builder creates annotation interface for a
+generator.
+
+==== Configuration Builder
+
+==== Annotation Builder
+

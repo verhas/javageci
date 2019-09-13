@@ -30,19 +30,11 @@
     <dependencies>
         <dependency>
             <groupId>com.javax0.geci</groupId>
-            <artifactId>javageci-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.javax0.geci</groupId>
             <artifactId>javageci-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.javax0.geci</groupId>
             <artifactId>javageci-engine</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.javax0.geci</groupId>
-            <artifactId>javageci-tools</artifactId>
         </dependency>
         <dependency>
             <groupId>com.javax0.geci</groupId>
