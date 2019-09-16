@@ -141,17 +141,20 @@ appropriate menus of the IDE. Using these generators provide some
 advantages. These are the followings.
 
 * These generators run automatically and compilation fails if the code
-  is not up-to-date. That way it is not possible to have for example an
-  `equals()` and `hashCode()` method that does not take into account
-  some of the fields that were introduced into the code after the last
-  time the code generator was executed.
+  is not up-to-date. That way it is not possible to have, for example,
+  `equals()` and `hashCode()` methods that do not take into account
+  some of the fields introduced into the code after the last
+  time the code generator executed.
 
-* The code that generates the code is very simple after you get
+* The Java class that generates the code is very simple after you get
   acquainted with the framework and it is possible to tune the actual
   generator to your specific needs.
 
+In the following sections we list the most important sample generators.
 
 ==== Accessor Generator
+
+
 
 ==== Builder Generator
 

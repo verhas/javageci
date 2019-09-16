@@ -111,7 +111,7 @@ https://en.wikipedia.org/wiki/Redundancy_(information_theory) says:
 
 In Information theory, redundancy measures the fractional difference
 between the entropy H(X) of an ensemble X, and its maximum possible
-value log(|A pass:[<sub>X</sub>]|)
+value log(|A~X~|)
 
 ====
 
