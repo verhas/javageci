@@ -579,7 +579,7 @@ phases the generator needs and when asked if it has to be
 active in a phase it will return `true` if the actual phase is
 the same as the one configured.
 
-#### `files = "\\.md$"`
+#### `files = "\\.md$|\\.adoc$"`
 
 
 This configuration parameter can limit the file name pattern

@@ -461,7 +461,7 @@ public class Source implements javax0.geci.api.Source {
                     seg.originals.add(line);
                 }
                 if (i >= lines.size()) {
-                    throw new GeciException("Segment '" + seg.attr.id() + "'does not end in file " + getAbsoluteFile());
+                    throw new GeciException("Segment '" + seg.attr.id() + "' does not end in file " + getAbsoluteFile());
                 }
             }
         }

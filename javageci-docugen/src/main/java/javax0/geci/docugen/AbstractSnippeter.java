@@ -1,9 +1,14 @@
 package javax0.geci.docugen;
 
 import javax0.geci.annotations.Geci;
-import javax0.geci.api.*;
+import javax0.geci.api.CompoundParams;
+import javax0.geci.api.Context;
+import javax0.geci.api.GeciException;
+import javax0.geci.api.Segment;
+import javax0.geci.api.Source;
 import javax0.geci.tools.AbstractGeneratorEx;
 import javax0.geci.tools.CompoundParamsBuilder;
+import javax0.geci.tools.Tracer;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -45,7 +50,7 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
          * in the builder interface.
          *
          */
-        protected CharSequence files = "\\.md$";
+        protected CharSequence files = "\\.md$|\\.adoc$";
     }
 
     protected SnippetStore snippets;
@@ -85,7 +90,10 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
 
     @Override
     public void processEx(Source source) throws Exception {
+        Tracer.log("AbstractSnippeter", source.getAbsoluteFile() + " =?= " + fileNamePattern);
         if (fileNamePattern.matcher(source.getAbsoluteFile()).find()) {
+            Tracer.prepend("MATCHES: ");
+            Tracer.log("SegmentCount",""+source.segmentNames().size());
             for (final var name : source.segmentNames()) {
                 final var segment = source.safeOpen(name);
                 final var sourceParams = segment.sourceParams();
@@ -111,6 +119,8 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
                     }
                 }
             }
+        } else {
+            Tracer.prepend("NO MATCH: ");
         }
 
     }

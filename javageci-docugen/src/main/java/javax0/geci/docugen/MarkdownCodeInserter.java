@@ -4,6 +4,7 @@ import javax0.geci.annotations.Geci;
 import javax0.geci.api.CompoundParams;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
+import javax0.geci.tools.Tracer;
 
 @Geci("configBuilder localConfigMethod=''")
 public class MarkdownCodeInserter extends AbstractSnippeter implements NonConfigurable {
@@ -15,9 +16,14 @@ public class MarkdownCodeInserter extends AbstractSnippeter implements NonConfig
     public void modify(Source source, Segment segment, Snippet snippet, CompoundParams params) {
         final var originalLines = segment.originalLines();
         if (originalLines.size() > 0 && originalLines.get(0).startsWith("```")) {
+            Tracer.log("snippetLine",originalLines.get(0));
             segment.write(originalLines.get(0));
         }
-        snippet.lines().forEach(l -> segment.write(l));
+        snippet.lines().forEach(l -> {
+            Tracer.log("snippetLine",l);
+            segment.write(l);
+            }
+        );
     }
 
     /**

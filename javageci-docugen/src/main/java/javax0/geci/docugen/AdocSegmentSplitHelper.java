@@ -10,7 +10,9 @@ public class AdocSegmentSplitHelper extends AbstractXMLSegmentSplitHelper {
     public AdocSegmentSplitHelper() {
         super(
             Pattern.compile("^(\\s*)//\\s*snip\\s+(.*)\\s*$"),
-            Pattern.compile("^(\\s*)//\\s*end\\s+snip\\s+(.*)\\s*$"),
+            Pattern.compile("^(\\s*)```(\\s*)$" +
+                "|" +
+                "^(\\s*)//\\s*end\\s+snip(.*)$"),
             Pattern.compile("DEFAULT SEGMENT") // probably will not match ever, if yes, c'mon!
         );
         setSegmentPreface("");
@@ -40,19 +42,22 @@ public class AdocSegmentSplitHelper extends AbstractXMLSegmentSplitHelper {
         final var line = lines.get(i);
         if (stripLine(line).startsWith("//")) {
             final var sb = new StringBuilder();
-            int j;
-            for (j = i; j < lines.size(); j++) {
-                if (!lines.get(j).stripLeading().startsWith("//") ||
-                    lines.get(j).matches("^\\s*//\\s*end\\s+snip")) {
-                    j--;
-                    break;
+            if (line.matches("\\s*//\\s*snip\\s+.*")) {
+                int j;
+                for (j = i; j < lines.size(); j++) {
+                    if (!lines.get(j).stripLeading().startsWith("//") ||
+                        lines.get(j).matches("^\\s*//\\s*end\\s+snip")) {
+                        break;
+                    }
+                    sb.append(stripContinuationLine(lines.get(j)));
                 }
-                sb.append(stripContinuationLine(lines.get(j)));
+                sb.insert(0, "//");
+                return new Matcher(match(sb.toString()), j - i);
+            } else if (lines.get(i).matches("\\s*//\\s*end\\s+snip.*")) {
+                return new Matcher(match(lines.get(i)), 1);
             }
-            return new Matcher(match(sb.toString()), j - i + 1);
-        } else {
-            return match(line);
         }
+        return match(line);
     }
 
     protected String stripContinuationLine(String line) {
