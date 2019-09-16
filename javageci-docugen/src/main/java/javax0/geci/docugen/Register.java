@@ -97,7 +97,7 @@ public class Register {
      * @return the prepared generator builders
      */
     public GeneratorBuilder[] generators(Supplier<GeneratorBuilder>... snippetBuildersSuppliers) {
-        return generators(Arrays.stream(snippetBuildersSuppliers).map(sbg -> sbg.get()).toArray(GeneratorBuilder[]::new));
+        return generators(Arrays.stream(snippetBuildersSuppliers).map(Supplier::get).toArray(GeneratorBuilder[]::new));
     }
 
     /**

@@ -6,6 +6,9 @@ v1.0, 2019-09-11
 
 == Introduction, What is Java::Geci
 
+// snip Geci_GeciReflectionTools_invoke_sample trim="to=0"
+// end snip
+
 ****
 
 In this chapter we will talk about what Java::Geci really is without too much background or technical details. After

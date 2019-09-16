@@ -196,7 +196,8 @@ Assertions.assertFalse(
             "\\.git", "\\.idea", "\\.iml$",
             "target")
         .log(Geci.MODIFIED)
-        .register(Register.register().ordered().fileExtensions("md", "java").allSnippetGenerators())
+        .register(Register.register().ordered().fileExtensions("md", "java","adoc").allSnippetGenerators())
+        .splitHelper("adoc", new AdocSegmentSplitHelper())
         .splitHelper("md", new MarkdownSegmentSplitHelper())
         .splitHelper("java", new JavaDocSegmentSplitHelper())
         .generate(),
@@ -399,11 +400,12 @@ to create this documentation:
 19.             "\\.git", "\\.idea", "\\.iml$",
 20.             "target")
 21.         .log(Geci.MODIFIED)
-22.         .register(Register.register().ordered().fileExtensions("md", "java").allSnippetGenerators())
-23.         .splitHelper("md", new MarkdownSegmentSplitHelper())
-24.         .splitHelper("java", new JavaDocSegmentSplitHelper())
-25.         .generate(),
-26.     geci.failed());
+22.         .register(Register.register().ordered().fileExtensions("md", "java","adoc").allSnippetGenerators())
+23.         .splitHelper("adoc", new AdocSegmentSplitHelper())
+24.         .splitHelper("md", new MarkdownSegmentSplitHelper())
+25.         .splitHelper("java", new JavaDocSegmentSplitHelper())
+26.         .generate(),
+27.     geci.failed());
 ```
 
 we can have a look at line 14. It registers the
