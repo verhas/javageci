@@ -6,6 +6,10 @@ import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.Tracer;
 
+/**
+ * Snippet inserter that inserts snippets into asciidoc and into
+ * markdown format files.
+ */
 @Geci("configBuilder localConfigMethod=''")
 public class MarkdownCodeInserter extends AbstractSnippeter implements NonConfigurable {
 
