@@ -20,6 +20,8 @@ public class AdocSegmentSplitHelper extends AbstractXMLSegmentSplitHelper {
         defaultOffset = 4;
     }
 
+    private static final Pattern SNIP = Pattern.compile("\\s*//\\s*snip\\s+.*");
+    private static final Pattern SNIPEND = Pattern.compile("\\s*//\\s*end\\s+snip.*");
 
     /**
      * <p>If the line starts with {@code // } then the lines following
@@ -42,7 +44,7 @@ public class AdocSegmentSplitHelper extends AbstractXMLSegmentSplitHelper {
         final var line = lines.get(i);
         if (stripLine(line).startsWith("//")) {
             final var sb = new StringBuilder();
-            if (line.matches("\\s*//\\s*snip\\s+.*")) {
+            if (SNIP.matcher(line).matches()) {
                 int j;
                 for (j = i; j < lines.size(); j++) {
                     if (!lines.get(j).stripLeading().startsWith("//") ||
@@ -53,7 +55,7 @@ public class AdocSegmentSplitHelper extends AbstractXMLSegmentSplitHelper {
                 }
                 sb.insert(0, "//");
                 return new Matcher(match(sb.toString()), j - i);
-            } else if (lines.get(i).matches("\\s*//\\s*end\\s+snip.*")) {
+            } else if (SNIPEND.matcher(lines.get(i)).matches()) {
                 return new Matcher(match(lines.get(i)), 1);
             }
         }
