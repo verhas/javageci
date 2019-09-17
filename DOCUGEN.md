@@ -189,14 +189,13 @@ fragmentCollector
 final var geci = new Geci();
 Assertions.assertFalse(
     geci.context(fragmentCollector.context())
-    .trace("target/trace.xml")
         .source("..", ".")
         .ignoreBinary()
         .ignore(
             "\\.git", "\\.idea", "\\.iml$",
             "target")
         .log(Geci.MODIFIED)
-        .register(Register.register().ordered().fileExtensions("md", "java","adoc").allSnippetGenerators())
+        .register(Register.register().ordered().fileExtensions("md", "java", "adoc").allSnippetGenerators())
         .splitHelper("adoc", new AdocSegmentSplitHelper())
         .splitHelper("md", new MarkdownSegmentSplitHelper())
         .splitHelper("java", new JavaDocSegmentSplitHelper())
@@ -393,19 +392,18 @@ to create this documentation:
 12. final var geci = new Geci();
 13. Assertions.assertFalse(
 14.     geci.context(fragmentCollector.context())
-15.     .trace("target/trace.xml")
-16.         .source("..", ".")
-17.         .ignoreBinary()
-18.         .ignore(
-19.             "\\.git", "\\.idea", "\\.iml$",
-20.             "target")
-21.         .log(Geci.MODIFIED)
-22.         .register(Register.register().ordered().fileExtensions("md", "java","adoc").allSnippetGenerators())
-23.         .splitHelper("adoc", new AdocSegmentSplitHelper())
-24.         .splitHelper("md", new MarkdownSegmentSplitHelper())
-25.         .splitHelper("java", new JavaDocSegmentSplitHelper())
-26.         .generate(),
-27.     geci.failed());
+15.         .source("..", ".")
+16.         .ignoreBinary()
+17.         .ignore(
+18.             "\\.git", "\\.idea", "\\.iml$",
+19.             "target")
+20.         .log(Geci.MODIFIED)
+21.         .register(Register.register().ordered().fileExtensions("md", "java", "adoc").allSnippetGenerators())
+22.         .splitHelper("adoc", new AdocSegmentSplitHelper())
+23.         .splitHelper("md", new MarkdownSegmentSplitHelper())
+24.         .splitHelper("java", new JavaDocSegmentSplitHelper())
+25.         .generate(),
+26.     geci.failed());
 ```
 
 we can have a look at line 14. It registers the

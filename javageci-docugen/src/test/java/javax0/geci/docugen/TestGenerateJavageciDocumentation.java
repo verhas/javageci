@@ -26,14 +26,13 @@ class TestGenerateJavageciDocumentation {
         final var geci = new Geci();
         Assertions.assertFalse(
             geci.context(fragmentCollector.context())
-            .trace("target/trace.xml")
                 .source("..", ".")
                 .ignoreBinary()
                 .ignore(
                     "\\.git", "\\.idea", "\\.iml$",
                     "target")
                 .log(Geci.MODIFIED)
-                .register(Register.register().ordered().fileExtensions("md", "java","adoc").allSnippetGenerators())
+                .register(Register.register().ordered().fileExtensions("md", "java", "adoc").allSnippetGenerators())
                 .splitHelper("adoc", new AdocSegmentSplitHelper())
                 .splitHelper("md", new MarkdownSegmentSplitHelper())
                 .splitHelper("java", new JavaDocSegmentSplitHelper())
