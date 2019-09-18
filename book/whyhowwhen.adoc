@@ -258,7 +258,7 @@ that way.
 2. __Language Intrinsic,__ and
 3. __Structural__
 
----
+'''
 [start=4]
 
 .good candidates for source code generation
@@ -266,7 +266,7 @@ that way.
 1. **Domain induced** and
 2. **Language Evolution**
 
----
+'''
 [start=6]
 
 .must be handled, but with education and not using code generation if possible

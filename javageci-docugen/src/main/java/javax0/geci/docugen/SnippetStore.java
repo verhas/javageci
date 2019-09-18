@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-class SnippetStore {
+public class SnippetStore {
     final Map<String, Snippet> originals = new HashMap<>();
     final Map<String, Map<String, Snippet>> locals = new HashMap<>();
     final Map<String, Source> sourceTracking = new HashMap<>();

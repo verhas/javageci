@@ -166,12 +166,12 @@ public interface Segment extends AutoCloseable {
     /**
      * Trace the parameters
      */
-    public void traceParams();
+    void traceParams();
 
     /**
      * Trace the lines of the segment.
      */
-    public void traceLines();
+    void traceLines();
 
     /**
      * Delete the previously defined parameters.

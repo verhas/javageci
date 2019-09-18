@@ -128,7 +128,7 @@ class FileCollector {
     }
 
     public void registerSplitHelpers(Map<String, SegmentSplitHelper> splitHelpers) {
-        splitHelpers.entrySet().forEach(e -> Tracer.log("Helper " + e.getKey() + " = " + e.getValue().getClass().getName()));
+        splitHelpers.forEach((key, value) -> Tracer.log("Helper " + key + " = " + value.getClass().getName()));
         this.splitHelpers.putAll(splitHelpers);
     }
 

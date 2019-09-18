@@ -1,6 +1,5 @@
 package javax0.geci.javacomparator;
 
-import javax0.geci.javacomparator.lex.CommentLiteral;
 import javax0.geci.javacomparator.lex.Lexer;
 import javax0.geci.javacomparator.lex.LexicalElement;
 

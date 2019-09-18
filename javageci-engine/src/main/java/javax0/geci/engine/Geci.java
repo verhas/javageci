@@ -8,12 +8,10 @@ import javax0.geci.javacomparator.Comparator;
 import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
 import javax0.geci.tools.AbstractJavaGenerator;
-import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.Tracer;
 import javax0.geci.util.DirectoryLocator;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.BiPredicate;
@@ -405,7 +403,7 @@ public class Geci implements javax0.geci.api.Geci {
             }
             if (exceptions.size() > 0 && !ignoreBinary) {
                 try (final var pos = Tracer.push("Exceptions")) {
-                    exceptions.forEach(e -> Tracer.log(e));
+                    exceptions.forEach(Tracer::log);
                 }
                 throw new GeciException("Cannot read the files\n" + String.join("\n", exceptions) + "\nThey are probably binary file. Use '.ignore()' to filter binary files out");
             }

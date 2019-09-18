@@ -1,6 +1,5 @@
 package javax0.geci.tools.reflection;
 
-import javax0.geci.api.GeciException;
 import javax0.geci.tools.MethodTool;
 
 import java.lang.reflect.*;

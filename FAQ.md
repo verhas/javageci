@@ -6,7 +6,7 @@ is worth answering here.
 
 ## What is the difference between Java::Geci and Roaster, which one is the better?
 
-Roaster is available at https://github.com/forge/roaster
+Roaster is available at <https://github.com/forge/roaster>
 
 Roaster and Java:Geci are two different things and have different
 purposes, although there is some functionality that they share. Roaster

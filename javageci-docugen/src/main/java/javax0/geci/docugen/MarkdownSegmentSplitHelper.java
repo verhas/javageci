@@ -1,10 +1,5 @@
 package javax0.geci.docugen;
 
-import javax0.geci.api.CompoundParams;
-import javax0.geci.api.SegmentSplitHelper;
-import javax0.geci.engine.RegexBasedSegmentSplitHelper;
-
-import java.util.List;
 import java.util.regex.Pattern;
 /**
  * <p>A segment split helper that helps to split markdown documents into

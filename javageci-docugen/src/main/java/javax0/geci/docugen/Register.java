@@ -75,9 +75,9 @@ public class Register {
      */
     public GeneratorBuilder[] generators(GeneratorBuilder... snippetBuilders) {
         int phase = 0;
-        for (int i = 0; i < snippetBuilders.length; i++) {
-            if (snippetBuilders[i] instanceof AbstractSnippeter.Builder) {
-                final var abstractBuilder = (AbstractSnippeter.Builder) snippetBuilders[i];
+        for (GeneratorBuilder snippetBuilder : snippetBuilders) {
+            if (snippetBuilder instanceof AbstractSnippeter.Builder) {
+                final var abstractBuilder = (AbstractSnippeter.Builder) snippetBuilder;
                 if (ordered) {
                     abstractBuilder.phase(phase++);
                 }

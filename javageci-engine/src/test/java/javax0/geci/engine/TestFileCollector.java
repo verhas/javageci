@@ -12,7 +12,6 @@ import java.util.Set;
 import static javax0.geci.api.Source.Predicates.exists;
 import static javax0.geci.api.Source.Set.set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestFileCollector {
     @Test

@@ -26,6 +26,7 @@ public class LexicalElement {
     public enum Type {
         COMMENT, STRING, CHARACTER, IDENTIFIER, INTEGER, FLOAT, SYMBOL;
 
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         public boolean is(Type... types) {
             for (final var t : types) {
                 if (t == this) return true;
