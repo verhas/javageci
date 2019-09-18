@@ -10,7 +10,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -46,9 +50,9 @@ public class GeciAnnotationTools {
      */
     public static String[] getGecis(AnnotatedElement element) {
         return getDeclaredAnnotationUnwrapped(element)
-                .filter(GeciAnnotationTools::isAnnotationGeci)
-                .map(GeciAnnotationTools::getValue)
-                .toArray(String[]::new);
+            .filter(GeciAnnotationTools::isAnnotationGeci)
+            .map(GeciAnnotationTools::getValue)
+            .toArray(String[]::new);
     }
 
     /**
@@ -67,7 +71,7 @@ public class GeciAnnotationTools {
     private static Stream<Annotation> getDeclaredAnnotationUnwrapped(AnnotatedElement element) {
         final var allAnnotations = element.getDeclaredAnnotations();
         return Arrays.stream(allAnnotations)
-                .flatMap(GeciAnnotationTools::getSelfOrRepeated);
+            .flatMap(GeciAnnotationTools::getSelfOrRepeated);
     }
 
     /**
@@ -107,8 +111,8 @@ public class GeciAnnotationTools {
                 return Stream.of(annotation);
             }
         } catch (NoSuchMethodException |
-                IllegalAccessException |
-                InvocationTargetException e) {
+            IllegalAccessException |
+            InvocationTargetException e) {
             return Stream.of(annotation);
         }
     }
@@ -164,10 +168,10 @@ public class GeciAnnotationTools {
             return true;
         }
         final var annotations = annotation.annotationType()
-                .getDeclaredAnnotations();
+            .getDeclaredAnnotations();
         return Arrays.stream(annotations)
-                .filter(x -> !checked.contains(x))
-                .anyMatch(x -> isAnnotationGeci(x, checked));
+            .filter(x -> !checked.contains(x))
+            .anyMatch(x -> isAnnotationGeci(x, checked));
     }
 
     private static String annotationName(Annotation a) {
@@ -199,33 +203,33 @@ public class GeciAnnotationTools {
             final var value = getValue(CaseTools.lcase(annotationName), rawValue.trim());
             for (final var method : getAnnotationDeclaredMethods(annotation)) {
                 if (method.getReturnType().equals(String.class) &&
-                        !method.getName().equals("value") &&
-                        !method.getName().equals("toString")) {
+                    !method.getName().equals("value") &&
+                    !method.getName().equals("toString")) {
                     final String param = geParam(annotation, method);
                     if (param != null && param.length() > 0) {
                         value.append(" ")
-                                .append(method.getName())
-                                .append("='")
-                                .append(param)
-                                .append("'");
+                            .append(method.getName())
+                            .append("='")
+                            .append(param)
+                            .append("'");
                     }
                 }
             }
             return value.toString();
         } catch (ClassCastException e) {
             throw new GeciException("Cannot use '" + annotationName(annotation)
-                    + "' as generator annotation.", e);
+                + "' as generator annotation.", e);
         }
     }
 
     private static String getAnnotationGeciName(Annotation annotation) {
         final var selfName = annotation.annotationType().getSimpleName();
         final var annotations = annotation.annotationType()
-                .getDeclaredAnnotations();
+            .getDeclaredAnnotations();
         final var renamedName = Arrays.stream(annotations)
-                .filter(GeciAnnotationTools::isAnnotationGeci).map(GeciAnnotationTools::getRawValue).findFirst();
+            .filter(GeciAnnotationTools::isAnnotationGeci).map(GeciAnnotationTools::getRawValue).findFirst();
         return renamedName.isPresent() && renamedName.get().length() > 0 ?
-                renamedName.get() : selfName;
+            renamedName.get() : selfName;
     }
 
     private static String geParam(Annotation annotation, Method method) {
@@ -241,7 +245,16 @@ public class GeciAnnotationTools {
         try {
             final var valueMethod = getAnnotationValueMethod(annotation);
             valueMethod.setAccessible(true);
-            return (String) valueMethod.invoke(annotation);
+            final var value = valueMethod.invoke(annotation);
+            if (value instanceof String) {
+                return (String) value;
+            }
+            if (value instanceof String[]) {
+                final var values = (String[]) value;
+                return String.join(" ",values);
+            }
+            throw new IllegalArgumentException("The annotation " + annotationName(annotation)
+                + " value() return type is not String or String[]");
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             return "";
         }
@@ -278,7 +291,7 @@ public class GeciAnnotationTools {
      * @param annotation of which we need the value method
      * @return the value method
      * @throws NoSuchMethodException when the annotation does not have a
-     * {@code value()} method
+     *                               {@code value()} method
      */
     private static Method getAnnotationValueMethod(Annotation annotation) throws NoSuchMethodException {
         return annotation.annotationType().getDeclaredMethod("value");
@@ -351,13 +364,13 @@ public class GeciAnnotationTools {
                                           String value) {
         final var mnemonicEnd = value.indexOf(' ');
         final String mnemonic = mnemonicEnd == -1 ?
-                value
-                :
-                value.substring(0, mnemonicEnd);
+            value
+            :
+            value.substring(0, mnemonicEnd);
         if (mnemonic.contains("=") || mnemonic.length() == 0) {
             return new StringBuilder(annotationName)
-                    .append(value.length() == 0 ? "" : " ")
-                    .append(value);
+                .append(value.length() == 0 ? "" : " ")
+                .append(value);
         } else {
             return new StringBuilder(value);
         }
@@ -483,12 +496,10 @@ public class GeciAnnotationTools {
      * the segments that have the {@code id="mnemonic"} or {@code null}
      * if there is no appropriate segment starting line that would match
      * the syntax and the mnemonic
-     *
-     * @deprecated
-     * The parameters of a segment should be accessed directly
+     * @deprecated The parameters of a segment should be accessed directly
      * through the Segment object representing it.
      */
-    @Deprecated(since="1.2.0")
+    @Deprecated(since = "1.2.0")
     public static CompoundParams getSegmentParameters(Source source,
                                                       String mnemonic) {
         for (var line : source.getLines()) {
@@ -496,7 +507,7 @@ public class GeciAnnotationTools {
             final var headerMatcher = SEGMENT_HEADER_PATTERN.matcher(trimmedLine);
             if (headerMatcher.matches()) {
                 final var params = new CompoundParamsBuilder(headerMatcher.group(1)).exclude("desc").redefineId().build();
-                if( mnemonic.equals(params.id())){
+                if (mnemonic.equals(params.id())) {
                     return params;
                 }
             }
@@ -526,7 +537,7 @@ public class GeciAnnotationTools {
     private static Matcher getMatch(String prefix, String line) {
         final var trimmedLine = line.trim();
         final var chopped = prefix != null && trimmedLine.startsWith(prefix) ?
-                trimmedLine.substring(prefix.length()) : trimmedLine;
+            trimmedLine.substring(prefix.length()) : trimmedLine;
         final var matchLine = chopped.trim();
         return ANNOTATION_PATTERN.matcher(matchLine);
     }

@@ -861,14 +861,28 @@ The method `Tools.getParameters(xxx, mnemonic())` collects the
 configuration parameters from the annotation `@Geci`, which is on the
 `xxx` element. There is an annotation interface ready to use defined in
 the library `com.javax0.geci:javageci-annotation` but the actual code
-can use any annotation that
+can use any annotation that is a Geci annotation.
+
+The definition of the Geci annotation is recursive. A Geci annotation
+is an annotation that
 
 * is named `Geci`
+
+* is named in any way but the annotation itself is annotated with a
+  Geci annotation
+
+and
+
 * defines at least the `value`
-* the type of `value` is `java.langString`.
+* the type of `value` is `java.langString` or `java.langString[]`.
 
 Using your own annotation may eliminate the need for the dependency on
 the library `com.javax0.geci:javageci-annotation`.
+
+In case the type of the annotation is String array then the code may use
+multiple strings as value. These strings will be concatenated with a
+single space between them. This allow the code to break the annotation
+into multiple lines in case there are many parameters.
 
 The `value` of the annotation has to be a string that has the format:
 

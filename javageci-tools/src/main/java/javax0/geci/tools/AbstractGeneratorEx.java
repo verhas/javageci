@@ -30,10 +30,13 @@ public abstract class AbstractGeneratorEx implements Generator {
         try {
             processEx(source);
         } catch (Exception e) {
-            if( e instanceof GeciException){
-                throw (GeciException)e;
-            }else {
-                throw new GeciException(e);
+            if (e instanceof GeciException) {
+                throw (GeciException) e;
+            } else {
+                throw new GeciException("There was an "
+                    + e.getClass().getSimpleName()
+                    + " processing "
+                    + source.getAbsoluteFile(), e);
             }
         }
     }

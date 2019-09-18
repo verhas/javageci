@@ -5,7 +5,8 @@ import javax0.geci.annotations.Geci;
 import java.util.Map;
 import java.util.Set;
 
-@Geci("accessor filter='private | protected'")
+@Geci({"accessor ",
+    "filter='private | protected'"})
 public class NeedAccessors {
 
     @SuppressWarnings("EmptyMethod")
@@ -31,23 +32,23 @@ public class NeedAccessors {
 
 
     //<editor-fold id="accessor" desc="setters">
-    public String getApple(){
+    public String getApple() {
         return apple;
     }
 
-    public void setBirnen(int birnen){
+    public void setBirnen(int birnen) {
         this.birnen = birnen;
     }
 
-    public int getBirnen(){
+    public int getBirnen() {
         return birnen;
     }
 
-     void setTruth(boolean truth){
+    void setTruth(boolean truth) {
         this.truth = truth;
     }
 
-     boolean isTrue(){
+    boolean isTrue() {
         return truth;
     }
 

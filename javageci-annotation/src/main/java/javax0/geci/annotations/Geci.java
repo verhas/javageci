@@ -17,5 +17,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(Gecis.class)
 public @interface Geci {
-    String value() default "";
+    String[] value() default "";
 }
