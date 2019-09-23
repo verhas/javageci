@@ -3,17 +3,14 @@ package javax0.geci.javacomparator.lex;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class TestCommentLiteral {
+class TestCommentLiteral {
 
-    private static StringBuilder comment(String s) {
-        return new StringBuilder(s);
-    }
-
-    private static void testAndAssert(String comment, String expected, String ...rest){
+    private static void testAndAssert(String comment, String ...rest){
         final var sut = new CommentLiteral();
-        final var sb = comment(comment);
+        final var sb = new StringBuilder(comment);
         final var result = sut.apply(sb);
         Assertions.assertEquals(result.type, LexicalElement.Type.COMMENT);
+        final var expected = comment.substring(0,comment.length()-sb.length());
         Assertions.assertEquals(expected,result.lexeme);
         if( rest.length == 1) {
             Assertions.assertEquals(rest[0], sb.toString());
@@ -26,10 +23,10 @@ public class TestCommentLiteral {
     @Test
     void testGoodComments() {
 
-        testAndAssert("// vouw\n"," vouw","\n");
-        testAndAssert("/* vouw */"," vouw ");
-        testAndAssert("/* vo\nuw */"," vo\nuw ");
-        testAndAssert("/** vouw */","* vouw ");
-        testAndAssert("// vouw */"," vouw */");
+        testAndAssert("// vouw\n","\n");
+        testAndAssert("/* vouw */");
+        testAndAssert("/* vo\nuw */");
+        testAndAssert("/** vouw */");
+        testAndAssert("// vouw */");
     }
 }

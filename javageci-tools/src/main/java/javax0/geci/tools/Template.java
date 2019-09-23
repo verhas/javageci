@@ -7,7 +7,7 @@ import java.util.Map;
  * {{key}} string with the value as defined in the map passed as a construction parameter.</p>
  *
  * <p>Examples:</p>
- * <table><caption></caption>
+ * <table><caption>. .</caption>
  *     <tr><th>Map values</th><th>input</th><th>output</th></tr>
  *     <!-- snip Template_javadoc snippet="epsilon"
  *           append="snippets='Template_test_.*'"
@@ -28,7 +28,7 @@ import java.util.Map;
  *
  */
 public class Template {
-    final Map<String, String> params;
+    final private Map<String, String> params;
 
     public Template(Map<String, String> params) {
         this.params = params;

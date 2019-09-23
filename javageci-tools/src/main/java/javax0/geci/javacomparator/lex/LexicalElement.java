@@ -3,7 +3,6 @@ package javax0.geci.javacomparator.lex;
 import java.util.Objects;
 
 public class LexicalElement {
-    public static final LexicalElement IGNORED = new LexicalElement("", Type.COMMENT);
 
     LexicalElement(String lexeme, Type type) {
         this.lexeme = lexeme;
@@ -23,10 +22,14 @@ public class LexicalElement {
         return Objects.hash(lexeme);
     }
 
-    public enum Type {
-        COMMENT, STRING, CHARACTER, IDENTIFIER, INTEGER, FLOAT, SYMBOL;
+    @Override
+    public String toString() {
+        return type.toString() + "[" + lexeme + "]";
+    }
 
-        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public enum Type {
+        COMMENT, STRING, CHARACTER, IDENTIFIER, INTEGER, FLOAT, SYMBOL, SPACING;
+
         public boolean is(Type... types) {
             for (final var t : types) {
                 if (t == this) return true;
@@ -47,7 +50,7 @@ public class LexicalElement {
                 value = Long.parseLong(lexeme.substring(2), 16);
             } else {
                 if (lexeme.toUpperCase().endsWith("L")) {
-                    value = Long.parseLong(lexeme.substring(0,lexeme.length()-1));
+                    value = Long.parseLong(lexeme.substring(0, lexeme.length() - 1));
                 } else {
                     value = Long.parseLong(lexeme);
                 }
@@ -90,27 +93,39 @@ public class LexicalElement {
         }
     }
 
-    public static class Symbol extends LexicalElement {
+    static class Symbol extends LexicalElement {
         Symbol(String lexeme) {
             super(lexeme, Type.SYMBOL);
         }
     }
 
-    public static class STring extends LexicalElement {
+    static class STring extends LexicalElement {
         STring(String lexeme) {
             super(lexeme, Type.STRING);
         }
     }
 
-    public static class CHaracter extends LexicalElement {
+    static class CHaracter extends LexicalElement {
         CHaracter(String lexeme) {
             super(lexeme, Type.CHARACTER);
         }
     }
 
-    public static class Identifier extends LexicalElement {
+    static class Identifier extends LexicalElement {
         Identifier(String lexeme) {
             super(lexeme, Type.IDENTIFIER);
+        }
+    }
+
+    static class Spacing extends LexicalElement {
+        Spacing(String lexeme) {
+            super(lexeme, Type.SPACING);
+        }
+    }
+
+    static class Comment extends LexicalElement {
+        Comment(String lexeme) {
+            super(lexeme, Type.COMMENT);
         }
     }
 }

@@ -7,12 +7,14 @@ package javax0.geci.javacomparator.lex;
 public class SpaceLiteral implements LexEater {
     @Override
     public LexicalElement apply(StringBuilder sb) {
-        if (!Character.isWhitespace(sb.charAt(0))) {
+        if (sb.length() == 0 || !Character.isWhitespace(sb.charAt(0))) {
             return null;
         }
+        final var lexeme = new StringBuilder();
         while (sb.length() > 0 && Character.isWhitespace(sb.charAt(0))) {
+            lexeme.append(sb.charAt(0));
             sb.deleteCharAt(0);
         }
-        return LexicalElement.IGNORED;
+        return new LexicalElement.Spacing(lexeme.toString());
     }
 }

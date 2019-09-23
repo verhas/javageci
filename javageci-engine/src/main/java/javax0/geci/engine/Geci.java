@@ -46,7 +46,7 @@ public class Geci implements javax0.geci.api.Geci {
     private BiPredicate<List<String>, List<String>> sourceComparator = null;
     public static final BiPredicate<List<String>, List<String>> EQUALS_COMPARATOR = (orig, gen) -> !orig.equals(gen);
     public static final BiPredicate<List<String>, List<String>> JAVA_COMPARATOR = new Comparator();
-    public static final BiPredicate<List<String>, List<String>> JAVA_COMPARATOR_COMMENT = new Comparator().checkComments();
+    public static final BiPredicate<List<String>, List<String>> JAVA_COMPARATOR_COMMENT = new Comparator().commentSensitive();
     private final Set<Source.Set> outputSet = new HashSet<>();
     private Source.Set lastSet = null;
     private boolean ignoreBinary = false;

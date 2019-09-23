@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class TestComparator {
+class TestComparator {
 
     @Test
     @DisplayName("Two empty source code equals")
@@ -45,6 +45,17 @@ public class TestComparator {
                 "    void method(){\n" +
                 "        var x = 0xd;\n" +
                 "    }";
+        Assertions.assertFalse( new Comparator().test(List.of(s1.split("\n",-1)),List.of(s2.split("\n",-1))));
+    }
+
+    @Test void testCommentDifference(){
+        final var s1 = "    @Test\n" +
+            "    void method(){\n" +
+            "    }";
+        final var s2 = "    @Test\n" +
+            "/** This is some \n comment \n*/"+
+            "    void method(){\n" +
+            "    }";
         Assertions.assertFalse( new Comparator().test(List.of(s1.split("\n",-1)),List.of(s2.split("\n",-1))));
     }
 }
