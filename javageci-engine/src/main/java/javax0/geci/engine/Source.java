@@ -150,6 +150,25 @@ public class Source implements javax0.geci.api.Source {
         return String.join("\n", lines);
     }
 
+    /**
+     * If the source was not read yet, then it reads from the disk so
+     * that the original lines will be there. After that it clears the
+     * current lines and adds the lines from the argument to replace the
+     * current list of lines.
+     *
+     * @param lines See {@link javax0.geci.api.Source#setLines(List)}
+     */
+    @Override
+    public void setLines(final List<String> lines){
+        if( !inMemory ){
+            getLines();
+        }
+        inMemory = true;
+        this.lines.clear();
+        this.lines.addAll(lines);
+    }
+
+    @Override
     public List<String> getLines() {
         if (!inMemory) {
             try {

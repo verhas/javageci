@@ -45,10 +45,10 @@ public interface Source {
      * @param root the directory to the root module where the top level
      *             {@code pom.xml} containing the
      *             <pre>
-     *                                       {@code <modules>
-     *                                           <module>...</module>
-     *                                         </modules>}
-     *                                       </pre>
+     *                                                               {@code <modules>
+     *                                                                   <module>...</module>
+     *                                                                 </modules>}
+     *                                                               </pre>
      *             declaration is.
      * @return a new Maven source directory configuration object.
      */
@@ -146,6 +146,20 @@ public interface Source {
     List<String> getLines();
 
     /**
+     * <p>Generators as a last resort can set the lines directly. This is usually not recommended. The purpose of
+     * this method is to create functionality that can alter the code on lexical level and then inject the
+     * changed code back into the Java Source.</p>
+     *
+     * <p>The list is copied into the Source object, thus the passed list can later be modified, it does not
+     * affect the list of lines that were already passed in this method.</p>
+     *
+     * @param lines the lines that will replace the lines that were there, either same as the
+     *              original or already modified. The lines after this operation will be what is
+     *              in the argument.
+     */
+    void setLines(List<String> lines);
+
+    /**
      * Get the absolute file name of this source.
      *
      * @return the absolute file name of the source
@@ -195,7 +209,7 @@ public interface Source {
      * <p>
      * When calculating the class name the directory structure is used and the name of the source file
      * chopping off the {@code .java} or other extension.
-     *
+     * <p>
      * Note: The seemingly weird decision to use 'K' in the name of the method provides some consistency. The method
      * {@link #getKlass()} cannot be named {@code getClass()} because that would override the method of the same name
      * in the class {@code Object}. Based on that all the methods that are returning the name or simple name of the
@@ -258,7 +272,7 @@ public interface Source {
         private final boolean autoName;
 
         private Set(String name, boolean autoName) {
-            if( name == null && autoName){
+            if (name == null && autoName) {
                 throw new GeciException("When the name for a set is not specified it cannot be 'autoName'");
             }
             if (name == null) {
@@ -312,7 +326,7 @@ public interface Source {
          * name} is {@code null} and {@code autoName} has to be {@code
          * false}.
          *
-         * @param name the name of the set
+         * @param name     the name of the set
          * @param autoName signals if the name was set automatically
          * @return the new set
          */
@@ -399,8 +413,8 @@ public interface Source {
          */
         public static Predicate<String> hasOneOfTheFiles(String... anchors) {
             return exists().and(file ->
-                    Arrays.stream(anchors).anyMatch(anchor ->
-                            new File(file + anchor).exists()));
+                                    Arrays.stream(anchors).anyMatch(anchor ->
+                                                                        new File(file + anchor).exists()));
         }
 
         /**
@@ -416,8 +430,8 @@ public interface Source {
          */
         public static Predicate<String> hasAllTheFiles(String... anchors) {
             return exists().and(file ->
-                    Arrays.stream(anchors).allMatch(anchor ->
-                            new File(file + anchor).exists()));
+                                    Arrays.stream(anchors).allMatch(anchor ->
+                                                                        new File(file + anchor).exists()));
         }
     }
 
@@ -447,7 +461,7 @@ public interface Source {
          * <pre>
          * '{@code ./src/(main|test)/(java|resources)}'
          * </pre>
-         *
+         * <p>
          * where the sources can be. This is sufficient. The current
          * working directory is the project root when the tests are
          * started either interactively in an IDE or from the command
@@ -470,7 +484,7 @@ public interface Source {
          *     {@code ./module/src/(main|test)/(java|resources)
          *     }
          * </pre>
-         *
+         * <p>
          * or
          *
          * <pre>
@@ -486,14 +500,14 @@ public interface Source {
          *     {@code $root/module/src/(main|test)/(java|resources)
          *     }
          * </pre>
-         *
+         * <p>
          * or
          *
          * <pre>
          *     {@code ./module/src/(main|test)/(java|resources)
          *     }
          * </pre>
-         *
+         * <p>
          * where {@code $root} is where the root module is. In this case
          * the algorithm will also try {@code ..} as {@code $root},
          * which works if the module structure is only two levels.
@@ -520,14 +534,14 @@ public interface Source {
             } else {
                 if (rootModuleDir == null) {
                     return new NamedSourceSet(Set.set(name, true), new String[]{
-                            "./" + module + "/src/" + mainOrTest + "/" + javaOrResources,
-                            "../" + module + "/src/" + mainOrTest + "/" + javaOrResources,
-                            "./src/" + mainOrTest + "/" + javaOrResources
+                        "./" + module + "/src/" + mainOrTest + "/" + javaOrResources,
+                        "../" + module + "/src/" + mainOrTest + "/" + javaOrResources,
+                        "./src/" + mainOrTest + "/" + javaOrResources
                     });
                 } else {
                     return new NamedSourceSet(Set.set(name, true), new String[]{
-                            rootModuleDir + "/" + module + "/src/" + mainOrTest + "/" + javaOrResources,
-                            "./" + module + "/src/" + mainOrTest + "/" + javaOrResources
+                        rootModuleDir + "/" + module + "/src/" + mainOrTest + "/" + javaOrResources,
+                        "./" + module + "/src/" + mainOrTest + "/" + javaOrResources
                     });
                 }
             }
