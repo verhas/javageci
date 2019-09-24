@@ -121,6 +121,10 @@ public class TestGeciReflectionTools {
             }
 
             @Override
+            public void returns(String text) {
+
+            }
+            @Override
             public List<String> getLines() {
                 return List.of("    // @Geci(\"aaa a='b' b='c' c='d' a$='dollared' b3='bthree' _='-'\")",
                         "    // @Geci(\"xxx x='x' y='y' z='z'\")",

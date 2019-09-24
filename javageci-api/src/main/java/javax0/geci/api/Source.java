@@ -145,19 +145,11 @@ public interface Source {
      */
     List<String> getLines();
 
-    /**
-     * <p>Generators as a last resort can set the lines directly. This is usually not recommended. The purpose of
-     * this method is to create functionality that can alter the code on lexical level and then inject the
-     * changed code back into the Java Source.</p>
-     *
-     * <p>The list is copied into the Source object, thus the passed list can later be modified, it does not
-     * affect the list of lines that were already passed in this method.</p>
-     *
-     * @param lines the lines that will replace the lines that were there, either same as the
-     *              original or already modified. The lines after this operation will be what is
-     *              in the argument.
-     */
-    void setLines(List<String> lines);
+    default String borrows(){
+        return String.join("\n",getLines());
+    }
+
+    void returns(String text);
 
     /**
      * Get the absolute file name of this source.

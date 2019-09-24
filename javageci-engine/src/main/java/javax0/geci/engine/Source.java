@@ -29,6 +29,7 @@ public class Source implements javax0.geci.api.Source {
     private long touchBits = 0;
     boolean allowDefaultSegment = false;
     boolean isBinary = false;
+    private boolean isBorrowed = false;
 
     Generator currentGenerator = null;
 
@@ -48,7 +49,7 @@ public class Source implements javax0.geci.api.Source {
     private void assertTouching() {
         if (currentGenerator != null && currentGenerator instanceof Distant) {
             throw new GeciException("The distant generator " + currentGenerator.getClass().getName() +
-                " tried to touch the source " + getAbsoluteFile());
+                                        " tried to touch the source " + getAbsoluteFile());
         }
     }
 
@@ -86,7 +87,7 @@ public class Source implements javax0.geci.api.Source {
         return touched;
     }
 
-    long getTouchBits(){
+    long getTouchBits() {
         return touchBits;
     }
 
@@ -150,23 +151,29 @@ public class Source implements javax0.geci.api.Source {
         return String.join("\n", lines);
     }
 
-    /**
-     * If the source was not read yet, then it reads from the disk so
-     * that the original lines will be there. After that it clears the
-     * current lines and adds the lines from the argument to replace the
-     * current list of lines.
-     *
-     * @param lines See {@link javax0.geci.api.Source#setLines(List)}
-     */
     @Override
-    public void setLines(final List<String> lines){
-        if( !inMemory ){
-            getLines();
+    public void returns(final String text) {
+        if( ! isBorrowed ){
+            throw new GeciException("Source " + getAbsoluteFile() + " cannot be returned before it was borrowed.");
+        }
+        if (!inMemory) {
+            throw new GeciException("Source " + getAbsoluteFile() + " cannot be returned before it is read from file.");
         }
         inMemory = true;
         this.lines.clear();
-        this.lines.addAll(lines);
+        this.lines.addAll(List.of(text.split("\n")));
+        isBorrowed = false;
     }
+
+    @Override
+    public String borrows() {
+        if (isBorrowed) {
+            throw new GeciException("Source " + getAbsoluteFile() + " cannot be borrowed more than once. Has to be returned before.");
+        }
+        isBorrowed = true;
+        return String.join("\n", getLines());
+    }
+
 
     @Override
     public List<String> getLines() {
@@ -340,7 +347,7 @@ public class Source implements javax0.geci.api.Source {
 
     private void mergeSegment(Segment segment, SegmentDescriptor segmentLocation) {
         if (segmentLocation.startLine < segmentLocation.endLine
-            || segment.lines.size() > 0) {
+                || segment.lines.size() > 0) {
             lines.subList(segmentLocation.startLine, segmentLocation.endLine).clear();
             lines.addAll(segmentLocation.startLine, segment.postface);
             lines.addAll(segmentLocation.startLine, segment.lines);
@@ -385,13 +392,13 @@ public class Source implements javax0.geci.api.Source {
                 originals.add(line);
             });
             inMemory = true;
-        }catch (IOException e){
+        } catch (IOException e) {
             throw e;
         } catch (UncheckedIOException e) {
             isBinary = true;
             throw new SourceIsBinary(absoluteFile);
         } catch (Exception e) {
-            throw new GeciException("Cannot read the file " + absoluteFile + "\nIt is probably binary file. Use '.ignore()' to filter binary files out",e);
+            throw new GeciException("Cannot read the file " + absoluteFile + "\nIt is probably binary file. Use '.ignore()' to filter binary files out", e);
         }
     }
 
@@ -515,7 +522,8 @@ public class Source implements javax0.geci.api.Source {
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;
-        if (other == null || getClass() != other.getClass()) return false;
+        if (other == null || getClass() != other.getClass())
+            return false;
         Source source = (Source) other;
         return absoluteFile.equals(source.absoluteFile);
     }
