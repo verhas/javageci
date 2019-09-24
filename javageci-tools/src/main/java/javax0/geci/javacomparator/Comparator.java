@@ -67,10 +67,8 @@ public class Comparator implements BiPredicate<List<String>, List<String>> {
             return true;
         }
         for (int i = 0; i < elements1.length; i++) {
-            if ((checkComments || elements1[i].type != LexicalElement.Type.COMMENT)) {
-                if (!elements1[i].equals(elements2[i])) {
-                    return true;
-                }
+            if (!elements1[i].equals(elements2[i])) {
+                return true;
             }
         }
         return false;

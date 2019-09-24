@@ -1,5 +1,6 @@
 package javax0.geci.tools;
 
+import javax0.geci.api.Logger;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 
@@ -30,9 +31,29 @@ public abstract class AbstractTestSource implements Source {
         return null;
     }
 
+    /**
+     * Get all the segment names that are defined in the source
+     *
+     * @return the set of the names of the segments
+     */
+    @Override
+    public java.util.Set<String> segmentNames() {
+        return null;
+    }
+
     @Override
     public List<String> getLines() {
         return null;
+    }
+
+    @Override
+    public List<String> borrows() {
+        return null;
+    }
+
+     @Override
+    public void returns(List<String> lines) {
+
     }
 
     @Override
@@ -72,6 +93,11 @@ public abstract class AbstractTestSource implements Source {
 
     @Override
     public Class<?> getKlass() {
+        return null;
+    }
+
+    @Override
+    public Logger getLogger() {
         return null;
     }
 }

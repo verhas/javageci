@@ -53,6 +53,7 @@
                             --add-opens geci.tools/javax0.geci.tools.syntax=ALL-UNNAMED
                             --add-opens geci.tools/javax0.geci.tools.reflection=ALL-UNNAMED
                             --add-opens geci.tools/javax0.geci.javacomparator=ALL-UNNAMED
+                            --add-opens geci.tools/javax0.geci.lexeger=ALL-UNNAMED
                             --add-opens geci.tools/javax0.geci.javacomparator.lex=ALL-UNNAMED
                             --add-opens geci.engine/javax0.geci.util=ALL-UNNAMED
                             --add-opens geci.engine/javax0.geci.toolsgen=ALL-UNNAMED

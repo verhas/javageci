@@ -13,7 +13,7 @@ class TestComparator {
     void testEmpty(){
         final var s1 = "";
         final var s2 = "";
-        Assertions.assertFalse( new Comparator().test(List.of(s1.split("\n",-1)),List.of(s2.split("\n",-1))));
+        Assertions.assertFalse( new Comparator().test(sourceList(s1), sourceList(s2)));
     }
 
     @Test
@@ -30,7 +30,7 @@ class TestComparator {
                 "                s2 = \"\";\n" +
                 "        Assertions.assertTrue( new Comparator().test(List.of(s1.split(\"\\n\",-1)),List.of(s2.split(\"\\n\",-1))));\n" +
                 "    }";
-        Assertions.assertFalse( new Comparator().test(List.of(s1.split("\n",-1)),List.of(s2.split("\n",-1))));
+        Assertions.assertFalse( new Comparator().test(sourceList(s1), sourceList(s2)));
     }
 
 
@@ -45,7 +45,11 @@ class TestComparator {
                 "    void method(){\n" +
                 "        var x = 0xd;\n" +
                 "    }";
-        Assertions.assertFalse( new Comparator().test(List.of(s1.split("\n",-1)),List.of(s2.split("\n",-1))));
+        Assertions.assertFalse( new Comparator().test(sourceList(s1), sourceList(s2)));
+    }
+
+    private List<String> sourceList(String s1) {
+        return List.of(s1.split("\n", -1));
     }
 
     @Test void testCommentDifference(){
@@ -56,6 +60,6 @@ class TestComparator {
             "/** This is some \n comment \n*/"+
             "    void method(){\n" +
             "    }";
-        Assertions.assertFalse( new Comparator().test(List.of(s1.split("\n",-1)),List.of(s2.split("\n",-1))));
+        Assertions.assertFalse( new Comparator().test(sourceList(s1), sourceList(s2)));
     }
 }

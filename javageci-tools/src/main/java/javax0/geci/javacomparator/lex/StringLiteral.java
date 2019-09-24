@@ -1,6 +1,8 @@
 package javax0.geci.javacomparator.lex;
 
-import static javax0.geci.javacomparator.lex.Escape.*;
+import static javax0.geci.javacomparator.lex.Escape.createOutput;
+import static javax0.geci.javacomparator.lex.Escape.handleEscape;
+import static javax0.geci.javacomparator.lex.Escape.handleNormalCharacter;
 
 /**
  * String literal eating lexer as per defined in the Java Language
@@ -23,7 +25,7 @@ public class StringLiteral implements LexEater {
     }
 
     @Override
-    public LexicalElement.STring apply(StringBuilder sb) {
+    public LexicalElement.StringLiteral apply(StringBuilder sb) {
         if (sb.length() == 0 || sb.charAt(0) != enclosing) {
             return null;
         }
@@ -41,6 +43,6 @@ public class StringLiteral implements LexEater {
             throw new IllegalArgumentException("String is not terminated before eol");
         }
         sb.deleteCharAt(0);
-        return new LexicalElement.STring(output.toString());
+        return new LexicalElement.StringLiteral(output.toString(),enclosing);
     }
 }

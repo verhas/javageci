@@ -44,7 +44,7 @@ public class NumberLiteral implements LexEater {
             return null;
         }
         sb.delete(0, maxLength);
-        return index > 1 ? new LexicalElement.FLoat(literals[index])
-                : new LexicalElement.INteger(literals[index]);
+        return index > 1 ? new LexicalElement.FloatLiteral(literals[index])
+                : new LexicalElement.IntegerLiteral(literals[index]);
     }
 }

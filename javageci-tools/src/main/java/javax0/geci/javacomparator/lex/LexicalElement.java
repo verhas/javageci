@@ -9,6 +9,22 @@ public class LexicalElement {
         this.type = type;
     }
 
+    public String getLexeme(){
+        return lexeme;
+    }
+
+    public String getFullLexeme(){
+        var lexeme = this.lexeme;
+        if (type == LexicalElement.Type.STRING) {
+            final char enclosing = ((StringLiteral) this).enclosing;
+            lexeme = enclosing + lexeme + enclosing;
+        }
+        if (type == LexicalElement.Type.CHARACTER) {
+            lexeme = "'" + lexeme + "'";
+        }
+        return lexeme;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -41,10 +57,10 @@ public class LexicalElement {
     public final String lexeme;
     public final Type type;
 
-    public static class INteger extends LexicalElement {
+    public static class IntegerLiteral extends LexicalElement {
         public final long value;
 
-        INteger(String lexeme) {
+        public IntegerLiteral(String lexeme) {
             super(lexeme, Type.INTEGER);
             if (lexeme.startsWith("0x") || lexeme.startsWith("0X")) {
                 value = Long.parseLong(lexeme.substring(2), 16);
@@ -61,8 +77,8 @@ public class LexicalElement {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            INteger iNteger = (INteger) o;
-            return value == iNteger.value;
+            IntegerLiteral literal = (IntegerLiteral) o;
+            return value == literal.value;
         }
 
         @Override
@@ -71,10 +87,10 @@ public class LexicalElement {
         }
     }
 
-    public static class FLoat extends LexicalElement {
+    public static class FloatLiteral extends LexicalElement {
         public final double value;
 
-        FLoat(String lexeme) {
+        public FloatLiteral(String lexeme) {
             super(lexeme, Type.FLOAT);
             value = Double.parseDouble(lexeme);
         }
@@ -83,8 +99,8 @@ public class LexicalElement {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            FLoat fLoat = (FLoat) o;
-            return Double.compare(fLoat.value, value) == 0;
+            FloatLiteral literal = (FloatLiteral) o;
+            return Double.compare(literal.value, value) == 0;
         }
 
         @Override
@@ -93,38 +109,40 @@ public class LexicalElement {
         }
     }
 
-    static class Symbol extends LexicalElement {
-        Symbol(String lexeme) {
+    public static class Symbol extends LexicalElement {
+        public Symbol(String lexeme) {
             super(lexeme, Type.SYMBOL);
         }
     }
 
-    static class STring extends LexicalElement {
-        STring(String lexeme) {
+    public static class StringLiteral extends LexicalElement {
+        public final char enclosing;
+        StringLiteral(String lexeme, char enclosing) {
             super(lexeme, Type.STRING);
+            this.enclosing = enclosing;
         }
     }
 
-    static class CHaracter extends LexicalElement {
-        CHaracter(String lexeme) {
+    public static class CharacterLiteral extends LexicalElement {
+        public CharacterLiteral(String lexeme) {
             super(lexeme, Type.CHARACTER);
         }
     }
 
-    static class Identifier extends LexicalElement {
-        Identifier(String lexeme) {
+    public static class Identifier extends LexicalElement {
+        public Identifier(String lexeme) {
             super(lexeme, Type.IDENTIFIER);
         }
     }
 
-    static class Spacing extends LexicalElement {
-        Spacing(String lexeme) {
+    public static class Spacing extends LexicalElement {
+        public Spacing(String lexeme) {
             super(lexeme, Type.SPACING);
         }
     }
 
-    static class Comment extends LexicalElement {
-        Comment(String lexeme) {
+    public static class Comment extends LexicalElement {
+        public Comment(String lexeme) {
             super(lexeme, Type.COMMENT);
         }
     }

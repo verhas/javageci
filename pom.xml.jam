@@ -21,6 +21,7 @@
                             {opens/tools/tools.syntax}
                             {opens/tools/tools.reflection}
                             {opens/tools/javacomparator}
+                            {opens/tools/lexeger}
                             {opens/tools/javacomparator.lex}
                             {opens/engine/util}
                             {opens/engine/toolsgen}
