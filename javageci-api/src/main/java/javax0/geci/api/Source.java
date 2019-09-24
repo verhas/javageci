@@ -45,10 +45,10 @@ public interface Source {
      * @param root the directory to the root module where the top level
      *             {@code pom.xml} containing the
      *             <pre>
-     *                                                               {@code <modules>
-     *                                                                   <module>...</module>
-     *                                                                 </modules>}
-     *                                                               </pre>
+     *                                                                                                   {@code <modules>
+     *                                                                                                       <module>...</module>
+     *                                                                                                     </modules>}
+     *                                                                                                   </pre>
      *             declaration is.
      * @return a new Maven source directory configuration object.
      */
@@ -67,8 +67,11 @@ public interface Source {
     }
 
     /**
-     * Return the named segment that the generator can write. Return
-     * {@code null} if there is no such segment in the file.
+     * <p>Return the named segment that the generator can write. Return
+     * {@code null} if there is no such segment in the file.</p>
+     *
+     * <p>The global segment cannot be opened while the lines of the segments
+     * are borrowed. See {@link #borrows()} and {@link #returns(List)}</p>
      *
      * @param id the name of the segment as defined in the
      *           {@code id="..."} xml tag of the
@@ -119,12 +122,13 @@ public interface Source {
     Segment temporary();
 
     /**
-     * Open the "global" segment that is the whole source file. Usually used on sources that are created calling
-     * {@link #newSource(String)}
-     * <p>
-     * If you invoke this method on a source that was "hand-made" then you will essentially delete the content of the
+     * <p>Open the "global" segment that is the whole source file. Usually used on sources that are created calling
+     * {@link #newSource(String)}</p>
+     * <p>If you invoke this method on a source that was "hand-made" then you will essentially delete the content of the
      * file. If you want to get the content of a source file you should call {@link #getLines()} on the source object
-     * itself.
+     * itself.</p>
+     * <p>The global segment cannot be opened while the lines of the segments
+     * are borrowed. See {@link #borrows()} and {@link #returns(List)}</p>
      *
      * @return the new segment object.
      */
@@ -138,18 +142,37 @@ public interface Source {
     java.util.Set<String> segmentNames();
 
     /**
-     * Generators can use this method to read the whole content of a file. The content of the list should not be
-     * modified and should be treated as immutable.
+     * <p>Generators can use this method to read the whole content of a file. The content of the list should not be
+     * modified and should be treated as immutable.</p>
+     * <p>The lines cannot be read while they are borrowed. See {@link #borrows()} and {@link #returns(List)}</p>
      *
      * @return the list of the strings that contain the lines of the source file.
      */
     List<String> getLines();
 
-    default String borrows(){
-        return String.join("\n",getLines());
+    /**
+     * <p>A generator may decide to use the lines of the source as they are without the help of the Source object.
+     * To signal this intention it should borrow the lines from the Source. While the lines are borrowed the
+     * Source cannot be modified in any other way calling API that modifies the Source object.</p>
+     * <p>When the generator is ready with the modifications then it has to return the possibly modified
+     * line list calling {@link #returns(List)}</p>
+     * <p>A generator cannot call {@code borrows()} in case it already opened or initialized some segments or
+     * if the lines were already borrowed.</p>
+     * @return the list of the lines
+     */
+    default List<String> borrows() {
+        return getLines();
     }
 
-    void returns(String text);
+    /**
+     * <p>When a generator borrowed the source line (see {@link #borrows()} from the Source then it also has to
+     * returns the lines before it finishes its work.</p>
+     * <p>It is possible to tell the Source object that the lines were not modified. In this case the argument
+     * has to be {@code null}</p>
+     *
+     * @param lines the list of the lines, or {@code null} in case the lines, as they are in the Source object are OK
+     */
+    void returns(List<String> lines);
 
     /**
      * Get the absolute file name of this source.
@@ -179,7 +202,7 @@ public interface Source {
     Source newSource(Source.Set set, String fileName);
 
     /**
-     * Initialize a segment. This is needed in case it is possible that the code generator does not
+     * Initialize a segment. This is needed in case when the code generator does not
      * write anything into the segment. In that case the segment may not even be opened and in that
      * case the segment is not touched and the old text, presumably garbage may be there. For example,
      * you have a setter/getter generated code that selects some of the fields only, say only the

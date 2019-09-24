@@ -82,8 +82,7 @@ public class Tracer implements AutoCloseable {
      */
     public static void on() {
         root = new Tracer(null, "tracer root", "trace", null);
-        current = root;
-        last = root;
+        resetCurrentAndLast();
     }
 
     /**
@@ -91,6 +90,10 @@ public class Tracer implements AutoCloseable {
      */
     public static void off() {
         root = null;
+        resetCurrentAndLast();
+    }
+
+    private static void resetCurrentAndLast() {
         current = root;
         last = root;
     }
@@ -345,16 +348,16 @@ public class Tracer implements AutoCloseable {
         final String messageTag = node.message != null ? " msg=\"" + escape(node.message) + "\"" : "";
         if (node.children.isEmpty()) {
             if (node.cData == null) {
-                sb.append(" ".repeat(tab)).append("<" + node.tag).append(messageTag).append("/>").append("\n");
+                sb.append(" ".repeat(tab)).append("<").append(node.tag).append(messageTag).append("/>").append("\n");
             } else {
-                sb.append(" ".repeat(tab)).append("<" + node.tag).append(messageTag).append(">").append("\n");
+                sb.append(" ".repeat(tab)).append("<").append(node.tag).append(messageTag).append(">").append("\n");
                 sb.append("<![CDATA[").append(node.cData).append("]]>\n");
-                sb.append(" ".repeat(tab)).append("</" + node.tag + ">\n");
+                sb.append(" ".repeat(tab)).append("</").append(node.tag).append(">\n");
             }
         } else {
-            sb.append(" ".repeat(tab)).append("<" + node.tag).append(messageTag).append(">").append("\n");
+            sb.append(" ".repeat(tab)).append("<").append(node.tag).append(messageTag).append(">").append("\n");
             node.children.forEach(c -> dumpXML(c, sb, tab + 2));
-            sb.append(" ".repeat(tab)).append("</" + node.tag + ">\n");
+            sb.append(" ".repeat(tab)).append("</").append(node.tag).append(">\n");
         }
     }
 

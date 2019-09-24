@@ -7,6 +7,7 @@ import javax0.geci.tools.GeciReflectionTools;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -152,31 +153,47 @@ public class Source implements javax0.geci.api.Source {
     }
 
     @Override
-    public void returns(final String text) {
-        if( ! isBorrowed ){
+    public void returns(final List<String> lines) {
+        if (!isBorrowed) {
             throw new GeciException("Source " + getAbsoluteFile() + " cannot be returned before it was borrowed.");
         }
         if (!inMemory) {
             throw new GeciException("Source " + getAbsoluteFile() + " cannot be returned before it is read from file.");
         }
         inMemory = true;
-        this.lines.clear();
-        this.lines.addAll(List.of(text.split("\n")));
+        if (lines != null) {
+            this.lines.clear();
+            this.lines.addAll(lines);
+        }
         isBorrowed = false;
     }
 
     @Override
-    public String borrows() {
+    public List<String> borrows() {
         if (isBorrowed) {
             throw new GeciException("Source " + getAbsoluteFile() + " cannot be borrowed more than once. Has to be returned before.");
         }
+        if (!segments.isEmpty()) {
+            throw new GeciException("Source " + getAbsoluteFile() + " cannot be borrowed after some segments were touched.");
+        }
+        final var lines = getLines();
         isBorrowed = true;
-        return String.join("\n", getLines());
+        return lines;
     }
-
 
     @Override
     public List<String> getLines() {
+        assertNotBorrowed();
+        readToMemorySafely();
+        return lines;
+    }
+
+    /**
+     * Read the content of the source into the object from the file. In case there is an
+     * {@code IOException} then we treat it like the file does not exist yet. No lines, but
+     * was read into memory.
+     */
+    private void readToMemorySafely() {
         if (!inMemory) {
             try {
                 readToMemory();
@@ -186,11 +203,11 @@ public class Source implements javax0.geci.api.Source {
                 lines.clear();
             }
         }
-        return lines;
     }
 
     @Override
     public Segment open() {
+        assertNotBorrowed();
         assertTouching();
         if (!segments.isEmpty()) {
             throw new GeciException("Global segment was opened when the there were already opened segments");
@@ -198,20 +215,13 @@ public class Source implements javax0.geci.api.Source {
         if (globalSegment == null) {
             globalSegment = new Segment(0);
         }
-        if (!inMemory) {
-            try {
-                readToMemory();
-            } catch (IOException e) {
-                inMemory = true;
-                originals.clear();
-                lines.clear();
-            }
-        }
+        readToMemorySafely();
         return globalSegment;
     }
 
     @Override
     public java.util.Set<String> segmentNames() {
+        assertNotBorrowed();
         loadSegments();
         return segments.keySet();
     }
@@ -254,6 +264,7 @@ public class Source implements javax0.geci.api.Source {
 
     @Override
     public Segment open(String id) throws IOException {
+        assertNotBorrowed();
         assertTouching();
         if (globalSegment != null) {
             throw new GeciException("Segment was opened after the global segment was already created.");
@@ -315,10 +326,17 @@ public class Source implements javax0.geci.api.Source {
         return getKlassName().replaceAll("\\.\\w+$", "");
     }
 
+    private void assertNotBorrowed() {
+        if (isBorrowed) {
+            throw new GeciException("Source " + getAbsoluteFile() + " was borrowed and not returned.");
+        }
+    }
+
     /**
      * Replace the original content of the segments with the generated lines.
      */
     void consolidate() {
+        assertNotBorrowed();
         if (!inMemory && !segments.isEmpty()) {
             throw new GeciException(
                 "This is an internal error: source was not read into memory but segments were generated");
@@ -374,7 +392,7 @@ public class Source implements javax0.geci.api.Source {
             } catch (Exception ignored) {
             }
         }
-        Files.write(Paths.get(absoluteFile), lines, Charset.forName("utf-8"));
+        Files.write(Paths.get(absoluteFile), lines, StandardCharsets.UTF_8);
     }
 
     /**
@@ -503,7 +521,7 @@ public class Source implements javax0.geci.api.Source {
      * {@link #findSegment(String)}. When the segments are consolidated the index values in {@code lines}
      * will change.
      */
-    private class SegmentDescriptor {
+    private static class SegmentDescriptor {
         String id;
         List<String> originals;
         int startLine;

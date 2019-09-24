@@ -29,8 +29,7 @@ public class ProxyMakerOfOrginalClass {
                     handler.invoke(instance, originalMethodMethod, new Object[]{s});
                 } catch (NumberFormatException nfe) {
                     throw nfe;
-                } catch (Throwable t) {
-
+                } catch (Throwable ignored) {
                 }
             }
         }

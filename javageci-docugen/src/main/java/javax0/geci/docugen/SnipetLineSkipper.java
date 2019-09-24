@@ -145,6 +145,7 @@ public class SnipetLineSkipper extends AbstractSnippeter {
                     skipping = false;
                     skipPattern = null;
                     skipCounter = 0;
+                    //noinspection UnnecessaryContinue
                     continue;
                 }
             } else {

@@ -164,7 +164,7 @@ public class Repeated extends AbstractJavaGenerator {
             Tracer.log("Adding values from configured values supplier");
             loopVars.addAll(local.valuesSupplier.apply(klass));
         }
-        Tracer.log("final list of values: [" + loopVars.stream().collect(Collectors.joining(",")) + "]");
+        Tracer.log("final list of values: [" + String.join(",", loopVars) + "]");
         for (final var key : config.templatesMap.keySet()) {
             try (final var pos = Tracer.push("Segment", key)) {
                 final Segment segment;

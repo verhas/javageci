@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 class TestTracer {
 
-    private class TestOutput implements AutoCloseable {
+    private static class TestOutput implements AutoCloseable {
         final StringBuilder sb = new StringBuilder();
 
         TestOutput() {
@@ -27,7 +27,7 @@ class TestTracer {
     }
 
     private TestOutput testOutput() {
-        return TestTracer.this.new TestOutput();
+        return new TestOutput();
     }
 
     private static void assertStartsWith(final String expectedStart, final String actual) {

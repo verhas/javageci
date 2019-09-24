@@ -36,12 +36,8 @@ public class Reflection {
      * group(2) is the selector expression, optionally empty
      */
 
-    public static WeakHashMap<String, Field> globalFieldsMap = new WeakHashMap<>();
+    public static final WeakHashMap<String, Field> globalFieldsMap = new WeakHashMap<>();
 
-
-
-    public static WeakHashMap<String, Method> globalMethodMap = new WeakHashMap<>();
-
-
+    public static final WeakHashMap<String, Method> globalMethodMap = new WeakHashMap<>();
 
 }

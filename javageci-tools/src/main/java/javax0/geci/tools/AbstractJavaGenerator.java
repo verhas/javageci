@@ -143,7 +143,7 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
             global.trace();
             Tracer.pop();
 
-            try (final var pos = Tracer.push("setting the constraint on the parameters keys=[" + (implementedKeys() == null ? "" : implementedKeys().stream().collect(Collectors.joining(","))) + "]")) {
+            try (final var pos = Tracer.push("setting the constraint on the parameters keys=[" + (implementedKeys() == null ? "" : String.join(",", implementedKeys())) + "]")) {
                 global.setConstraints(source, mnemonic(), implementedKeys());
             }
             if (nullableAannotationParams != null || processAllClasses()) {

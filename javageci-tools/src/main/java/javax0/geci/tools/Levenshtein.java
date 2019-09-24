@@ -64,8 +64,8 @@ class Levenshtein {
         int substitution = calculate(x.substring(1), y.substring(1), cost + thisCost)
                 + thisCost;
         int insertion = calculate(x, y.substring(1), cost + 1) + 1;
-        final var min = substitution > insertion ? insertion : substitution;
+        final var min = Math.min(substitution, insertion);
         int deletion = calculate(x.substring(1), y, cost + 1) + 1;
-        return min < deletion ? min : deletion;
+        return Math.min(min, deletion);
     }
 }

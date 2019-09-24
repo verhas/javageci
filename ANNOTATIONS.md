@@ -6,7 +6,7 @@ The Java generators works on source files that are some way noted for
 the generators. There are multiple ways to tell a generator that a Java
 source file nees its attention, One is add a Geci annotation. It is
 usually `javax0.geci.annotations.Geci` but not neccessarily. As it is
-described in the documentation of the [configuration](CONFIGURATION.MD)
+described in the documentation of the [configuration](CONFIGURATION.md)
 
 >
 An annotation is a Geci annotation if

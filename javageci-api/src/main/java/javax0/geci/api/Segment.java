@@ -20,7 +20,7 @@ public interface Segment extends AutoCloseable {
      * the same code as the already existing text in the segment. This
      * is discovered during source consolidation and it is used to check
      * that the generators have touched at least one source object. If
-     * no generator touched none of the source objects then there is no
+     * no generator touched any of the source objects then there is no
      * point to run the generators, and this is probably a configuration
      * error. (Unless the generator implements the interface {@link
      * Distant}.)</p>

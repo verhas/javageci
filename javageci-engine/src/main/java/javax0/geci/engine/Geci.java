@@ -294,7 +294,6 @@ public class Geci implements javax0.geci.api.Geci {
         }
     }
 
-
     private static boolean isCommentTouched(final Source source) {
         if (source instanceof javax0.geci.engine.Source) {
             final var src = (javax0.geci.engine.Source) source;

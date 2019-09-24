@@ -121,7 +121,7 @@ public class TestGeciReflectionTools {
             }
 
             @Override
-            public void returns(String text) {
+            public void returns(List<String> lines) {
 
             }
             @Override
