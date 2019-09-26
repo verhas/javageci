@@ -3,7 +3,6 @@ package javax0.geci.lexeger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.awt.*;
 import java.util.List;
 import java.util.regex.Pattern;
 
