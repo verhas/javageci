@@ -6,8 +6,16 @@ import java.util.function.Function;
 
 public class Lexer implements Function<List<String>, LexicalElement[]> {
 
-    private boolean ignoreSpacing = true;
-    private boolean ignoreComments = true;
+    private boolean spaceSensitive = false;
+    private boolean commentSensitive = false;
+
+    public boolean isSpaceSensitive() {
+        return spaceSensitive;
+    }
+
+    public boolean isCommentSensitive() {
+        return commentSensitive;
+    }
 
     /**
      * Set the lexer to be space sensitive. In case the lexer is space
@@ -17,7 +25,7 @@ public class Lexer implements Function<List<String>, LexicalElement[]> {
      * @return {@code this}
      */
     public Lexer spaceSensitive() {
-        ignoreSpacing = false;
+        spaceSensitive = true;
         return this;
     }
 
@@ -30,7 +38,7 @@ public class Lexer implements Function<List<String>, LexicalElement[]> {
      * @return {@code this}
      */
     public Lexer commentSensitive() {
-        ignoreComments = false;
+        commentSensitive = true;
         return this;
     }
 
@@ -89,8 +97,8 @@ public class Lexer implements Function<List<String>, LexicalElement[]> {
     }
 
     private boolean ignore(LexicalElement nlextElement) {
-        return (ignoreSpacing && nlextElement.type == LexicalElement.Type.SPACING) ||
-            (ignoreComments && nlextElement.type == LexicalElement.Type.COMMENT);
+        return (!spaceSensitive && nlextElement.type == LexicalElement.Type.SPACING) ||
+            (!commentSensitive && nlextElement.type == LexicalElement.Type.COMMENT);
     }
 
 }

@@ -5,8 +5,8 @@ public class Repeat extends LexMatcher {
     private final int min;
     private final int max;
 
-    public Repeat(JavaLexed javaLexed, LexMatcher matcher, int min, int max) {
-        super(javaLexed);
+    public Repeat(LexExpression factory, JavaLexed javaLexed, LexMatcher matcher, int min, int max) {
+        super(factory, javaLexed);
         this.matcher = matcher;
         this.min = min;
         this.max = max;
@@ -19,13 +19,14 @@ public class Repeat extends LexMatcher {
         int counter = 0;
         while (counter < max) {
             j = skipSpacesAndComments(j);
-            matcher.spaceSensitive(this);
-            final var result = matcher.match(j++);
+            final var result = matcher.match(j);
             counter++;
             if (!result.matches && counter < min) {
                 return MatchResult.NO_MATCH;
             }
-            if (!result.matches) {
+            if (result.matches) {
+                j = result.end;
+            } else {
                 return new MatchResult(true, start, j);
             }
         }

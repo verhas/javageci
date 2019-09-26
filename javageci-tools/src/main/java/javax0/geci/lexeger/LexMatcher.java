@@ -1,40 +1,53 @@
 package javax0.geci.lexeger;
 
+import javax0.geci.javacomparator.lex.Lexer;
 import javax0.geci.javacomparator.lex.LexicalElement;
+
+import java.util.List;
 
 public abstract class LexMatcher {
     protected final JavaLexed javaLexed;
+    private final LexExpression expression;
 
-    protected LexMatcher(JavaLexed javaLexed) {
+    protected LexMatcher(LexExpression expression, JavaLexed javaLexed) {
         this.javaLexed = javaLexed;
+        this.expression = expression;
     }
 
-    private boolean isSpaceChecked = false;
-    private boolean isCommentChecked = false;
-
-    public static LexMatcherFactory factory(JavaLexed javaLexed) {
-        return new LexMatcherFactory(javaLexed);
+    void store(String name, List<LexicalElement> elements) {
+        if (name != null) {
+            expression.store(name, elements);
+        }
     }
 
-    public LexMatcher spaceSensitive() {
-        isSpaceChecked = true;
-        return this;
+    protected void store(String name, java.util.regex.MatchResult patternMatchResult) {
+        if (name != null) {
+            expression.store(name, patternMatchResult);
+        }
     }
 
-    public LexMatcher commentSensitive() {
-        isCommentChecked = true;
-        return this;
+
+    public static LexExpression of(JavaLexed javaLexed, int sensitivity) {
+        final var lexer = new Lexer();
+        if ((sensitivity & LexExpression.SPACE_SENSITIVE) > 0) {
+            lexer.spaceSensitive();
+        }
+        if ((sensitivity & LexExpression.COMMENT_SENSITIVE) > 0) {
+            lexer.commentSensitive();
+        }
+        return new LexExpression(javaLexed, lexer);
     }
 
-    protected void spaceSensitive(LexMatcher lm) {
-        isSpaceChecked = lm.isSpaceChecked;
+    public static LexExpression of(JavaLexed javaLexed) {
+        return of(javaLexed, LexExpression.NO_SENSITIVITY);
     }
 
     public abstract MatchResult match(int i);
 
     public MatchResult find(int i) {
         int j = i;
-        while (i < javaLexed.size()) {
+        while (j < javaLexed.size()) {
+            expression.clean();
             final var result = match(j);
             if (result.matches) {
                 return result;
@@ -50,10 +63,10 @@ public abstract class LexMatcher {
 
     protected int skipSpacesAndComments(int i) {
         int j = i;
-        if (!isSpaceChecked || !isCommentChecked) {
+        if (!expression.isSpaceSensitive() || !expression.isCommentSensitive()) {
             while (j < javaLexed.size() &&
-                       ((!isSpaceChecked && javaLexed.get(j).type == LexicalElement.Type.SPACING)
-                            || (!isCommentChecked && javaLexed.get(j).type == LexicalElement.Type.COMMENT))
+                ((!expression.isSpaceSensitive() && javaLexed.get(j).type == LexicalElement.Type.SPACING)
+                    || (!expression.isCommentSensitive() && javaLexed.get(j).type == LexicalElement.Type.COMMENT))
             ) {
                 j++;
             }

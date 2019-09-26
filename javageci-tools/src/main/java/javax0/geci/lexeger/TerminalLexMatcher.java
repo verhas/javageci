@@ -5,8 +5,8 @@ import javax0.geci.javacomparator.lex.LexicalElement;
 public class TerminalLexMatcher extends LexMatcher {
     private final LexicalElement le;
 
-    public TerminalLexMatcher(JavaLexed javaLexed, LexicalElement le) {
-        super(javaLexed);
+    public TerminalLexMatcher(LexExpression factory, JavaLexed javaLexed, LexicalElement le) {
+        super(factory, javaLexed);
         this.le = le;
     }
 

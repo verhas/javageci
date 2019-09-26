@@ -3,8 +3,8 @@ package javax0.geci.lexeger;
 public class ListMatcher extends LexMatcher {
     private final LexMatcher[] matchers;
 
-    public ListMatcher(JavaLexed javaLexed, LexMatcher[] matchers) {
-        super(javaLexed);
+    public ListMatcher(LexExpression factory, JavaLexed javaLexed, LexMatcher[] matchers) {
+        super(factory,javaLexed);
         this.matchers = matchers;
     }
 
@@ -14,11 +14,14 @@ public class ListMatcher extends LexMatcher {
         int j = start;
         for (LexMatcher matcher : matchers) {
             j = skipSpacesAndComments(j);
-            matcher.spaceSensitive(this);
-            final var result = matcher.match(j++);
+            if( j >= javaLexed.size() ){
+                return MatchResult.NO_MATCH;
+            }
+            final var result = matcher.match(j);
             if (!result.matches) {
                 return MatchResult.NO_MATCH;
             }
+            j = result.end;
         }
         return new MatchResult(true, start, j);
     }
