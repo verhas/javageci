@@ -1,15 +1,25 @@
-package javax0.geci.lexeger;
+package javax0.geci.lexeger.matchers;
+
+import javax0.geci.lexeger.JavaLexed;
+import javax0.geci.lexeger.MatchResult;
 
 public class Repeat extends LexMatcher {
     private final LexMatcher matcher;
     private final int min;
     private final int max;
+    private int currentMax;
 
-    public Repeat(LexExpression factory, JavaLexed javaLexed, LexMatcher matcher, int min, int max) {
+    public Repeat(Lexpression factory, JavaLexed javaLexed, LexMatcher matcher, int min, int max) {
         super(factory, javaLexed);
         this.matcher = matcher;
         this.min = min;
         this.max = max;
+        currentMax = max;
+    }
+
+    @Override
+    public void reset() {
+        currentMax = max;
     }
 
     @Override
@@ -17,19 +27,26 @@ public class Repeat extends LexMatcher {
         int start = skipSpacesAndComments(i);
         int j = start;
         int counter = 0;
-        while (counter < max) {
+        while (counter < currentMax) {
             j = skipSpacesAndComments(j);
+            matcher.reset();
             final var result = matcher.match(j);
-            counter++;
             if (!result.matches && counter < min) {
                 return MatchResult.NO_MATCH;
             }
             if (result.matches) {
+                counter++;
                 j = result.end;
             } else {
-                return new MatchResult(true, start, j);
+                currentMax = counter - 1;
+                return matching( start, j);
             }
         }
-        return new MatchResult(true, start, j);
+        currentMax--;
+        if (counter < min) {
+            return MatchResult.NO_MATCH;
+        } else {
+            return matching( start, j);
+        }
     }
 }

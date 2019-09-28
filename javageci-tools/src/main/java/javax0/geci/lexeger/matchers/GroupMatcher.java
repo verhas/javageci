@@ -1,6 +1,8 @@
-package javax0.geci.lexeger;
+package javax0.geci.lexeger.matchers;
 
 import javax0.geci.javacomparator.lex.LexicalElement;
+import javax0.geci.lexeger.JavaLexed;
+import javax0.geci.lexeger.MatchResult;
 
 import java.util.ArrayList;
 
@@ -8,7 +10,7 @@ public class GroupMatcher extends LexMatcher {
     private final LexMatcher matcher;
     private final String name;
 
-    public GroupMatcher(LexExpression expr, JavaLexed javaLexed, String name, LexMatcher matcher) {
+    public GroupMatcher(Lexpression expr, JavaLexed javaLexed, String name, LexMatcher matcher) {
         super(expr, javaLexed);
         this.matcher = matcher;
         this.name = name;
@@ -17,6 +19,11 @@ public class GroupMatcher extends LexMatcher {
 
     @Override
     public MatchResult match(final int i) {
+        if( consumed()){
+            remove(name);
+            return MatchResult.NO_MATCH;
+        }
+        matcher.reset();
         final var result = matcher.match(i);
         if (result.matches) {
             final var elements = new ArrayList<LexicalElement>(result.end-result.start);

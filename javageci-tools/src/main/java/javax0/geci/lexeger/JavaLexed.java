@@ -57,6 +57,12 @@ public class JavaLexed implements AutoCloseable {
         source.returns(lines);
     }
 
+    private void assertOpen() {
+        if (!isOpen) {
+            throw new IllegalArgumentException("JavaLexed must not be used after it was closed.");
+        }
+    }
+
     public Iterable<LexicalElement> lexicalElements() {
         return new LexicalIterable();
     }
@@ -80,6 +86,7 @@ public class JavaLexed implements AutoCloseable {
          */
         @Override
         public boolean hasNext() {
+            assertOpen();
             return index < lexicalElements.size();
         }
 
@@ -91,6 +98,7 @@ public class JavaLexed implements AutoCloseable {
          */
         @Override
         public LexicalElement next() throws NoSuchElementException {
+            assertOpen();
             if (index >= lexicalElements.size()) {
                 throw new NoSuchElementException("The JavaLexed source contains only " +
                                                      lexicalElements.size() +
@@ -107,6 +115,7 @@ public class JavaLexed implements AutoCloseable {
      * @return the element
      */
     public LexicalElement get(int i) {
+        assertOpen();
         return lexicalElements.get(i);
     }
 
@@ -117,6 +126,7 @@ public class JavaLexed implements AutoCloseable {
      * @return the removed object
      */
     public LexicalElement remove(int i) {
+        assertOpen();
         return lexicalElements.remove(i);
     }
 
@@ -131,17 +141,20 @@ public class JavaLexed implements AutoCloseable {
      *                {@code toIndex} will not be removed.
      */
     public void removeRange(int fromIndex, int toIndex) {
+        assertOpen();
         for (int i = toIndex - 1; i >= fromIndex; i--) {
             lexicalElements.remove(i);
         }
     }
 
     public void add(int index, LexicalElement le) {
+        assertOpen();
         lexicalElements.add(index, le);
     }
 
 
-    public int size(){
+    public int size() {
+        assertOpen();
         return lexicalElements.size();
     }
 }

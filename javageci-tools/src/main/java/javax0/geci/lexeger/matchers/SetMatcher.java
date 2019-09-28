@@ -1,17 +1,23 @@
-package javax0.geci.lexeger;
+package javax0.geci.lexeger.matchers;
+
+import javax0.geci.lexeger.JavaLexed;
+import javax0.geci.lexeger.MatchResult;
 
 import java.util.HashSet;
 
 public class SetMatcher extends LexMatcher {
     private final LexMatcher[] matchers;
 
-    public SetMatcher(LexExpression factory, JavaLexed javaLexed, LexMatcher[] matchers) {
+    public SetMatcher(Lexpression factory, JavaLexed javaLexed, LexMatcher[] matchers) {
         super(factory, javaLexed);
         this.matchers = matchers;
     }
 
     @Override
     public MatchResult match(int i) {
+        if( consumed() ){
+            return MatchResult.NO_MATCH;
+        }
         final var wasMatched = new HashSet<LexMatcher>();
         int start = skipSpacesAndComments(i);
         int j = start;
@@ -25,6 +31,7 @@ public class SetMatcher extends LexMatcher {
                 if (j >= javaLexed.size()) {
                     return MatchResult.NO_MATCH;
                 }
+                matcher.reset();
                 final var result = matcher.match(j);
                 if (result.matches) {
                     wasMatched.add(matcher);
@@ -36,6 +43,6 @@ public class SetMatcher extends LexMatcher {
                 return MatchResult.NO_MATCH;
             }
         }
-        return new MatchResult(true, start, j);
+        return matching( start, j);
     }
 }

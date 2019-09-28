@@ -1,23 +1,39 @@
-package javax0.geci.lexeger;
+package javax0.geci.lexeger.matchers;
 
 import javax0.geci.javacomparator.lex.Lexer;
 import javax0.geci.javacomparator.lex.LexicalElement;
+import javax0.geci.lexeger.JavaLexed;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
-public class LexExpression {
+public class Lexpression {
     private final JavaLexed javaLexed;
-    private final Lexer lexer;
+    public final Lexer lexer;
     public static final int NO_SENSITIVITY = 0x00;
     public static final int SPACE_SENSITIVE = 0x01;
     public static final int COMMENT_SENSITIVE = 0x02;
 
+
+    public static Lexpression of(JavaLexed javaLexed, int sensitivity) {
+        final var lexer = new Lexer();
+        if ((sensitivity & Lexpression.SPACE_SENSITIVE) > 0) {
+            lexer.spaceSensitive();
+        }
+        if ((sensitivity & Lexpression.COMMENT_SENSITIVE) > 0) {
+            lexer.commentSensitive();
+        }
+        return new Lexpression(javaLexed, lexer);
+    }
+
+    public static Lexpression of(JavaLexed javaLexed) {
+        return of(javaLexed, Lexpression.NO_SENSITIVITY);
+    }
 
     public boolean isSpaceSensitive() {
         return lexer.isSpaceSensitive();
@@ -27,13 +43,9 @@ public class LexExpression {
         return lexer.isCommentSensitive();
     }
 
-    LexExpression(JavaLexed javaLexed, Lexer lexer) {
+    public Lexpression(JavaLexed javaLexed, Lexer lexer) {
         this.javaLexed = javaLexed;
         this.lexer = lexer;
-    }
-
-    public LexMatcher identifier(String id) {
-        return new TerminalLexMatcher(this, javaLexed, new LexicalElement.Identifier(id));
     }
 
     void clean() {
@@ -42,39 +54,44 @@ public class LexExpression {
         ;
     }
 
-    private final Map<String, List<List<LexicalElement>>> groups = new HashMap<>();
+    private final Map<String, List<LexicalElement>> groups = new HashMap<>();
 
+    void remove(String name) {
+        groups.remove(name);
+        regexResults.remove(name);
+    }
     void store(String name, List<LexicalElement> elements) {
-        if (!groups.containsKey(name)) {
-            groups.put(name, new ArrayList<>());
+        if (regexResults.containsKey(name)) {
+            throw new IllegalArgumentException(name + " cannot be used to identify both a lex group and regex result");
         }
-        groups.get(name).add(elements);
+        groups.put(name, elements);
     }
 
-    public List<List<LexicalElement>> group(final String name) {
+    void store(String name, java.util.regex.MatchResult patternMatchResult) {
+        if (groups.containsKey(name)) {
+            throw new IllegalArgumentException(name + " cannot be used to identify both a lex group and regex result");
+        }
+        regexResults.put(name, patternMatchResult);
+    }
+
+    public List<LexicalElement> group(final String name) {
         if (groups.containsKey(name)) {
             return groups.get(name);
         }
         return List.of();
     }
 
-    private final Map<String, List<MatchResult>> regexResults = new HashMap<>();
+    private final Map<String, MatchResult> regexResults = new HashMap<>();
 
-    void store(String name, java.util.regex.MatchResult patternMatchResult) {
-        if (!regexResults.containsKey(name)) {
-            regexResults.put(name, new ArrayList<>());
-        }
-        regexResults.get(name).add(patternMatchResult);
-    }
 
-    public List<MatchResult> get(final String name) {
+    public Optional<MatchResult> matchResult(final String name) {
         if (regexResults.containsKey(name)) {
-            return regexResults.get(name);
+            return Optional.of(regexResults.get(name));
         }
-        return List.of();
+        return Optional.empty();
     }
 
-    private LexMatcher terminal(LexicalElement le) {
+    public LexMatcher terminal(LexicalElement le) {
         return new TerminalLexMatcher(this, javaLexed, le);
     }
 
@@ -106,6 +123,10 @@ public class LexExpression {
         return new Repeat(this, javaLexed, matcher, min, max);
     }
 
+    public LexMatcher identifier(String id) {
+        return new TerminalLexMatcher(this, javaLexed, new LexicalElement.Identifier(id));
+    }
+
     public LexMatcher identifier(Pattern pattern) {
         return new IdentifierMatcher(this, javaLexed, pattern);
     }
@@ -116,6 +137,22 @@ public class LexExpression {
 
     public LexMatcher identifier() {
         return new IdentifierMatcher(this, javaLexed);
+    }
+
+    public LexMatcher character(String text) {
+        return new CharacterMatcher(this, javaLexed, text);
+    }
+
+    public LexMatcher character(Pattern pattern) {
+        return new CharacterMatcher(this, javaLexed, pattern);
+    }
+
+    public LexMatcher character(String name, Pattern pattern) {
+        return new CharacterMatcher(this, javaLexed, pattern, name);
+    }
+
+    public LexMatcher character() {
+        return new CharacterMatcher(this, javaLexed);
     }
 
     public LexMatcher string(String text) {
@@ -134,6 +171,23 @@ public class LexExpression {
         return new StringMatcher(this, javaLexed);
     }
 
+
+    public LexMatcher type(String text) {
+        return new TypeMatcher(this, javaLexed, text);
+    }
+
+    public LexMatcher type(Pattern pattern) {
+        return new TypeMatcher(this, javaLexed, pattern);
+    }
+
+    public LexMatcher type(String name, Pattern pattern) {
+        return new TypeMatcher(this, javaLexed, pattern, name);
+    }
+
+    public LexMatcher type() {
+        return new TypeMatcher(this, javaLexed);
+    }
+
     public LexMatcher comment(String text) {
         return new CommentMatcher(this, javaLexed, text);
     }
@@ -150,12 +204,20 @@ public class LexExpression {
         return new CommentMatcher(this, javaLexed);
     }
 
-    public LexMatcher integer() {
+    public LexMatcher integerNumber() {
         return new IntegerMatcher(this, javaLexed);
     }
 
-    public LexMatcher integer(Predicate<Long> predicate) {
+    public LexMatcher integerNumber(Predicate<Long> predicate) {
         return new IntegerMatcher(this, javaLexed, predicate);
+    }
+
+    public LexMatcher number() {
+        return new NumberMatcher(this, javaLexed);
+    }
+
+    public LexMatcher number(Predicate<Number> predicate) {
+        return new NumberMatcher(this, javaLexed, predicate);
     }
 
     public LexMatcher floatNumber() {
