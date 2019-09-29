@@ -81,7 +81,7 @@ public class Lexpression {
         return Optional.empty();
     }
 
-    public LexMatcher terminal(LexicalElement le) {
+    private LexMatcher terminal(LexicalElement le) {
         return new TerminalLexMatcher(this, javaLexed, le);
     }
 
@@ -97,12 +97,24 @@ public class Lexpression {
         return new Repeat(this, javaLexed, matcher, 0, Integer.MAX_VALUE);
     }
 
+    public LexMatcher zeroOrMore(String string) {
+        return zeroOrMore(getMatcher(string));
+    }
+
     public LexMatcher optional(LexMatcher matcher) {
         return new Repeat(this, javaLexed, matcher, 0, 1);
     }
 
+    public LexMatcher optional(String string) {
+        return optional(getMatcher(string));
+    }
+
     public LexMatcher oneOrMore(LexMatcher matcher) {
         return new Repeat(this, javaLexed, matcher, 1, Integer.MAX_VALUE);
+    }
+
+    public LexMatcher oneOrMore(String string) {
+        return oneOrMore(getMatcher(string));
     }
 
     public LexMatcher repeat(LexMatcher matcher, int times) {
@@ -218,17 +230,20 @@ public class Lexpression {
         return new FloatMatcher(this, javaLexed, predicate);
     }
 
+    private LexMatcher list(LexicalElement... elements) {
+        final var matchers = getLexMatchers(elements);
+        return new ListMatcher(this, javaLexed, matchers);
+    }
+
+    public LexMatcher list(String... strings) {
+        return list(getMatchers(strings));
+    }
     public LexMatcher list(LexMatcher... matchers) {
         return new ListMatcher(this, javaLexed, matchers);
     }
 
     public LexMatcher match(String string) {
         return list(lexer.apply(List.of(string)));
-    }
-
-    public LexMatcher list(LexicalElement... elements) {
-        final var matchers = getLexMatchers(elements);
-        return new ListMatcher(this, javaLexed, matchers);
     }
 
     public LexMatcher unordered(LexMatcher... matchers) {
@@ -257,17 +272,25 @@ public class Lexpression {
     }
 
     public LexMatcher oneOf(String... strings) {
+        return oneOf(getMatchers(strings));
+    }
+
+    private LexMatcher getMatcher(String string) {
+        final var lexicalElements = lexer.apply(List.of(string));
+        if (lexicalElements.length == 1) {
+            return terminal(lexicalElements[0]);
+        } else {
+            return list(lexicalElements);
+        }
+    }
+
+    private LexMatcher[] getMatchers(String... strings) {
         final var matchers = new LexMatcher[strings.length];
         int i = 0;
         for (final var string : strings) {
-            final var lexicalElements = lexer.apply(List.of(string));
-            if (lexicalElements.length == 1) {
-                matchers[i++] = terminal(lexicalElements[0]);
-            } else {
-                matchers[i++] = list(lexicalElements);
-            }
+            matchers[i++] = getMatcher(string);
         }
-        return oneOf(matchers);
+        return matchers;
     }
 
 }

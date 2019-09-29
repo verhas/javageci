@@ -569,7 +569,7 @@ class TestMatching {
         final var source = new TestSource(List.of("public public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(oneOrMore(match("public")), match("public public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
+            final var matcher = e.usingExpression(list(oneOrMore("public"), match("public public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
             final var result = matcher.matchesAt(0);
             Assertions.assertFalse(result.matches);
         }

@@ -19,10 +19,6 @@ public class LexpressionBuilder {
             Arrays.stream(matchers).map(matcher -> X(matcher, jLex, e)).toArray(javax0.geci.lexeger.matchers.LexMatcher[]::new);
     }
 
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> terminal(LexicalElement le) {
-        return (jLex, e) -> e.terminal(le);
-    }
-
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> keyword(String id) {
         return identifier(id);
     }
@@ -35,12 +31,22 @@ public class LexpressionBuilder {
         return (jLex, e) -> e.zeroOrMore(X(matcher, jLex, e));
     }
 
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> zeroOrMore(String string) {
+        return (jLex, e) -> e.zeroOrMore(string);
+    }
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> optional(BiFunction<JavaLexed, Lexpression, LexMatcher> matcher) {
         return (jLex, e) -> e.optional(X(matcher, jLex, e));
     }
 
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> optional(String string) {
+        return (jLex, e) -> e.optional(string);
+    }
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> oneOrMore(BiFunction<JavaLexed, Lexpression, LexMatcher> matcher) {
         return (jLex, e) -> e.oneOrMore(X(matcher, jLex, e));
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> oneOrMore(String string) {
+        return (jLex, e) -> e.oneOrMore(string);
     }
 
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> repeat(BiFunction<JavaLexed, Lexpression, LexMatcher> matcher, int times) {
@@ -164,8 +170,8 @@ public class LexpressionBuilder {
         return (jLex, e) -> e.match(string);
     }
 
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> list(LexicalElement... elements) {
-        return (jLex, e) -> e.list(elements);
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> list(String... strings) {
+        return (jLex, e) -> e.list(strings);
     }
 
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> unordered(BiFunction<JavaLexed, Lexpression, LexMatcher>... matchers) {
