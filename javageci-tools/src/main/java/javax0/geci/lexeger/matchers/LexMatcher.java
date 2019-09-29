@@ -1,6 +1,7 @@
 package javax0.geci.lexeger.matchers;
 
-import javax0.geci.javacomparator.lex.LexicalElement;
+import javax0.geci.javacomparator.LexicalElement;
+import javax0.geci.javacomparator.lex.Lexer;
 import javax0.geci.lexeger.JavaLexed;
 import javax0.geci.lexeger.MatchResult;
 
@@ -14,6 +15,21 @@ public abstract class LexMatcher implements javax0.geci.lexeger.LexMatcher {
 
     protected MatchResult matching(int start, int end) {
         return new MatchResult(true, start, end);
+    }
+
+    public static Lexpression when(JavaLexed javaLexed, int sensitivity) {
+        final var lexer = new Lexer();
+        if ((sensitivity & Lexpression.SPACE_SENSITIVE) > 0) {
+            lexer.spaceSensitive();
+        }
+        if ((sensitivity & Lexpression.COMMENT_SENSITIVE) > 0) {
+            lexer.commentSensitive();
+        }
+        return new Lexpression(javaLexed, lexer);
+    }
+
+    public static Lexpression when(JavaLexed javaLexed) {
+        return when(javaLexed, Lexpression.NO_SENSITIVITY);
     }
 
     protected void reset() {
@@ -49,14 +65,14 @@ public abstract class LexMatcher implements javax0.geci.lexeger.LexMatcher {
         }
     }
 
-    public abstract MatchResult match(int i);
+    public abstract MatchResult matchesAt(int i);
 
     public MatchResult find(int i) {
         int j = i;
         while (j < javaLexed.size()) {
             expression.clean();
             reset();
-            final var result = match(j);
+            final var result = matchesAt(j);
             if (result.matches) {
                 return result;
             }
@@ -73,8 +89,8 @@ public abstract class LexMatcher implements javax0.geci.lexeger.LexMatcher {
         int j = i;
         if (!expression.isSpaceSensitive() || !expression.isCommentSensitive()) {
             while (j < javaLexed.size() &&
-                ((!expression.isSpaceSensitive() && javaLexed.get(j).type == LexicalElement.Type.SPACING)
-                    || (!expression.isCommentSensitive() && javaLexed.get(j).type == LexicalElement.Type.COMMENT))
+                ((!expression.isSpaceSensitive() && javaLexed.get(j).getType() == javax0.geci.javacomparator.LexicalElement.Type.SPACING)
+                    || (!expression.isCommentSensitive() && javaLexed.get(j).getType() == javax0.geci.javacomparator.LexicalElement.Type.COMMENT))
             ) {
                 j++;
             }

@@ -21,23 +21,8 @@ public class Lexpression {
     public static final int COMMENT_SENSITIVE = 0x02;
 
 
-    public javax0.geci.lexeger.LexMatcher compile(BiFunction<JavaLexed, Lexpression, javax0.geci.lexeger.LexMatcher> function){
+    public javax0.geci.lexeger.LexMatcher usingExpression(BiFunction<JavaLexed, Lexpression, javax0.geci.lexeger.LexMatcher> function){
         return function.apply(javaLexed,this);
-    }
-
-    public static Lexpression of(JavaLexed javaLexed, int sensitivity) {
-        final var lexer = new Lexer();
-        if ((sensitivity & Lexpression.SPACE_SENSITIVE) > 0) {
-            lexer.spaceSensitive();
-        }
-        if ((sensitivity & Lexpression.COMMENT_SENSITIVE) > 0) {
-            lexer.commentSensitive();
-        }
-        return new Lexpression(javaLexed, lexer);
-    }
-
-    public static Lexpression of(JavaLexed javaLexed) {
-        return of(javaLexed, Lexpression.NO_SENSITIVITY);
     }
 
     public boolean isSpaceSensitive() {
@@ -59,13 +44,13 @@ public class Lexpression {
         ;
     }
 
-    private final Map<String, List<LexicalElement>> groups = new HashMap<>();
+    private final Map<String, List<javax0.geci.javacomparator.LexicalElement>> groups = new HashMap<>();
 
     void remove(String name) {
         groups.remove(name);
         regexResults.remove(name);
     }
-    void store(String name, List<LexicalElement> elements) {
+    void store(String name, List<javax0.geci.javacomparator.LexicalElement> elements) {
         if (regexResults.containsKey(name)) {
             throw new IllegalArgumentException(name + " cannot be used to identify both a lex group and regex result");
         }
@@ -79,7 +64,7 @@ public class Lexpression {
         regexResults.put(name, patternMatchResult);
     }
 
-    public List<LexicalElement> group(final String name) {
+    public List<javax0.geci.javacomparator.LexicalElement> group(final String name) {
         if (groups.containsKey(name)) {
             return groups.get(name);
         }

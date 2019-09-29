@@ -2,7 +2,7 @@ package javax0.geci.javacomparator.lex;
 
 import java.util.Objects;
 
-public class LexicalElement {
+public class LexicalElement implements javax0.geci.javacomparator.LexicalElement {
 
     LexicalElement(String lexeme, Type type) {
         this.lexeme = lexeme;
@@ -15,11 +15,11 @@ public class LexicalElement {
 
     public String getFullLexeme(){
         var lexeme = this.lexeme;
-        if (type == LexicalElement.Type.STRING) {
+        if (type == javax0.geci.javacomparator.LexicalElement.Type.STRING) {
             final char enclosing = ((StringLiteral) this).enclosing;
             lexeme = enclosing + lexeme + enclosing;
         }
-        if (type == LexicalElement.Type.CHARACTER) {
+        if (type == javax0.geci.javacomparator.LexicalElement.Type.CHARACTER) {
             lexeme = "'" + lexeme + "'";
         }
         return lexeme;
@@ -34,6 +34,11 @@ public class LexicalElement {
     }
 
     @Override
+    public Type getType() {
+        return type;
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(lexeme);
     }
@@ -41,17 +46,6 @@ public class LexicalElement {
     @Override
     public String toString() {
         return type.toString() + "[" + lexeme + "]";
-    }
-
-    public enum Type {
-        COMMENT, STRING, CHARACTER, IDENTIFIER, INTEGER, FLOAT, SYMBOL, SPACING;
-
-        public boolean is(Type... types) {
-            for (final var t : types) {
-                if (t == this) return true;
-            }
-            return false;
-        }
     }
 
     public final String lexeme;

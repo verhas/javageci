@@ -23,14 +23,14 @@ public class Repeat extends LexMatcher {
     }
 
     @Override
-    public MatchResult match(int i) {
+    public MatchResult matchesAt(int i) {
         int start = skipSpacesAndComments(i);
         int j = start;
         int counter = 0;
         while (counter < currentMax) {
             j = skipSpacesAndComments(j);
             matcher.reset();
-            final var result = matcher.match(j);
+            final var result = matcher.matchesAt(j);
             if (!result.matches && counter < min) {
                 return MatchResult.NO_MATCH;
             }

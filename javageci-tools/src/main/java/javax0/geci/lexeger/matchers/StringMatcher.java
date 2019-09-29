@@ -1,6 +1,6 @@
 package javax0.geci.lexeger.matchers;
 
-import javax0.geci.javacomparator.lex.LexicalElement;
+import javax0.geci.javacomparator.LexicalElement;
 import javax0.geci.lexeger.JavaLexed;
 import javax0.geci.lexeger.MatchResult;
 
@@ -25,7 +25,7 @@ public class StringMatcher extends AbstractPatternedMatcher {
     }
 
     @Override
-    public MatchResult match(int i) {
+    public MatchResult matchesAt(int i) {
         return match(i, LexicalElement.Type.STRING);
     }
 }

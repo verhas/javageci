@@ -1,6 +1,6 @@
 package javax0.geci.lexeger.matchers;
 
-import javax0.geci.javacomparator.lex.LexicalElement;
+import javax0.geci.javacomparator.LexicalElement;
 import javax0.geci.lexeger.JavaLexed;
 import javax0.geci.lexeger.MatchResult;
 
@@ -27,19 +27,19 @@ public class TypeMatcher extends AbstractPatternedMatcher {
     }
 
     @Override
-    public MatchResult match(int i) {
+    public MatchResult matchesAt(int i) {
         var result = match(i, LexicalElement.Type.IDENTIFIER);
         if (!result.matches) {
             return result;
         }
         int j = skipSpacesAndComments(result.end);
-        if (j + 1 < javaLexed.size() && javaLexed.get(j + 1).lexeme.equals("<")) {
+        if (j + 1 < javaLexed.size() && javaLexed.get(j + 1).getLexeme().equals("<")) {
             int counter = 1;
             while (j < javaLexed.size()) {
-                if (javaLexed.get(i).lexeme.equals("<")) {
+                if (javaLexed.get(i).getLexeme().equals("<")) {
                     counter++;
                 }
-                if (javaLexed.get(j).lexeme.equals(">")) {
+                if (javaLexed.get(j).getLexeme().equals(">")) {
                     counter++;
                 }
                 j++;

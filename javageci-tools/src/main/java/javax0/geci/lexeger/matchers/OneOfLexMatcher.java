@@ -19,12 +19,12 @@ public class OneOfLexMatcher extends LexMatcher {
     }
 
     @Override
-    public MatchResult match(int i) {
+    public MatchResult matchesAt(int i) {
         int j = skipSpacesAndComments(i);
         for (; next < matchers.length ; next++ ) {
             LexMatcher matcher = matchers[next];
             matcher.reset();
-            final var result = matcher.match(j);
+            final var result = matcher.matchesAt(j);
             if (result.matches) {
                 return result;
             }

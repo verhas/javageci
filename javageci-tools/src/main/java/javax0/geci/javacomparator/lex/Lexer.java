@@ -97,8 +97,8 @@ public class Lexer implements Function<List<String>, LexicalElement[]> {
     }
 
     private boolean ignore(LexicalElement nlextElement) {
-        return (!spaceSensitive && nlextElement.type == LexicalElement.Type.SPACING) ||
-            (!commentSensitive && nlextElement.type == LexicalElement.Type.COMMENT);
+        return (!spaceSensitive && nlextElement.getType() == javax0.geci.javacomparator.LexicalElement.Type.SPACING) ||
+            (!commentSensitive && nlextElement.getType() == javax0.geci.javacomparator.LexicalElement.Type.COMMENT);
     }
 
 }

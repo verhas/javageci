@@ -1,6 +1,6 @@
 package javax0.geci.lexeger.matchers;
 
-import javax0.geci.javacomparator.lex.LexicalElement;
+import javax0.geci.javacomparator.LexicalElement;
 import javax0.geci.lexeger.JavaLexed;
 import javax0.geci.lexeger.MatchResult;
 
@@ -18,13 +18,13 @@ public class GroupMatcher extends LexMatcher {
 
 
     @Override
-    public MatchResult match(final int i) {
+    public MatchResult matchesAt(final int i) {
         if( consumed()){
             remove(name);
             return MatchResult.NO_MATCH;
         }
         matcher.reset();
-        final var result = matcher.match(i);
+        final var result = matcher.matchesAt(i);
         if (result.matches) {
             final var elements = new ArrayList<LexicalElement>(result.end-result.start);
             for( int j = result.start ; j < result.end ; j++ ){

@@ -50,7 +50,7 @@ public class TestJavaLexed {
         final var sb = new StringBuilder();
         try (final var sut = new JavaLexed(source)) {
             for (final var le : sut.lexicalElements()) {
-                sb.append(le.type.name()).append("[")
+                sb.append(le.getType().name()).append("[")
                     .append(le.getFullLexeme()).append("]").append("\n");
             }
         }

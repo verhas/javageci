@@ -1,8 +1,8 @@
 package javax0.geci.lexeger;
 
 import javax0.geci.api.Source;
+import javax0.geci.javacomparator.LexicalElement;
 import javax0.geci.javacomparator.lex.Lexer;
-import javax0.geci.javacomparator.lex.LexicalElement;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -147,8 +147,20 @@ public class JavaLexed implements AutoCloseable {
         }
     }
 
-    public void replace(int start, int end, List<LexicalElement> list){
+    public void replace(MatchResult result, List<LexicalElement>... lists) {
+        if (result.matches) {
+            replace(result.start, result.end, lists);
+        }
+    }
 
+    public void replace(int start, int end, List<LexicalElement>... lists) {
+        removeRange(start, end);
+        int j = start;
+        for (final var list : lists) {
+            for (final var element : list) {
+                add(j++, element);
+            }
+        }
     }
 
     public void add(int index, LexicalElement le) {

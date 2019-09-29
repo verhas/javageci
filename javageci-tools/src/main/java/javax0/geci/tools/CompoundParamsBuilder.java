@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static javax0.geci.javacomparator.lex.LexicalElement.Type.*;
+import static javax0.geci.javacomparator.LexicalElement.Type.*;
 
 /**
  * Create a new CompoundParams object out of a string. The string should

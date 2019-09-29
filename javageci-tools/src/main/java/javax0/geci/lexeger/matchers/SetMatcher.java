@@ -14,7 +14,7 @@ public class SetMatcher extends LexMatcher {
     }
 
     @Override
-    public MatchResult match(int i) {
+    public MatchResult matchesAt(int i) {
         if( consumed() ){
             return MatchResult.NO_MATCH;
         }
@@ -32,7 +32,7 @@ public class SetMatcher extends LexMatcher {
                     return MatchResult.NO_MATCH;
                 }
                 matcher.reset();
-                final var result = matcher.match(j);
+                final var result = matcher.matchesAt(j);
                 if (result.matches) {
                     wasMatched.add(matcher);
                     j = result.end;

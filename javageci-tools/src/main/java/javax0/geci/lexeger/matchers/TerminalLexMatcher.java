@@ -13,7 +13,7 @@ public class TerminalLexMatcher extends LexMatcher {
     }
 
     @Override
-    public MatchResult match(int i) {
+    public MatchResult matchesAt(int i) {
         if( consumed()){
             return MatchResult.NO_MATCH;
         }

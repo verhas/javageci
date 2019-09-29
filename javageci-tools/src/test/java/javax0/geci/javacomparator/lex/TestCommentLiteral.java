@@ -1,5 +1,6 @@
 package javax0.geci.javacomparator.lex;
 
+import javax0.geci.javacomparator.LexicalElement;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

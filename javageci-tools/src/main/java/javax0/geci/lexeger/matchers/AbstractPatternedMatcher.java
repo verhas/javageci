@@ -43,18 +43,18 @@ public abstract class AbstractPatternedMatcher extends LexMatcher {
             return MatchResult.NO_MATCH;
         }
         int start = skipSpacesAndComments(i);
-        if (javaLexed.get(start).type != type) {
+        if (javaLexed.get(start).getType() != type) {
             return MatchResult.NO_MATCH;
         }
         if (text != null) {
-            if (text.equals(javaLexed.get(start).lexeme)) {
+            if (text.equals(javaLexed.get(start).getLexeme())) {
                 return matching( start, start + 1);
             } else {
                 return MatchResult.NO_MATCH;
             }
         } else {
             if (pattern != null) {
-                final var regex = pattern.matcher(javaLexed.get(start).lexeme);
+                final var regex = pattern.matcher(javaLexed.get(start).getLexeme());
                 if (regex.find()) {
                     store(name,regex);
                     return matching( start, start + 1);

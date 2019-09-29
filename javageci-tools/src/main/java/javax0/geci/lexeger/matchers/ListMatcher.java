@@ -12,7 +12,7 @@ public class ListMatcher extends LexMatcher {
     }
 
     @Override
-    public MatchResult match(int i) {
+    public MatchResult matchesAt(int i) {
         if (consumed()) {
             return MatchResult.NO_MATCH;
         }
@@ -40,7 +40,7 @@ public class ListMatcher extends LexMatcher {
                     return MatchResult.NO_MATCH;
                 }
             }
-            result = matchers[index].match(j);
+            result = matchers[index].matchesAt(j);
         }
     }
 }

@@ -18,16 +18,16 @@ public class NumberMatcher extends LexMatcher {
         this(factory, javaLexed, null);
     }
 
-    public MatchResult match(int i) {
+    public MatchResult matchesAt(int i) {
         if (consumed()) {
             return MatchResult.NO_MATCH;
         }
         int start = skipSpacesAndComments(i);
-        if (javaLexed.get(start).type != LexicalElement.Type.INTEGER && javaLexed.get(start).type != LexicalElement.Type.FLOAT) {
+        if (javaLexed.get(start).getType() != javax0.geci.javacomparator.LexicalElement.Type.INTEGER && javaLexed.get(start).getType() != javax0.geci.javacomparator.LexicalElement.Type.FLOAT) {
             return MatchResult.NO_MATCH;
         }
         if (predicate != null) {
-            if (javaLexed.get(start).type == LexicalElement.Type.INTEGER) {
+            if (javaLexed.get(start).getType() == javax0.geci.javacomparator.LexicalElement.Type.INTEGER) {
                 if (predicate.test(((LexicalElement.IntegerLiteral) javaLexed.get(start)).value)) {
                     return matching( start, start + 1);
                 } else {
