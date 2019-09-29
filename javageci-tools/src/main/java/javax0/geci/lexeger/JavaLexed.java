@@ -147,13 +147,14 @@ public class JavaLexed implements AutoCloseable {
         }
     }
 
-    public void replace(MatchResult result, List<LexicalElement>... lists) {
+    public int replace(MatchResult result, List<LexicalElement>... lists) {
         if (result.matches) {
-            replace(result.start, result.end, lists);
+            return replace(result.start, result.end, lists);
         }
+        return -1;
     }
 
-    public void replace(int start, int end, List<LexicalElement>... lists) {
+    public int replace(int start, int end, List<LexicalElement>... lists) {
         removeRange(start, end);
         int j = start;
         for (final var list : lists) {
@@ -161,6 +162,7 @@ public class JavaLexed implements AutoCloseable {
                 add(j++, element);
             }
         }
+        return j;
     }
 
     public void add(int index, LexicalElement le) {
