@@ -7,16 +7,33 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static javax0.geci.lexeger.LexpressionBuilder.*;
+import static javax0.geci.lexeger.LexpressionBuilder.character;
+import static javax0.geci.lexeger.LexpressionBuilder.comment;
+import static javax0.geci.lexeger.LexpressionBuilder.floatNumber;
+import static javax0.geci.lexeger.LexpressionBuilder.group;
+import static javax0.geci.lexeger.LexpressionBuilder.identifier;
+import static javax0.geci.lexeger.LexpressionBuilder.integerNumber;
+import static javax0.geci.lexeger.LexpressionBuilder.keyword;
+import static javax0.geci.lexeger.LexpressionBuilder.list;
+import static javax0.geci.lexeger.LexpressionBuilder.match;
+import static javax0.geci.lexeger.LexpressionBuilder.number;
+import static javax0.geci.lexeger.LexpressionBuilder.oneOf;
+import static javax0.geci.lexeger.LexpressionBuilder.oneOrMore;
+import static javax0.geci.lexeger.LexpressionBuilder.optional;
+import static javax0.geci.lexeger.LexpressionBuilder.repeat;
+import static javax0.geci.lexeger.LexpressionBuilder.string;
+import static javax0.geci.lexeger.LexpressionBuilder.type;
+import static javax0.geci.lexeger.LexpressionBuilder.unordered;
+import static javax0.geci.lexeger.LexpressionBuilder.zeroOrMore;
 
-public class TestMatching {
+class TestMatching {
 
     @Test
     void testSimpleListMatching() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var expr = Lexpression.of(javaLexed);
-            final var matcher = expr.match("private final int");
+            final var e = Lexpression.of(javaLexed);
+            final var matcher = e.compile(match("private final int"));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
@@ -28,8 +45,8 @@ public class TestMatching {
     void testSimpleListFindingWithSpaces() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var expr = Lexpression.of(javaLexed, Lexpression.SPACE_SENSITIVE);
-            final var matcher = expr.match("public var h");
+            final var e = Lexpression.of(javaLexed, Lexpression.SPACE_SENSITIVE);
+            final var matcher = e.compile(match("public var h"));
             final var result = matcher.find();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
@@ -41,8 +58,8 @@ public class TestMatching {
     void testSimpleListFindingWithComments() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var //comment\nh = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var expr = Lexpression.of(javaLexed, Lexpression.COMMENT_SENSITIVE);
-            final var matcher = expr.list(expr.match("public var "), expr.comment(), expr.match("h"));
+            final var e = Lexpression.of(javaLexed, Lexpression.COMMENT_SENSITIVE);
+            final var matcher = e.compile(list(match("public var "), comment(), match("h")));
             final var result = matcher.find();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
@@ -54,10 +71,10 @@ public class TestMatching {
     void testSimpleListFindingWithPatternedComments() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var //comment\nh = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var expr = Lexpression.of(javaLexed, Lexpression.COMMENT_SENSITIVE);
-            final var matcher = expr.list(expr.match("public var "), expr.comment(
+            final var e = Lexpression.of(javaLexed, Lexpression.COMMENT_SENSITIVE);
+            final var matcher = e.compile(list(match("public var "), comment(
                 Pattern.compile("//c.*t")
-            ), expr.match("h"));
+            ), match("h")));
             final var result = matcher.find();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
@@ -69,16 +86,16 @@ public class TestMatching {
     void testSimpleListFindingWithNamedPatternedComments() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var //comment\nh = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var expr = Lexpression.of(javaLexed, Lexpression.COMMENT_SENSITIVE);
-            final var matcher = expr.list(expr.match("public var "), expr.comment(
+            final var e = Lexpression.of(javaLexed, Lexpression.COMMENT_SENSITIVE);
+            final var matcher = e.compile(list(match("public var "), comment(
                 "comment", Pattern.compile("//(c.*t)")
-            ), expr.match("h"));
+            ), match("h")));
             final var result = matcher.find();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
             Assertions.assertEquals(20, result.end);
-            Assertions.assertTrue(expr.matchResult("comment").isPresent());
-            Assertions.assertEquals("comment", expr.matchResult("comment").get().group(1));
+            Assertions.assertTrue(e.matchResult("comment").isPresent());
+            Assertions.assertEquals("comment", e.matchResult("comment").get().group(1));
         }
     }
 
@@ -86,10 +103,10 @@ public class TestMatching {
     void testSimpleListFindingWithTextComments() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var //comment\nh = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var expr = Lexpression.of(javaLexed, Lexpression.COMMENT_SENSITIVE);
-            final var matcher = expr.list(expr.match("public var "), expr.comment(
+            final var e = Lexpression.of(javaLexed, Lexpression.COMMENT_SENSITIVE);
+            final var matcher = e.compile(list(match("public var "), comment(
                 "//comment"
-            ), expr.match("h"));
+            ), match("h")));
             final var result = matcher.find();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
@@ -101,8 +118,8 @@ public class TestMatching {
     void testSimpleListFinding() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var expr = Lexpression.of(javaLexed);
-            final var matcher = expr.match("public var h");
+            final var e = Lexpression.of(javaLexed);
+            final var matcher = e.compile(match("public var h"));
             final var result = matcher.find();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
@@ -114,15 +131,15 @@ public class TestMatching {
     void testSimpleGroupCollection() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var expr = Lexpression.of(javaLexed);
-            final var matcher = expr.list(expr.group("protection", expr.oneOf("public", "private")), expr.match("var h"));
+            final var e = Lexpression.of(javaLexed);
+            final var matcher = e.compile(list(group("protection", oneOf("public", "private")), match("var h")));
             final var result = matcher.find();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
             Assertions.assertEquals(18, result.end);
-            Assertions.assertEquals(1, expr.group("protection").size());
-            Assertions.assertEquals(1, expr.group("protection").size());
-            Assertions.assertEquals("public", expr.group("protection").get(0).lexeme);
+            Assertions.assertEquals(1, e.group("protection").size());
+            Assertions.assertEquals(1, e.group("protection").size());
+            Assertions.assertEquals("public", e.group("protection").get(0).lexeme);
         }
     }
 
@@ -130,14 +147,14 @@ public class TestMatching {
     void testSimpleUnmatchedGroup() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var expr = Lexpression.of(javaLexed);
-            final var matcher = expr.list(expr.group("protection", expr.oneOf(expr.match("public"), expr.group("private", expr.match("private")))), expr.match("var h"));
+            final var e = Lexpression.of(javaLexed);
+            final var matcher = e.compile(list(group("protection", oneOf(match("public"), group("private", match("private")))), match("var h")));
             final var result = matcher.find();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
             Assertions.assertEquals(18, result.end);
-            Assertions.assertEquals(0, expr.group("private").size());
-            Assertions.assertEquals(1, expr.group("protection").size());
+            Assertions.assertEquals(0, e.group("private").size());
+            Assertions.assertEquals(1, e.group("protection").size());
         }
     }
 
@@ -145,8 +162,8 @@ public class TestMatching {
     void testSimpleSetFinding() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var expr = Lexpression.of(javaLexed);
-            final var matcher = expr.unordered("h public var");
+            final var e = Lexpression.of(javaLexed);
+            final var matcher = e.compile(unordered("h public var"));
             final var result = matcher.find();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
@@ -158,8 +175,8 @@ public class TestMatching {
     void testComplexSetFinding() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var expr = Lexpression.of(javaLexed);
-            final var matcher = expr.unordered(expr.identifier("h"), expr.keyword("public"), expr.match("var"));
+            final var e = Lexpression.of(javaLexed);
+            final var matcher = e.compile(unordered(identifier("h"), keyword("public"), match("var")));
             final var result = matcher.find();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
@@ -171,8 +188,8 @@ public class TestMatching {
     void testSimpleSetNotFinding() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var expr = Lexpression.of(javaLexed);
-            final var matcher = expr.unordered("k public var");
+            final var e = Lexpression.of(javaLexed);
+            final var matcher = e.compile(unordered("k public var"));
             final var result = matcher.find();
             Assertions.assertFalse(result.matches);
         }
@@ -182,8 +199,8 @@ public class TestMatching {
     void testIdentifiertMatching() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var expr = Lexpression.of(javaLexed);
-            final var matcher = expr.list(expr.keyword("private"), expr.identifier("final"), expr.unordered("int"));
+            final var e = Lexpression.of(javaLexed);
+            final var matcher = e.compile(list(keyword("private"), identifier("final"), unordered("int")));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
@@ -196,8 +213,8 @@ public class TestMatching {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.oneOrMore(e.keyword("private")), e.zeroOrMore(e.identifier("final"))
-                , e.zeroOrMore(e.identifier("abraka dabra")), e.unordered("int"));
+            final var matcher = e.compile(list(oneOrMore(keyword("private")), zeroOrMore(identifier("final"))
+                , zeroOrMore(identifier("abraka dabra")), unordered("int")));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
@@ -210,8 +227,8 @@ public class TestMatching {
         final var source = new TestSource(List.of("private private private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.oneOrMore(e.keyword("private")), e.optional(e.identifier("final"))
-                , e.optional(e.identifier("abraka dabra")), e.unordered("int"));
+            final var matcher = e.compile(list(oneOrMore(keyword("private")), optional(identifier("final"))
+                , optional(identifier("abraka dabra")), unordered("int")));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
@@ -224,8 +241,8 @@ public class TestMatching {
         final var source = new TestSource(List.of("private private private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.repeat(e.keyword("private"), 3), e.optional(e.identifier("final"))
-                , e.optional(e.identifier("abraka dabra")), e.unordered("int"));
+            final var matcher = e.compile(list(repeat(keyword("private"), 3), optional(identifier("final"))
+                , optional(identifier("abraka dabra")), unordered("int")));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
@@ -238,8 +255,8 @@ public class TestMatching {
         final var source = new TestSource(List.of("private private private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.repeat(e.keyword("private"), 2, 3), e.optional(e.identifier("final"))
-                , e.optional(e.identifier("abraka dabra")), e.unordered("int"));
+            final var matcher = e.compile(list(repeat(keyword("private"), 2, 3), optional(identifier("final"))
+                , optional(identifier("abraka dabra")), unordered("int")));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
@@ -252,8 +269,8 @@ public class TestMatching {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.keyword("private"), e.optional(e.identifier())
-                , e.optional(e.identifier("abraka dabra")), e.unordered("int"));
+            final var matcher = e.compile(list(keyword("private"), optional(identifier())
+                , optional(identifier("abraka dabra")), unordered("int")));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
@@ -266,7 +283,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.oneOf("final int", "int", "private final int");
+            final var matcher = e.compile(oneOf("final int", "int", "private final int"));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
@@ -279,8 +296,8 @@ public class TestMatching {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.keyword("private"), e.optional(e.identifier(Pattern.compile("f.*")))
-                , e.optional(e.identifier("abraka dabra")), e.unordered("int"));
+            final var matcher = e.compile(list(keyword("private"), optional(identifier(Pattern.compile("f.*")))
+                , optional(identifier("abraka dabra")), unordered("int")));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
@@ -293,8 +310,8 @@ public class TestMatching {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.keyword("private"), e.optional(e.identifier("final", Pattern.compile("f(.*)")))
-                , e.optional(e.identifier("abraka dabra")), e.unordered("int"));
+            final var matcher = e.compile(list(keyword("private"), optional(identifier("final", Pattern.compile("f(.*)")))
+                , optional(identifier("abraka dabra")), unordered("int")));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
@@ -311,7 +328,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("private  final int z = 13.5;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.match("private final int z = "), e.floatNumber());
+            final var matcher = e.compile(list(match("private final int z = "), floatNumber()));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
@@ -324,7 +341,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("private  final int z = 13.5;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.match("private final int z = "), e.floatNumber(f -> f > 13 && f < 14));
+            final var matcher = e.compile(list(match("private final int z = "), floatNumber(f -> f > 13 && f < 14)));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
@@ -337,7 +354,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("private  final int z = 13.5;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.match("private final int z = "), e.floatNumber(f -> false));
+            final var matcher = e.compile(list(match("private final int z = "), floatNumber(f -> false)));
             final var result = matcher.match(0);
             Assertions.assertFalse(result.matches);
         }
@@ -349,7 +366,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.match("private final int z = "), e.integerNumber());
+            final var matcher = e.compile(list(match("private final int z = "), integerNumber()));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
@@ -362,7 +379,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.match("private final int z = "), e.integerNumber(f -> f > 12 && f < 14));
+            final var matcher = e.compile(list(match("private final int z = "), integerNumber(f -> f > 12 && f < 14)));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
@@ -375,7 +392,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.match("private final int z = "), e.integerNumber(f -> false));
+            final var matcher = e.compile(list(match("private final int z = "), integerNumber(f -> false)));
             final var result = matcher.match(0);
             Assertions.assertFalse(result.matches);
         }
@@ -386,7 +403,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.match("private final int z = "), e.number());
+            final var matcher = e.compile(list(match("private final int z = "), number()));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
@@ -399,7 +416,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.match("private final int z = "), e.number(f -> true));
+            final var matcher = e.compile(list(match("private final int z = "), number(f -> true)));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
@@ -412,7 +429,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.match("private final int z = "), e.number(f -> false));
+            final var matcher = e.compile(list(match("private final int z = "), number(f -> false)));
             final var result = matcher.match(0);
             Assertions.assertFalse(result.matches);
         }
@@ -423,7 +440,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("List"));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.type();
+            final var matcher = e.compile(type());
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
         }
@@ -434,7 +451,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("List<Object,?>>"));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.type();
+            final var matcher = e.compile(type());
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
         }
@@ -445,7 +462,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("public var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.match("public var h = "), e.string());
+            final var matcher = e.compile(list(match("public var h = "), string()));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
         }
@@ -456,7 +473,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("public var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.match("public var h = "), e.string("kkk"));
+            final var matcher = e.compile(list(match("public var h = "), string("kkk")));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
         }
@@ -467,7 +484,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("public var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.match("public var h = "), e.string(Pattern.compile("k{3}")));
+            final var matcher = e.compile(list(match("public var h = "), string(Pattern.compile("k{3}"))));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
         }
@@ -478,7 +495,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("public var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.match("public var h = "), e.string("Zkk", Pattern.compile("(k{3})")));
+            final var matcher = e.compile(list(match("public var h = "), string("Zkk", Pattern.compile("(k{3})"))));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertTrue(e.matchResult("Zkk").isPresent());
@@ -493,7 +510,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = list(match("public var h = "), character()).apply(javaLexed,e);
+            final var matcher = e.compile(list(match("public var h = "), character()));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
         }
@@ -504,7 +521,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.match("public var h = "), e.character("kkk"));
+            final var matcher = e.compile(list(match("public var h = "), character("kkk")));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
         }
@@ -515,7 +532,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.match("public var h = "), e.character(Pattern.compile("k{3}")));
+            final var matcher = e.compile(list(match("public var h = "), character(Pattern.compile("k{3}"))));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
         }
@@ -526,7 +543,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.match("public var h = "), e.character("Zkk", Pattern.compile("(k{3})")));
+            final var matcher = e.compile(list(match("public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertTrue(e.matchResult("Zkk").isPresent());
@@ -541,7 +558,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("public public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.oneOrMore(e.match("public")), e.match("public var h = "), e.character("Zkk", Pattern.compile("(k{3})")));
+            final var matcher = e.compile(list(oneOrMore(match("public")), match("public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertTrue(e.matchResult("Zkk").isPresent());
@@ -555,7 +572,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("public public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.oneOrMore(e.match("public")), e.match("public public var h = "), e.character("Zkk", Pattern.compile("(k{3})")));
+            final var matcher = e.compile(list(oneOrMore(match("public")), match("public public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
             final var result = matcher.match(0);
             Assertions.assertFalse(result.matches);
         }
@@ -566,7 +583,7 @@ public class TestMatching {
         final var source = new TestSource(List.of("public public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = Lexpression.of(javaLexed);
-            final var matcher = e.list(e.zeroOrMore(e.match("public")), e.match("public public var h = "), e.character("Zkk", Pattern.compile("(k{3})")));
+            final var matcher = e.compile(list(zeroOrMore(match("public")), match("public public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
             final var result = matcher.match(0);
             Assertions.assertTrue(result.matches);
             Assertions.assertTrue(e.matchResult("Zkk").isPresent());
@@ -574,5 +591,4 @@ public class TestMatching {
             Assertions.assertEquals("kkk", e.matchResult("Zkk").get().group(1));
         }
     }
-
 }

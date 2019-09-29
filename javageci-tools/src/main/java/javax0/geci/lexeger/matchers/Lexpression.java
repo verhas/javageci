@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
@@ -19,6 +20,10 @@ public class Lexpression {
     public static final int SPACE_SENSITIVE = 0x01;
     public static final int COMMENT_SENSITIVE = 0x02;
 
+
+    public javax0.geci.lexeger.LexMatcher compile(BiFunction<JavaLexed, Lexpression, javax0.geci.lexeger.LexMatcher> function){
+        return function.apply(javaLexed,this);
+    }
 
     public static Lexpression of(JavaLexed javaLexed, int sensitivity) {
         final var lexer = new Lexer();
@@ -115,8 +120,8 @@ public class Lexpression {
         return new Repeat(this, javaLexed, matcher, 1, Integer.MAX_VALUE);
     }
 
-    public LexMatcher repeat(LexMatcher matcher, int min) {
-        return new Repeat(this, javaLexed, matcher, min, min);
+    public LexMatcher repeat(LexMatcher matcher, int times) {
+        return new Repeat(this, javaLexed, matcher, times, times);
     }
 
     public LexMatcher repeat(LexMatcher matcher, int min, int max) {

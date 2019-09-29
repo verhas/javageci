@@ -147,6 +147,10 @@ public class JavaLexed implements AutoCloseable {
         }
     }
 
+    public void replace(int start, int end, List<LexicalElement> list){
+
+    }
+
     public void add(int index, LexicalElement le) {
         assertOpen();
         lexicalElements.add(index, le);
