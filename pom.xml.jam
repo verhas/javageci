@@ -39,6 +39,7 @@
                             {opens/examples/tests.builder}
                             {opens/examples/tests.cloner}
                             {opens/examples/tests.configBuilder}
+                            {opens/examples/test.tools.lexeger}
                             {opens/docugen/docugen}
                             {exports/examples/tutorials.simple/core}
                             {exports/examples/tests.fluent/tools}

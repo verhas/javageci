@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Generators that work on Java source files that already have their
@@ -154,15 +153,15 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
                 try (final var tracePosition = Tracer.push("Start", this.getClass().getName() + ".process( source=" + klass.getName() + " )")) {
                     process(source, klass, global);
                 }
-                Tracer.prepend("Source","[PROCESSED] ");
-            }else{
-                Tracer.log("NotExecuted","There are no annotations, no editor-fold with id='"+mnemonic()+"' and this generator processAllCasses() returns false");
+                Tracer.prepend("Source", "[PROCESSED] ");
+            } else {
+                Tracer.log("NotExecuted", "There are no annotations, no editor-fold with id='" + mnemonic() + "' and this generator processAllCasses() returns false");
             }
         } else {
             if (source.getAbsoluteFile().endsWith("module-info.java")) {
                 Tracer.log("ModuleInfo", source.getAbsoluteFile() + " has no class, it is not processed.");
             } else {
-                Tracer.log("ERROR", "There is no class for " + source.getAbsoluteFile() + " skipping ");
+                Tracer.log("ERROR", "There is no class " + source.getKlassName() + " for " + source.getAbsoluteFile() + " skipping ");
             }
         }
     }

@@ -19,6 +19,9 @@ public class LexpressionBuilder {
             Arrays.stream(matchers).map(matcher -> X(matcher, jLex, e)).toArray(javax0.geci.lexeger.matchers.LexMatcher[]::new);
     }
 
+
+
+    //<editor-fold id="testGenerateLexpressionBuilderMethods">
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> keyword(String id) {
         return (jLex, e) -> e.keyword(id);
     }
@@ -107,7 +110,6 @@ public class LexpressionBuilder {
         return (jLex, e) -> e.string();
     }
 
-
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> type(String text) {
         return (jLex, e) -> e.type(text);
     }
@@ -164,16 +166,16 @@ public class LexpressionBuilder {
         return (jLex, e) -> e.floatNumber(predicate);
     }
 
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> list(String... strings) {
+        return (jLex, e) -> e.list(strings);
+    }
+
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> list(BiFunction<JavaLexed, Lexpression, LexMatcher>... matchers) {
         return (jLex, e) -> e.list(X(matchers, jLex, e));
     }
 
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> match(String string) {
         return (jLex, e) -> e.match(string);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> list(String... strings) {
-        return (jLex, e) -> e.list(strings);
     }
 
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> unordered(BiFunction<JavaLexed, Lexpression, LexMatcher>... matchers) {
@@ -195,4 +197,8 @@ public class LexpressionBuilder {
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> oneOf(String... strings) {
         return (jLex, e) -> e.oneOf(strings);
     }
+
+    //</editor-fold>
+
+
 }
