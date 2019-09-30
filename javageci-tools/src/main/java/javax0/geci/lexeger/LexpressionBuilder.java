@@ -20,7 +20,7 @@ public class LexpressionBuilder {
     }
 
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> keyword(String id) {
-        return identifier(id);
+        return (jLex, e) -> e.keyword(id);
     }
 
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> oneOf(BiFunction<JavaLexed, Lexpression, LexMatcher>... matchers) {
@@ -34,6 +34,7 @@ public class LexpressionBuilder {
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> zeroOrMore(String string) {
         return (jLex, e) -> e.zeroOrMore(string);
     }
+
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> optional(BiFunction<JavaLexed, Lexpression, LexMatcher> matcher) {
         return (jLex, e) -> e.optional(X(matcher, jLex, e));
     }
@@ -41,6 +42,7 @@ public class LexpressionBuilder {
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> optional(String string) {
         return (jLex, e) -> e.optional(string);
     }
+
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> oneOrMore(BiFunction<JavaLexed, Lexpression, LexMatcher> matcher) {
         return (jLex, e) -> e.oneOrMore(X(matcher, jLex, e));
     }
