@@ -173,9 +173,6 @@ public class Source implements javax0.geci.api.Source {
         if (isBorrowed) {
             throw new GeciException("Source " + getAbsoluteFile() + " cannot be borrowed more than once. Has to be returned before.");
         }
-        if (!segments.isEmpty()) {
-            throw new GeciException("Source " + getAbsoluteFile() + " cannot be borrowed after some segments were touched.");
-        }
         final var lines = getLines();
         isBorrowed = true;
         return lines;

@@ -7,18 +7,18 @@ import org.junit.jupiter.api.Test;
 
 import static javax0.geci.api.Source.maven;
 
-public class TestEquals {
+class TestEquals {
 
     @Test
-    public void testEquals() throws Exception {
+    void testEquals() throws Exception {
         final var geci = new Geci();
         Assertions.assertFalse(
-                geci.source(
-                        maven()
-                                .module("javageci-examples")
-                                .mainSource())
-                        .register(Equals.builder().build())
-                        .generate(),
-                geci.failed());
+            geci.source(
+                maven()
+                    .module("javageci-examples")
+                    .mainSource())
+                .register(Equals.builder().build())
+                .generate(),
+            geci.failed());
     }
 }

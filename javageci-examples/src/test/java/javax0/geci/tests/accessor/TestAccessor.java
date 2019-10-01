@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test;
 
 import static javax0.geci.api.Source.maven;
 
-public class TestAccessor {
+class TestAccessor {
 
     //snippet TestAccessor
     @Test
-    public void testAccessor() throws Exception {
+    void testAccessor() throws Exception {
         Geci geci;
         Assertions.assertFalse(
                 (geci = new Geci()).source(maven().module("javageci-examples").mainSource())
@@ -23,7 +23,7 @@ public class TestAccessor {
 
 
     @Test
-    public void testAllSourcesAccessor() throws Exception {
+    void testAllSourcesAccessor() throws Exception {
         Geci geci;
         Assertions.assertFalse(
                 (geci = new Geci()).source(

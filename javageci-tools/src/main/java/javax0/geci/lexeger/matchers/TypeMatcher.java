@@ -46,6 +46,6 @@ public class TypeMatcher extends AbstractPatternedMatcher {
                 }
             }
         }
-        return matching( j, j + 1);
+        return matching( i, j);
     }
 }
