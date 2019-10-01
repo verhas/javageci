@@ -5,6 +5,7 @@ import javax0.geci.lexeger.matchers.Lexpression;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -17,6 +18,7 @@ import static javax0.geci.lexeger.LexpressionBuilder.integerNumber;
 import static javax0.geci.lexeger.LexpressionBuilder.keyword;
 import static javax0.geci.lexeger.LexpressionBuilder.list;
 import static javax0.geci.lexeger.LexpressionBuilder.match;
+import static javax0.geci.lexeger.LexpressionBuilder.modifier;
 import static javax0.geci.lexeger.LexpressionBuilder.number;
 import static javax0.geci.lexeger.LexpressionBuilder.oneOf;
 import static javax0.geci.lexeger.LexpressionBuilder.oneOrMore;
@@ -129,7 +131,7 @@ class TestMatching {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(group("protection", oneOf("public", "private")), match("var h")));
+            final var matcher = e.usingExpression(list(oneOf(group("protection"), "public", "private"), match("var h")));
             final var result = matcher.find();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
@@ -549,6 +551,20 @@ class TestMatching {
         }
     }
 
+
+    @Test
+    void testModifiers() {
+        final var source = new TestSource(List.of("public var h = 'kkk'"));
+        try (final var javaLexed = new JavaLexed(source)) {
+            final var e = LexMatcher.when(javaLexed);
+            final var matcher = e.usingExpression(list(modifier(Modifier.PRIVATE|Modifier.PUBLIC),match(" var h = "), character("Zkk", Pattern.compile("(k{3})"))));
+            final var result = matcher.matchesAt(0);
+            Assertions.assertTrue(result.matches);
+            Assertions.assertTrue(e.matchResult("Zkk").isPresent());
+            Assertions.assertEquals(1, e.matchResult("Zkk").get().groupCount());
+            Assertions.assertEquals("kkk", e.matchResult("Zkk").get().group(1));
+        }
+    }
 
     @Test
     void testBackTrackOneStep() {

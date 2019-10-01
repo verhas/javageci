@@ -8,8 +8,6 @@ import java.util.regex.Pattern;
 
 public class TypeMatcher extends AbstractPatternedMatcher {
 
-    // TODO develop a matcher that matches a type simply getting an ID and then everything between matching '<' and '>' characters
-
     public TypeMatcher(Lexpression factory, JavaLexed javaLexed, Pattern pattern, String name) {
         super(factory, javaLexed, pattern, name);
     }

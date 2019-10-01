@@ -3,6 +3,7 @@ package javax0.geci.lexeger.matchers;
 import javax0.geci.javacomparator.lex.Lexer;
 import javax0.geci.javacomparator.lex.LexicalElement;
 import javax0.geci.lexeger.JavaLexed;
+import javax0.geci.lexeger.LexpressionBuilder.GroupNameWrapper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,15 +15,21 @@ import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
 public class Lexpression {
-    private final JavaLexed javaLexed;
-    public final Lexer lexer;
     public static final int NO_SENSITIVITY = 0x00;
     public static final int SPACE_SENSITIVE = 0x01;
     public static final int COMMENT_SENSITIVE = 0x02;
+    public final Lexer lexer;
+    private final JavaLexed javaLexed;
+    private final Map<String, List<javax0.geci.javacomparator.LexicalElement>> groups = new HashMap<>();
+    private final Map<String, MatchResult> regexResults = new HashMap<>();
 
+    public Lexpression(JavaLexed javaLexed, Lexer lexer) {
+        this.javaLexed = javaLexed;
+        this.lexer = lexer;
+    }
 
-    public javax0.geci.lexeger.LexMatcher usingExpression(BiFunction<JavaLexed, Lexpression, javax0.geci.lexeger.LexMatcher> function){
-        return function.apply(javaLexed,this);
+    public javax0.geci.lexeger.LexMatcher usingExpression(BiFunction<JavaLexed, Lexpression, javax0.geci.lexeger.LexMatcher> function) {
+        return function.apply(javaLexed, this);
     }
 
     public boolean isSpaceSensitive() {
@@ -33,23 +40,17 @@ public class Lexpression {
         return lexer.isCommentSensitive();
     }
 
-    public Lexpression(JavaLexed javaLexed, Lexer lexer) {
-        this.javaLexed = javaLexed;
-        this.lexer = lexer;
-    }
-
     void clean() {
         groups.clear();
         regexResults.clear();
         ;
     }
 
-    private final Map<String, List<javax0.geci.javacomparator.LexicalElement>> groups = new HashMap<>();
-
     void remove(String name) {
         groups.remove(name);
         regexResults.remove(name);
     }
+
     void store(String name, List<javax0.geci.javacomparator.LexicalElement> elements) {
         if (regexResults.containsKey(name)) {
             throw new IllegalArgumentException(name + " cannot be used to identify both a lex group and regex result");
@@ -71,9 +72,6 @@ public class Lexpression {
         return List.of();
     }
 
-    private final Map<String, MatchResult> regexResults = new HashMap<>();
-
-
     public Optional<MatchResult> matchResult(final String name) {
         if (regexResults.containsKey(name)) {
             return Optional.of(regexResults.get(name));
@@ -85,44 +83,96 @@ public class Lexpression {
         return new TerminalLexMatcher(this, javaLexed, le);
     }
 
+    public LexMatcher modifier(int mask) {
+        return new ModifierMatcher(this, javaLexed, mask);
+    }
+
+    public LexMatcher modifier(GroupNameWrapper name, int mask) {
+        return group(name.toString(), modifier(mask));
+    }
+
     public LexMatcher keyword(String id) {
         return identifier(id);
+    }
+
+    public LexMatcher keyword(GroupNameWrapper name, String id) {
+        return group(name.toString(), keyword(id));
+    }
+
+    public LexMatcher oneOf(GroupNameWrapper name, LexMatcher... matchers) {
+        return group(name.toString(), oneOf(matchers));
     }
 
     public LexMatcher oneOf(LexMatcher... matchers) {
         return new OneOfLexMatcher(this, javaLexed, matchers);
     }
 
+    public LexMatcher zeroOrMore(GroupNameWrapper name, LexMatcher matcher) {
+        return group(name.toString(), zeroOrMore(matcher));
+    }
+
     public LexMatcher zeroOrMore(LexMatcher matcher) {
         return new Repeat(this, javaLexed, matcher, 0, Integer.MAX_VALUE);
+    }
+
+    public LexMatcher zeroOrMore(GroupNameWrapper name, String string) {
+        return group(name.toString(), zeroOrMore(string));
     }
 
     public LexMatcher zeroOrMore(String string) {
         return zeroOrMore(getMatcher(string));
     }
 
+    public LexMatcher optional(GroupNameWrapper name, LexMatcher matcher) {
+        return group(name.toString(), optional(matcher));
+    }
+
     public LexMatcher optional(LexMatcher matcher) {
         return new Repeat(this, javaLexed, matcher, 0, 1);
+    }
+
+    public LexMatcher optional(GroupNameWrapper name, String string) {
+        return group(name.toString(), optional(string));
     }
 
     public LexMatcher optional(String string) {
         return optional(getMatcher(string));
     }
 
+    public LexMatcher oneOrMore(GroupNameWrapper name, LexMatcher matcher) {
+        return group(name.toString(), oneOrMore(matcher));
+    }
+
     public LexMatcher oneOrMore(LexMatcher matcher) {
         return new Repeat(this, javaLexed, matcher, 1, Integer.MAX_VALUE);
+    }
+
+    public LexMatcher oneOrMore(GroupNameWrapper name, String string) {
+        return group(name.toString(), oneOrMore(string));
     }
 
     public LexMatcher oneOrMore(String string) {
         return oneOrMore(getMatcher(string));
     }
 
+    public LexMatcher repeat(GroupNameWrapper name, LexMatcher matcher, int times) {
+        return group(name.toString(), repeat(matcher, times));
+    }
+
     public LexMatcher repeat(LexMatcher matcher, int times) {
         return new Repeat(this, javaLexed, matcher, times, times);
     }
 
+    public LexMatcher repeat(GroupNameWrapper name, LexMatcher matcher, int min, int max) {
+        return group(name.toString(), repeat(matcher, min, max));
+    }
+
     public LexMatcher repeat(LexMatcher matcher, int min, int max) {
         return new Repeat(this, javaLexed, matcher, min, max);
+    }
+
+    public LexMatcher identifier(GroupNameWrapper name, String id) {
+        return group(name.toString(), identifier(id));
     }
 
     public LexMatcher identifier(String id) {
@@ -137,8 +187,16 @@ public class Lexpression {
         return new IdentifierMatcher(this, javaLexed, pattern, name);
     }
 
+    public LexMatcher identifier(GroupNameWrapper name) {
+        return group(name.toString(), identifier());
+    }
+
     public LexMatcher identifier() {
         return new IdentifierMatcher(this, javaLexed);
+    }
+
+    public LexMatcher character(GroupNameWrapper name, String text) {
+        return group(name.toString(), character(text));
     }
 
     public LexMatcher character(String text) {
@@ -151,6 +209,10 @@ public class Lexpression {
 
     public LexMatcher character(String name, Pattern pattern) {
         return new CharacterMatcher(this, javaLexed, pattern, name);
+    }
+
+    public LexMatcher character(GroupNameWrapper name) {
+        return group(name.toString(), character());
     }
 
     public LexMatcher character() {
@@ -186,6 +248,10 @@ public class Lexpression {
         return new TypeMatcher(this, javaLexed, pattern, name);
     }
 
+    public LexMatcher type(GroupNameWrapper name) {
+        return group(name.toString(), type());
+    }
+
     public LexMatcher type() {
         return new TypeMatcher(this, javaLexed);
     }
@@ -206,12 +272,28 @@ public class Lexpression {
         return new CommentMatcher(this, javaLexed);
     }
 
+    public LexMatcher integerNumber(String name) {
+        return group(name, integerNumber());
+    }
+
+    public LexMatcher integerNumber(String name, Predicate<Long> predicate) {
+        return group(name, integerNumber(predicate));
+    }
+
     public LexMatcher integerNumber() {
         return new IntegerMatcher(this, javaLexed);
     }
 
     public LexMatcher integerNumber(Predicate<Long> predicate) {
         return new IntegerMatcher(this, javaLexed, predicate);
+    }
+
+    public LexMatcher number(String name) {
+        return group(name, number());
+    }
+
+    public LexMatcher number(String name, Predicate<Number> predicate) {
+        return group(name, number(predicate));
     }
 
     public LexMatcher number() {
@@ -222,12 +304,32 @@ public class Lexpression {
         return new NumberMatcher(this, javaLexed, predicate);
     }
 
+    public LexMatcher floatNumber(GroupNameWrapper name) {
+        return group(name.toString(), floatNumber());
+    }
+
+    public LexMatcher floatNumber(GroupNameWrapper name, Predicate<Double> predicate) {
+        return group(name.toString(), floatNumber(predicate));
+    }
+
     public LexMatcher floatNumber() {
         return new FloatMatcher(this, javaLexed);
     }
 
     public LexMatcher floatNumber(Predicate<Double> predicate) {
         return new FloatMatcher(this, javaLexed, predicate);
+    }
+
+    private LexMatcher list(GroupNameWrapper name, LexicalElement... elements) {
+        return group(name.toString(), list(elements));
+    }
+
+    public LexMatcher list(GroupNameWrapper name, String... strings) {
+        return group(name.toString(), list(strings));
+    }
+
+    public LexMatcher list(GroupNameWrapper name, LexMatcher... matchers) {
+        return group(name.toString(), list(matchers));
     }
 
     private LexMatcher list(LexicalElement... elements) {
@@ -238,8 +340,13 @@ public class Lexpression {
     public LexMatcher list(String... strings) {
         return list(getMatchers(strings));
     }
+
     public LexMatcher list(LexMatcher... matchers) {
         return new ListMatcher(this, javaLexed, matchers);
+    }
+
+    public LexMatcher match(GroupNameWrapper name, String string) {
+        return group(name.toString(), match(string));
     }
 
     public LexMatcher match(String string) {
@@ -250,25 +357,33 @@ public class Lexpression {
         return new SetMatcher(this, javaLexed, matchers);
     }
 
+    public LexMatcher unordered(GroupNameWrapper name, LexMatcher... matchers) {
+        return group(name.toString(), unordered(matchers));
+    }
+
     public LexMatcher unordered(LexicalElement... elements) {
         final var matchers = getLexMatchers(elements);
         return new SetMatcher(this, javaLexed, matchers);
+    }
+
+    public LexMatcher unordered(GroupNameWrapper name, LexicalElement... elements) {
+        return group(name.toString(), unordered(elements));
     }
 
     public LexMatcher unordered(String string) {
         return unordered(lexer.apply(List.of(string)));
     }
 
+    public LexMatcher unordered(GroupNameWrapper name, String string) {
+        return group(name.toString(), unordered(string));
+    }
+
     public LexMatcher group(String name, LexMatcher matcher) {
         return new GroupMatcher(this, javaLexed, name, matcher);
     }
 
-    private LexMatcher[] getLexMatchers(LexicalElement[] elements) {
-        final var matchers = new LexMatcher[elements.length];
-        for (int i = 0; i < elements.length; i++) {
-            matchers[i] = terminal(elements[i]);
-        }
-        return matchers;
+    public LexMatcher oneOf(GroupNameWrapper name, String... strings) {
+        return group(name.toString(), oneOf(strings));
     }
 
     public LexMatcher oneOf(String... strings) {
@@ -282,6 +397,14 @@ public class Lexpression {
         } else {
             return list(lexicalElements);
         }
+    }
+
+    private LexMatcher[] getLexMatchers(LexicalElement[] elements) {
+        final var matchers = new LexMatcher[elements.length];
+        for (int i = 0; i < elements.length; i++) {
+            matchers[i] = terminal(elements[i]);
+        }
+        return matchers;
     }
 
     private LexMatcher[] getMatchers(String... strings) {
