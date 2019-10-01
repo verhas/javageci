@@ -8,12 +8,12 @@ import javax0.geci.lexeger.MatchResult;
 import java.util.List;
 
 public abstract class LexMatcher implements javax0.geci.lexeger.LexMatcher {
-    protected final JavaLexed javaLexed;
+    final JavaLexed javaLexed;
     private final Lexpression expression;
 
     private boolean isReset = true;
 
-    protected MatchResult matching(int start, int end) {
+    MatchResult matching(int start, int end) {
         return new MatchResult(true, start, end);
     }
 
@@ -28,21 +28,17 @@ public abstract class LexMatcher implements javax0.geci.lexeger.LexMatcher {
         return new Lexpression(javaLexed, lexer);
     }
 
-    public static Lexpression when(JavaLexed javaLexed) {
-        return when(javaLexed, Lexpression.NO_SENSITIVITY);
-    }
-
-    protected void reset() {
+    void reset() {
         isReset = true;
     }
 
-    protected boolean consumed() {
+    boolean consumed() {
         final var isConsumed = !isReset;
         isReset = false;
         return isConsumed;
     }
 
-    protected LexMatcher(Lexpression expression, JavaLexed javaLexed) {
+    LexMatcher(Lexpression expression, JavaLexed javaLexed) {
         this.javaLexed = javaLexed;
         this.expression = expression;
     }
@@ -85,7 +81,7 @@ public abstract class LexMatcher implements javax0.geci.lexeger.LexMatcher {
         return find(0);
     }
 
-    protected int skipSpacesAndComments(int i) {
+    int skipSpacesAndComments(int i) {
         int j = i;
         if (!expression.isSpaceSensitive() || !expression.isCommentSensitive()) {
             while (j < javaLexed.size() &&

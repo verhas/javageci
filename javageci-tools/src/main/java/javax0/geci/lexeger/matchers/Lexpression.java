@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
@@ -18,7 +17,7 @@ public class Lexpression {
     public static final int NO_SENSITIVITY = 0x00;
     public static final int SPACE_SENSITIVE = 0x01;
     public static final int COMMENT_SENSITIVE = 0x02;
-    public final Lexer lexer;
+    private final Lexer lexer;
     private final JavaLexed javaLexed;
     private final Map<String, List<javax0.geci.javacomparator.LexicalElement>> groups = new HashMap<>();
     private final Map<String, MatchResult> regexResults = new HashMap<>();
@@ -26,10 +25,6 @@ public class Lexpression {
     public Lexpression(JavaLexed javaLexed, Lexer lexer) {
         this.javaLexed = javaLexed;
         this.lexer = lexer;
-    }
-
-    public javax0.geci.lexeger.LexMatcher usingExpression(BiFunction<JavaLexed, Lexpression, javax0.geci.lexeger.LexMatcher> function) {
-        return function.apply(javaLexed, this);
     }
 
     public boolean isSpaceSensitive() {
@@ -43,7 +38,6 @@ public class Lexpression {
     void clean() {
         groups.clear();
         regexResults.clear();
-        ;
     }
 
     void remove(String name) {
@@ -72,7 +66,7 @@ public class Lexpression {
         return List.of();
     }
 
-    public Optional<MatchResult> matchResult(final String name) {
+    public Optional<MatchResult> regexGroups(final String name) {
         if (regexResults.containsKey(name)) {
             return Optional.of(regexResults.get(name));
         }

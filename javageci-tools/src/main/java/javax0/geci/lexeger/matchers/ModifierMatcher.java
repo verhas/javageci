@@ -11,9 +11,9 @@ import java.util.Map;
 public class ModifierMatcher extends LexMatcher {
 
     private static final Map<String, Integer> modifierMap = new HashMap<>();
-    final int modifiers;
+    private final int modifiers;
 
-    {
+    static {
         modifierMap.putAll(Map.of(
             "public", Modifier.PUBLIC,
             "private", Modifier.PRIVATE,

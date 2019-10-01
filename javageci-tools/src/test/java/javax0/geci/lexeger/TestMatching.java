@@ -1,6 +1,5 @@
 package javax0.geci.lexeger;
 
-import javax0.geci.lexeger.matchers.LexMatcher;
 import javax0.geci.lexeger.matchers.Lexpression;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -35,7 +34,7 @@ class TestMatching {
     void testSimpleListMatching() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var result = LexMatcher.when(javaLexed).usingExpression(match("private final int")).matchesAt(0);
+            final var result = javaLexed.match(match("private final int")).fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(5, result.end);
@@ -46,7 +45,7 @@ class TestMatching {
     void testSimpleListFindingWithSpaces() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var result = LexMatcher.when(javaLexed, Lexpression.SPACE_SENSITIVE).usingExpression(match("public var h")).find(0);
+            final var result = javaLexed.sensitivity(Lexpression.SPACE_SENSITIVE).find(match("public var h")).fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
             Assertions.assertEquals(18, result.end);
@@ -57,9 +56,7 @@ class TestMatching {
     void testSimpleListFindingWithComments() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var //comment\nh = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed, Lexpression.COMMENT_SENSITIVE);
-            final var matcher = e.usingExpression(list(match("public var "), comment(), match("h")));
-            final var result = matcher.find();
+            final var result = javaLexed.sensitivity(Lexpression.COMMENT_SENSITIVE).find(list(match("public var "), comment(), match("h"))).fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
             Assertions.assertEquals(20, result.end);
@@ -70,11 +67,10 @@ class TestMatching {
     void testSimpleListFindingWithPatternedComments() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var //comment\nh = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed, Lexpression.COMMENT_SENSITIVE);
-            final var matcher = e.usingExpression(list(match("public var "), comment(
-                Pattern.compile("//c.*t")
-            ), match("h")));
-            final var result = matcher.find();
+            final var result =
+                javaLexed.sensitivity(Lexpression.COMMENT_SENSITIVE)
+                    .find(list(match("public var "), comment(Pattern.compile("//c.*t")), match("h")))
+                    .fromStart().result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
             Assertions.assertEquals(20, result.end);
@@ -85,16 +81,15 @@ class TestMatching {
     void testSimpleListFindingWithNamedPatternedComments() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var //comment\nh = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed, Lexpression.COMMENT_SENSITIVE);
-            final var matcher = e.usingExpression(list(match("public var "), comment(
-                "comment", Pattern.compile("//(c.*t)")
-            ), match("h")));
-            final var result = matcher.find();
+            final var result =
+                javaLexed.sensitivity(Lexpression.COMMENT_SENSITIVE)
+                    .find(list(match("public var "), comment("comment", Pattern.compile("//(c.*t)")), match("h")))
+                    .fromStart().result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
             Assertions.assertEquals(20, result.end);
-            Assertions.assertTrue(e.matchResult("comment").isPresent());
-            Assertions.assertEquals("comment", e.matchResult("comment").get().group(1));
+            Assertions.assertTrue(javaLexed.regexGroups("comment").isPresent());
+            Assertions.assertEquals("comment", javaLexed.regexGroups("comment").get().group(1));
         }
     }
 
@@ -102,11 +97,10 @@ class TestMatching {
     void testSimpleListFindingWithTextComments() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var //comment\nh = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed, Lexpression.COMMENT_SENSITIVE);
-            final var matcher = e.usingExpression(list(match("public var "), comment(
-                "//comment"
-            ), match("h")));
-            final var result = matcher.find();
+            final var result =
+                javaLexed.sensitivity(Lexpression.COMMENT_SENSITIVE)
+                    .find(list(match("public var "), comment("//comment"), match("h")))
+                    .fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
             Assertions.assertEquals(20, result.end);
@@ -117,9 +111,7 @@ class TestMatching {
     void testSimpleListFinding() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(match("public var h"));
-            final var result = matcher.find();
+            final var result = javaLexed.find(match("public var h")).fromStart().result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
             Assertions.assertEquals(18, result.end);
@@ -130,15 +122,13 @@ class TestMatching {
     void testSimpleGroupCollection() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(oneOf(group("protection"), "public", "private"), match("var h")));
-            final var result = matcher.find();
+            final var result = javaLexed.find(list(oneOf(group("protection"), "public", "private"), match("var h"))).fromStart().result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
             Assertions.assertEquals(18, result.end);
-            Assertions.assertEquals(1, e.group("protection").size());
-            Assertions.assertEquals(1, e.group("protection").size());
-            Assertions.assertEquals("public", e.group("protection").get(0).getLexeme());
+            Assertions.assertEquals(1, javaLexed.group("protection").size());
+            Assertions.assertEquals(1, javaLexed.group("protection").size());
+            Assertions.assertEquals("public", javaLexed.group("protection").get(0).getLexeme());
         }
     }
 
@@ -146,14 +136,13 @@ class TestMatching {
     void testSimpleUnmatchedGroup() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(group("protection", oneOf(match("public"), group("private", match("private")))), match("var h")));
-            final var result = matcher.find();
+            javaLexed.find(list(group("protection", oneOf(match("public"), group("private", match("private")))), match("var h")));
+            final var result = javaLexed.fromStart().result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
             Assertions.assertEquals(18, result.end);
-            Assertions.assertEquals(0, e.group("private").size());
-            Assertions.assertEquals(1, e.group("protection").size());
+            Assertions.assertEquals(0, javaLexed.group("private").size());
+            Assertions.assertEquals(1, javaLexed.group("protection").size());
         }
     }
 
@@ -161,9 +150,8 @@ class TestMatching {
     void testSimpleSetFinding() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(unordered("h public var"));
-            final var result = matcher.find();
+            javaLexed.find(unordered("h public var"));
+            final var result = javaLexed.fromStart().result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
             Assertions.assertEquals(18, result.end);
@@ -174,9 +162,8 @@ class TestMatching {
     void testComplexSetFinding() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(unordered(identifier("h"), keyword("public"), match("var")));
-            final var result = matcher.find();
+            javaLexed.find(unordered(identifier("h"), keyword("public"), match("var")));
+            final var result = javaLexed.fromStart().result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
             Assertions.assertEquals(18, result.end);
@@ -187,9 +174,9 @@ class TestMatching {
     void testSimpleSetNotFinding() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(unordered("k public var"));
-            final var result = matcher.find();
+
+            javaLexed.find(unordered("k public var"));
+            final var result = javaLexed.fromStart().result();
             Assertions.assertFalse(result.matches);
         }
     }
@@ -198,9 +185,8 @@ class TestMatching {
     void testIdentifiertMatching() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(keyword("private"), identifier("final"), unordered("int")));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(keyword("private"), identifier("final"), unordered("int")));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(5, result.end);
@@ -211,10 +197,9 @@ class TestMatching {
     void testOrMoretMatching() {
         final var source = new TestSource(List.of("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(oneOrMore(keyword("private")), zeroOrMore(identifier("final"))
+            javaLexed.match(list(oneOrMore(keyword("private")), zeroOrMore(identifier("final"))
                 , zeroOrMore(identifier("abraka dabra")), unordered("int")));
-            final var result = matcher.matchesAt(0);
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(5, result.end);
@@ -225,10 +210,9 @@ class TestMatching {
     void testOrMoretMatchingMany() {
         final var source = new TestSource(List.of("private private private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(oneOrMore(keyword("private")), optional(identifier("final"))
+            javaLexed.match(list(oneOrMore(keyword("private")), optional(identifier("final"))
                 , optional(identifier("abraka dabra")), unordered("int")));
-            final var result = matcher.matchesAt(0);
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(9, result.end);
@@ -239,10 +223,9 @@ class TestMatching {
     void testrepeatMinNumber() {
         final var source = new TestSource(List.of("private private private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(repeat(keyword("private"), 3), optional(identifier("final"))
+            javaLexed.match(list(repeat(keyword("private"), 3), optional(identifier("final"))
                 , optional(identifier("abraka dabra")), unordered("int")));
-            final var result = matcher.matchesAt(0);
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(9, result.end);
@@ -253,10 +236,9 @@ class TestMatching {
     void testRepeatMinMaxNumber() {
         final var source = new TestSource(List.of("private private private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(repeat(keyword("private"), 2, 3), optional(identifier("final"))
+            javaLexed.match(list(repeat(keyword("private"), 2, 3), optional(identifier("final"))
                 , optional(identifier("abraka dabra")), unordered("int")));
-            final var result = matcher.matchesAt(0);
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(9, result.end);
@@ -267,10 +249,9 @@ class TestMatching {
     void testAnyIdentifier() {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(keyword("private"), optional(identifier())
+            javaLexed.match(list(keyword("private"), optional(identifier())
                 , optional(identifier("abraka dabra")), unordered("int")));
-            final var result = matcher.matchesAt(0);
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(5, result.end);
@@ -281,9 +262,8 @@ class TestMatching {
     void testOneOf() {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(oneOf("final int", "int", "private final int"));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(oneOf("final int", "int", "private final int"));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(5, result.end);
@@ -294,10 +274,9 @@ class TestMatching {
     void testPatternedIdentifier() {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(keyword("private"), optional(identifier(Pattern.compile("f.*")))
+            javaLexed.match(list(keyword("private"), optional(identifier(Pattern.compile("f.*")))
                 , optional(identifier("abraka dabra")), unordered("int")));
-            final var result = matcher.matchesAt(0);
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(5, result.end);
@@ -308,17 +287,16 @@ class TestMatching {
     void testNamedPatternedIdentifier() {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(keyword("private"), optional(identifier("final", Pattern.compile("f(.*)")))
+            javaLexed.match(list(keyword("private"), optional(identifier("final", Pattern.compile("f(.*)")))
                 , optional(identifier("abraka dabra")), unordered("int")));
-            final var result = matcher.matchesAt(0);
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(5, result.end);
-            Assertions.assertTrue(e.matchResult("final").isPresent());
-            Assertions.assertTrue(e.matchResult("nonexistent").isEmpty());
-            Assertions.assertEquals(1, e.matchResult("final").get().groupCount());
-            Assertions.assertEquals("inal", e.matchResult("final").get().group(1));
+            Assertions.assertTrue(javaLexed.regexGroups("final").isPresent());
+            Assertions.assertTrue(javaLexed.regexGroups("nonexistent").isEmpty());
+            Assertions.assertEquals(1, javaLexed.regexGroups("final").get().groupCount());
+            Assertions.assertEquals("inal", javaLexed.regexGroups("final").get().group(1));
         }
     }
 
@@ -326,9 +304,8 @@ class TestMatching {
     void testFloatNumber() {
         final var source = new TestSource(List.of("private  final int z = 13.5;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("private final int z = "), floatNumber()));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(match("private final int z = "), floatNumber()));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(11, result.end);
@@ -339,9 +316,8 @@ class TestMatching {
     void testFloatNumberWithPredicate() {
         final var source = new TestSource(List.of("private  final int z = 13.5;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("private final int z = "), floatNumber(f -> f > 13 && f < 14)));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(match("private final int z = "), floatNumber(f -> f > 13 && f < 14)));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(11, result.end);
@@ -352,9 +328,8 @@ class TestMatching {
     void testFloatNumberWithFailingPredicate() {
         final var source = new TestSource(List.of("private  final int z = 13.5;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("private final int z = "), floatNumber(f -> false)));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(match("private final int z = "), floatNumber(f -> false)));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertFalse(result.matches);
         }
     }
@@ -364,9 +339,8 @@ class TestMatching {
     void testIntegerNumber() {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("private final int z = "), integerNumber()));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(match("private final int z = "), integerNumber()));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(11, result.end);
@@ -377,9 +351,9 @@ class TestMatching {
     void testIntegerNumberWithPredicate() {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("private final int z = "), integerNumber(f -> f > 12 && f < 14)));
-            final var result = matcher.matchesAt(0);
+
+            javaLexed.match(list(match("private final int z = "), integerNumber(f -> f > 12 && f < 14)));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(11, result.end);
@@ -390,9 +364,9 @@ class TestMatching {
     void testIntegerNumberWithFailingPredicate() {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("private final int z = "), integerNumber(f -> false)));
-            final var result = matcher.matchesAt(0);
+
+            javaLexed.match(list(match("private final int z = "), integerNumber(f -> false)));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertFalse(result.matches);
         }
     }
@@ -401,9 +375,8 @@ class TestMatching {
     void testNumber() {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("private final int z = "), number()));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(match("private final int z = "), number()));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(11, result.end);
@@ -414,9 +387,8 @@ class TestMatching {
     void testNumberWithPredicate() {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("private final int z = "), number(f -> true)));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(match("private final int z = "), number(f -> true)));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(11, result.end);
@@ -427,9 +399,8 @@ class TestMatching {
     void testNumberWithFailingPredicate() {
         final var source = new TestSource(List.of("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("private final int z = "), number(f -> false)));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(match("private final int z = "), number(f -> false)));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertFalse(result.matches);
         }
     }
@@ -438,9 +409,8 @@ class TestMatching {
     void testType() {
         final var source = new TestSource(List.of("List"));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(type());
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(type());
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
         }
     }
@@ -449,9 +419,8 @@ class TestMatching {
     void testTypeWithGenerics() {
         final var source = new TestSource(List.of("List<Object,?>>"));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(type());
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(type());
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
         }
     }
@@ -460,9 +429,8 @@ class TestMatching {
     void testString() {
         final var source = new TestSource(List.of("public var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("public var h = "), string()));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(match("public var h = "), string()));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
         }
     }
@@ -471,9 +439,8 @@ class TestMatching {
     void testStringWithValue() {
         final var source = new TestSource(List.of("public var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("public var h = "), string("kkk")));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(match("public var h = "), string("kkk")));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
         }
     }
@@ -482,9 +449,8 @@ class TestMatching {
     void testStringWithPattern() {
         final var source = new TestSource(List.of("public var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("public var h = "), string(Pattern.compile("k{3}"))));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(match("public var h = "), string(Pattern.compile("k{3}"))));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
         }
     }
@@ -493,13 +459,12 @@ class TestMatching {
     void testStringWithNamedPattern() {
         final var source = new TestSource(List.of("public var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("public var h = "), string("Zkk", Pattern.compile("(k{3})"))));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(match("public var h = "), string("Zkk", Pattern.compile("(k{3})"))));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
-            Assertions.assertTrue(e.matchResult("Zkk").isPresent());
-            Assertions.assertEquals(1, e.matchResult("Zkk").get().groupCount());
-            Assertions.assertEquals("kkk", e.matchResult("Zkk").get().group(1));
+            Assertions.assertTrue(javaLexed.regexGroups("Zkk").isPresent());
+            Assertions.assertEquals(1, javaLexed.regexGroups("Zkk").get().groupCount());
+            Assertions.assertEquals("kkk", javaLexed.regexGroups("Zkk").get().group(1));
         }
     }
 
@@ -508,9 +473,8 @@ class TestMatching {
     void testCharacter() {
         final var source = new TestSource(List.of("public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("public var h = "), character()));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(match("public var h = "), character()));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
         }
     }
@@ -519,9 +483,8 @@ class TestMatching {
     void testCharacterWithValue() {
         final var source = new TestSource(List.of("public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("public var h = "), character("kkk")));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(match("public var h = "), character("kkk")));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
         }
     }
@@ -530,9 +493,8 @@ class TestMatching {
     void testCharacterWithPattern() {
         final var source = new TestSource(List.of("public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("public var h = "), character(Pattern.compile("k{3}"))));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(match("public var h = "), character(Pattern.compile("k{3}"))));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
         }
     }
@@ -541,28 +503,34 @@ class TestMatching {
     void testCharacterWithNamedPattern() {
         final var source = new TestSource(List.of("public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(match("public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(match("public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
-            Assertions.assertTrue(e.matchResult("Zkk").isPresent());
-            Assertions.assertEquals(1, e.matchResult("Zkk").get().groupCount());
-            Assertions.assertEquals("kkk", e.matchResult("Zkk").get().group(1));
+            Assertions.assertTrue(javaLexed.regexGroups("Zkk").isPresent());
+            Assertions.assertEquals(1, javaLexed.regexGroups("Zkk").get().groupCount());
+            Assertions.assertEquals("kkk", javaLexed.regexGroups("Zkk").get().group(1));
         }
     }
-
 
     @Test
     void testModifiers() {
         final var source = new TestSource(List.of("public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(modifier(Modifier.PRIVATE|Modifier.PUBLIC),match(" var h = "), character("Zkk", Pattern.compile("(k{3})"))));
-            final var result = matcher.matchesAt(0);
+            final var result = javaLexed.match(list(modifier(Modifier.PRIVATE | Modifier.PUBLIC), match(" var h = "), character("Zkk", Pattern.compile("(k{3})")))).fromIndex(0).result();
             Assertions.assertTrue(result.matches);
-            Assertions.assertTrue(e.matchResult("Zkk").isPresent());
-            Assertions.assertEquals(1, e.matchResult("Zkk").get().groupCount());
-            Assertions.assertEquals("kkk", e.matchResult("Zkk").get().group(1));
+            Assertions.assertTrue(javaLexed.regexGroups("Zkk").isPresent());
+            Assertions.assertEquals(1, javaLexed.regexGroups("Zkk").get().groupCount());
+            Assertions.assertEquals("kkk", javaLexed.regexGroups("Zkk").get().group(1));
+        }
+    }
+
+    @Test
+    void testModifiersNoMatch() {
+        final var source = new TestSource(List.of("final var h = 'kkk'"));
+        try (final var javaLexed = new JavaLexed(source)) {
+            javaLexed.find(list(modifier(Modifier.PRIVATE | Modifier.PUBLIC), match(" var h = "), character("Zkk", Pattern.compile("(k{3})"))));
+            final var result = javaLexed.fromIndex(0).result();
+            Assertions.assertFalse(result.matches);
         }
     }
 
@@ -570,13 +538,12 @@ class TestMatching {
     void testBackTrackOneStep() {
         final var source = new TestSource(List.of("public public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(oneOrMore(match("public")), match("public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(oneOrMore(match("public")), match("public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
-            Assertions.assertTrue(e.matchResult("Zkk").isPresent());
-            Assertions.assertEquals(1, e.matchResult("Zkk").get().groupCount());
-            Assertions.assertEquals("kkk", e.matchResult("Zkk").get().group(1));
+            Assertions.assertTrue(javaLexed.regexGroups("Zkk").isPresent());
+            Assertions.assertEquals(1, javaLexed.regexGroups("Zkk").get().groupCount());
+            Assertions.assertEquals("kkk", javaLexed.regexGroups("Zkk").get().group(1));
         }
     }
 
@@ -584,9 +551,8 @@ class TestMatching {
     void testBackTrackTwoSteps() {
         final var source = new TestSource(List.of("public public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(oneOrMore("public"), match("public public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(oneOrMore("public"), match("public public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertFalse(result.matches);
         }
     }
@@ -595,13 +561,12 @@ class TestMatching {
     void testBackTrackTwoStepsSuccessful() {
         final var source = new TestSource(List.of("public public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var e = LexMatcher.when(javaLexed);
-            final var matcher = e.usingExpression(list(zeroOrMore(match("public")), match("public public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
-            final var result = matcher.matchesAt(0);
+            javaLexed.match(list(zeroOrMore(match("public")), match("public public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
+            final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
-            Assertions.assertTrue(e.matchResult("Zkk").isPresent());
-            Assertions.assertEquals(1, e.matchResult("Zkk").get().groupCount());
-            Assertions.assertEquals("kkk", e.matchResult("Zkk").get().group(1));
+            Assertions.assertTrue(javaLexed.regexGroups("Zkk").isPresent());
+            Assertions.assertEquals(1, javaLexed.regexGroups("Zkk").get().groupCount());
+            Assertions.assertEquals("kkk", javaLexed.regexGroups("Zkk").get().group(1));
         }
     }
 
@@ -609,9 +574,9 @@ class TestMatching {
     void testSimpleReplacement() {
         final var source = new TestSource(List.of("/** this is a comment */ public public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var result = LexMatcher.when(javaLexed)
-                .usingExpression(list(zeroOrMore(match("public")), match("public public var h = "), character("Zkk", Pattern.compile("(k{3})"))))
-                .find();
+            final var result = javaLexed
+                                   .find(list(zeroOrMore(match("public")), match("public public var h = "), character("Zkk", Pattern.compile("(k{3})"))))
+                                   .fromStart().result();
             javaLexed.replace(result.start, result.end, Lex.of("public var h = "));
         }
         Assertions.assertEquals("/** this is a comment */ public var h = ", source.toString());
@@ -621,10 +586,10 @@ class TestMatching {
     void testSimpleReplacement2() {
         final var source = new TestSource(List.of("/** this is a comment */ public public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var result = LexMatcher.when(javaLexed)
-                .usingExpression(list(zeroOrMore(match("public")), match("public public var h = "), character("Zkk", Pattern.compile("(k{3})"))))
-                .find();
-            javaLexed.replace(result, Lex.of("public var h = "));
+            final var result = javaLexed
+                                   .find(list(zeroOrMore(match("public")), match("public public var h = "), character("Zkk", Pattern.compile("(k{3})"))))
+                                   .fromStart().result();
+            javaLexed.replaceWith(Lex.of("public var h = "));
         }
         Assertions.assertEquals("/** this is a comment */ public var h = ", source.toString());
     }

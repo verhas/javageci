@@ -6,7 +6,7 @@ import javax0.geci.lexeger.MatchResult;
 
 import java.util.regex.Pattern;
 
-public abstract class AbstractPatternedMatcher extends LexMatcher {
+abstract class AbstractPatternedMatcher extends LexMatcher {
     private final String text;
     private final Pattern pattern;
     private final String name;

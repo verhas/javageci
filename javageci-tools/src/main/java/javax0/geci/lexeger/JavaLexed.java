@@ -3,11 +3,14 @@ package javax0.geci.lexeger;
 import javax0.geci.api.Source;
 import javax0.geci.javacomparator.LexicalElement;
 import javax0.geci.javacomparator.lex.Lexer;
+import javax0.geci.lexeger.matchers.Lexpression;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.function.BiFunction;
 
 /**
  * <p>A JavaLexed object contains a Java source file as a list of
@@ -179,9 +182,23 @@ public class JavaLexed implements AutoCloseable {
     public void removeRange(int start, int end) {
         assertStartEndOrder(start, end);
         assertOpen();
-        for (int i = end - 1; i >= start; i--) {
-            lexicalElements.remove(i);
+        if (end > start) {
+            lexicalElements.subList(start, end).clear();
         }
+    }
+
+    /**
+     * <p>Replace the part of the lexeme list that was matched by the
+     * last match result with the elements of the lists.</p>
+     *
+     * @param lists that will be inserted into the lexeme list
+     * @return the index of the first lexical elements after the
+     * replaced part. If the result was a no-match then the return value
+     * is -1.
+     */
+    public int replaceWith(List<LexicalElement>... lists) {
+        assertOpen();
+        return replace(lastMatchResult, lists);
     }
 
     /**
@@ -249,12 +266,74 @@ public class JavaLexed implements AutoCloseable {
     }
 
     /**
-     *
      * @return the number of lexical elements that are currently in the
      * list of lexical elements.
      */
     public int size() {
         assertOpen();
         return lexicalElements.size();
+    }
+
+    private enum Action {MATCH, FIND}
+
+    private BiFunction<JavaLexed, Lexpression, javax0.geci.lexeger.LexMatcher> function = null;
+    private Action action = null;
+    private int sensitivity;
+
+    public JavaLexed match(BiFunction<JavaLexed, Lexpression, LexMatcher> function) {
+        this.function = function;
+        action = Action.MATCH;
+        return this;
+    }
+
+    public JavaLexed find(BiFunction<JavaLexed, Lexpression, LexMatcher> function) {
+        this.function = function;
+        action = Action.FIND;
+        return this;
+    }
+
+    public JavaLexed sensitivity(int sensitivity) {
+        this.sensitivity = sensitivity;
+        return this;
+    }
+
+    private Lexpression expression;
+
+    public JavaLexed fromStart() {
+        return fromIndex(0);
+    }
+
+    private MatchResult lastMatchResult = MatchResult.NO_MATCH;
+
+    public JavaLexed fromIndex(int i) {
+        Lexer lexer = new Lexer();
+        if ((sensitivity & Lexpression.SPACE_SENSITIVE) > 0) {
+            lexer.spaceSensitive();
+        }
+        if ((sensitivity & Lexpression.COMMENT_SENSITIVE) > 0) {
+            lexer.commentSensitive();
+        }
+        expression = new Lexpression(this, lexer);
+        switch (action) {
+            case MATCH:
+                lastMatchResult = function.apply(this, expression).matchesAt(i);
+                return this;
+            case FIND:
+                lastMatchResult = function.apply(this, expression).find(i);
+                return this;
+        }
+        throw new IllegalArgumentException("action is " + action + "can only be MATCH or FIND");
+    }
+
+    public Optional<java.util.regex.MatchResult> regexGroups(final String name) {
+        return expression.regexGroups(name);
+    }
+
+    public List<javax0.geci.javacomparator.LexicalElement> group(final String name) {
+        return expression.group(name);
+    }
+
+    public MatchResult result(){
+        return lastMatchResult;
     }
 }
