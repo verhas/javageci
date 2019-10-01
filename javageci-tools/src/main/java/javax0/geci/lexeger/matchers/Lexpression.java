@@ -77,10 +77,34 @@ public class Lexpression {
         return new TerminalLexMatcher(this, javaLexed, le);
     }
 
+    /**
+     *  Creates a matcher that matches a modifier.
+     *
+     * @param mask the bit value of the modifier that is accepted by the
+     *             matcher. The value should be taken from the class
+     *             {@link java.lang.reflect.Modifier}. For example if
+     *             only {@code private} should be accepted as a modifier
+     *             then the {@code mask} argument has to be {@link
+     *             java.lang.reflect.Modifier#PRIVATE}. If there are
+     *             more than one modifiers accepted, for example {@code
+     *             private} as a modifier is accepted just as well as
+     *             {@code protected} then the value {@code
+     *             Modifier.PRIVATE|Modifier.PROTECTED} has to be used.
+     * @return the matcher
+     */
     public LexMatcher modifier(int mask) {
         return new ModifierMatcher(this, javaLexed, mask);
     }
 
+    /**
+     * Creates a matcher that matches a modifier and stores in in the
+     * group named {@code name}.
+     *
+     * @param name the name of the group to store the lexical element of
+     *             the matched modifier.
+     * @param mask See {@link #modifier(int)}
+     * @return the matcher
+     */
     public LexMatcher modifier(GroupNameWrapper name, int mask) {
         return group(name.toString(), modifier(mask));
     }
