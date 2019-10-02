@@ -8,12 +8,24 @@ import java.util.List;
 
 class TestComparator {
 
+    private List<String> sourceList(String s1) {
+        return List.of(s1.split("\n", -1));
+    }
+
     @Test
     @DisplayName("Two empty source code equals")
     void testEmpty(){
         final var s1 = "";
         final var s2 = "";
         Assertions.assertFalse( new Comparator().test(sourceList(s1), sourceList(s2)));
+    }
+
+    @Test
+    @DisplayName("Changed code does not equals")
+    void testSimple(){
+        final var s1 = "int i";
+        final var s2 = "float i";
+        Assertions.assertTrue( new Comparator().test(sourceList(s1), sourceList(s2)));
     }
 
     @Test
@@ -35,7 +47,7 @@ class TestComparator {
 
 
     @Test
-    @DisplayName("Code comparision does not care the radix of numbers")
+    @DisplayName("Code comparison does not care the radix of numbers")
     void testNumberDifference(){
         final var s1 = "    @Test\n" +
                 "    void method(){\n" +
@@ -48,11 +60,9 @@ class TestComparator {
         Assertions.assertFalse( new Comparator().test(sourceList(s1), sourceList(s2)));
     }
 
-    private List<String> sourceList(String s1) {
-        return List.of(s1.split("\n", -1));
-    }
-
-    @Test void testCommentDifference(){
+    @Test
+    @DisplayName("Code comparison does not care about comments by default.")
+    void testCommentDifference(){
         final var s1 = "    @Test\n" +
             "    void method(){\n" +
             "    }";
@@ -61,5 +71,18 @@ class TestComparator {
             "    void method(){\n" +
             "    }";
         Assertions.assertFalse( new Comparator().test(sourceList(s1), sourceList(s2)));
+    }
+
+    @Test
+    @DisplayName("Code comparison cares about comments when explicitly told.")
+    void testCommentDifferenceSensitive(){
+        final var s1 = "    @Test\n" +
+            "    void method(){\n" +
+            "    }";
+        final var s2 = "    @Test\n" +
+            "/** This is some \n comment \n*/"+
+            "    void method(){\n" +
+            "    }";
+        Assertions.assertTrue( new Comparator().commentSensitive().test(sourceList(s1), sourceList(s2)));
     }
 }
