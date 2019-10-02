@@ -26,26 +26,38 @@ public class TypeMatcher extends AbstractPatternedMatcher {
 
     @Override
     public MatchResult matchesAt(int i) {
-        var result = match(i, LexicalElement.Type.IDENTIFIER);
+        final var start = skipSpacesAndComments(i);
+        var result = match(start, LexicalElement.Type.IDENTIFIER);
         if (!result.matches) {
-            return result;
+            return MatchResult.NO_MATCH;
         }
         int j = skipSpacesAndComments(result.end);
-        if (j + 1 < javaLexed.size() && javaLexed.get(j + 1).getLexeme().equals("<")) {
-            int counter = 1;
-            while (j < javaLexed.size()) {
-                if (javaLexed.get(i).getLexeme().equals("<")) {
-                    counter++;
-                }
-                if (javaLexed.get(j).getLexeme().equals(">")) {
-                    counter++;
-                }
-                j++;
-                if (counter == 0) {
-                    return matching( j, j);
-                }
+        while (j < javaLexed.size() && javaLexed.get(j).getLexeme().equals(".")) {
+            j = skipSpacesAndComments(j + 1);
+            if (j < javaLexed.size() && javaLexed.get(j).getType() == LexicalElement.Type.IDENTIFIER) {
+                j = skipSpacesAndComments(j + 1);
+            } else {
+                return MatchResult.NO_MATCH;
             }
         }
-        return matching( i, j);
+        if (j < javaLexed.size() && javaLexed.get(j).getLexeme().equals("<")) {
+            int ltCounter = 1;
+            j = skipSpacesAndComments(j + 1);
+            while (j < javaLexed.size()) {
+                var lex = javaLexed.get(j);
+                if (lex.getLexeme().equals("<")) {
+                    ltCounter++;
+                }
+                if (lex.getLexeme().equals(">")) {
+                    ltCounter--;
+                }
+                j = skipSpacesAndComments(j + 1);
+                if (ltCounter == 0) {
+                    return matching( start, j);
+                }
+            }
+            return MatchResult.NO_MATCH;
+        }
+        return matching(start, j);
     }
 }

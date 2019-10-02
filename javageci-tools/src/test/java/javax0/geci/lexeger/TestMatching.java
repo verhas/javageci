@@ -417,11 +417,39 @@ class TestMatching {
 
     @Test
     void testTypeWithGenerics() {
-        final var source = new TestSource(List.of("List<Object,?>>"));
+        final var source = new TestSource(List.of("List<Object,?>"));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(type());
             final var result = javaLexed.fromIndex(0).result();
             Assertions.assertTrue(result.matches);
+            Assertions.assertEquals(0, result.start);
+            Assertions.assertEquals(6, result.end);
+        }
+    }
+
+    @Test
+    void testTypeWithGenericsAndPackageAndSpace() {
+        final var source = new TestSource(List.of("java.util.List< Object , ? >"));
+        try (final var javaLexed = new JavaLexed(source)) {
+            javaLexed.match(type(group("xx")));
+            final var result = javaLexed.fromIndex(0).result();
+            Assertions.assertTrue(result.matches);
+            Assertions.assertEquals(0, result.start);
+            Assertions.assertEquals(14, result.end);
+            Assertions.assertEquals("[IDENTIFIER[java], "
+                + "SYMBOL[.], "
+                + "IDENTIFIER[util], "
+                + "SYMBOL[.], "
+                + "IDENTIFIER[List], "
+                + "SYMBOL[<], "
+                + "SPACING[ ], "
+                + "IDENTIFIER[Object], "
+                + "SPACING[ ], "
+                + "SYMBOL[,], "
+                + "SPACING[ ], "
+                + "SYMBOL[?], "
+                + "SPACING[ ], "
+                + "SYMBOL[>]]", javaLexed.group("xx").toString());
         }
     }
 
