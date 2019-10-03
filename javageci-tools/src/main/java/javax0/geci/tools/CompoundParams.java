@@ -82,7 +82,6 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
      * value is already a list
      */
     private static List<String> valueToList(Object value) {
-        final List<String> list;
         if (value instanceof List) {
             return (List) value;
         } else if (value instanceof String) {

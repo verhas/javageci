@@ -1,5 +1,8 @@
 package javax0.geci.tools;
 
+import java.util.List;
+import java.util.Set;
+import javax0.geci.api.GeciException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +12,16 @@ import java.util.Map;
 public class TestCompoundParams {
 
     @Test
+    @DisplayName("Get returns with value if key exists or default value or supplied value")
+    void testGet1() {
+        final var sut = new CompoundParams("theId");
+        Assertions.assertEquals("theId", sut.get("id"));
+        Assertions.assertEquals("", sut.get("nonexistent"));
+        Assertions.assertEquals("foo", sut.get("nonexistent", "foo"));
+        Assertions.assertEquals("foobar", sut.get("nonexistent", () -> "foo" + "bar"));
+    }
+
+    @Test
     @DisplayName("It proxies a normal map")
     void testFromMap() {
         final var sut = new CompoundParams("theId", Map.of("a", "1", "b", "2"));
@@ -16,6 +29,20 @@ public class TestCompoundParams {
         Assertions.assertEquals("1", sut.get("a"));
         Assertions.assertEquals("2", sut.get("b"));
         Assertions.assertEquals("", sut.get("nonexsistent"));
+    }
+
+    @Test
+    @DisplayName("It proxies a map with strings only")
+    void testNotStringMap(){
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CompoundParams("id", Map.of("a", 1)));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CompoundParams("id", Map.of("a", 3L)));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CompoundParams("id", Map.of("a", 1.2f)));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CompoundParams("id", Map.of("a", true)));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CompoundParams("id", Map.of("a", new Object())));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CompoundParams("id", Map.of("a", List.of(1, new Object(), true))));
+        final String object = "1";
+        Assertions.assertDoesNotThrow(() -> new CompoundParams("id", Map.of("a", object)));
+        Assertions.assertDoesNotThrow(() -> new CompoundParams("id", Map.of("a", List.of("A", "B", "C"))));
     }
 
     @Test
@@ -102,5 +129,27 @@ public class TestCompoundParams {
         );
         Assertions.assertEquals("a,b,c",
                 String.join(",", sut.keySet()));
+    }
+
+    @Test
+    @DisplayName("KeySet can be constrained")
+    void testConstrainingKeys() {
+        final var source = new TestSource();
+        final var mnemonic = "TestGen";
+        final var sut = new CompoundParams("theId", Map.of(
+            "a", "1",
+            "b", "2",
+            "c", "3")
+        );
+
+        Assertions.assertThrows(GeciException.class, () -> sut.setConstraints(source, mnemonic, Set.of("a", "c", "e")));
+        Assertions.assertDoesNotThrow(() -> sut.setConstraints(source, mnemonic, Set.of("a", "b", "c", "d", "e")));
+    }
+
+    private static class TestSource extends AbstractTestSource {
+        @Override
+        public String getAbsoluteFile() {
+            return "ABSOLUTE_TEST_FILE";
+        }
     }
 }
