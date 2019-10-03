@@ -18,9 +18,9 @@ public class TestJavaLexed {
         Assertions.assertEquals(expected, result);
     }
 
-    private String buildLexemeTree(JavaLexed sut) {
+    private String toLexicalString(JavaLexed javaLexed) {
         StringBuilder sb = new StringBuilder();
-        for (final var le : sut.lexicalElements()) {
+        for (final var le : javaLexed.lexicalElements()) {
             sb.append(le.getType().name()).append("[")
                 .append(le.getFullLexeme()).append("]").append("\n");
         }
@@ -57,9 +57,9 @@ public class TestJavaLexed {
         final var source = new TestSource(List.of(
             "private final var apple= \"appleee\";   ",
             "    private final final 13 'aaaaa' "));
-        String lexed;
+        final String lexed;
         try (final var sut = new JavaLexed(source)) {
-            lexed = buildLexemeTree(sut);
+            lexed = toLexicalString(sut);
         }
         Assertions.assertEquals("IDENTIFIER[private]\n" +
                                     "SPACING[ ]\n" +
@@ -108,26 +108,54 @@ public class TestJavaLexed {
     }
 
     @Test
-    @DisplayName("Can remove a single lexical element.")
-    void removesElement() {
-        final var source = new TestSource(List.of("public static final"));
-        String lexed;
+    @DisplayName("Can't remove range if end is out of bounds.")
+    void removeRangeThrowsExceptionWhenEndOutOfBounds() {
+        final var source = new TestSource(List.of("public final"));
         try(final var sut = new JavaLexed(source)) {
-            sut.remove(4);
-            lexed = buildLexemeTree(sut);
+            Assertions.assertThrows(IndexOutOfBoundsException.class, () -> sut.removeRange(1, 5));
         }
-        Assertions.assertEquals("IDENTIFIER[public]\n" +
-            "SPACING[ ]\n" +
-            "IDENTIFIER[static]\n" +
-            "SPACING[ ]\n", lexed);
     }
 
     @Test
-    @DisplayName("Can get a single lexical element by id.")
+    @DisplayName("Can't remove range if start is out of bounds.")
+    void removeRangeThrowsExceptionWhenStartOutOfBounds() {
+        final var source = new TestSource(List.of("public final"));
+        try(final var sut = new JavaLexed(source)) {
+            Assertions.assertThrows(IndexOutOfBoundsException.class, () -> sut.removeRange(-1, 2));
+        }
+    }
+
+    @Test
+    @DisplayName("Can remove a single lexical element.")
+    void removesElement() {
+        final var source = new TestSource(List.of("public static final"));
+        final String lexed;
+        try(final var sut = new JavaLexed(source)) {
+            sut.remove(2);
+            lexed = toLexicalString(sut);
+        }
+        Assertions.assertEquals("IDENTIFIER[public]\n" +
+            "SPACING[ ]\n" +
+            "SPACING[ ]\n" +
+            "IDENTIFIER[final]\n", lexed);
+    }
+
+    @Test
+    @DisplayName("Can't remove element from out of bounds.")
+    void removeElementThrowsExceptionOutOfBounds() {
+        final var source = new TestSource(List.of("public final"));
+        try(final var sut = new JavaLexed(source)) {
+            Assertions.assertThrows(IndexOutOfBoundsException.class, () -> sut.remove(-1));
+            Assertions.assertThrows(IndexOutOfBoundsException.class, () -> sut.remove(5));
+        }
+    }
+
+    @Test
+    @DisplayName("Can get a single lexical element by position.")
     void getsElement() {
         final var source = new TestSource(List.of("public static final"));
         try(final var sut = new JavaLexed(source)) {
-            final javax0.geci.javacomparator.LexicalElement lexicalElement = sut.get(2);
+            final var lexicalElement = sut.get(2);
             Assertions.assertEquals(javax0.geci.javacomparator.LexicalElement.Type.IDENTIFIER, lexicalElement.getType());
             Assertions.assertEquals("static", lexicalElement.getFullLexeme());
         }
@@ -136,23 +164,26 @@ public class TestJavaLexed {
     @Test
     @DisplayName("Can remove a range of lexical elements.")
     void removesRange() {
-        final var source = new TestSource(List.of("final private"));
-        String lexed;
+        final var source = new TestSource(List.of("final static private"));
+        final String lexed;
         try(final var sut = new JavaLexed(source)) {
-            sut.removeRange(0, 2);
-            lexed = buildLexemeTree(sut);
+            sut.removeRange(1, 3);
+            lexed = toLexicalString(sut);
         }
-        Assertions.assertEquals("IDENTIFIER[private]\n", lexed);
+        Assertions.assertEquals("IDENTIFIER[final]\n" +
+            "SPACING[ ]\n" +
+            "IDENTIFIER[private]\n", lexed);
     }
 
     @Test
-    @DisplayName("Can replace a range of lexical elements.")
-    void replacesRange() {
+    @DisplayName("Can replace a range of lexical elements at the start.")
+    void replacesRangeStart() {
         final var source = new TestSource(List.of("final private"));
-        String lexed;
+        final var source3 = new TestSource(List.of("private var"));
+        final String lexed;
         try(final var sut = new JavaLexed(source)) {
             sut.replace(0, 2, List.of(new LexicalElement.Identifier("static"), new LexicalElement.Spacing("   ")));
-            lexed = buildLexemeTree(sut);
+            lexed = toLexicalString(sut);
         }
         Assertions.assertEquals("IDENTIFIER[static]\n" +
             "SPACING[   ]\n" +
@@ -160,13 +191,46 @@ public class TestJavaLexed {
     }
 
     @Test
+    @DisplayName("Can replace a range of lexical elements between the start and the end.")
+    void replacesRangeMiddle() {
+        final var source = new TestSource(List.of("public final static var"));
+        final String lexed;
+        try(final var sut = new JavaLexed(source)) {
+            sut.replace(2, 4, List.of(new LexicalElement.Identifier("static"), new LexicalElement.Spacing("   ")));
+            lexed = toLexicalString(sut);
+        }
+        Assertions.assertEquals("IDENTIFIER[public]\n" +
+            "SPACING[ ]\n" +
+            "IDENTIFIER[static]\n" +
+            "SPACING[   ]\n" +
+            "IDENTIFIER[static]\n" +
+            "SPACING[ ]\n" +
+            "IDENTIFIER[var]\n", lexed);
+    }
+
+    @Test
+    @DisplayName("Can replace a range of lexical elements at the end.")
+    void replacesRangeEnd() {
+        final var source = new TestSource(List.of("public final static"));
+        final String lexed;
+        try(final var sut = new JavaLexed(source)) {
+            sut.replace(2, 5, List.of(new LexicalElement.Identifier("static"), new LexicalElement.Spacing("   ")));
+            lexed = toLexicalString(sut);
+        }
+        Assertions.assertEquals("IDENTIFIER[public]\n" +
+            "SPACING[ ]\n" +
+            "IDENTIFIER[static]\n" +
+            "SPACING[   ]\n", lexed);
+    }
+
+    @Test
     @DisplayName("Can replace a range of lexical elements with the Lex utility class.")
     void replacesRangeWithLex() {
         final var source = new TestSource(List.of("final private"));
-        String lexed;
+        final String lexed;
         try(final var sut = new JavaLexed(source)) {
             sut.replace(0, 2, Lex.of("static   "));
-            lexed = buildLexemeTree(sut);
+            lexed = toLexicalString(sut);
         }
         Assertions.assertEquals("IDENTIFIER[static]\n" +
             "SPACING[   ]\n" +
