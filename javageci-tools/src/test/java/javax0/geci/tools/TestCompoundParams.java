@@ -20,7 +20,7 @@ public class TestCompoundParams {
 
     @Test
     @DisplayName("Get returns with value if key exists or default value or supplied value")
-    void testGet1() {
+    void testGet() {
         final var sut = new CompoundParams("theId");
         Assertions.assertEquals("theId", sut.get("id"));
         Assertions.assertEquals("", sut.get("nonexistent"));
