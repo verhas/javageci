@@ -4,9 +4,17 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 public class TestCompoundParams {
+
+    @Test
+    @DisplayName("Throws IllegalArgumentException when the constructor argument is illegal")
+    void testBadConstructorUse(){
+        Assertions.assertThrows(IllegalArgumentException.class , () -> new CompoundParams("theId", Map.of("a", List.of(1,2,3))));
+        Assertions.assertThrows(IllegalArgumentException.class , () -> new CompoundParams("theId", Map.of("a", 3)));
+    }
 
     @Test
     @DisplayName("It proxies a normal map")
