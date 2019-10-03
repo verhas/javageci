@@ -101,7 +101,7 @@ can see that this is a proof of concept demonstration sample code:
 <!-- snip TestAccessor -->
 ```java
     @Test
-    public void testAccessor() throws Exception {
+    void testAccessor() throws Exception {
         Geci geci;
         Assertions.assertFalse(
                 (geci = new Geci()).source(maven().module("javageci-examples").mainSource())

@@ -3,7 +3,15 @@ package javax0.geci.tools;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Source;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -63,8 +71,8 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
             this.params[i] = new HashMap<>();
             for (final var entry : params[i].entrySet()) {
                 this.params[i]
-                        .put(entry.getKey(),
-                                valueToList(entry.getValue()));
+                    .put(entry.getKey(),
+                        valueToList(entry.getValue()));
             }
         }
         this.cparams = null;
@@ -83,15 +91,27 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
      */
     private static List<String> valueToList(Object value) {
         if (value instanceof List) {
-            return (List) value;
+            return assertListOfStrings((List)value);
         } else if (value instanceof String) {
             return new ArrayList(List.of((String) value));
         } else {
             throw new IllegalArgumentException(value.getClass()
-                    + " cannot be used in "
-                    + CompoundParams.class.getSimpleName()
-                    + " as parameter value.");
+                                                   + " cannot be used in "
+                                                   + CompoundParams.class.getSimpleName()
+                                                   + " as parameter value.");
         }
+    }
+
+    private static List<String> assertListOfStrings(List value) {
+        for (final var string : value) {
+            if (!(string instanceof String)) {
+                throw new IllegalArgumentException(value.getClass()
+                                                       + " cannot be used in "
+                                                       + CompoundParams.class.getSimpleName()
+                                                       + " as parameter value as it contains non-String elements.");
+            }
+        }
+        return value;
     }
 
     /**
@@ -122,7 +142,7 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
 
     public void trace() {
         for (final var key : keySet()) {
-            Tracer.log(key,get(key));
+            Tracer.log(key, get(key));
         }
     }
 
@@ -150,11 +170,11 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
     private static <T> T find(Function<CompoundParams, T> mapper,
                               CompoundParams... cparams) {
         return Arrays.stream(cparams)
-            .filter(Objects::nonNull)
-            .map(mapper)
-            .filter(Objects::nonNull)
-            .limit(1)
-            .findFirst().orElse(null);
+                   .filter(Objects::nonNull)
+                   .map(mapper)
+                   .filter(Objects::nonNull)
+                   .limit(1)
+                   .findFirst().orElse(null);
     }
 
     @Override
@@ -184,7 +204,7 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
                 int closestDistance = Integer.MAX_VALUE;
                 for (final var s : allowedKeys) {
                     final var d = Levenshtein.distance(key, s);
-                    if( d == closestDistance ){
+                    if (d == closestDistance) {
                         closestKey = null;
                     }
                     if (d < closestDistance) {
@@ -193,22 +213,22 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
                     }
                 }
                 errorMessage
-                        .append("\nThe configuration '")
-                        .append(key)
-                        .append("' can not be used with the generator ")
-                        .append(mnemonic)
-                        .append(closestKey == null ?
+                    .append("\nThe configuration '")
+                    .append(key)
+                    .append("' can not be used with the generator ")
+                    .append(mnemonic)
+                    .append(closestKey == null ?
                                 "" :
                                 ", did you mean '" + closestKey + "' ?");
             }
         }
         if (errorMessage.length() > 0) {
             throw new GeciException(errorMessage.append(
-                    "\nThe possible keys are:\n  ").append(
-                    String.join(", ", allowedKeys))
-                    .append("\nIn source code ")
-                    .append(source.getAbsoluteFile())
-                    .toString()
+                "\nThe possible keys are:\n  ").append(
+                String.join(", ", allowedKeys))
+                                        .append("\nIn source code ")
+                                        .append(source.getAbsoluteFile())
+                                        .toString()
             );
 
         }
@@ -261,19 +281,19 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
         assertKeyAllowed(key);
         if (params != null) {
             return Arrays.stream(params)
-                    .filter(Objects::nonNull)
-                    .filter(p -> p.containsKey(key))
-                    .map(p -> p.get(key).get(0))
-                    .findFirst()
-                    .orElse("id".equals(key) ? id : null);
+                       .filter(Objects::nonNull)
+                       .filter(p -> p.containsKey(key))
+                       .map(p -> p.get(key).get(0))
+                       .findFirst()
+                       .orElse("id".equals(key) ? id : null);
         }
         if (cparams != null) {
             return Arrays.stream(cparams)
-                    .filter(Objects::nonNull)
-                    .map(p -> p.get0(key))
-                    .filter(Objects::nonNull)
-                    .findFirst()
-                    .orElse("id".equals(key) ? id : null);
+                       .filter(Objects::nonNull)
+                       .map(p -> p.get0(key))
+                       .filter(Objects::nonNull)
+                       .findFirst()
+                       .orElse("id".equals(key) ? id : null);
         }
         if ("id".equals(key)) {
             return id;
@@ -296,9 +316,9 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
     private void assertKeyAllowed(String key) {
         if (allowedKeys != null && !allowedKeys.contains(key)) {
             throw new GeciException("Generator is accessing key '"
-                    + key
-                    + "' which it does not list as an allowed key."
-                    + " This is a generator bug.");
+                                        + key
+                                        + "' which it does not list as an allowed key."
+                                        + " This is a generator bug.");
         }
     }
 
@@ -315,19 +335,19 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
     public List<String> getValueList(String key) {
         if (params != null) {
             return Arrays.stream(params)
-                    .filter(Objects::nonNull)
-                    .filter(p -> p.containsKey(key))
-                    .map(p -> p.get(key))
-                    .findFirst()
-                    .orElse("id".equals(key) ? List.of(id) : null);
+                       .filter(Objects::nonNull)
+                       .filter(p -> p.containsKey(key))
+                       .map(p -> p.get(key))
+                       .findFirst()
+                       .orElse("id".equals(key) ? List.of(id) : null);
         }
         if (cparams != null) {
             return Arrays.stream(cparams)
-                    .filter(Objects::nonNull)
-                    .map(p -> p.getValueList(key))
-                    .filter(Objects::nonNull)
-                    .findFirst()
-                    .orElse("id".equals(key) ? List.of(id) : null);
+                       .filter(Objects::nonNull)
+                       .map(p -> p.getValueList(key))
+                       .filter(Objects::nonNull)
+                       .findFirst()
+                       .orElse("id".equals(key) ? List.of(id) : null);
         }
         if ("id".equals(key)) {
             return List.of(id);
@@ -367,22 +387,22 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
         final Stream<Set<String>> keyStream;
         if (params != null) {
             keyStream = Arrays.stream(params).filter(Objects::nonNull)
-                .map(Map::keySet);
+                            .map(Map::keySet);
         } else if (cparams != null) {
             keyStream = Arrays.stream(cparams).filter(Objects::nonNull)
-                .map(CompoundParams::keySet);
+                            .map(CompoundParams::keySet);
         } else {
             keyStream = Stream.of();
         }
         return keyStream.filter(Objects::nonNull).flatMap(Collection::stream)
-            .collect(Collectors.toSet());
+                   .collect(Collectors.toSet());
     }
 
     @Override
     public String toString() {
         return "{ " +
-            keySet().stream().map(k -> Q + k + Q + ":" + Q + get(k) + Q)
-                .collect(Collectors.joining(","))
-            + " }";
+                   keySet().stream().map(k -> Q + k + Q + ":" + Q + get(k) + Q)
+                       .collect(Collectors.joining(","))
+                   + " }";
     }
 }

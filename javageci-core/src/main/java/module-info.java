@@ -11,6 +11,7 @@ module geci.core {
     exports javax0.geci.config;
     exports javax0.geci.templated;
     exports javax0.geci.repeated;
+    exports javax0.geci.record;
     exports javax0.geci.delegator;
     exports javax0.geci.accessor;
     exports javax0.geci.equals;

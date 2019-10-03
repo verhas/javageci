@@ -39,12 +39,14 @@
                             {opens/examples/tests.builder}
                             {opens/examples/tests.cloner}
                             {opens/examples/tests.configBuilder}
+                            {opens/examples/tests.record}
+                            {opens/examples/tests.accessor}
+                            {opens/examples/tests.equals}
                             {opens/examples/test.tools.lexeger}
                             {opens/docugen/docugen}
                             {exports/examples/tutorials.simple/core}
                             {exports/examples/tests.fluent/tools}
                             {exports/examples/tests.fluent/core}
-                            {exports/examples/buildfluent/core}
                             {exports/examples/buildfluent/core}
                             {opens/examples/jamal}
                             {opens/examples/jamal.util}

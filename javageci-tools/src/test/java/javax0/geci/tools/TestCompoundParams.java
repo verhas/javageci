@@ -1,15 +1,22 @@
 package javax0.geci.tools;
 
-import java.util.List;
 import java.util.Set;
 import javax0.geci.api.GeciException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 public class TestCompoundParams {
+
+    @Test
+    @DisplayName("Throws IllegalArgumentException when the constructor argument is illegal")
+    void testBadConstructorUse(){
+        Assertions.assertThrows(IllegalArgumentException.class , () -> new CompoundParams("theId", Map.of("a", List.of(1,2,3))));
+        Assertions.assertThrows(IllegalArgumentException.class , () -> new CompoundParams("theId", Map.of("a", 3)));
+    }
 
     @Test
     @DisplayName("Get returns with value if key exists or default value or supplied value")
@@ -29,20 +36,6 @@ public class TestCompoundParams {
         Assertions.assertEquals("1", sut.get("a"));
         Assertions.assertEquals("2", sut.get("b"));
         Assertions.assertEquals("", sut.get("nonexsistent"));
-    }
-
-    @Test
-    @DisplayName("It proxies a map with strings only")
-    void testNotStringMap(){
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CompoundParams("id", Map.of("a", 1)));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CompoundParams("id", Map.of("a", 3L)));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CompoundParams("id", Map.of("a", 1.2f)));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CompoundParams("id", Map.of("a", true)));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CompoundParams("id", Map.of("a", new Object())));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CompoundParams("id", Map.of("a", List.of(1, new Object(), true))));
-        final String object = "1";
-        Assertions.assertDoesNotThrow(() -> new CompoundParams("id", Map.of("a", object)));
-        Assertions.assertDoesNotThrow(() -> new CompoundParams("id", Map.of("a", List.of("A", "B", "C"))));
     }
 
     @Test

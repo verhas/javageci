@@ -7,7 +7,7 @@ to generate setters and getters. To use it you should create a test
 <!-- snip TestAccessor -->
 ```java
     @Test
-    public void testAccessor() throws Exception {
+    void testAccessor() throws Exception {
         Geci geci;
         Assertions.assertFalse(
                 (geci = new Geci()).source(maven().module("javageci-examples").mainSource())
