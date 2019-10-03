@@ -37,7 +37,7 @@ You use Java::Geci by using the `javax0.geci.engine.Geci` class in tests.
 <!-- snip TestAccessor -->
 ```java
     @Test
-    public void testAccessor() throws Exception {
+    void testAccessor() throws Exception {
         Geci geci;
         Assertions.assertFalse(
                 (geci = new Geci()).source(maven().module("javageci-examples").mainSource())

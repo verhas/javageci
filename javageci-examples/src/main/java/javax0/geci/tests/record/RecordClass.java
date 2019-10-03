@@ -11,9 +11,7 @@ public final class RecordClass {
     final double b;
 
     //<editor-fold id="record">
-    public RecordClass(
-        int a, double b, java.util.Map<String, String> z
-    ) {
+    public RecordClass(int a, double b, java.util.Map<String, String> z) {
         this.a = a;
         this.b = b;
         this.z = z;
@@ -30,5 +28,19 @@ public final class RecordClass {
     public java.util.Map<String, String> getZ() {
         return z;
     }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(a, b, z);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RecordClass that = (RecordClass) o;
+        return java.util.Objects.equals(that.a, a) && java.util.Objects.equals(that.b, b) && java.util.Objects.equals(that.z, z);
+    }
+
     //</editor-fold>
 }
