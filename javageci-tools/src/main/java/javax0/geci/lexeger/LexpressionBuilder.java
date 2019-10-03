@@ -334,6 +334,10 @@ public class LexpressionBuilder {
         return (jLex, e) -> e.oneOf(strings);
     }
 
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> not(BiFunction<JavaLexed, Lexpression, LexMatcher> matcher) {
+        return (jLex, e) -> e.not(X(matcher, jLex, e));
+    }
+
     //</editor-fold>
 
 

@@ -221,6 +221,9 @@ public class JavaLexed implements AutoCloseable {
      */
     public int replace(MatchResult result, List<LexicalElement>... lists) {
         assertOpen();
+        if (result == null) {
+            throw new IllegalArgumentException("Illegal sequence of invocation, there is no match result.");
+        }
         if (result.matches) {
             return replace(result.start, result.end, lists);
         }
@@ -283,12 +286,14 @@ public class JavaLexed implements AutoCloseable {
     public JavaLexed match(BiFunction<JavaLexed, Lexpression, LexMatcher> function) {
         this.function = function;
         action = Action.MATCH;
+        lastMatchResult = null;
         return this;
     }
 
     public JavaLexed find(BiFunction<JavaLexed, Lexpression, LexMatcher> function) {
         this.function = function;
         action = Action.FIND;
+        lastMatchResult = null;
         return this;
     }
 

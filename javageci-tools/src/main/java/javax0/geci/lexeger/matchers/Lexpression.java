@@ -407,6 +407,9 @@ public class Lexpression {
     public LexMatcher oneOf(String... strings) {
         return oneOf(getMatchers(strings));
     }
+    public LexMatcher not(LexMatcher matcher) {
+        return new NotMatcher(this, javaLexed, matcher);
+    }
 
     private LexMatcher getMatcher(String string) {
         final var lexicalElements = lexer.apply(List.of(string));

@@ -4,17 +4,27 @@ import javax0.geci.annotations.Geci;
 
 import java.util.Map;
 
+
 @Geci("record")
 public final class RecordClass {
     final public Map<String, String> z;
     final int a;
     final double b;
 
+    private void RecordClass(java.util.Map<String,String> z, int a, double b){
+        // do nothing, really
+    }
+
     //<editor-fold id="record">
-    public RecordClass(int a, double b, java.util.Map<String, String> z) {
+    public RecordClass(final java.util.Map<String,String> z, final int a, final double b) {
+        RecordClass(z, a, b);
+        this.z = z;
         this.a = a;
         this.b = b;
-        this.z = z;
+    }
+
+    public java.util.Map<String,String> getZ() {
+        return z;
     }
 
     public int getA() {
@@ -25,13 +35,9 @@ public final class RecordClass {
         return b;
     }
 
-    public java.util.Map<String, String> getZ() {
-        return z;
-    }
-
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(a, b, z);
+        return java.util.Objects.hash(z, a, b);
     }
 
     @Override
@@ -39,8 +45,7 @@ public final class RecordClass {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RecordClass that = (RecordClass) o;
-        return java.util.Objects.equals(that.a, a) && java.util.Objects.equals(that.b, b) && java.util.Objects.equals(that.z, z);
+        return java.util.Objects.equals(that.z, z) && java.util.Objects.equals(that.a, a) && java.util.Objects.equals(that.b, b);
     }
-
     //</editor-fold>
 }
