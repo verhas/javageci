@@ -11,7 +11,7 @@ public final class RecordClass {
     final int a;
     final double b;
 
-    private void RecordClass(java.util.Map<String,String> z, int a, double b){
+    private void RecordClass(final java.util.Map<String,String> z, final int a, final double b){
         // do nothing, really
     }
 
