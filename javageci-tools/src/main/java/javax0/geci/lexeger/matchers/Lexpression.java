@@ -411,6 +411,9 @@ public class Lexpression {
         return new NotMatcher(this, javaLexed, matcher);
     }
 
+    //<editor-fold id="methods">
+    //</editor-fold>
+
     private LexMatcher getMatcher(String string) {
         final var lexicalElements = lexer.apply(List.of(string));
         if (lexicalElements.length == 1) {
