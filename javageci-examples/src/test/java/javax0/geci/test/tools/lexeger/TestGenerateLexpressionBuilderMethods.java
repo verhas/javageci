@@ -4,6 +4,7 @@ import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.engine.Geci;
 import javax0.geci.tools.AbstractJavaGenerator;
+import javax0.geci.tools.CaseTools;
 import javax0.geci.tools.CompoundParams;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ class TestGenerateLexpressionBuilderMethods extends AbstractJavaGenerator {
             geci.failed());
     }
 
+    private static final String patternedMatchers = "identifier, character, string, type, comment";
 
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
@@ -50,6 +52,23 @@ class TestGenerateLexpressionBuilderMethods extends AbstractJavaGenerator {
                         .write_l("}");
                 }
             }
+        }
+        for (final var patterned : patternedMatchers.split(",")) {
+            final var id = patterned.trim();
+            final var matcher = CaseTools.ucase(id) + "Matcher";
+            expSegment.param("id", id, "matcher", matcher);
+            expSegment.write_r("public LexMatcher {{id}}() {")
+                .write("return new {{matcher}}(this, javaLexed);")
+                .write_l("}").newline();
+            expSegment.write_r("public LexMatcher {{id}}(String text) {")
+                .write("return new {{matcher}}(this, javaLexed, text);")
+                .write_l("}").newline();
+            expSegment.write_r("public LexMatcher {{id}}(Pattern pattern) {")
+                .write("return new {{matcher}}(this, javaLexed, pattern);")
+                .write_l("}").newline();
+            expSegment.write_r("public LexMatcher {{id}}(String name, Pattern pattern) {")
+                .write("return new {{matcher}}(this, javaLexed, pattern, name);")
+                .write_l("}").newline();
         }
     }
 

@@ -136,87 +136,6 @@ public class Lexpression {
         return new Repeat(this, javaLexed, matcher, min, max);
     }
 
-    public LexMatcher identifier(String id) {
-        return new TerminalLexMatcher(this, javaLexed, new LexicalElement.Identifier(id));
-    }
-
-    public LexMatcher identifier(Pattern pattern) {
-        return new IdentifierMatcher(this, javaLexed, pattern);
-    }
-
-    public LexMatcher identifier(String name, Pattern pattern) {
-        return new IdentifierMatcher(this, javaLexed, pattern, name);
-    }
-
-    public LexMatcher identifier() {
-        return new IdentifierMatcher(this, javaLexed);
-    }
-
-    public LexMatcher character(String text) {
-        return new CharacterMatcher(this, javaLexed, text);
-    }
-
-    public LexMatcher character(Pattern pattern) {
-        return new CharacterMatcher(this, javaLexed, pattern);
-    }
-
-    public LexMatcher character(String name, Pattern pattern) {
-        return new CharacterMatcher(this, javaLexed, pattern, name);
-    }
-
-    public LexMatcher character() {
-        return new CharacterMatcher(this, javaLexed);
-    }
-
-    public LexMatcher string(String text) {
-        return new StringMatcher(this, javaLexed, text);
-    }
-
-    public LexMatcher string(Pattern pattern) {
-        return new StringMatcher(this, javaLexed, pattern);
-    }
-
-    public LexMatcher string(String name, Pattern pattern) {
-        return new StringMatcher(this, javaLexed, pattern, name);
-    }
-
-    public LexMatcher string() {
-        return new StringMatcher(this, javaLexed);
-    }
-
-
-    public LexMatcher type(String text) {
-        return new TypeMatcher(this, javaLexed, text);
-    }
-
-    public LexMatcher type(Pattern pattern) {
-        return new TypeMatcher(this, javaLexed, pattern);
-    }
-
-    public LexMatcher type(String name, Pattern pattern) {
-        return new TypeMatcher(this, javaLexed, pattern, name);
-    }
-
-    public LexMatcher type() {
-        return new TypeMatcher(this, javaLexed);
-    }
-
-    public LexMatcher comment(String text) {
-        return new CommentMatcher(this, javaLexed, text);
-    }
-
-    public LexMatcher comment(Pattern pattern) {
-        return new CommentMatcher(this, javaLexed, pattern);
-    }
-
-    public LexMatcher comment(String name, Pattern pattern) {
-        return new CommentMatcher(this, javaLexed, pattern, name);
-    }
-
-    public LexMatcher comment() {
-        return new CommentMatcher(this, javaLexed);
-    }
-
     public LexMatcher integerNumber(String name) {
         return group(name, integerNumber());
     }
@@ -336,66 +255,6 @@ public class Lexpression {
     public LexMatcher repeat(GroupNameWrapper nameWrapper, LexMatcher matcher, int min, int max) {
         return group(nameWrapper.toString(),repeat(matcher, min, max));
     }
-    public LexMatcher identifier(GroupNameWrapper nameWrapper, String id) {
-        return group(nameWrapper.toString(),identifier(id));
-    }
-    public LexMatcher identifier(GroupNameWrapper nameWrapper, Pattern pattern) {
-        return group(nameWrapper.toString(),identifier(pattern));
-    }
-    public LexMatcher identifier(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
-        return group(nameWrapper.toString(),identifier(name, pattern));
-    }
-    public LexMatcher identifier(GroupNameWrapper nameWrapper) {
-        return group(nameWrapper.toString(),identifier());
-    }
-    public LexMatcher character(GroupNameWrapper nameWrapper, String text) {
-        return group(nameWrapper.toString(),character(text));
-    }
-    public LexMatcher character(GroupNameWrapper nameWrapper, Pattern pattern) {
-        return group(nameWrapper.toString(),character(pattern));
-    }
-    public LexMatcher character(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
-        return group(nameWrapper.toString(),character(name, pattern));
-    }
-    public LexMatcher character(GroupNameWrapper nameWrapper) {
-        return group(nameWrapper.toString(),character());
-    }
-    public LexMatcher string(GroupNameWrapper nameWrapper, String text) {
-        return group(nameWrapper.toString(),string(text));
-    }
-    public LexMatcher string(GroupNameWrapper nameWrapper, Pattern pattern) {
-        return group(nameWrapper.toString(),string(pattern));
-    }
-    public LexMatcher string(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
-        return group(nameWrapper.toString(),string(name, pattern));
-    }
-    public LexMatcher string(GroupNameWrapper nameWrapper) {
-        return group(nameWrapper.toString(),string());
-    }
-    public LexMatcher type(GroupNameWrapper nameWrapper, String text) {
-        return group(nameWrapper.toString(),type(text));
-    }
-    public LexMatcher type(GroupNameWrapper nameWrapper, Pattern pattern) {
-        return group(nameWrapper.toString(),type(pattern));
-    }
-    public LexMatcher type(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
-        return group(nameWrapper.toString(),type(name, pattern));
-    }
-    public LexMatcher type(GroupNameWrapper nameWrapper) {
-        return group(nameWrapper.toString(),type());
-    }
-    public LexMatcher comment(GroupNameWrapper nameWrapper, String text) {
-        return group(nameWrapper.toString(),comment(text));
-    }
-    public LexMatcher comment(GroupNameWrapper nameWrapper, Pattern pattern) {
-        return group(nameWrapper.toString(),comment(pattern));
-    }
-    public LexMatcher comment(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
-        return group(nameWrapper.toString(),comment(name, pattern));
-    }
-    public LexMatcher comment(GroupNameWrapper nameWrapper) {
-        return group(nameWrapper.toString(),comment());
-    }
     public LexMatcher integerNumber(GroupNameWrapper nameWrapper, String name) {
         return group(nameWrapper.toString(),integerNumber(name));
     }
@@ -453,6 +312,146 @@ public class Lexpression {
     public LexMatcher not(GroupNameWrapper nameWrapper, LexMatcher matcher) {
         return group(nameWrapper.toString(),not(matcher));
     }
+    public LexMatcher identifier(GroupNameWrapper nameWrapper) {
+        return group(nameWrapper.toString(),identifier());
+    }
+    public LexMatcher identifier(GroupNameWrapper nameWrapper, String text) {
+        return group(nameWrapper.toString(),identifier(text));
+    }
+    public LexMatcher identifier(GroupNameWrapper nameWrapper, Pattern pattern) {
+        return group(nameWrapper.toString(),identifier(pattern));
+    }
+    public LexMatcher identifier(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
+        return group(nameWrapper.toString(),identifier(name, pattern));
+    }
+    public LexMatcher character(GroupNameWrapper nameWrapper) {
+        return group(nameWrapper.toString(),character());
+    }
+    public LexMatcher character(GroupNameWrapper nameWrapper, String text) {
+        return group(nameWrapper.toString(),character(text));
+    }
+    public LexMatcher character(GroupNameWrapper nameWrapper, Pattern pattern) {
+        return group(nameWrapper.toString(),character(pattern));
+    }
+    public LexMatcher character(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
+        return group(nameWrapper.toString(),character(name, pattern));
+    }
+    public LexMatcher string(GroupNameWrapper nameWrapper) {
+        return group(nameWrapper.toString(),string());
+    }
+    public LexMatcher string(GroupNameWrapper nameWrapper, String text) {
+        return group(nameWrapper.toString(),string(text));
+    }
+    public LexMatcher string(GroupNameWrapper nameWrapper, Pattern pattern) {
+        return group(nameWrapper.toString(),string(pattern));
+    }
+    public LexMatcher string(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
+        return group(nameWrapper.toString(),string(name, pattern));
+    }
+    public LexMatcher type(GroupNameWrapper nameWrapper) {
+        return group(nameWrapper.toString(),type());
+    }
+    public LexMatcher type(GroupNameWrapper nameWrapper, String text) {
+        return group(nameWrapper.toString(),type(text));
+    }
+    public LexMatcher type(GroupNameWrapper nameWrapper, Pattern pattern) {
+        return group(nameWrapper.toString(),type(pattern));
+    }
+    public LexMatcher type(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
+        return group(nameWrapper.toString(),type(name, pattern));
+    }
+    public LexMatcher comment(GroupNameWrapper nameWrapper) {
+        return group(nameWrapper.toString(),comment());
+    }
+    public LexMatcher comment(GroupNameWrapper nameWrapper, String text) {
+        return group(nameWrapper.toString(),comment(text));
+    }
+    public LexMatcher comment(GroupNameWrapper nameWrapper, Pattern pattern) {
+        return group(nameWrapper.toString(),comment(pattern));
+    }
+    public LexMatcher comment(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
+        return group(nameWrapper.toString(),comment(name, pattern));
+    }
+    public LexMatcher identifier() {
+        return new IdentifierMatcher(this, javaLexed);
+    }
+
+    public LexMatcher identifier(String text) {
+        return new IdentifierMatcher(this, javaLexed, text);
+    }
+
+    public LexMatcher identifier(Pattern pattern) {
+        return new IdentifierMatcher(this, javaLexed, pattern);
+    }
+
+    public LexMatcher identifier(String name, Pattern pattern) {
+        return new IdentifierMatcher(this, javaLexed, pattern, name);
+    }
+
+    public LexMatcher character() {
+        return new CharacterMatcher(this, javaLexed);
+    }
+
+    public LexMatcher character(String text) {
+        return new CharacterMatcher(this, javaLexed, text);
+    }
+
+    public LexMatcher character(Pattern pattern) {
+        return new CharacterMatcher(this, javaLexed, pattern);
+    }
+
+    public LexMatcher character(String name, Pattern pattern) {
+        return new CharacterMatcher(this, javaLexed, pattern, name);
+    }
+
+    public LexMatcher string() {
+        return new StringMatcher(this, javaLexed);
+    }
+
+    public LexMatcher string(String text) {
+        return new StringMatcher(this, javaLexed, text);
+    }
+
+    public LexMatcher string(Pattern pattern) {
+        return new StringMatcher(this, javaLexed, pattern);
+    }
+
+    public LexMatcher string(String name, Pattern pattern) {
+        return new StringMatcher(this, javaLexed, pattern, name);
+    }
+
+    public LexMatcher type() {
+        return new TypeMatcher(this, javaLexed);
+    }
+
+    public LexMatcher type(String text) {
+        return new TypeMatcher(this, javaLexed, text);
+    }
+
+    public LexMatcher type(Pattern pattern) {
+        return new TypeMatcher(this, javaLexed, pattern);
+    }
+
+    public LexMatcher type(String name, Pattern pattern) {
+        return new TypeMatcher(this, javaLexed, pattern, name);
+    }
+
+    public LexMatcher comment() {
+        return new CommentMatcher(this, javaLexed);
+    }
+
+    public LexMatcher comment(String text) {
+        return new CommentMatcher(this, javaLexed, text);
+    }
+
+    public LexMatcher comment(Pattern pattern) {
+        return new CommentMatcher(this, javaLexed, pattern);
+    }
+
+    public LexMatcher comment(String name, Pattern pattern) {
+        return new CommentMatcher(this, javaLexed, pattern, name);
+    }
+
     //</editor-fold>
 
     private LexMatcher getMatcher(String string) {

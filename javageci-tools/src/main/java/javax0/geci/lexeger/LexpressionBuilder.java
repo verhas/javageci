@@ -82,86 +82,6 @@ public class LexpressionBuilder {
         return (jLex, e) -> e.repeat(X(matcher, jLex, e), min, max);
     }
 
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier(String id) {
-        return (jLex, e) -> e.identifier(id);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier(Pattern pattern) {
-        return (jLex, e) -> e.identifier(pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier(String name, Pattern pattern) {
-        return (jLex, e) -> e.identifier(name, pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier() {
-        return (jLex, e) -> e.identifier();
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> character(String text) {
-        return (jLex, e) -> e.character(text);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> character(Pattern pattern) {
-        return (jLex, e) -> e.character(pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> character(String name, Pattern pattern) {
-        return (jLex, e) -> e.character(name, pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> character() {
-        return (jLex, e) -> e.character();
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> string(String text) {
-        return (jLex, e) -> e.string(text);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> string(Pattern pattern) {
-        return (jLex, e) -> e.string(pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> string(String name, Pattern pattern) {
-        return (jLex, e) -> e.string(name, pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> string() {
-        return (jLex, e) -> e.string();
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> type(String text) {
-        return (jLex, e) -> e.type(text);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> type(Pattern pattern) {
-        return (jLex, e) -> e.type(pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> type(String name, Pattern pattern) {
-        return (jLex, e) -> e.type(name, pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> type() {
-        return (jLex, e) -> e.type();
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> comment(String text) {
-        return (jLex, e) -> e.comment(text);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> comment(Pattern pattern) {
-        return (jLex, e) -> e.comment(pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> comment(String name, Pattern pattern) {
-        return (jLex, e) -> e.comment(name, pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> comment() {
-        return (jLex, e) -> e.comment();
-    }
-
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> integerNumber(String name) {
         return (jLex, e) -> e.integerNumber(name);
     }
@@ -282,86 +202,6 @@ public class LexpressionBuilder {
         return (jLex, e) -> e.repeat(nameWrapper, X(matcher, jLex, e), min, max);
     }
 
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier(GroupNameWrapper nameWrapper, String id) {
-        return (jLex, e) -> e.identifier(nameWrapper, id);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier(GroupNameWrapper nameWrapper, Pattern pattern) {
-        return (jLex, e) -> e.identifier(nameWrapper, pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
-        return (jLex, e) -> e.identifier(nameWrapper, name, pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier(GroupNameWrapper nameWrapper) {
-        return (jLex, e) -> e.identifier(nameWrapper);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> character(GroupNameWrapper nameWrapper, String text) {
-        return (jLex, e) -> e.character(nameWrapper, text);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> character(GroupNameWrapper nameWrapper, Pattern pattern) {
-        return (jLex, e) -> e.character(nameWrapper, pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> character(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
-        return (jLex, e) -> e.character(nameWrapper, name, pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> character(GroupNameWrapper nameWrapper) {
-        return (jLex, e) -> e.character(nameWrapper);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> string(GroupNameWrapper nameWrapper, String text) {
-        return (jLex, e) -> e.string(nameWrapper, text);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> string(GroupNameWrapper nameWrapper, Pattern pattern) {
-        return (jLex, e) -> e.string(nameWrapper, pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> string(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
-        return (jLex, e) -> e.string(nameWrapper, name, pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> string(GroupNameWrapper nameWrapper) {
-        return (jLex, e) -> e.string(nameWrapper);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> type(GroupNameWrapper nameWrapper, String text) {
-        return (jLex, e) -> e.type(nameWrapper, text);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> type(GroupNameWrapper nameWrapper, Pattern pattern) {
-        return (jLex, e) -> e.type(nameWrapper, pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> type(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
-        return (jLex, e) -> e.type(nameWrapper, name, pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> type(GroupNameWrapper nameWrapper) {
-        return (jLex, e) -> e.type(nameWrapper);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> comment(GroupNameWrapper nameWrapper, String text) {
-        return (jLex, e) -> e.comment(nameWrapper, text);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> comment(GroupNameWrapper nameWrapper, Pattern pattern) {
-        return (jLex, e) -> e.comment(nameWrapper, pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> comment(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
-        return (jLex, e) -> e.comment(nameWrapper, name, pattern);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> comment(GroupNameWrapper nameWrapper) {
-        return (jLex, e) -> e.comment(nameWrapper);
-    }
-
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> integerNumber(GroupNameWrapper nameWrapper, String name) {
         return (jLex, e) -> e.integerNumber(nameWrapper, name);
     }
@@ -436,6 +276,166 @@ public class LexpressionBuilder {
 
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> not(GroupNameWrapper nameWrapper, BiFunction<JavaLexed, Lexpression, LexMatcher> matcher) {
         return (jLex, e) -> e.not(nameWrapper, X(matcher, jLex, e));
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier(GroupNameWrapper nameWrapper) {
+        return (jLex, e) -> e.identifier(nameWrapper);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier(GroupNameWrapper nameWrapper, String text) {
+        return (jLex, e) -> e.identifier(nameWrapper, text);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier(GroupNameWrapper nameWrapper, Pattern pattern) {
+        return (jLex, e) -> e.identifier(nameWrapper, pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
+        return (jLex, e) -> e.identifier(nameWrapper, name, pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> character(GroupNameWrapper nameWrapper) {
+        return (jLex, e) -> e.character(nameWrapper);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> character(GroupNameWrapper nameWrapper, String text) {
+        return (jLex, e) -> e.character(nameWrapper, text);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> character(GroupNameWrapper nameWrapper, Pattern pattern) {
+        return (jLex, e) -> e.character(nameWrapper, pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> character(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
+        return (jLex, e) -> e.character(nameWrapper, name, pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> string(GroupNameWrapper nameWrapper) {
+        return (jLex, e) -> e.string(nameWrapper);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> string(GroupNameWrapper nameWrapper, String text) {
+        return (jLex, e) -> e.string(nameWrapper, text);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> string(GroupNameWrapper nameWrapper, Pattern pattern) {
+        return (jLex, e) -> e.string(nameWrapper, pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> string(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
+        return (jLex, e) -> e.string(nameWrapper, name, pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> type(GroupNameWrapper nameWrapper) {
+        return (jLex, e) -> e.type(nameWrapper);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> type(GroupNameWrapper nameWrapper, String text) {
+        return (jLex, e) -> e.type(nameWrapper, text);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> type(GroupNameWrapper nameWrapper, Pattern pattern) {
+        return (jLex, e) -> e.type(nameWrapper, pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> type(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
+        return (jLex, e) -> e.type(nameWrapper, name, pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> comment(GroupNameWrapper nameWrapper) {
+        return (jLex, e) -> e.comment(nameWrapper);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> comment(GroupNameWrapper nameWrapper, String text) {
+        return (jLex, e) -> e.comment(nameWrapper, text);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> comment(GroupNameWrapper nameWrapper, Pattern pattern) {
+        return (jLex, e) -> e.comment(nameWrapper, pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> comment(GroupNameWrapper nameWrapper, String name, Pattern pattern) {
+        return (jLex, e) -> e.comment(nameWrapper, name, pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier() {
+        return (jLex, e) -> e.identifier();
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier(String text) {
+        return (jLex, e) -> e.identifier(text);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier(Pattern pattern) {
+        return (jLex, e) -> e.identifier(pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier(String name, Pattern pattern) {
+        return (jLex, e) -> e.identifier(name, pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> character() {
+        return (jLex, e) -> e.character();
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> character(String text) {
+        return (jLex, e) -> e.character(text);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> character(Pattern pattern) {
+        return (jLex, e) -> e.character(pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> character(String name, Pattern pattern) {
+        return (jLex, e) -> e.character(name, pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> string() {
+        return (jLex, e) -> e.string();
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> string(String text) {
+        return (jLex, e) -> e.string(text);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> string(Pattern pattern) {
+        return (jLex, e) -> e.string(pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> string(String name, Pattern pattern) {
+        return (jLex, e) -> e.string(name, pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> type() {
+        return (jLex, e) -> e.type();
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> type(String text) {
+        return (jLex, e) -> e.type(text);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> type(Pattern pattern) {
+        return (jLex, e) -> e.type(pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> type(String name, Pattern pattern) {
+        return (jLex, e) -> e.type(name, pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> comment() {
+        return (jLex, e) -> e.comment();
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> comment(String text) {
+        return (jLex, e) -> e.comment(text);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> comment(Pattern pattern) {
+        return (jLex, e) -> e.comment(pattern);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> comment(String name, Pattern pattern) {
+        return (jLex, e) -> e.comment(name, pattern);
     }
 
     //</editor-fold>
