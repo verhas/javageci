@@ -15,6 +15,21 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * <p>Generate the API for the matcher generation. The lexical analysis
+ * matching is an API implemented in Java providing many convenience
+ * methods to ease the use of the API. This means a lot of redundant
+ * code. These methods are generated from here.</p>
+ *
+ * <p>Note that this test generates code into the source file {@code
+ * Lexpression} and also into the source code {@code
+ * LexpressionBuilder}. The second depends on the methods that are
+ * already in the first, so it may happen that after new methods are
+ * generated into {@code Lexpression} re-running the test will fail one
+ * more time because it generates methods int {@code LexpressionBuilder}
+ * from the methods that were generated into {@code Lexpression} during
+ * the previous run. Note that it should not fail the third time.</p>
+ */
 class TestGenerateLexpressionBuilderMethods extends AbstractJavaGenerator {
 
     @Test
@@ -76,7 +91,7 @@ class TestGenerateLexpressionBuilderMethods extends AbstractJavaGenerator {
         final var parameters = calculateBuilderCallParameterListString(argString);
         final var arguments = argString.replaceAll("LexMatcher\\s+matcher",
             "BiFunction<JavaLexed, Lexpression, LexMatcher> matcher")
-                        .replaceAll("LexMatcher\\.\\.\\.\\s+matchers", "BiFunction<JavaLexed, Lexpression, LexMatcher>... matchers");
+                                  .replaceAll("LexMatcher\\.\\.\\.\\s+matchers", "BiFunction<JavaLexed, Lexpression, LexMatcher>... matchers");
         segment.write_r("public static BiFunction<JavaLexed, Lexpression, LexMatcher> " + methodName + "(" + arguments + ") {");
         segment.write("return (jLex, e) -> e." + methodName + "(" + parameters + ");");
         segment.write_l("}");

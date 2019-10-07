@@ -153,7 +153,7 @@ public class Record extends AbstractFilteredFieldsGenerator {
                 match("private void "
                           + validatorMethodName
                           + "("),
-                zeroOrMore(not(match(")"))),
+                zeroOrMore(not(")")),
                 match(")")
             )
         ).fromStart()

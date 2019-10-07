@@ -217,8 +217,13 @@ public class Lexpression {
     public LexMatcher oneOf(String... strings) {
         return oneOf(getMatchers(strings));
     }
+
     public LexMatcher not(LexMatcher matcher) {
         return new NotMatcher(this, javaLexed, matcher);
+    }
+
+    public LexMatcher not(String string) {
+        return not(match(string));
     }
 
     //<editor-fold id="methods">
@@ -311,6 +316,9 @@ public class Lexpression {
     }
     public LexMatcher not(GroupNameWrapper nameWrapper, LexMatcher matcher) {
         return group(nameWrapper.toString(),not(matcher));
+    }
+    public LexMatcher not(GroupNameWrapper nameWrapper, String string) {
+        return group(nameWrapper.toString(),not(string));
     }
     public LexMatcher identifier(GroupNameWrapper nameWrapper) {
         return group(nameWrapper.toString(),identifier());
