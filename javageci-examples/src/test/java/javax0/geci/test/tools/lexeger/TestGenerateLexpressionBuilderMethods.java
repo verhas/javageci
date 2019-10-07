@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -37,22 +38,23 @@ class TestGenerateLexpressionBuilderMethods extends AbstractJavaGenerator {
             if (match.matches()) {
                 final var methodName = match.group(1);
                 final var argString = match.group(2);
-                final var parameters = calculateCallParameterListString(argString);
-                createMethod(segment, methodName, argString, parameters);
+                final var parameters = calculateExpressionCallParameterListString(argString);
+                createMethod(segment, methodName, argString);
                 if (argString.trim().length() == 0) {
-                    expSegment.write_r("public LexMatcher " + methodName + "(GroupNameWrapper name) {")
-                        .write("return group(name.toString()," + methodName + "());")
+                    expSegment.write_r("public LexMatcher " + methodName + "(GroupNameWrapper nameWrapper) {")
+                        .write("return group(nameWrapper.toString()," + methodName + "());")
                         .write_l("}");
                 }else if( !argString.contains("GroupNameWrapper")){
-                    expSegment.write_r("public LexMatcher " + methodName + "(GroupNameWrapper name, "+argString+") {")
-                        .write("return group(name.toString()," + methodName + "("+parameters+"));")
+                    expSegment.write_r("public LexMatcher " + methodName + "(GroupNameWrapper nameWrapper, "+argString+") {")
+                        .write("return group(nameWrapper.toString()," + methodName + "("+parameters+"));")
                         .write_l("}");
                 }
             }
         }
     }
 
-    private void createMethod(final Segment segment, final String methodName, final String argString, final String parameters) {
+    private void createMethod(final Segment segment, final String methodName, final String argString) {
+        final var parameters = calculateBuilderCallParameterListString(argString);
         final var arguments = argString.replaceAll("LexMatcher\\s+matcher",
             "BiFunction<JavaLexed, Lexpression, LexMatcher> matcher")
                         .replaceAll("LexMatcher\\.\\.\\.\\s+matchers", "BiFunction<JavaLexed, Lexpression, LexMatcher>... matchers");
@@ -72,10 +74,18 @@ class TestGenerateLexpressionBuilderMethods extends AbstractJavaGenerator {
      *                  types
      * @return the arguments comma separated without the types
      */
-    private String calculateCallParameterListString(String argString) {
+    private String calculateBuilderCallParameterListString(String argString) {
+        return calculateCallParameterListString(argString, s -> s.startsWith("matcher") ? "X(" + s + ", jLex, e)" : s);
+    }
+
+    private String calculateExpressionCallParameterListString(String argString) {
+        return calculateCallParameterListString(argString, s -> s);
+    }
+
+    private String calculateCallParameterListString(String argString, Function<String, String> transform) {
         return Arrays.stream(argString.split(",", -1))
                    .map(s -> s.trim().replaceAll("^.*?\\s+", ""))
-                   .map(s -> s.startsWith("matcher") ? "X(" + s + ", jLex, e)" : s)
+                   .map(transform)
                    .collect(Collectors.joining(", "));
     }
 }
