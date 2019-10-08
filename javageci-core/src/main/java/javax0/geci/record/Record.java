@@ -6,6 +6,7 @@ import javax0.geci.api.Source;
 import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.lexeger.JavaLexed;
 import javax0.geci.lexeger.Lex;
+import javax0.geci.lexeger.LexpressionBuilder;
 import javax0.geci.tools.AbstractFilteredFieldsGenerator;
 import javax0.geci.tools.CaseTools;
 import javax0.geci.tools.CompoundParams;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static javax0.geci.lexeger.LexpressionBuilder.anyTill;
 import static javax0.geci.lexeger.LexpressionBuilder.group;
 import static javax0.geci.lexeger.LexpressionBuilder.identifier;
 import static javax0.geci.lexeger.LexpressionBuilder.list;
@@ -153,7 +155,7 @@ public class Record extends AbstractFilteredFieldsGenerator {
                 match("private void "
                           + validatorMethodName
                           + "("),
-                zeroOrMore(not(")")),
+                anyTill(")"),
                 match(")")
             )
         ).fromStart()
