@@ -90,32 +90,69 @@ public class Lexpression {
      *             private} as a modifier is accepted just as well as
      *             {@code protected} then the value {@code
      *             Modifier.PRIVATE|Modifier.PROTECTED} has to be used.
-     * @return the matcher
+     * @return the new matcher
      */
     public LexMatcher modifier(int mask) {
         return new ModifierMatcher(this, javaLexed, mask);
     }
 
+    /**
+     * Create a matcher that matches a keyword.
+     *
+     * @param id the string representation of the keyword
+     * @return the new matcher
+     */
     public LexMatcher keyword(String id) {
         return identifier(id);
     }
 
+    /**
+     * Creates a matcher that matches when any of the underlying matchers match.
+     *
+     * @param matchers the underlying matchers at least one of which should match for the returned matcher to be
+     *                 sucsessfully matching
+     * @return the new matcher
+     */
     public LexMatcher oneOf(LexMatcher... matchers) {
         return new OneOfLexMatcher(this, javaLexed, matchers);
     }
 
+    /**
+     * Create a matcher that will match zero or more of the underlying matcher.
+     *
+     * @param matcher the underlying matcher that should match zero or more times
+     * @return the new matcher
+     */
     public LexMatcher zeroOrMore(LexMatcher matcher) {
         return new Repeat(this, javaLexed, matcher, 0, Integer.MAX_VALUE);
     }
 
+    /**
+     * Create a matcher that will match zero or more of the underlying matcher.
+     *
+     * @param string representing one or more lexical element, each may match exactly the same lexical element
+     * @return the new matcher
+     */
     public LexMatcher zeroOrMore(String string) {
         return zeroOrMore(getMatcher(string));
     }
 
+    /**
+     * Creates a new matcher that matches zero or one time the underlying matcher
+     *
+     * @param matcher the underlying matcher
+     * @return the new matcher
+     */
     public LexMatcher optional(LexMatcher matcher) {
         return new Repeat(this, javaLexed, matcher, 0, 1);
     }
 
+    /**
+     * Creates a new matcher that matches zero or one time the underlying matcher
+     *
+     * @param string representing one or more lexical element, each may match exactly the same lexical element
+     * @return the new matcher
+     */
     public LexMatcher optional(String string) {
         return optional(getMatcher(string));
     }
@@ -231,6 +268,19 @@ public class Lexpression {
         return not(lexer.apply(List.of(string)));
     }
 
+    public LexMatcher anyTill(LexMatcher... matchers) {
+        return zeroOrMore(not(matchers));
+    }
+
+    public LexMatcher anyTill(LexicalElement... elements) {
+        final var matchers = getLexMatchers(elements);
+        return anyTill(matchers);
+    }
+
+    public LexMatcher anyTill(String string) {
+        return anyTill(lexer.apply(List.of(string)));
+    }
+
     //<editor-fold id="methods">
     public LexMatcher modifier(GroupNameWrapper nameWrapper, int mask) {
         return group(nameWrapper.toString(),modifier(mask));
@@ -327,6 +377,15 @@ public class Lexpression {
     }
     public LexMatcher not(GroupNameWrapper nameWrapper, String string) {
         return group(nameWrapper.toString(),not(string));
+    }
+    public LexMatcher anyTill(GroupNameWrapper nameWrapper, LexMatcher... matchers) {
+        return group(nameWrapper.toString(),anyTill(matchers));
+    }
+    public LexMatcher anyTill(GroupNameWrapper nameWrapper, LexicalElement... elements) {
+        return group(nameWrapper.toString(),anyTill(elements));
+    }
+    public LexMatcher anyTill(GroupNameWrapper nameWrapper, String string) {
+        return group(nameWrapper.toString(),anyTill(string));
     }
     public LexMatcher identifier(GroupNameWrapper nameWrapper) {
         return group(nameWrapper.toString(),identifier());

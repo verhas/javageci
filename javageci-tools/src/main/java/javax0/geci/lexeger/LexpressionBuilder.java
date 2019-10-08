@@ -166,6 +166,18 @@ public class LexpressionBuilder {
         return (jLex, e) -> e.not(string);
     }
 
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> anyTill(BiFunction<JavaLexed, Lexpression, LexMatcher>... matchers) {
+        return (jLex, e) -> e.anyTill(X(matchers, jLex, e));
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> anyTill(LexicalElement... elements) {
+        return (jLex, e) -> e.anyTill(elements);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> anyTill(String string) {
+        return (jLex, e) -> e.anyTill(string);
+    }
+
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> modifier(GroupNameWrapper nameWrapper, int mask) {
         return (jLex, e) -> e.modifier(nameWrapper, mask);
     }
@@ -292,6 +304,18 @@ public class LexpressionBuilder {
 
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> not(GroupNameWrapper nameWrapper, String string) {
         return (jLex, e) -> e.not(nameWrapper, string);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> anyTill(GroupNameWrapper nameWrapper, BiFunction<JavaLexed, Lexpression, LexMatcher>... matchers) {
+        return (jLex, e) -> e.anyTill(nameWrapper, X(matchers, jLex, e));
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> anyTill(GroupNameWrapper nameWrapper, LexicalElement... elements) {
+        return (jLex, e) -> e.anyTill(nameWrapper, elements);
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> anyTill(GroupNameWrapper nameWrapper, String string) {
+        return (jLex, e) -> e.anyTill(nameWrapper, string);
     }
 
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> identifier(GroupNameWrapper nameWrapper) {
