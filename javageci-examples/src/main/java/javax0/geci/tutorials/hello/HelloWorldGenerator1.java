@@ -6,8 +6,7 @@ import javax0.geci.api.Source;
 
 public class HelloWorldGenerator1 implements Generator {
     public void process(Source source) {
-        try {
-            final var segment = source.open("hello");
+        try (final var segment = source.open("hello")) {
             segment.write_r("public static void hello(){");
             segment.write("System.out.println(\"Hello, World\");");
             segment.write_l("}");

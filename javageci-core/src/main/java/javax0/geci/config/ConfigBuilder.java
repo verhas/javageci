@@ -44,29 +44,30 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         } catch (ClassNotFoundException cnfe) {
             throw new GeciException("There is no class 'Config' in " + klass.getName(), cnfe);
         }
-        final var segment = source.open(global.id());
-        final var allDeclaredFields = List.of(GeciReflectionTools.getDeclaredFieldsSorted(configClass));
-        final var fields = configurableFields(global, allDeclaredFields);
+        try (final var segment = source.open(global.id())) {
+            final var allDeclaredFields = List.of(GeciReflectionTools.getDeclaredFieldsSorted(configClass));
+            final var fields = configurableFields(global, allDeclaredFields);
 
-        final var local = localConfig(global);
-        segment.param("klass", klass.getSimpleName(),
+            final var local = localConfig(global);
+            segment.param("klass", klass.getSimpleName(),
                 "access", local.configAccess,
                 "build", local.buildMethod,
                 "builder", local.builderFactoryMethod,
                 "Builder", local.builderName,
                 "localConfig", local.localConfigMethod);
-        generateMnemonic(segment, local, klass);
-        generateConfigField(segment);
-        generateBuilderFactoryMethod(segment, klass);
-        if (toBoolean(local.generateImplementedKeys)) {
-            generateConfigKeySet(segment, fields);
-        }
-        startBuilderClass(segment, klass);
-        allDeclaredFields.forEach(field -> generateBuilderMethod(segment, klass, configClass, field));
-        generateMnemonicConfiguration(segment, local);
-        finishBuilderClass(segment);
-        if (local.localConfigMethod.length() > 0) {
-            generateLocalConfigMethod(segment, allDeclaredFields, fields, configClass);
+            generateMnemonic(segment, local, klass);
+            generateConfigField(segment);
+            generateBuilderFactoryMethod(segment, klass);
+            if (toBoolean(local.generateImplementedKeys)) {
+                generateConfigKeySet(segment, fields);
+            }
+            startBuilderClass(segment, klass);
+            allDeclaredFields.forEach(field -> generateBuilderMethod(segment, klass, configClass, field));
+            generateMnemonicConfiguration(segment, local);
+            finishBuilderClass(segment);
+            if (local.localConfigMethod.length() > 0) {
+                generateLocalConfigMethod(segment, allDeclaredFields, fields, configClass);
+            }
         }
     }
 

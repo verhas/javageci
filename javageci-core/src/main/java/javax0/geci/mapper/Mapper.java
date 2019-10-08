@@ -71,17 +71,18 @@ public class Mapper extends AbstractJavaGenerator {
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
         final var gid = global.get("id");
-        final var segment = source.open(gid);
-        final var factory = localConfig(global).factory;
-        segment.param("mnemonic", mnemonic(),
-            "generatedBy", config.generatedAnnotation.getCanonicalName(),
-            "class", klass.getSimpleName(),
-            "factory", factory == null ? "new "+klass.getSimpleName()+"()" : factory,
-            "Map", "java.util.Map",
-            "HashMap", "java.util.HashMap"
-        );
-        generateToMap(segment, source, klass, global);
-        generateFromMap(segment, source, klass, global);
+        try (final var segment = source.open(gid)) {
+            final var factory = localConfig(global).factory;
+            segment.param("mnemonic", mnemonic(),
+                "generatedBy", config.generatedAnnotation.getCanonicalName(),
+                "class", klass.getSimpleName(),
+                "factory", factory == null ? "new " + klass.getSimpleName() + "()" : factory,
+                "Map", "java.util.Map",
+                "HashMap", "java.util.HashMap"
+            );
+            generateToMap(segment, source, klass, global);
+            generateFromMap(segment, source, klass, global);
+        }
     }
 
     private void generateToMap(Segment segment, Source source, Class<?> klass, CompoundParams global) throws Exception {

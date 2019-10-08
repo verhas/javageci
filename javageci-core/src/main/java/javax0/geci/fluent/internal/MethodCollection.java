@@ -176,13 +176,17 @@ public class MethodCollection {
      * Declare that the method specified by the name (signature) is a final in the fluent call.
      * <p>
      * Final methods are special because they have the original return type in the interfaces as well as in the
-     * wrapper class and they are not chainable.
+     * wrapper class and they are not chain-able.
      *
      * @param name the name or the signature of the method
      */
     public void exitNode(String name) {
         var md = get0(name);
-        md.isExitNodeMethod = true;
+        if( md != null ) {
+            md.isExitNodeMethod = true;
+        }else{
+            throw new IllegalArgumentException("The method "+name+" is signalled as exit node, but it is not defined.");
+        }
     }
 
     private MethodData get0(String name) {

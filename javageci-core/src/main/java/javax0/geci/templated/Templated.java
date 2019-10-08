@@ -14,7 +14,11 @@ import javax0.geci.tools.reflection.Selector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -188,43 +192,44 @@ public class Templated extends AbstractJavaGenerator {
 
     @Override
     public final void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
-        final var segment = source.open(global.id());
-        if (phase == 0) {
-            preprocess(source, klass, global, segment);
+        try (final var segment = source.open(global.id())) {
+            if (phase == 0) {
+                preprocess(source, klass, global, segment);
 
-            final var selectedFields = new ArrayList<Field>();
-            final var fields = config.declaredOnly ? GeciReflectionTools.getDeclaredFieldsSorted(klass)
-                    : GeciReflectionTools.getAllFieldsSorted(klass);
-            processFieldsLooping(source, klass, global, segment, fields, selectedFields);
+                final var selectedFields = new ArrayList<Field>();
+                final var fields = config.declaredOnly ? GeciReflectionTools.getDeclaredFieldsSorted(klass)
+                                       : GeciReflectionTools.getAllFieldsSorted(klass);
+                processFieldsLooping(source, klass, global, segment, fields, selectedFields);
 
-            final var selectedMethods = new ArrayList<Method>();
-            final var methods = config.declaredOnly ? GeciReflectionTools.getDeclaredMethodsSorted(klass)
-                    : GeciReflectionTools.getAllMethodsSorted(klass);
-            processMethodsLooping(source, klass, global, segment, methods, selectedMethods);
+                final var selectedMethods = new ArrayList<Method>();
+                final var methods = config.declaredOnly ? GeciReflectionTools.getDeclaredMethodsSorted(klass)
+                                        : GeciReflectionTools.getAllMethodsSorted(klass);
+                processMethodsLooping(source, klass, global, segment, methods, selectedMethods);
 
-            final var selectedClasses = new ArrayList<Class>();
-            final var classes = config.declaredOnly ? GeciReflectionTools.getDeclaredClassesSorted(klass)
-                    : GeciReflectionTools.getAllClassesSorted(klass);
-            processMemberClassesLooping(source, klass, global, segment, classes, selectedClasses);
+                final var selectedClasses = new ArrayList<Class>();
+                final var classes = config.declaredOnly ? GeciReflectionTools.getDeclaredClassesSorted(klass)
+                                        : GeciReflectionTools.getAllClassesSorted(klass);
+                processMemberClassesLooping(source, klass, global, segment, classes, selectedClasses);
 
-            processFields(source, klass, global, selectedFields, segment);
-            processMethods(source, klass, global, selectedMethods, segment);
-            processClasses(source, klass, global, selectedClasses, segment);
+                processFields(source, klass, global, selectedFields, segment);
+                processMethods(source, klass, global, selectedMethods, segment);
+                processClasses(source, klass, global, selectedClasses, segment);
 
-        } else {
-            var local = localConfig(global);
-            final var selector = Selector.compile(local.classFilter);
-            final var selectedClasses = classes.stream()
-                    .filter(selector::match)
-                    .sorted(Comparator.comparing(Class::getName))
-                    .collect(Collectors.toCollection(ArrayList::new));
-            preprocessClass(source, klass, selectedClasses, global, segment);
+            } else {
+                var local = localConfig(global);
+                final var selector = Selector.compile(local.classFilter);
+                final var selectedClasses = classes.stream()
+                                                .filter(selector::match)
+                                                .sorted(Comparator.comparing(Class::getName))
+                                                .collect(Collectors.toCollection(ArrayList::new));
+                preprocessClass(source, klass, selectedClasses, global, segment);
 
-            for (final var listedKlass : selectedClasses) {
-                processClass(source, klass, listedKlass, global, segment);
+                for (final var listedKlass : selectedClasses) {
+                    processClass(source, klass, listedKlass, global, segment);
+                }
+                postprocessClass(source, klass, selectedClasses, global, segment);
+                postprocess(source, klass, global, segment);
             }
-            postprocessClass(source, klass, selectedClasses, global, segment);
-            postprocess(source, klass, global, segment);
         }
     }
 

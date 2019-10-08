@@ -98,20 +98,21 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
     }
 
     private void writeContent(Source source, String mnemonic, String annotation, List<String> keys) {
-        final var segment = source.open();
-        segment.write("package %s;", source.getPackageName())
-            .newline()
-            .write("import java.lang.annotation.Retention;")
-            .write("import java.lang.annotation.RetentionPolicy;")
-            .write("import javax0.geci.annotations.Geci;")
-            .newline()
-            .write("@Geci(\"%s\")", mnemonic)
-            .write("@Retention(RetentionPolicy.RUNTIME)")
-            .write_r("public @interface %s {", annotation)
-            .newline()
-            .write(parameterMethod("value"));
-        keys.stream().filter(key -> !key.equals("id")).map(this::parameterMethod).forEach(segment::write);
-        segment.write_l("}");
+        try (final var segment = source.open()) {
+            segment.write("package %s;", source.getPackageName())
+                .newline()
+                .write("import java.lang.annotation.Retention;")
+                .write("import java.lang.annotation.RetentionPolicy;")
+                .write("import javax0.geci.annotations.Geci;")
+                .newline()
+                .write("@Geci(\"%s\")", mnemonic)
+                .write("@Retention(RetentionPolicy.RUNTIME)")
+                .write_r("public @interface %s {", annotation)
+                .newline()
+                .write(parameterMethod("value"));
+            keys.stream().filter(key -> !key.equals("id")).map(this::parameterMethod).forEach(segment::write);
+            segment.write_l("}");
+        }
     }
 
     private String parameterMethod(String param) {

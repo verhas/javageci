@@ -1,17 +1,25 @@
 package javax0.geci.engine;
 
 
-import javax0.geci.api.*;
+import javax0.geci.api.CompoundParams;
+import javax0.geci.api.Distant;
+import javax0.geci.api.GeciException;
+import javax0.geci.api.Generator;
+import javax0.geci.api.Logger;
+import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.tools.GeciReflectionTools;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
 public class Source implements javax0.geci.api.Source {
@@ -279,13 +287,13 @@ public class Source implements javax0.geci.api.Source {
                 }
                 defaultSegment = true;
             }
-            var segment = new Segment(segDesc.tab, segDesc.attr, segDesc.originals);
-            if (defaultSegment) {
-                segment.setPreface(mnemonize(id, splitHelper.getSegmentPreface()));
-                segment.setPostface(mnemonize(id, splitHelper.getSegmentPostface()));
+            try (final var segment = new Segment(segDesc.tab, segDesc.attr, segDesc.originals)) {
+                if (defaultSegment) {
+                    segment.setPreface(mnemonize(id, splitHelper.getSegmentPreface()));
+                    segment.setPostface(mnemonize(id, splitHelper.getSegmentPostface()));
+                }
+                segments.put(id, segment);
             }
-            segments.put(id, segment);
-
         }
         return segments.get(id);
     }
@@ -401,8 +409,8 @@ public class Source implements javax0.geci.api.Source {
      * @throws IOException if the file cannot be read
      */
     private void readToMemory() throws IOException {
-        try {
-            Files.lines(Paths.get(absoluteFile)).forEach(line -> {
+        try (final var stream = Files.lines(Paths.get(absoluteFile))) {
+            stream.forEach(line -> {
                 lines.add(line);
                 originals.add(line);
             });

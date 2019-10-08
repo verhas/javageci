@@ -82,9 +82,10 @@ public class Equals extends AbstractFilteredFieldsGenerator {
             generateEqualsForField(equalsSegment, lastParams, lastField, this::retLast);
         }
         generateEqualsTail(equalsSegment);
-        var segment = source.open(global.id());
-        if (generateEquals) {
-            segment.write(equalsSegment);
+        try( final var segment = source.open(global.id())) {
+            if (generateEquals) {
+                segment.write(equalsSegment);
+            }
         }
     }
 
@@ -230,26 +231,27 @@ public class Equals extends AbstractFilteredFieldsGenerator {
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global, Field[] fields) throws Exception {
         final var gid = global.get("id");
-        var segment = source.open(gid);
-        var hashCodeMethod = getMethodOrNull(klass, "hashCode");
-        var generateHashCode = hashCodeMethod == null || GeciAnnotationTools.isGenerated(hashCodeMethod);
-        if (generateHashCode) {
-            writeGenerated(segment, config.generatedAnnotation);
-            segment.write("@Override");
-            segment.write_r("public int hashCode() {");
-            final var hashFields = Arrays.stream(fields).filter(field -> {
+        try( final var segment = source.open(gid)) {
+            var hashCodeMethod = getMethodOrNull(klass, "hashCode");
+            var generateHashCode = hashCodeMethod == null || GeciAnnotationTools.isGenerated(hashCodeMethod);
+            if (generateHashCode) {
+                writeGenerated(segment, config.generatedAnnotation);
+                segment.write("@Override");
+                segment.write_r("public int hashCode() {");
+                final var hashFields = Arrays.stream(fields).filter(field -> {
                         final var params = new CompoundParams(GeciReflectionTools.getParameters(field, mnemonic()), global);
                         final var hashFilter = params.get("hashFilter", params.get("filter", config.hashFilter));
                         return Selector.compile(hashFilter).match(field);
                     }
-            ).toArray(Field[]::new);
-            var usingSuper = shouldUseSuper(klass, global);
-            if (global.is("useObjects", config.useObjects)) {
-                generateHashCodeBodyUsingObjects(segment, hashFields, usingSuper);
-            } else {
-                generateHashCodeBody(segment, global, hashFields, usingSuper);
+                ).toArray(Field[]::new);
+                var usingSuper = shouldUseSuper(klass, global);
+                if (global.is("useObjects", config.useObjects)) {
+                    generateHashCodeBodyUsingObjects(segment, hashFields, usingSuper);
+                } else {
+                    generateHashCodeBody(segment, global, hashFields, usingSuper);
+                }
+                segment.write_l("}");
             }
-            segment.write_l("}");
         }
     }
 

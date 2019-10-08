@@ -1,7 +1,6 @@
 package javax0.geci.repeated;
 
 import javax0.geci.api.GeciException;
-import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.templated.Context;
@@ -20,7 +19,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @AnnotationBuilder
 public class Repeated extends AbstractJavaGenerator {
@@ -167,35 +165,37 @@ public class Repeated extends AbstractJavaGenerator {
         Tracer.log("final list of values: [" + String.join(",", loopVars) + "]");
         for (final var key : config.templatesMap.keySet()) {
             try (final var pos = Tracer.push("Segment", key)) {
-                final Segment segment;
+                final String segmentKey;
                 if (key.isEmpty()) {
                     Tracer.log("This is the ID segment named '" + global.id() + "'");
-                    segment = source.open(global.id());
+                    segmentKey = global.id();
                 } else {
-                    segment = source.open(key);
+                    segmentKey = key;
                 }
-                final var template = config.templatesMap.get(key);
-                if (template != null) {
-                    Tracer.log("Template", null, template);
-                    config.ctx.triplet(source, klass, segment);
-                    final var resolver = config.resolverMap.get(key);
-                    final var define = config.defineMap.get(key);
-                    final var templateContent = TemplateLoader.getTemplateContent(template);
-                    Tracer.log("TemplateContent", null, templateContent);
-                    final var resolvedTemplate = resolver == null ? templateContent : resolver.apply(config.ctx, templateContent);
-                    for (final var loopVar : loopVars) {
-                        segment.param("value", loopVar);
-                        if (define != null) {
-                            define.accept(config.ctx, loopVar);
+                try(final var segment = source.open(segmentKey)) {
+                    final var template = config.templatesMap.get(key);
+                    if (template != null) {
+                        Tracer.log("Template", null, template);
+                        config.ctx.triplet(source, klass, segment);
+                        final var resolver = config.resolverMap.get(key);
+                        final var define = config.defineMap.get(key);
+                        final var templateContent = TemplateLoader.getTemplateContent(template);
+                        Tracer.log("TemplateContent", null, templateContent);
+                        final var resolvedTemplate = resolver == null ? templateContent : resolver.apply(config.ctx, templateContent);
+                        for (final var loopVar : loopVars) {
+                            segment.param("value", loopVar);
+                            if (define != null) {
+                                define.accept(config.ctx, loopVar);
+                            }
+                            try (final var segmentParamsPos = Tracer.push("SegmentParams", null)) {
+                                segment.traceParams();
+                                segment.write(resolvedTemplate);
+                            }
                         }
-                        try (final var segmentParamsPos = Tracer.push("SegmentParams", null)) {
-                            segment.traceParams();
-                            segment.write(resolvedTemplate);
-                        }
+                        segment.traceLines();
+                    } else {
+                        Tracer.log("Template " + key + " does not exist");
                     }
-                    segment.traceLines();
-                } else {
-                    Tracer.log("Template " + key + " does not exist");
                 }
             }
         }

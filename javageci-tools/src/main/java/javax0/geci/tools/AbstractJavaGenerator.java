@@ -129,9 +129,10 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
                 annotationParams.trace();
                 Tracer.pop();
             }
-
-            var segment = source.open(mnemonic());
-            var editorFoldParams = segment == null ? null : (javax0.geci.tools.CompoundParams) segment.sourceParams();
+            final CompoundParams editorFoldParams;
+            try (final var segment = source.open(mnemonic())) {
+                editorFoldParams = segment == null ? null : (javax0.geci.tools.CompoundParams) segment.sourceParams();
+            }
             if (editorFoldParams != null) {
                 Tracer.push("Parameters collected from the editor fold header");
                 editorFoldParams.trace();
