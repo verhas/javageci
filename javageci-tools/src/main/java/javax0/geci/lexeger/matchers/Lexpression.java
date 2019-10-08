@@ -203,7 +203,7 @@ public class Lexpression {
 
     public LexMatcher unordered(LexicalElement... elements) {
         final var matchers = getLexMatchers(elements);
-        return new SetMatcher(this, javaLexed, matchers);
+        return unordered(matchers);
     }
 
     public LexMatcher unordered(String string) {
@@ -218,12 +218,17 @@ public class Lexpression {
         return oneOf(getMatchers(strings));
     }
 
-    public LexMatcher not(LexMatcher matcher) {
-        return new NotMatcher(this, javaLexed, matcher);
+    public LexMatcher not(LexMatcher... matchers) {
+        return new NotMatcher(this, javaLexed, matchers);
+    }
+
+    public LexMatcher not(LexicalElement... elements) {
+        final var matchers = getLexMatchers(elements);
+        return not(matchers);
     }
 
     public LexMatcher not(String string) {
-        return not(match(string));
+        return not(lexer.apply(List.of(string)));
     }
 
     //<editor-fold id="methods">
@@ -314,8 +319,11 @@ public class Lexpression {
     public LexMatcher oneOf(GroupNameWrapper nameWrapper, String... strings) {
         return group(nameWrapper.toString(),oneOf(strings));
     }
-    public LexMatcher not(GroupNameWrapper nameWrapper, LexMatcher matcher) {
-        return group(nameWrapper.toString(),not(matcher));
+    public LexMatcher not(GroupNameWrapper nameWrapper, LexMatcher... matchers) {
+        return group(nameWrapper.toString(),not(matchers));
+    }
+    public LexMatcher not(GroupNameWrapper nameWrapper, LexicalElement... elements) {
+        return group(nameWrapper.toString(),not(elements));
     }
     public LexMatcher not(GroupNameWrapper nameWrapper, String string) {
         return group(nameWrapper.toString(),not(string));

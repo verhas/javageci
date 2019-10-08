@@ -154,8 +154,12 @@ public class LexpressionBuilder {
         return (jLex, e) -> e.oneOf(strings);
     }
 
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> not(BiFunction<JavaLexed, Lexpression, LexMatcher> matcher) {
-        return (jLex, e) -> e.not(X(matcher, jLex, e));
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> not(BiFunction<JavaLexed, Lexpression, LexMatcher>... matchers) {
+        return (jLex, e) -> e.not(X(matchers, jLex, e));
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> not(LexicalElement... elements) {
+        return (jLex, e) -> e.not(elements);
     }
 
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> not(String string) {
@@ -278,8 +282,12 @@ public class LexpressionBuilder {
         return (jLex, e) -> e.oneOf(nameWrapper, strings);
     }
 
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> not(GroupNameWrapper nameWrapper, BiFunction<JavaLexed, Lexpression, LexMatcher> matcher) {
-        return (jLex, e) -> e.not(nameWrapper, X(matcher, jLex, e));
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> not(GroupNameWrapper nameWrapper, BiFunction<JavaLexed, Lexpression, LexMatcher>... matchers) {
+        return (jLex, e) -> e.not(nameWrapper, X(matchers, jLex, e));
+    }
+
+    public static BiFunction<JavaLexed, Lexpression, LexMatcher> not(GroupNameWrapper nameWrapper, LexicalElement... elements) {
+        return (jLex, e) -> e.not(nameWrapper, elements);
     }
 
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> not(GroupNameWrapper nameWrapper, String string) {
