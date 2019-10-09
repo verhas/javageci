@@ -157,28 +157,47 @@ public class Lexpression {
         return optional(getMatcher(string));
     }
 
+    /**
+     * Creates a new matcher that matches one or more time the underlying matcher
+     *
+     * @param matcher the underlying matcher
+     * @return the new matcher
+     */
     public LexMatcher oneOrMore(LexMatcher matcher) {
         return new Repeat(this, javaLexed, matcher, 1, Integer.MAX_VALUE);
     }
 
+    /**
+     * Creates a new matcher that matches one or more time the underlying matcher
+     *
+     * @param string representing one or more lexical element, each may match exactly the same lexical element
+     * @return the new matcher
+     */
     public LexMatcher oneOrMore(String string) {
         return oneOrMore(getMatcher(string));
     }
 
+    /**
+     * Creates a new matcher that matches {@code times} times the underlying matcher
+     *
+     * @param matcher the underlying matcher
+     * @param times the number, how many times the underlying matcher must match
+     * @return the new matcher
+     */
     public LexMatcher repeat(LexMatcher matcher, int times) {
         return new Repeat(this, javaLexed, matcher, times, times);
     }
 
+    /**
+     * Creates a new matcher that matches {@code times} times the underlying matcher
+     *
+     * @param matcher the underlying matcher
+     * @param min the number, how many times the underlying matcher must match at least
+     * @param max the number, how many times the underlying matcher must match at most
+     * @return the new matcher
+     */
     public LexMatcher repeat(LexMatcher matcher, int min, int max) {
         return new Repeat(this, javaLexed, matcher, min, max);
-    }
-
-    public LexMatcher integerNumber(String name) {
-        return group(name, integerNumber());
-    }
-
-    public LexMatcher integerNumber(String name, Predicate<Long> predicate) {
-        return group(name, integerNumber(predicate));
     }
 
     public LexMatcher integerNumber() {
@@ -187,14 +206,6 @@ public class Lexpression {
 
     public LexMatcher integerNumber(Predicate<Long> predicate) {
         return new IntegerMatcher(this, javaLexed, predicate);
-    }
-
-    public LexMatcher number(String name) {
-        return group(name, number());
-    }
-
-    public LexMatcher number(String name, Predicate<Number> predicate) {
-        return group(name, number(predicate));
     }
 
     public LexMatcher number() {
@@ -315,23 +326,11 @@ public class Lexpression {
     public LexMatcher repeat(GroupNameWrapper nameWrapper, LexMatcher matcher, int min, int max) {
         return group(nameWrapper.toString(),repeat(matcher, min, max));
     }
-    public LexMatcher integerNumber(GroupNameWrapper nameWrapper, String name) {
-        return group(nameWrapper.toString(),integerNumber(name));
-    }
-    public LexMatcher integerNumber(GroupNameWrapper nameWrapper, String name, Predicate<Long> predicate) {
-        return group(nameWrapper.toString(),integerNumber(name, predicate));
-    }
     public LexMatcher integerNumber(GroupNameWrapper nameWrapper) {
         return group(nameWrapper.toString(),integerNumber());
     }
     public LexMatcher integerNumber(GroupNameWrapper nameWrapper, Predicate<Long> predicate) {
         return group(nameWrapper.toString(),integerNumber(predicate));
-    }
-    public LexMatcher number(GroupNameWrapper nameWrapper, String name) {
-        return group(nameWrapper.toString(),number(name));
-    }
-    public LexMatcher number(GroupNameWrapper nameWrapper, String name, Predicate<Number> predicate) {
-        return group(nameWrapper.toString(),number(name, predicate));
     }
     public LexMatcher number(GroupNameWrapper nameWrapper) {
         return group(nameWrapper.toString(),number());

@@ -82,28 +82,12 @@ public class LexpressionBuilder {
         return (jLex, e) -> e.repeat(X(matcher, jLex, e), min, max);
     }
 
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> integerNumber(String name) {
-        return (jLex, e) -> e.integerNumber(name);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> integerNumber(String name, Predicate<Long> predicate) {
-        return (jLex, e) -> e.integerNumber(name, predicate);
-    }
-
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> integerNumber() {
         return (jLex, e) -> e.integerNumber();
     }
 
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> integerNumber(Predicate<Long> predicate) {
         return (jLex, e) -> e.integerNumber(predicate);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> number(String name) {
-        return (jLex, e) -> e.number(name);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> number(String name, Predicate<Number> predicate) {
-        return (jLex, e) -> e.number(name, predicate);
     }
 
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> number() {
@@ -222,28 +206,12 @@ public class LexpressionBuilder {
         return (jLex, e) -> e.repeat(nameWrapper, X(matcher, jLex, e), min, max);
     }
 
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> integerNumber(GroupNameWrapper nameWrapper, String name) {
-        return (jLex, e) -> e.integerNumber(nameWrapper, name);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> integerNumber(GroupNameWrapper nameWrapper, String name, Predicate<Long> predicate) {
-        return (jLex, e) -> e.integerNumber(nameWrapper, name, predicate);
-    }
-
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> integerNumber(GroupNameWrapper nameWrapper) {
         return (jLex, e) -> e.integerNumber(nameWrapper);
     }
 
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> integerNumber(GroupNameWrapper nameWrapper, Predicate<Long> predicate) {
         return (jLex, e) -> e.integerNumber(nameWrapper, predicate);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> number(GroupNameWrapper nameWrapper, String name) {
-        return (jLex, e) -> e.number(nameWrapper, name);
-    }
-
-    public static BiFunction<JavaLexed, Lexpression, LexMatcher> number(GroupNameWrapper nameWrapper, String name, Predicate<Number> predicate) {
-        return (jLex, e) -> e.number(nameWrapper, name, predicate);
     }
 
     public static BiFunction<JavaLexed, Lexpression, LexMatcher> number(GroupNameWrapper nameWrapper) {
