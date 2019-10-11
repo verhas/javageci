@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 
 class TestTracer {
 
+    public static final String CLASS_LOG_PREFIX = "geci\\.tools[@.\\-\\w\\d]*?/";
+
     private static class TestOutput implements AutoCloseable {
         final StringBuilder sb = new StringBuilder();
 
@@ -135,7 +137,7 @@ class TestTracer {
                 "<![CDATA[javax0.geci.api.GeciException: Hooppa"));
             Assertions.assertTrue(content.endsWith("]]>\n  </ERROR>\n</trace>\n"));
             Assertions.assertTrue(content
-                .replaceAll("geci.tools/","")
+                .replaceAll(CLASS_LOG_PREFIX,"")
                 .contains("at javax0.geci.tools.TestTracer.testExceptionLogging(TestTracer.java:"));
         }
     }
@@ -178,7 +180,7 @@ class TestTracer {
                             "  <ERROR>\n" +
                             "<![CDATA[javax0.geci.api.GeciException: Too many Tracer.pop() calls\n" +
                             "\tat javax0.geci.tools.Tracer.pop(Tracer.java:",
-                    content.replaceAll("geci.tools/", ""));
+                    content.replaceAll(CLASS_LOG_PREFIX, ""));
             assertEndsWith("]]>\n" +
                 "  </ERROR>\n" +
                 "  <log msg=\"top level\"/>\n" +
@@ -228,7 +230,7 @@ class TestTracer {
                 "  </log>\n" + // remove the line numbers as they may change when altering the unit test
                 "</trace>\n", content
                 .replaceAll(":\\d+", ":000")
-                .replaceAll("geci.tools/",""));
+                .replaceAll(CLASS_LOG_PREFIX,""));
         }
     }
 

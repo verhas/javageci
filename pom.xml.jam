@@ -70,6 +70,7 @@
                     {GAV :org.apache.maven.plugins:maven-javadoc-plugin:{MAVEN_JAVADOC_PLUGIN_VERSION}}
                     {configuration|
                         <detectLinks>false</detectLinks>
+                        <failOnError>false</failOnError>
                     }
                     {dependencies|{dependency :org.ow2.asm:asm:7.0:}}
                     {executions|
@@ -96,4 +97,46 @@
             {dependency :com.javax0.jamal:jamal-testsupport:{JAMAL_VERSION}:test}
         }
     }
+
+    <profiles>
+        <profile>
+            <id>JDK8</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>{MAVEN_COMPILER_PLUGIN_VERSION}</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>module-info.java</exclude>
+                            </excludes>
+                            <encoding>UTF-8</encoding>
+                            <release>8</release>
+                            <annotationProcessorPaths>
+                                <annotationProcessorPath>
+                                    <groupId>com.github.bsideup.jabel</groupId>
+                                    <artifactId>jabel-javac-plugin</artifactId>
+                                    <version>0.2.0</version>
+                                </annotationProcessorPath>
+                            </annotationProcessorPaths>
+                            <annotationProcessors>
+                                <annotationProcessor>com.github.bsideup.jabel.JabelJavacProcessor</annotationProcessor>
+                            </annotationProcessors>
+                            <source>13</source>
+                            <target>13</target>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
+            <repositories>
+                <repository>
+                    <id>jitpack.io</id>
+                    <url>https://jitpack.io</url>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
 }
