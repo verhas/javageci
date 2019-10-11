@@ -1,9 +1,13 @@
 package javax0.geci.engine;
 
 import javax0.geci.api.Context;
+import javax0.geci.api.Distant;
+import javax0.geci.api.GeciException;
+import javax0.geci.api.Generator;
+import javax0.geci.api.GlobalGenerator;
 import javax0.geci.api.Segment;
+import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.api.Source;
-import javax0.geci.api.*;
 import javax0.geci.javacomparator.Comparator;
 import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
@@ -13,7 +17,14 @@ import javax0.geci.util.DirectoryLocator;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -480,7 +491,23 @@ public class Geci implements javax0.geci.api.Geci {
             } else {
                 generatorId = entry.generator.getClass().getSimpleName();
             }
-            LOG.log(entry.level, generatorId + ":" + entry.message);
+            switch (entry.level) {
+                case SourceLogger.TRACE:
+                    LOG.trace(generatorId + ":" + entry.message);
+                    break;
+                case SourceLogger.DEBUG:
+                    LOG.debug(generatorId + ":" + entry.message);
+                    break;
+                case SourceLogger.INFO:
+                    LOG.info(generatorId + ":" + entry.message);
+                    break;
+                case SourceLogger.WARNING:
+                    LOG.warning(generatorId + ":" + entry.message);
+                    break;
+                case SourceLogger.ERROR:
+                    LOG.error(generatorId + ":" + entry.message);
+                    break;
+            }
         }
     }
 

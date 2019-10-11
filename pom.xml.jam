@@ -111,6 +111,7 @@
                         <configuration>
                             <excludes>
                                 <exclude>module-info.java</exclude>
+                                <exclude>javax0/geci/log/LoggerJDK9.java</exclude>
                             </excludes>
                             <encoding>UTF-8</encoding>
                             <release>8</release>

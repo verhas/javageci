@@ -499,7 +499,7 @@ public class GeciAnnotationTools {
      * @deprecated The parameters of a segment should be accessed directly
      * through the Segment object representing it.
      */
-    @Deprecated(since = "1.2.0")
+    @Deprecated(/*since = "1.2.0"*/)
     public static CompoundParams getSegmentParameters(Source source,
                                                       String mnemonic) {
         for (var line : source.getLines()) {
@@ -568,7 +568,7 @@ public class GeciAnnotationTools {
      * @param s the string parameter
      * @return the map composed from the string
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(/*forRemoval = true*/)
     public static Map<String, String> getParameters(String s) {
         var pars = new HashMap<String, String>();
         var matcher = pattern.matcher(s);

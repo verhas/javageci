@@ -1,36 +1,61 @@
 package javax0.geci.log;
 
+import java.lang.reflect.Method;
+import java.util.function.Function;
+
 public class Logger implements javax0.geci.api.Logger {
-    public Logger(Class<?> forClass) {
-        this.LOGGER = System.getLogger(forClass.getName());
+
+    final static Function<Class<?>, LoggerJDK> factory;
+
+    static {
+        Function<Class<?>, LoggerJDK> _factory = null;
+        try {
+            final Method m = Class.forName("javax0.geci.log.LoggerJDK9").getDeclaredMethod("factory", Class.class);
+            _factory = convert(m);
+        } catch (ClassNotFoundException | NoSuchMethodException ignore) {
+        }
+        if (_factory == null) {
+            try {
+                final Method m = Class.forName("javax0.geci.log.LoggerJDK8").getDeclaredMethod("factory", Class.class);
+                _factory = convert(m);
+            } catch (ClassNotFoundException | NoSuchMethodException e) {
+            }
+        }
+        factory = _factory;
     }
 
-    private final System.Logger LOGGER;
+    private static Function<Class<?>, LoggerJDK> convert(Method m) {
+        return (c) -> {
+            try {
+                return (LoggerJDK) m.invoke(null,c);
+            } catch (Exception ignore) {
+                return null;
+            }
+        };
+    }
 
-    public void log(System.Logger.Level level, String format, Object... params) {
-        if (LOGGER.isLoggable(level)) {
-            var s = String.format(format, params);
-            LOGGER.log(level, s);
-        }
+    private final LoggerJDK LOGGER;
+    public Logger(Class<?> forClass) {
+        this.LOGGER = factory.apply(forClass);
     }
 
     public void trace(String format, Object... params) {
-        log(System.Logger.Level.TRACE, format, params);
+        LOGGER.log(LoggerJDK.TRACE, format, params);
     }
 
     public void debug(String format, Object... params) {
-        log(System.Logger.Level.DEBUG, format, params);
+        LOGGER.log(LoggerJDK.DEBUG, format, params);
     }
 
     public void info(String format, Object... params) {
-        log(System.Logger.Level.INFO, format, params);
+        LOGGER.log(LoggerJDK.INFO, format, params);
     }
 
     public void warning(String format, Object... params) {
-        log(System.Logger.Level.WARNING, format, params);
+        LOGGER.log(LoggerJDK.WARNING, format, params);
     }
 
     public void error(String format, Object... params) {
-        log(System.Logger.Level.ERROR, format, params);
+        LOGGER.log(LoggerJDK.ERROR, format, params);
     }
 }

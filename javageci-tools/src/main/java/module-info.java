@@ -7,4 +7,5 @@ module geci.tools {
     exports javax0.geci.lexeger;
     requires geci.annotation;
     requires geci.api;
+    requires java.logging;
 }
