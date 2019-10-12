@@ -201,8 +201,8 @@ public class GeciReflectionTools {
      */
     public static String normalizeTypeName(String s, Class<?> klass) {
         s = normalizeTypeName(s);
-        if (s.startsWith(klass.getPackageName() + ".")) {
-            s = s.substring(klass.getPackageName().length() + 1);
+        if (s.startsWith(JDK8Tools.getPackageName(klass) + ".")) {
+            s = s.substring(JDK8Tools.getPackageName(klass).length() + 1);
         }
         return s;
     }
@@ -292,7 +292,7 @@ public class GeciReflectionTools {
      */
     public static String getLocalGenericClassName(Class<?> t) {
         return normalizeTypeName(t.getCanonicalName()
-            .substring(t.getPackageName().length() + 1))
+            .substring(JDK8Tools.getPackageName(t).length() + 1))
             + getGenericParametersString(t);
     }
 

@@ -69,4 +69,25 @@ public class JDK8Tools {
         return map;
     }
 
+    /**
+     * This is practically the copy from JDK9.
+     * @param klass
+     * @return the package name of the class
+     */
+    public static String getPackageName(Class<?> klass) {
+        String pn;
+        Class<?> c = klass;
+        while (c.isArray()) {
+            c = c.getComponentType();
+        }
+        if (c.isPrimitive()) {
+            pn = "java.lang";
+        } else {
+            String cn = c.getName();
+            int dot = cn.lastIndexOf('.');
+            pn = (dot != -1) ? cn.substring(0, dot).intern() : "";
+        }
+        return pn;
+    }
+
 }
