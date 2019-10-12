@@ -7,8 +7,14 @@ public final class Range {
     final  int  lo;
     final  int  hi;
 
+     public void Range(final int lo, final int hi) {
+        if (lo > hi)  /* referring here to the implicit constructor parameters */
+            throw new IllegalArgumentException(String.format("(%d,%d)", lo, hi));
+    }
+
     //<editor-fold id="record">
     public Range(final int lo, final int hi) {
+        Range(lo, hi);
         this.lo = lo;
         this.hi = hi;
     }

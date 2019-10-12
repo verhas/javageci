@@ -6,7 +6,6 @@ import javax0.geci.api.Source;
 import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.lexeger.JavaLexed;
 import javax0.geci.lexeger.Lex;
-import javax0.geci.lexeger.LexpressionBuilder;
 import javax0.geci.tools.AbstractFilteredFieldsGenerator;
 import javax0.geci.tools.CaseTools;
 import javax0.geci.tools.CompoundParams;
@@ -74,7 +73,7 @@ public class Record extends AbstractFilteredFieldsGenerator {
 
     private static final Selector<Field> NON_STATIC = Selector.compile("! static ");
     private static Selector<Field> NON_FINAL__NON_STATIC = Selector.compile("!final & ! static ");
-    private static final Selector<Method> PRIVATE_VOID = Selector.compile("private & void");
+    private static final Selector<Method> VOID = Selector.compile("void");
 
     private static class Config {
         private String filter;
@@ -152,14 +151,14 @@ public class Record extends AbstractFilteredFieldsGenerator {
     ) {
         javaLexed.find(
             list(
-                match("private void "
+                match("void "
                           + validatorMethodName
                           + "("),
                 anyTill(")"),
                 match(")")
             )
         ).fromStart()
-            .replaceWith(Lex.of("private void "
+            .replaceWith(Lex.of("void "
                                     + validatorMethodName
                                     + "(" + argumentDeclaration + ")")
             );
@@ -169,7 +168,7 @@ public class Record extends AbstractFilteredFieldsGenerator {
         final var methods = klass.getDeclaredMethods();
         Method validatorMethod = null;
         for (final var method : methods) {
-            if (method.getName().equalsIgnoreCase(klass.getSimpleName()) && PRIVATE_VOID.match(method)) {
+            if (method.getName().equalsIgnoreCase(klass.getSimpleName()) && VOID.match(method)) {
                 if (validatorMethod != null) {
                     throw new GeciException("There are more than one methods mimicking the validator constructor of the record class " + klass.getName());
                 }
