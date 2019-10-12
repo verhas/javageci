@@ -1,20 +1,20 @@
 package javax0.geci.tools;
 
-import java.util.Set;
 import javax0.geci.api.GeciException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 
 public class TestCompoundParams {
 
     @Test
     @DisplayName("Throws IllegalArgumentException when the constructor argument is illegal")
     void testBadConstructorUse(){
-        Assertions.assertThrows(IllegalArgumentException.class , () -> new CompoundParams("theId", Map.of("a", List.of(1,2,3))));
+        Assertions.assertThrows(IllegalArgumentException.class , () -> new CompoundParams("theId", Map.of("a", Arrays.asList(1,2,3))));
         Assertions.assertThrows(IllegalArgumentException.class , () -> new CompoundParams("theId", Map.of("a", 3)));
     }
 

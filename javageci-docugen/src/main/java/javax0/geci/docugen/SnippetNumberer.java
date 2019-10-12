@@ -1,9 +1,14 @@
 package javax0.geci.docugen;
 
 import javax0.geci.annotations.Geci;
-import javax0.geci.api.*;
+import javax0.geci.api.CompoundParams;
+import javax0.geci.api.Segment;
+import javax0.geci.api.Source;
 
 import java.util.ArrayList;
+
+import static javax0.geci.tools.JDK8Tools.space;
+
 /** // snippet SnippetNumberer_doc
  *
  * The `number` snippet handling generator is implemented in the class `SnippetNumberer`.
@@ -93,7 +98,7 @@ public class SnippetNumberer extends AbstractSnippeter {
                 modifiedLines.add(formattedNumber + line);
                 number += step;
             } else {
-                modifiedLines.add(" ".repeat(formattedNumber.length()) + line);
+                modifiedLines.add(space(formattedNumber.length()) + line);
             }
             index++;
         }

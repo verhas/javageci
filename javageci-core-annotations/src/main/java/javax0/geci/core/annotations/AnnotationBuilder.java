@@ -1,8 +1,9 @@
 package javax0.geci.core.annotations;
 
+import javax0.geci.annotations.Geci;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import javax0.geci.annotations.Geci;
 
 @Geci("annotationBuilder")
 @Retention(RetentionPolicy.RUNTIME)

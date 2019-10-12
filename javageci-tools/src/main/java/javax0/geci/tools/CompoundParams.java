@@ -93,7 +93,7 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
         if (value instanceof List) {
             return assertListOfStrings((List)value);
         } else if (value instanceof String) {
-            return new ArrayList(List.of((String) value));
+            return new ArrayList(Arrays.asList((String) value));
         } else {
             throw new IllegalArgumentException(value.getClass()
                                                    + " cannot be used in "
@@ -339,7 +339,7 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
                        .filter(p -> p.containsKey(key))
                        .map(p -> p.get(key))
                        .findFirst()
-                       .orElse("id".equals(key) ? List.of(id) : null);
+                       .orElse("id".equals(key) ? Arrays.asList(id) : null);
         }
         if (cparams != null) {
             return Arrays.stream(cparams)
@@ -347,10 +347,10 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
                        .map(p -> p.getValueList(key))
                        .filter(Objects::nonNull)
                        .findFirst()
-                       .orElse("id".equals(key) ? List.of(id) : null);
+                       .orElse("id".equals(key) ? Arrays.asList(id) : null);
         }
         if ("id".equals(key)) {
-            return List.of(id);
+            return Arrays.asList(id);
         }
         return null;
     }

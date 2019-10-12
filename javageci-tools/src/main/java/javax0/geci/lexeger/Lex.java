@@ -15,6 +15,6 @@ import java.util.stream.Collectors;
  */
 public class Lex {
     public static List<LexicalElement> of(String s) {
-        return Arrays.stream(new Lexer().spaceSensitive().commentSensitive().apply(List.of(s))).collect(Collectors.toList());
+        return Arrays.stream(new Lexer().spaceSensitive().commentSensitive().apply(Arrays.asList(s))).collect(Collectors.toList());
     }
 }

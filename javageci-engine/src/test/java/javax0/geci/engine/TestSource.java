@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,7 +16,7 @@ public class TestSource {
         final var collector = new FileCollector(Map.of());
         var sut = new Source(collector, "ddd", Paths.get("xyz.java"));
         sut.inMemory = true;
-        sut.lines.addAll(List.of(
+        sut.lines.addAll(Arrays.asList(
                 "This is something there",
                 "    // <editor-fold id=\"myId\">",
                 "this is to be replaced",

@@ -26,7 +26,6 @@ import static javax0.geci.lexeger.LexpressionBuilder.identifier;
 import static javax0.geci.lexeger.LexpressionBuilder.list;
 import static javax0.geci.lexeger.LexpressionBuilder.match;
 import static javax0.geci.lexeger.LexpressionBuilder.modifier;
-import static javax0.geci.lexeger.LexpressionBuilder.not;
 import static javax0.geci.lexeger.LexpressionBuilder.type;
 import static javax0.geci.lexeger.LexpressionBuilder.zeroOrMore;
 

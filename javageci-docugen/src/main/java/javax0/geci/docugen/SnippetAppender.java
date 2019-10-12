@@ -6,6 +6,7 @@ import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
@@ -52,7 +53,7 @@ public class SnippetAppender extends AbstractSnippeter {
 
     private static class Config extends AbstractSnippeter.Config {
         // snippet SnippetAppender_Config_001
-        private List<String> snippets = List.of();
+        private List<String> snippets = Arrays.asList();
         /*
 
         This configuration parameter defines the snippets that are appended to the base snippet.

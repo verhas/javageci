@@ -4,12 +4,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 class TestComparator {
 
     private List<String> sourceList(String s1) {
-        return List.of(s1.split("\n", -1));
+        return Arrays.asList(s1.split("\n", -1));
     }
 
     @Test
@@ -34,13 +35,13 @@ class TestComparator {
         final var s1 = "    void test(){\n" +
                 "        final var s1 = \"\";\n" +
                 "        final var s2 = \"\";\n" +
-                "        Assertions.assertTrue( new Comparator().test(List.of(s1.split(\"\\n\",-1)),List.of(s2.split(\"\\n\",-1))));\n" +
+                "        Assertions.assertTrue( new Comparator().test(Arrays.asList(s1.split(\"\\n\",-1)),Arrays.asList(s2.split(\"\\n\",-1))));\n" +
                 "    }";
         final var s2 = "    void test(){\n" +
                 "                                 final var s1 = \"\";\n" +
                 "        final var \n" +
                 "                s2 = \"\";\n" +
-                "        Assertions.assertTrue( new Comparator().test(List.of(s1.split(\"\\n\",-1)),List.of(s2.split(\"\\n\",-1))));\n" +
+                "        Assertions.assertTrue( new Comparator().test(Arrays.asList(s1.split(\"\\n\",-1)),Arrays.asList(s2.split(\"\\n\",-1))));\n" +
                 "    }";
         Assertions.assertFalse( new Comparator().test(sourceList(s1), sourceList(s2)));
     }

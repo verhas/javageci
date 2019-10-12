@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -380,7 +379,7 @@ public class GeciReflectionTools {
      * @return the sorted array of fields
      */
     public static Field[] getAllFieldsSorted(Class<?> klass) {
-        Set<Field> fields = new HashSet<>(List.of(klass.getDeclaredFields()));
+        Set<Field> fields = new HashSet<>(Arrays.asList(klass.getDeclaredFields()));
         var superClass = klass.getSuperclass();
         var samePackage = klass.getPackage() == superClass.getPackage();
         while (superClass != null) {

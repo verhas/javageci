@@ -8,9 +8,13 @@ import javax0.geci.fluent.tree.Tree;
 import javax0.geci.tools.syntax.Lexer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static javax0.geci.tools.syntax.Lexeme.Type.*;
+import static javax0.geci.tools.syntax.Lexeme.Type.EOF;
+import static javax0.geci.tools.syntax.Lexeme.Type.SPACE;
+import static javax0.geci.tools.syntax.Lexeme.Type.SYMBOL;
+import static javax0.geci.tools.syntax.Lexeme.Type.WORD;
 
 /**
  * This class implements the syntax analyzer that can process fluent api grammar definition.
@@ -72,7 +76,7 @@ public class Syntax {
      */
     @SafeVarargs
     private static <T> List<T> listOf(T... ts) {
-        return new ArrayList<>(List.of(ts));
+        return new ArrayList<>(Arrays.asList(ts));
     }
 
     /**

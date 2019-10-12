@@ -1,7 +1,6 @@
 package javax0.geci.fluent.tree;
 
 import javax0.geci.fluent.FluentBuilder;
-import javax0.geci.fluent.tree.Node;
 
 import java.util.List;
 

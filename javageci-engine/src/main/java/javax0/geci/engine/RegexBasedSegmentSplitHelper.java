@@ -1,10 +1,11 @@
 package javax0.geci.engine;
 
-import java.util.List;
 import javax0.geci.api.CompoundParams;
 import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.tools.CompoundParamsBuilder;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -78,7 +79,7 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
         this.startPattern = startPattern;
         this.endPattern = endPattern;
         this.defaultPattern = defaultPattern;
-        this.excludedKeys = List.of();
+        this.excludedKeys = Arrays.asList();
     }
 
     public RegexBasedSegmentSplitHelper(Pattern startPattern, Pattern endPattern, Pattern defaultPattern, List<String> excludedKeys) {

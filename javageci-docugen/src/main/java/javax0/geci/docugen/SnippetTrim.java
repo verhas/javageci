@@ -8,6 +8,8 @@ import javax0.geci.api.Source;
 
 import java.util.ArrayList;
 
+import static javax0.geci.tools.JDK8Tools.space;
+
 @Geci("configBuilder localConfigMethod='' configurableMnemonic='trim'")
 public class SnippetTrim extends AbstractSnippeter {
 
@@ -40,7 +42,7 @@ public class SnippetTrim extends AbstractSnippeter {
 
         final var modifiedLines = new ArrayList<String>();
         for (final var line : snippet.lines()) {
-            modifiedLines.add(" ".repeat(to) + (line.length() >= untab ? line.substring(untab) : ""));
+            modifiedLines.add(space(to) + (line.length() >= untab ? line.substring(untab) : ""));
         }
         snippet.lines().clear();
         snippet.lines().addAll(modifiedLines);

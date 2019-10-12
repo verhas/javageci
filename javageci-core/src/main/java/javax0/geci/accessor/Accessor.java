@@ -1,8 +1,9 @@
 package javax0.geci.accessor;
 
-import java.lang.reflect.Field;
 import javax0.geci.api.Segment;
 import javax0.geci.core.annotations.AnnotationBuilder;
+
+import java.lang.reflect.Field;
 
 @AnnotationBuilder()
 public class Accessor extends AbstractAccessor {

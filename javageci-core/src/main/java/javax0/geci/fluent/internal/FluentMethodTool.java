@@ -1,7 +1,7 @@
 package javax0.geci.fluent.internal;
 
-import javax0.geci.tools.MethodTool;
 import javax0.geci.tools.GeciReflectionTools;
+import javax0.geci.tools.MethodTool;
 
 import java.lang.reflect.Type;
 

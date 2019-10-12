@@ -11,6 +11,7 @@ import javax0.geci.tools.TemplateLoader;
 import javax0.geci.tools.Tracer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,7 +157,7 @@ public class Repeated extends AbstractJavaGenerator {
         }
         if (local.values != null) {
             Tracer.log("Adding configured values [" + local.values + "]");
-            loopVars.addAll(List.of(local.values.split(",")));
+            loopVars.addAll(Arrays.asList(local.values.split(",")));
         }
         if (local.valuesSupplier != null) {
             Tracer.log("Adding values from configured values supplier");

@@ -1,7 +1,11 @@
 package javax0.geci.docugen;
 
 import javax0.geci.annotations.Geci;
-import javax0.geci.api.*;
+import javax0.geci.api.CompoundParams;
+import javax0.geci.api.Distant;
+import javax0.geci.api.GeciException;
+import javax0.geci.api.Segment;
+import javax0.geci.api.Source;
 import javax0.geci.tools.Tracer;
 
 import java.util.regex.Pattern;

@@ -12,6 +12,7 @@ import javax0.geci.tools.reflection.Selector;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +46,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
             throw new GeciException("There is no class 'Config' in " + klass.getName(), cnfe);
         }
         try (final var segment = source.open(global.id())) {
-            final var allDeclaredFields = List.of(GeciReflectionTools.getDeclaredFieldsSorted(configClass));
+            final var allDeclaredFields = Arrays.asList(GeciReflectionTools.getDeclaredFieldsSorted(configClass));
             final var fields = configurableFields(global, allDeclaredFields);
 
             final var local = localConfig(global);

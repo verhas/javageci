@@ -5,11 +5,17 @@ import javax0.geci.javacomparator.lex.Lexer;
 import javax0.geci.javacomparator.lex.LexicalElement;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static javax0.geci.javacomparator.LexicalElement.Type.*;
+import static javax0.geci.javacomparator.LexicalElement.Type.CHARACTER;
+import static javax0.geci.javacomparator.LexicalElement.Type.FLOAT;
+import static javax0.geci.javacomparator.LexicalElement.Type.IDENTIFIER;
+import static javax0.geci.javacomparator.LexicalElement.Type.INTEGER;
+import static javax0.geci.javacomparator.LexicalElement.Type.STRING;
+import static javax0.geci.javacomparator.LexicalElement.Type.SYMBOL;
 
 /**
  * Create a new CompoundParams object out of a string. The string should
@@ -45,7 +51,7 @@ public class CompoundParamsBuilder {
     }
 
     public CompoundParamsBuilder exclude(String... keys) {
-        excludedKeys.addAll(List.of(keys));
+        excludedKeys.addAll(Arrays.asList(keys));
         return this;
     }
 
@@ -54,7 +60,7 @@ public class CompoundParamsBuilder {
         final var lexer = new Lexer();
         final LexicalElement[] elements;
         try {
-            elements = lexer.apply(List.of(line));
+            elements = lexer.apply(Arrays.asList(line));
         } catch (IllegalArgumentException iae) {
             throw new GeciException("Cannot parse the line for parameters: " + line, iae);
         }

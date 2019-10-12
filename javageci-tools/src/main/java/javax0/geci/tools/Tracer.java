@@ -12,6 +12,8 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
+import static javax0.geci.tools.JDK8Tools.space;
+
 /**
  * <p>Tracing the execution of code generation.</p>
  *
@@ -342,22 +344,22 @@ public class Tracer implements AutoCloseable {
 
     private static void dumpXML(Tracer node, StringBuilder sb, int tab) {
         if( tab > 200 ){
-            sb.append(" ".repeat(tab)).append("<FATAL message=\"Nesting of trace messages is too deep, probably internal error.\"/>");
+            sb.append(space(tab)).append("<FATAL message=\"Nesting of trace messages is too deep, probably internal error.\"/>");
             return;
         }
         final String messageTag = node.message != null ? " msg=\"" + escape(node.message) + "\"" : "";
         if (node.children.isEmpty()) {
             if (node.cData == null) {
-                sb.append(" ".repeat(tab)).append("<").append(node.tag).append(messageTag).append("/>").append("\n");
+                sb.append(space(tab)).append("<").append(node.tag).append(messageTag).append("/>").append("\n");
             } else {
-                sb.append(" ".repeat(tab)).append("<").append(node.tag).append(messageTag).append(">").append("\n");
+                sb.append(space(tab)).append("<").append(node.tag).append(messageTag).append(">").append("\n");
                 sb.append("<![CDATA[").append(node.cData).append("]]>\n");
-                sb.append(" ".repeat(tab)).append("</").append(node.tag).append(">\n");
+                sb.append(space(tab)).append("</").append(node.tag).append(">\n");
             }
         } else {
-            sb.append(" ".repeat(tab)).append("<").append(node.tag).append(messageTag).append(">").append("\n");
+            sb.append(space(tab)).append("<").append(node.tag).append(messageTag).append(">").append("\n");
             node.children.forEach(c -> dumpXML(c, sb, tab + 2));
-            sb.append(" ".repeat(tab)).append("</").append(node.tag).append(">\n");
+            sb.append(space(tab)).append("</").append(node.tag).append(">\n");
         }
     }
 

@@ -6,6 +6,7 @@ import javax0.geci.javacomparator.lex.Lexer;
 import javax0.geci.lexeger.matchers.Lexpression;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -30,7 +31,7 @@ public class JavaLexed implements AutoCloseable {
         this.source = source;
         lexicalElements =
             new ArrayList<>(
-                List.of(
+                Arrays.asList(
                     new Lexer()
                         .spaceSensitive()
                         .commentSensitive()

@@ -5,7 +5,12 @@ import javax0.geci.api.GeciException;
 import javax0.geci.tools.Template;
 import javax0.geci.tools.Tracer;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Segment implements javax0.geci.api.Segment {
     private static final int TAB = 4;
@@ -23,7 +28,7 @@ public class Segment implements javax0.geci.api.Segment {
         this.openingTabStop = tabStop;
         this.tabStop = tabStop;
         this.cparams = new javax0.geci.tools.CompoundParams();
-        this.originals = List.of();
+        this.originals = Arrays.asList();
     }
 
     public Segment(int tabStop, CompoundParams cparams, List<String> originals) {
@@ -112,7 +117,7 @@ public class Segment implements javax0.geci.api.Segment {
     @Override
     public void setContent(String content) {
         lines.clear();
-        lines.addAll(List.of(content.split("\n", -1)));
+        lines.addAll(Arrays.asList(content.split("\n", -1)));
     }
 
     @Override

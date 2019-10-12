@@ -5,6 +5,7 @@ import javax0.geci.javacomparator.lex.LexicalElement;
 import javax0.geci.lexeger.JavaLexed;
 import javax0.geci.lexeger.LexpressionBuilder.GroupNameWrapper;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,7 @@ public class Lexpression {
         if (groups.containsKey(name)) {
             return groups.get(name);
         }
-        return List.of();
+        return Arrays.asList();
     }
 
     public Optional<MatchResult> regexGroups(final String name) {
@@ -242,7 +243,7 @@ public class Lexpression {
     }
 
     public LexMatcher match(String string) {
-        return list(lexer.apply(List.of(string)));
+        return list(lexer.apply(Arrays.asList(string)));
     }
 
     public LexMatcher unordered(LexMatcher... matchers) {
@@ -255,7 +256,7 @@ public class Lexpression {
     }
 
     public LexMatcher unordered(String string) {
-        return unordered(lexer.apply(List.of(string)));
+        return unordered(lexer.apply(Arrays.asList(string)));
     }
 
     public LexMatcher group(String name, LexMatcher matcher) {
@@ -276,7 +277,7 @@ public class Lexpression {
     }
 
     public LexMatcher not(String string) {
-        return not(lexer.apply(List.of(string)));
+        return not(lexer.apply(Arrays.asList(string)));
     }
 
     public LexMatcher anyTill(LexMatcher... matchers) {
@@ -289,7 +290,7 @@ public class Lexpression {
     }
 
     public LexMatcher anyTill(String string) {
-        return anyTill(lexer.apply(List.of(string)));
+        return anyTill(lexer.apply(Arrays.asList(string)));
     }
 
     //<editor-fold id="methods">
@@ -529,7 +530,7 @@ public class Lexpression {
     //</editor-fold>
 
     private LexMatcher getMatcher(String string) {
-        final var lexicalElements = lexer.apply(List.of(string));
+        final var lexicalElements = lexer.apply(Arrays.asList(string));
         if (lexicalElements.length == 1) {
             return terminal(lexicalElements[0]);
         } else {

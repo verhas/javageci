@@ -11,6 +11,7 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,7 +127,7 @@ public class TestGeciReflectionTools {
             }
             @Override
             public List<String> getLines() {
-                return List.of("    // @Geci(\"aaa a='b' b='c' c='d' a$='dollared' b3='bthree' _='-'\")",
+                return Arrays.asList("    // @Geci(\"aaa a='b' b='c' c='d' a$='dollared' b3='bthree' _='-'\")",
                         "    // @Geci(\"xxx x='x' y='y' z='z'\")",
                         "    private static Object something;",
                         "    private HashMap<Map<String, Integer>, Object> b;");

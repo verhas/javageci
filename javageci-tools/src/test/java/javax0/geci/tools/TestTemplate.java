@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
 
 public class TestTemplate {
@@ -13,7 +13,7 @@ public class TestTemplate {
     @DisplayName("When there are no params every string just returns as is")
     void emptyTest(){
         final var sut = new Template(Map.of());
-        final var samples = List.of("alma", "{{kirte}}", "just {a{{nithing");
+        final var samples = Arrays.asList("alma", "{{kirte}}", "just {a{{nithing");
         for( final var sample : samples) {
             Assertions.assertEquals(sample, sut.resolve(sample));
         }
