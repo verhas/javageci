@@ -595,7 +595,7 @@ public class Templated extends AbstractJavaGenerator {
         return new Templated().new Builder();
     }
 
-    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+    private static final java.util.Set<String> implementedKeys = new java.util.HashSet<>(java.util.Arrays.asList(
         "classFilter",
         "fieldFilter",
         "memberClassFilter",
@@ -613,7 +613,7 @@ public class Templated extends AbstractJavaGenerator {
         "processMethods",
         "selector",
         "id"
-    );
+    ));
 
     @Override
     public java.util.Set<String> implementedKeys() {

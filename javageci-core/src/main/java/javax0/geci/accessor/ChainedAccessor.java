@@ -4,6 +4,8 @@ import javax0.geci.api.Segment;
 import javax0.geci.tools.GeciReflectionTools;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import static javax0.geci.tools.CaseTools.ucase;
@@ -11,7 +13,7 @@ import static javax0.geci.tools.CaseTools.ucase;
 public class ChainedAccessor extends AbstractAccessor {
 
     private static final Set<String> accessModifiers =
-            Set.of("public", "private", "protected", "package");
+            new HashSet<>(Arrays.asList("public", "private", "protected", "package"));
 
     public ChainedAccessor(){
         config.setterNameGenerator = name -> "with" + ucase(name);

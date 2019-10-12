@@ -2,6 +2,8 @@ package javax0.geci.tests.fluent;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -52,7 +54,7 @@ public class ReplCommandBuilder {
 
     private void noParameters() {
         if (parameters == null) {
-            this.parameters = new HashSet<>(Set.of());
+            this.parameters = new HashSet<>(Collections.emptySet());
         } else {
             throw new IllegalArgumentException(
                     "You cannot define parameters and noParameters for the same command");
@@ -61,7 +63,7 @@ public class ReplCommandBuilder {
 
     private void parameter(String parameter) {
         if (parameters == null) {
-            this.parameters = new HashSet<>(Set.of(parameter));
+            this.parameters = new HashSet<>(Arrays.asList(parameter));
         } else {
             this.parameters.add(parameter);
         }

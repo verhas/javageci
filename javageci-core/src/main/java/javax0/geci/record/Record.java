@@ -308,21 +308,19 @@ public class Record extends AbstractFilteredFieldsGenerator {
 
     //<editor-fold id="configBuilder">
     private final Config config = new Config();
-
     public static Record.Builder builder() {
         return new Record().new Builder();
     }
 
-    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+    private static final java.util.Set<String> implementedKeys = new java.util.HashSet<>(java.util.Arrays.asList(
         "filter",
         "id"
-    );
+    ));
 
     @Override
     public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
-
     public class Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder filter(String filter) {
             config.filter = filter;
@@ -333,8 +331,7 @@ public class Record extends AbstractFilteredFieldsGenerator {
             return Record.this;
         }
     }
-
-    private Config localConfig(CompoundParams params) {
+    private Config localConfig(CompoundParams params){
         final var local = new Config();
         local.filter = params.get("filter", config.filter);
         return local;

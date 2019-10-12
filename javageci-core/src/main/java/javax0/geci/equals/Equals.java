@@ -330,7 +330,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         return new Equals().new Builder();
     }
 
-    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+    private static final java.util.Set<String> implementedKeys = new java.util.HashSet<>(java.util.Arrays.asList(
         "filter",
         "hashFilter",
         "notNull",
@@ -338,7 +338,7 @@ public class Equals extends AbstractFilteredFieldsGenerator {
         "useObjects",
         "useSuper",
         "id"
-    );
+    ));
 
     @Override
     public java.util.Set<String> implementedKeys() {

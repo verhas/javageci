@@ -235,7 +235,7 @@ public class Repeated extends AbstractJavaGenerator {
         return new Repeated().new Builder();
     }
 
-    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+    private static final java.util.Set<String> implementedKeys = new java.util.HashSet<>(java.util.Arrays.asList(
         "end",
         "matchLine",
         "start",
@@ -243,7 +243,7 @@ public class Repeated extends AbstractJavaGenerator {
         "templateStart",
         "values",
         "id"
-    );
+    ));
 
     @Override
     public java.util.Set<String> implementedKeys() {

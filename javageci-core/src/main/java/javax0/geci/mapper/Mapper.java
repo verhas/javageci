@@ -180,11 +180,11 @@ public class Mapper extends AbstractJavaGenerator {
         return new Mapper().new Builder();
     }
 
-    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+    private static final java.util.Set<String> implementedKeys = new java.util.HashSet<>(java.util.Arrays.asList(
         "factory",
         "filter",
         "id"
-    );
+    ));
 
     @Override
     public java.util.Set<String> implementedKeys() {

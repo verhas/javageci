@@ -107,13 +107,13 @@ public class ConfigBuilder extends AbstractJavaGenerator {
     }
 
     private void generateConfigKeySet(Segment segment, List<Field> fields) {
-        segment.write_r("private static final java.util.Set<String> implementedKeys = java.util.Set.of(");
+        segment.write_r("private static final java.util.Set<String> implementedKeys = new java.util.HashSet<>(java.util.Arrays.asList(");
         fields.forEach(field -> {
             final var name = field.getName();
             segment.write("\"%s\",", name);
         });
         segment.write("\"id\"")
-                .write_l(");")
+                .write_l("));")
                 .newline();
         segment.write("@Override")
                 .write_r("public java.util.Set<String> implementedKeys() {")
@@ -246,7 +246,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         return new ConfigBuilder().new Builder();
     }
 
-    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+    private static final java.util.Set<String> implementedKeys = new java.util.HashSet<>(java.util.Arrays.asList(
         "buildMethod",
         "builderFactoryMethod",
         "builderName",
@@ -256,7 +256,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         "generateImplementedKeys",
         "localConfigMethod",
         "id"
-    );
+    ));
 
     @Override
     public java.util.Set<String> implementedKeys() {

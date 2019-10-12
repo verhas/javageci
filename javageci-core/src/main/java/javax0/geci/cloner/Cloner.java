@@ -229,7 +229,7 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         return new Cloner().new Builder();
     }
 
-    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+    private static final java.util.Set<String> implementedKeys = new java.util.HashSet<>(java.util.Arrays.asList(
         "cloneMethod",
         "cloneMethodProtection",
         "cloneWith",
@@ -239,7 +239,7 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         "filter",
         "superCopyMethod",
         "id"
-    );
+    ));
 
     @Override
     public java.util.Set<String> implementedKeys() {

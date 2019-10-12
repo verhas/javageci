@@ -125,11 +125,11 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
         return new AnnotationBuilder().new Builder();
     }
 
-    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+    private static final java.util.Set<String> implementedKeys = new java.util.HashSet<>(java.util.Arrays.asList(
         "in",
         "set",
         "id"
-    );
+    ));
 
     @Override
     public java.util.Set<String> implementedKeys() {

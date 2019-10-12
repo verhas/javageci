@@ -9,6 +9,8 @@ import javax0.geci.tools.GeciReflectionTools;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -41,8 +43,7 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
         return config.filter;
     }
 
-    private static final Set<String> accessModifiers =
-            Set.of("public", "private", "protected", "package");
+    private static final Set<String> accessModifiers = new HashSet<>(Arrays.asList("public", "private", "protected", "package"));
 
     protected void writeGetter(Field field, String name, String getterName,
                                String type, String access, Segment segment) {
@@ -107,7 +108,7 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
         return new AbstractAccessor().new Builder();
     }
 
-    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+    private static final java.util.Set<String> implementedKeys = new java.util.HashSet<>(java.util.Arrays.asList(
         "access",
         "filter",
         "getter",
@@ -115,7 +116,7 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
         "only",
         "setter",
         "id"
-    );
+    ));
 
     @Override
     public java.util.Set<String> implementedKeys() {

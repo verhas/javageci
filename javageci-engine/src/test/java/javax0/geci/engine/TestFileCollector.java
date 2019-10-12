@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,7 +20,7 @@ public class TestFileCollector {
     void collectAllFiles() {
         final Map<Source.Set, javax0.geci.api.DirectoryLocator> sources = Map.of(set(),new DirectoryLocator(exists(),new String[]{"src/test/java/javax0/geci/engine"}));
         var collector = new FileCollector(sources);
-        collector.collect(null,null, Set.of());
+        collector.collect(null,null, Collections.emptySet());
         assertEquals(4, collector.getSources().size());
         for( final var source : collector.getSources() ){
             if( source.getKlassName().endsWith("TestFileCollector"))

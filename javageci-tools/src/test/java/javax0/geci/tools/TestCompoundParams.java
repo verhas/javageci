@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -135,8 +136,8 @@ public class TestCompoundParams {
             "c", "3")
         );
 
-        Assertions.assertThrows(GeciException.class, () -> sut.setConstraints(source, mnemonic, Set.of("a", "c", "e")));
-        Assertions.assertDoesNotThrow(() -> sut.setConstraints(source, mnemonic, Set.of("a", "b", "c", "d", "e")));
+        Assertions.assertThrows(GeciException.class, () -> sut.setConstraints(source, mnemonic, new HashSet<>(Arrays.asList("a", "c", "e"))));
+        Assertions.assertDoesNotThrow(() -> sut.setConstraints(source, mnemonic, new HashSet<>(Arrays.asList("a", "b", "c", "d", "e"))));
     }
 
     private static class TestSource extends AbstractTestSource {

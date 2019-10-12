@@ -405,7 +405,7 @@ public class Builder extends AbstractFilteredFieldsGenerator {
         return new Builder().new ConfBuilder();
     }
 
-    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+    private static final java.util.Set<String> implementedKeys = new java.util.HashSet<>(java.util.Arrays.asList(
         "aggregatorMethod",
         "argumentVariable",
         "buildMethod",
@@ -416,7 +416,7 @@ public class Builder extends AbstractFilteredFieldsGenerator {
         "filter",
         "setterPrefix",
         "id"
-    );
+    ));
 
     @Override
     public java.util.Set<String> implementedKeys() {

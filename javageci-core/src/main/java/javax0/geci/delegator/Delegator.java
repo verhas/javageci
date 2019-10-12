@@ -129,11 +129,11 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
         return new Delegator().new Builder();
     }
 
-    private static final java.util.Set<String> implementedKeys = java.util.Set.of(
+    private static final java.util.Set<String> implementedKeys = new java.util.HashSet<>(java.util.Arrays.asList(
         "filter",
         "methods",
         "id"
-    );
+    ));
 
     @Override
     public java.util.Set<String> implementedKeys() {
