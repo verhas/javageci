@@ -371,7 +371,9 @@ public class Source implements javax0.geci.api.Source {
     private void mergeSegment(Segment segment, SegmentDescriptor segmentLocation) {
         if (segmentLocation.startLine < segmentLocation.endLine
                 || segment.lines.size() > 0) {
-            lines.subList(segmentLocation.startLine, segmentLocation.endLine).clear();
+            if (segmentLocation.startLine < segmentLocation.endLine) {
+                lines.subList(segmentLocation.startLine, segmentLocation.endLine).clear();
+            }
             lines.addAll(segmentLocation.startLine, segment.postface);
             lines.addAll(segmentLocation.startLine, segment.lines);
             lines.addAll(segmentLocation.startLine, segment.preface);

@@ -172,6 +172,10 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
             this.tabs = tabs;
         }
 
+        @Override
+        public int headerLength(){
+            return segmentDefault ? 0 : 1;
+        }
 
         @Override
         public boolean isSegmentStart() {
