@@ -246,7 +246,8 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
 
     @Override
     public String get(String key) {
-        return Objects.requireNonNullElse(get0(key), "");
+        final var value = get0(key);
+        return value == null ? "" : value;
     }
 
 

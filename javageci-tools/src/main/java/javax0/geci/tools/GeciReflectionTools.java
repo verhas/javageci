@@ -38,7 +38,7 @@ public class GeciReflectionTools {
     public static final int PACKAGE = 0x00010000;
     private static final Selector inheritedField = Selector.compile("!static & !private");
     private static final Selector inheritedFieldDifferentPackage = Selector.compile("!static & !private & !package");
-    private static final Map<String, Class<?>> PRIMITIVES = Map.of(
+    private static final Map<String, Class<?>> PRIMITIVES = JDK8Tools.asMap(
         "byte", byte.class,
         "char", char.class,
         "short", short.class,

@@ -1,5 +1,6 @@
 package javax0.geci.engine;
 
+import javax0.geci.tools.JDK8Tools;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ public class TestSource {
 
     @Test
     public void testSource() throws IOException {
-        final var collector = new FileCollector(Map.of());
+        final var collector = new FileCollector(JDK8Tools.asMap());
         var sut = new Source(collector, "ddd", Paths.get("xyz.java"));
         sut.inMemory = true;
         sut.lines.addAll(Arrays.asList(

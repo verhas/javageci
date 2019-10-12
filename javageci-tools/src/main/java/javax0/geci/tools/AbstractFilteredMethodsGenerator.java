@@ -59,7 +59,7 @@ public abstract class AbstractFilteredMethodsGenerator extends AbstractMethodsGe
     @Override
     protected final void processMethodHook(Source source, Class<?> klass, CompoundParams global, Method[] methods)
         throws Exception {
-        processSelectedMethodHook(source, klass, global, this.methods.toArray(Method[]::new));
+        processSelectedMethodHook(source, klass, global, this.methods.toArray(new Method[this.methods.size()]));
     }
 
     /**
