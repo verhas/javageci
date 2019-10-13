@@ -7,6 +7,9 @@ import javax0.geci.engine.RegexBasedSegmentSplitHelper;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static javax0.geci.tools.JDK8Tools.stripLeading;
+import static javax0.geci.tools.JDK8Tools.stripTrailing;
+
 public abstract class AbstractXMLSegmentSplitHelper extends RegexBasedSegmentSplitHelper {
     public AbstractXMLSegmentSplitHelper(Pattern startPattern, Pattern endPattern, Pattern defaultPattern) {
         super(startPattern, endPattern, defaultPattern);
@@ -49,7 +52,7 @@ public abstract class AbstractXMLSegmentSplitHelper extends RegexBasedSegmentSpl
             int j;
             for (j = i; j < lines.size(); j++) {
                 sb.append(stripContinuationLine(lines.get(j)));
-                if (lines.get(j).stripTrailing().endsWith("-->")) {
+                if (stripTrailing(lines.get(j)).endsWith("-->")) {
                     break;
                 }
             }
@@ -60,7 +63,7 @@ public abstract class AbstractXMLSegmentSplitHelper extends RegexBasedSegmentSpl
     }
 
     protected String stripLine(String line) {
-        return line.stripLeading();
+        return stripLeading(line);
     }
 
     protected String stripContinuationLine(String line) {

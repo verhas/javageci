@@ -95,6 +95,14 @@ public class JDK8Tools {
         return pn;
     }
 
+    public static String stripLeading(final String s){
+        return s.replaceAll("^\\s*","");
+    }
+
+    public static String stripTrailing(final String s){
+        return s.replaceAll("\\s*$","");
+    }
+
     private static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
     private static final int DEFAULT_BUFFER_SIZE = 8192;
 

@@ -84,7 +84,7 @@ public class SnippetAppender extends AbstractSnippeter {
         for (final var pattern : namePatterns) {
             final var thereWereSomeSnippets = new AtomicBoolean(false);
             snippets.names().stream()
-                .filter(pattern.asMatchPredicate())
+                .filter(s -> pattern.matcher(s).matches())
                 .sorted(String::compareTo)
                 .map(name -> snippets.get(segmentName, name))
                 .forEach(snip -> {

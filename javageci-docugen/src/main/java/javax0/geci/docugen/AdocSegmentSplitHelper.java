@@ -1,9 +1,12 @@
 package javax0.geci.docugen;
 
 import javax0.geci.api.SegmentSplitHelper;
+import javax0.geci.tools.JDK8Tools;
 
 import java.util.List;
 import java.util.regex.Pattern;
+
+import static javax0.geci.tools.JDK8Tools.stripLeading;
 
 /**
  * <p>A segment split helper that helps to split Asciidoc documents into
@@ -95,7 +98,7 @@ public class AdocSegmentSplitHelper extends AbstractXMLSegmentSplitHelper {
             if (SNIP.matcher(line).matches()) {
                 int j;
                 for (j = i; j < lines.size(); j++) {
-                    if (!lines.get(j).stripLeading().startsWith("//") ||
+                    if (!stripLeading(lines.get(j)).startsWith("//") ||
                         lines.get(j).matches("^\\s*//\\s*end\\s+snip")) {
                         break;
                     }

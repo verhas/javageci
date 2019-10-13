@@ -2,6 +2,8 @@ package javax0.geci.docugen;
 
 import java.util.regex.Pattern;
 
+import static javax0.geci.tools.JDK8Tools.stripLeading;
+
 public class JavaDocSegmentSplitHelper extends AbstractXMLSegmentSplitHelper {
     public JavaDocSegmentSplitHelper() {
         super(
@@ -17,7 +19,7 @@ public class JavaDocSegmentSplitHelper extends AbstractXMLSegmentSplitHelper {
     }
 
     protected String stripLine(String line) {
-        return line.stripLeading().replaceAll("^\\*\\s*", "");
+        return stripLeading(line).replaceAll("^\\*\\s*", "");
     }
 
     protected String stripContinuationLine(String line) {

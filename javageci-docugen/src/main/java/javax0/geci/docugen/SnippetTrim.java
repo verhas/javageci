@@ -9,6 +9,7 @@ import javax0.geci.api.Source;
 import java.util.ArrayList;
 
 import static javax0.geci.tools.JDK8Tools.space;
+import static javax0.geci.tools.JDK8Tools.stripLeading;
 
 @Geci("configBuilder localConfigMethod='' configurableMnemonic='trim'")
 public class SnippetTrim extends AbstractSnippeter {
@@ -51,7 +52,7 @@ public class SnippetTrim extends AbstractSnippeter {
     private int calculateTabbing(Snippet snippet) {
         var min = Integer.MAX_VALUE;
         for (final var line : snippet.lines()) {
-            final var stripped = line.stripLeading().length();
+            final var stripped = stripLeading(line).length();
             if (stripped > 0) {
                 final var spaces = line.length() - stripped;
                 if (spaces < min) {
