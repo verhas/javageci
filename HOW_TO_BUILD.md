@@ -18,6 +18,12 @@ for the latest Java (Java 11 as for now) or
 mvn -PJDK8 clean install
 ```
 
-to target Java 8. After the successful build run the shell script
-`release.sh` that collects all the files, starts the GPG signature and
-creates the ZIP file that can be uploaded to NEXUS.
+to target Java 8.
+
+You will run the build twice as the documentation will be updated during
+the process to refer to the current build and the test that updates the
+documentation fails when it needs to change the documentation source.
+
+After the successful build run the shell script `release.sh` that
+collects all the files, starts the GPG signature and creates the ZIP
+file that can be uploaded to NEXUS.
