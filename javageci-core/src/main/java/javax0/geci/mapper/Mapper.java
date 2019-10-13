@@ -6,6 +6,7 @@ import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
+import javax0.geci.tools.JDK8Tools;
 import javax0.geci.tools.reflection.Selector;
 
 import java.io.IOException;
@@ -114,7 +115,7 @@ public class Mapper extends AbstractJavaGenerator {
      * @throws IOException if the file was not found
      */
     private String getResourceString(String resource) throws IOException {
-        return new String(getClass().getResourceAsStream(resource).readAllBytes(), StandardCharsets.UTF_8)
+        return new String(JDK8Tools.readAllBytes(getClass().getResourceAsStream(resource)), StandardCharsets.UTF_8)
                 .replaceAll("\r", "");
     }
 

@@ -3,6 +3,7 @@ package javax0.geci.tools;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -37,8 +38,8 @@ public class TemplateLoader {
         try {
             final var resource = loader.getResource(template);
             if (resource != null) {
-                return Files.readString(
-                        Paths.get(fix(resource.getFile())))
+                return new String(Files.readAllBytes(
+                    Paths.get(fix(resource.getFile()))), StandardCharsets.UTF_8)
                         .replaceAll("\r\n", "\n");
             } else {
                 return "/* template '" + template + "' was not loaded */";

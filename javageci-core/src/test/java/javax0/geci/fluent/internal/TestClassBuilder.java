@@ -10,6 +10,8 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
+import static javax0.geci.tools.JDK8Tools.readAllBytes;
+
 public class TestClassBuilder {
 
     @Test
@@ -25,7 +27,7 @@ public class TestClassBuilder {
             output.write(result.getBytes(StandardCharsets.UTF_8));
         }
         var is = TestClassBuilder.class.getResourceAsStream(resourceName);
-        var expected = new String(is.readAllBytes(), StandardCharsets.UTF_8).replace("\r", "");
+        var expected = new String(readAllBytes(is), StandardCharsets.UTF_8).replace("\r", "");
         Assertions.assertEquals(expected, result);
     }
 

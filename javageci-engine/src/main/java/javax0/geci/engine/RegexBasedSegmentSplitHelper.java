@@ -104,7 +104,7 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
                     + startMatcher
                     + "\ndoes not give a second matching group. This is probably a coding error in that class.");
             }
-            attrs = new CompoundParamsBuilder(paramsDef).exclude(excludedKeys.toArray(String[]::new)).redefineId().build();
+            attrs = new CompoundParamsBuilder(paramsDef).exclude(excludedKeys.toArray(new String[excludedKeys.size()])).redefineId().build();
             final var startSpaces = getGroup(1, startMatcher);
             if (startSpaces == null) {
                 throw new IllegalArgumentException("Start pattern in "

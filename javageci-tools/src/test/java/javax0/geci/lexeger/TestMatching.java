@@ -294,7 +294,7 @@ class TestMatching {
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(5, result.end);
             Assertions.assertTrue(javaLexed.regexGroups("final").isPresent());
-            Assertions.assertTrue(javaLexed.regexGroups("nonexistent").isEmpty());
+            Assertions.assertFalse(javaLexed.regexGroups("nonexistent").isPresent());
             Assertions.assertEquals(1, javaLexed.regexGroups("final").get().groupCount());
             Assertions.assertEquals("inal", javaLexed.regexGroups("final").get().group(1));
         }

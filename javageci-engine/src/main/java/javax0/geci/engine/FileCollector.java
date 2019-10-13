@@ -228,7 +228,7 @@ class FileCollector {
             Tracer.push("Entry","File collecting started for entry [" + entry.getValue().alternatives().collect(Collectors.joining(",")) + "]");
             var processed = new AtomicBoolean(false);
             final var locator = entry.getValue();
-            locator.alternatives().takeWhile(x -> !processed.get())
+            locator.alternatives().filter(x -> !processed.get())
                 .forEach(directory -> {
                     var dir = normalized(directory);
                     try (final var tracePosition = Tracer.push("Alternative","File collecting started for alternative '" + directory + "'")) {

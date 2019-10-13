@@ -8,6 +8,7 @@ import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
+import javax0.geci.tools.JDK8Tools;
 import javax0.geci.tools.TemplateLoader;
 import javax0.geci.tools.reflection.Selector;
 
@@ -23,6 +24,8 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static javax0.geci.tools.JDK8Tools.getPackageName;
 
 @AnnotationBuilder
 @Geci("repeated values='preprocess,processField,processMethod,processClass," +
@@ -297,7 +300,7 @@ public class Templated extends AbstractJavaGenerator {
                 "SimpleName", listedClass.getSimpleName(),
                 "Name", listedClass.getName(),
                 "CanonicalName", listedClass.getCanonicalName(),
-                "Package", listedClass.getPackageName(),
+                "Package", getPackageName(listedClass),
                 "TypeName", listedClass.getTypeName(),
                 "GenericString", listedClass.toGenericString()
         );
@@ -319,7 +322,7 @@ public class Templated extends AbstractJavaGenerator {
                     "SimpleName", selectedClass.getSimpleName(),
                     "Name", selectedClass.getName(),
                     "CanonicalName", selectedClass.getCanonicalName(),
-                    "Package", selectedClass.getPackageName(),
+                    "Package", getPackageName(selectedClass),
                     "TypeName", selectedClass.getTypeName(),
                     "GenericString", selectedClass.toGenericString()
             );
@@ -328,7 +331,7 @@ public class Templated extends AbstractJavaGenerator {
                     "SimpleName", selectedClass.getSimpleName(),
                     "Name", selectedClass.getName(),
                     "CanonicalName", selectedClass.getCanonicalName(),
-                    "Package", selectedClass.getPackageName(),
+                    "Package", getPackageName(selectedClass),
                     "TypeName", selectedClass.getTypeName(),
                     "GenericString", selectedClass.toGenericString()
             );
@@ -346,7 +349,7 @@ public class Templated extends AbstractJavaGenerator {
                 "SimpleName", klass.getSimpleName(),
                 "Name", klass.getName(),
                 "CanonicalName", klass.getCanonicalName(),
-                "Package", klass.getPackageName(),
+                "Package", getPackageName(klass),
                 "TypeName", klass.getTypeName(),
                 "GenericString", klass.toGenericString()
         );
@@ -370,7 +373,7 @@ public class Templated extends AbstractJavaGenerator {
                 "classSimpleName", fieldType.getSimpleName(),
                 "className", fieldType.getName(),
                 "classCanonicalName", fieldType.getCanonicalName(),
-                "classPackage", fieldType.getPackageName(),
+                "classPackage", getPackageName(fieldType),
                 "classTypeName", fieldType.getTypeName(),
                 "classGenericString", fieldType.toGenericString()
         );
@@ -396,7 +399,7 @@ public class Templated extends AbstractJavaGenerator {
                 "SimpleName", memberClass.getSimpleName(),
                 "Name", memberClass.getName(),
                 "CanonicalName", memberClass.getCanonicalName(),
-                "Package", memberClass.getPackageName(),
+                "Package", getPackageName(memberClass),
                 "TypeName", memberClass.getTypeName(),
                 "GenericString", memberClass.toGenericString()
         );
@@ -424,7 +427,7 @@ public class Templated extends AbstractJavaGenerator {
                 "returnClassSimpleName", returnType.getSimpleName(),
                 "returnClassName", returnType.getName(),
                 "returnClassCanonicalName", returnType.getCanonicalName(),
-                "returnClassPackage", returnType.getPackageName(),
+                "returnClassPackage", getPackageName(returnType),
                 "returnClassTypeName", returnType.getTypeName(),
                 "returnClassGenericString", returnType.toGenericString()
         );
@@ -471,7 +474,7 @@ public class Templated extends AbstractJavaGenerator {
                     "ClassSimpleName", fieldType.getSimpleName(),
                     "ClassName", fieldType.getName(),
                     "ClassCanonicalName", fieldType.getCanonicalName(),
-                    "ClassPackage", fieldType.getPackageName(),
+                    "ClassPackage", getPackageName(fieldType),
                     "ClassTypeName", fieldType.getTypeName(),
                     "ClassGenericString", fieldType.toGenericString()
             );
@@ -481,7 +484,7 @@ public class Templated extends AbstractJavaGenerator {
                     "ClassSimpleName", fieldType.getSimpleName(),
                     "ClassName", fieldType.getName(),
                     "ClassCanonicalName", fieldType.getCanonicalName(),
-                    "ClassPackage", fieldType.getPackageName(),
+                    "ClassPackage", getPackageName(fieldType),
                     "ClassTypeName", fieldType.getTypeName(),
                     "ClassGenericString", fieldType.toGenericString()
             );
@@ -507,7 +510,7 @@ public class Templated extends AbstractJavaGenerator {
                     "ReturnClassSimpleName", returnType.getSimpleName(),
                     "ReturnClassName", returnType.getName(),
                     "ReturnClassCanonicalName", returnType.getCanonicalName(),
-                    "ReturnClassPackage", returnType.getPackageName(),
+                    "ReturnClassPackage", getPackageName(returnType),
                     "ReturnClassTypeName", returnType.getTypeName(),
                     "ReturnClassGenericString", returnType.toGenericString()
             );
@@ -517,7 +520,7 @@ public class Templated extends AbstractJavaGenerator {
                     "ReturnClassSimpleName", returnType.getSimpleName(),
                     "ReturnClassName", returnType.getName(),
                     "ReturnClassCanonicalName", returnType.getCanonicalName(),
-                    "ReturnClassPackage", returnType.getPackageName(),
+                    "ReturnClassPackage", getPackageName(returnType),
                     "ReturnClassTypeName", returnType.getTypeName(),
                     "ReturnClassGenericString", returnType.toGenericString()
             );
@@ -540,7 +543,7 @@ public class Templated extends AbstractJavaGenerator {
                     "SimpleName", memberClass.getSimpleName(),
                     "Name", memberClass.getName(),
                     "CanonicalName", memberClass.getCanonicalName(),
-                    "Package", memberClass.getPackageName(),
+                    "Package", getPackageName(memberClass),
                     "TypeName", memberClass.getTypeName(),
                     "GenericString", memberClass.toGenericString()
             );
@@ -549,7 +552,7 @@ public class Templated extends AbstractJavaGenerator {
                     "SimpleName", memberClass.getSimpleName(),
                     "Name", memberClass.getName(),
                     "CanonicalName", memberClass.getCanonicalName(),
-                    "Package", memberClass.getPackageName(),
+                    "Package", getPackageName(memberClass),
                     "TypeName", memberClass.getTypeName(),
                     "GenericString", memberClass.toGenericString()
             );
