@@ -1,12 +1,12 @@
 package javax0.geci.docugen;
 
 import javax0.geci.api.SegmentSplitHelper;
-import javax0.geci.tools.JDK8Tools;
+import javax0.geci.tools.JVM8Tools;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static javax0.geci.tools.JDK8Tools.stripLeading;
+import static javax0.geci.tools.JVM8Tools.stripLeading;
 
 /**
  * <p>A segment split helper that helps to split Asciidoc documents into

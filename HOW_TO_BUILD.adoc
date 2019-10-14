@@ -1,0 +1,51 @@
+= Compiling the project
+
+The project can be built for the Java 11 and also for Java 8 target. To
+create a new release edit the `version.jim` file and set the
+
+----
+{@define VERSION=A.B.C}
+----
+
+line to whatever version is to be released. If the target is Java 8 then
+the version should be `A.B.C-JVM8`. To create a release the project has
+to be built first. This is simply
+
+----
+mvn clean install
+----
+
+for the latest Java (Java 11 as for now) or
+
+----
+mvn -PJVM8 clean install
+----
+
+to target Java 8. The profile `JVM8` will include the
+`com.github.bsideup.jabel` plugin.
+
+After the successful build run the shell script `release.sh` that
+collects all the files, starts the GPG signature and creates the ZIP
+file that can be uploaded to NEXUS.
+
+Note: It is/was NOT possible to use a maven property to define the
+version of the build and to automatically adjust the version to have the
+postfix `-JVM8` because the multi-module maven project modules reference
+the parent project version and that is automatized using Jamal. The
+`genpom.xml` POM is executed by Maven before the build. When the build
+starts the versions are already there in the different `pom.xml` files.
+
+There is a test that checks that the version number in the POM files as
+well as in the `version.jim` file has or does not have the `-JVM8`
+postfix. If you compile for Java 8 and you do NOT have the postfix then
+the test will fail. If you compile for a version that is later than Java
+8 and there is the `-JVM8` postfix at the end of the version string then
+the test will fail. The version must be consistent with the compilation
+target.
+
+The tests also work following the Java::Geci philosophy: when the
+version is not appropriate then they remove or add the postfix. They
+could also start the `mvn -f genpom.xml clean` command, but that is
+something they do not. It is up to you execute the command or to revert
+the `version.jim` file and start a build for a different target in case
+it was not the version that was wrong but the build command line.

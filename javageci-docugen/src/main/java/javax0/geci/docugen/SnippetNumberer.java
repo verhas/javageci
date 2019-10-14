@@ -7,7 +7,7 @@ import javax0.geci.api.Source;
 
 import java.util.ArrayList;
 
-import static javax0.geci.tools.JDK8Tools.space;
+import static javax0.geci.tools.JVM8Tools.space;
 
 /** // snippet SnippetNumberer_doc
  *

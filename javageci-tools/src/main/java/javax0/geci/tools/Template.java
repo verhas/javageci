@@ -13,7 +13,7 @@ import java.util.Map;
  *           append="snippets='Template_test_.*'"
  *           regex="escape='~'
  *           replace='|Assertions.assertEquals~((\".*?\"),~s*sut~.resolve~((\".*?\")~)~);|<td>$2</td><td>$1</td></tr>|'
- *           replace='|final~s+var~s+sut~s+=~s+new~s+Template~(JDK8Tools.asMap~((.*?)~)~);|<tr><td>$1</td>|'"
+ *           replace='|final~s+var~s+sut~s+=~s+new~s+Template~(JVM8Tools.asMap~((.*?)~)~);|<tr><td>$1</td>|'"
  *           -->
  *         <tr><td>"a","b", "huhh","spooky"</td>
  *             <td>"this is a {{huhh}} {{a}}a{{a}}oon"</td><td>"this is a spooky baboon"</td></tr>

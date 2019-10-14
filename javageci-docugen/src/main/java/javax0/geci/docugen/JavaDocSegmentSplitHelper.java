@@ -2,7 +2,7 @@ package javax0.geci.docugen;
 
 import java.util.regex.Pattern;
 
-import static javax0.geci.tools.JDK8Tools.stripLeading;
+import static javax0.geci.tools.JVM8Tools.stripLeading;
 
 public class JavaDocSegmentSplitHelper extends AbstractXMLSegmentSplitHelper {
     public JavaDocSegmentSplitHelper() {

@@ -3,13 +3,13 @@ package javax0.geci.log;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class LoggerJDK8 implements LoggerJDK {
+class LoggerJVM8 implements LoggerJDK {
 
     static LoggerJDK factory(Class<?> forClass){
-        return new LoggerJDK8(forClass);
+        return new LoggerJVM8(forClass);
     }
 
-    LoggerJDK8(Class<?> forClass) {
+    LoggerJVM8(Class<?> forClass) {
         this.LOGGER = Logger.getLogger(forClass.getName());
     }
     private final Logger LOGGER;

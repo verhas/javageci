@@ -16,7 +16,7 @@ public class Logger implements javax0.geci.api.Logger {
         }
         if (_factory == null) {
             try {
-                final Method m = Class.forName("javax0.geci.log.LoggerJDK8").getDeclaredMethod("factory", Class.class);
+                final Method m = Class.forName("javax0.geci.log.LoggerJVM8").getDeclaredMethod("factory", Class.class);
                 _factory = convert(m);
             } catch (ClassNotFoundException | NoSuchMethodException e) {
             }

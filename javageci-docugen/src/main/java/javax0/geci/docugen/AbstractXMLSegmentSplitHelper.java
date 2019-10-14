@@ -7,8 +7,8 @@ import javax0.geci.engine.RegexBasedSegmentSplitHelper;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static javax0.geci.tools.JDK8Tools.stripLeading;
-import static javax0.geci.tools.JDK8Tools.stripTrailing;
+import static javax0.geci.tools.JVM8Tools.stripLeading;
+import static javax0.geci.tools.JVM8Tools.stripTrailing;
 
 public abstract class AbstractXMLSegmentSplitHelper extends RegexBasedSegmentSplitHelper {
     public AbstractXMLSegmentSplitHelper(Pattern startPattern, Pattern endPattern, Pattern defaultPattern) {

@@ -10,7 +10,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
-import static javax0.geci.tools.JDK8Tools.readAllBytes;
+import static javax0.geci.tools.JVM8Tools.readAllBytes;
 
 public class TestClassBuilder {
 

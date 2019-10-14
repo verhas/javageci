@@ -3,7 +3,7 @@ package javax0.geci.lexeger.matchers;
 import javax0.geci.javacomparator.LexicalElement;
 import javax0.geci.lexeger.JavaLexed;
 import javax0.geci.lexeger.MatchResult;
-import javax0.geci.tools.JDK8Tools;
+import javax0.geci.tools.JVM8Tools;
 
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -15,14 +15,14 @@ public class ModifierMatcher extends LexMatcher {
     private final int modifiers;
 
     static {
-        modifierMap.putAll(JDK8Tools.asMap(
+        modifierMap.putAll(JVM8Tools.asMap(
             "public", Modifier.PUBLIC,
             "private", Modifier.PRIVATE,
             "protected", Modifier.PROTECTED,
             "static", Modifier.STATIC,
             "final", Modifier.FINAL,
             "synchronized", Modifier.SYNCHRONIZED));
-        modifierMap.putAll(JDK8Tools.asMap(
+        modifierMap.putAll(JVM8Tools.asMap(
             "volatile", Modifier.VOLATILE,
             "transient", Modifier.TRANSIENT,
             "native", Modifier.NATIVE,

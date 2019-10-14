@@ -10,6 +10,7 @@
     {github|verhas|javageci}
     {properties|
         {property :project.build.sourceEncoding:UTF-8}
+        {property :profile:default}
     }
     {build|{pluginManagement|{plugins|
                 {plugin|
@@ -88,6 +89,12 @@
                 }
             }
         }
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     }
     {dependencyManagement|
         {dependencies|
@@ -100,8 +107,10 @@
 
     <profiles>
         <profile>
-            <id>JDK8</id>
-
+            <id>JVM8</id>
+                {properties|
+                    {property :profile:JVM8}
+                }
             <build>
                 <plugins>
                     <plugin>

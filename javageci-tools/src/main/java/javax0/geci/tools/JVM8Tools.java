@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Various static methods that implement functionalities that are available only in JDK8+ and thus cannot be used when
- * targeting JDK8 code.
+ * Various static methods that implement functionalities that are available only in JVM8+ and thus cannot be used when
+ * targeting JVM8 code.
  */
-public class JDK8Tools {
+public class JVM8Tools {
 
     public static String space(int n){
         final StringBuilder sb = new StringBuilder(/*20 spaces*/"                    ");

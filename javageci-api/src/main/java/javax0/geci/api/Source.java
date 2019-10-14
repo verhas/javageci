@@ -225,7 +225,7 @@ public interface Source {
      * When calculating the class name the directory structure is used and the name of the source file
      * chopping off the {@code .java} or other extension.
      * <p>
-     * Note: The seemingly weird decision to use 'K' in the name of the method provides some consistency. The method
+     * Note: The seemingly weird decision to use 'K' in the name of the method provides some javax0.geci.consistency. The method
      * {@link #getKlass()} cannot be named {@code getClass()} because that would override the method of the same name
      * in the class {@code Object}. Based on that all the methods that are returning the name or simple name of the
      * "klass" uses the letter 'K' even though these two methods could be named with the letter 'C'.

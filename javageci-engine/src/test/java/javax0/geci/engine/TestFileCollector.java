@@ -1,7 +1,7 @@
 package javax0.geci.engine;
 
 import javax0.geci.api.Source;
-import javax0.geci.tools.JDK8Tools;
+import javax0.geci.tools.JVM8Tools;
 import javax0.geci.util.DirectoryLocator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +19,7 @@ public class TestFileCollector {
     @Test
     @DisplayName("Collect the file in this test directory and find the class for it.")
     void collectAllFiles() {
-        final Map<Source.Set, javax0.geci.api.DirectoryLocator> sources = JDK8Tools.asMap(set(),new DirectoryLocator(exists(),new String[]{"src/test/java/javax0/geci/engine"}));
+        final Map<Source.Set, javax0.geci.api.DirectoryLocator> sources = JVM8Tools.asMap(set(),new DirectoryLocator(exists(),new String[]{"src/test/java/javax0/geci/engine"}));
         var collector = new FileCollector(sources);
         collector.collect(null,null, Collections.emptySet());
         assertEquals(4, collector.getSources().size());

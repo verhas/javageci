@@ -3,7 +3,7 @@ package javax0.geci.docugen;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Source;
 import javax0.geci.tools.CompoundParams;
-import javax0.geci.tools.JDK8Tools;
+import javax0.geci.tools.JVM8Tools;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ public class SnippetStore {
     private static final String EPSILON = "epsilon";
 
     SnippetStore() {
-        originals.put(EPSILON, new Snippet(EPSILON, new CompoundParams(EPSILON, JDK8Tools.asMap()), Arrays.asList()));
+        originals.put(EPSILON, new Snippet(EPSILON, new CompoundParams(EPSILON, JVM8Tools.asMap()), Arrays.asList()));
     }
 
     //snippet SnippetStore_name

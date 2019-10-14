@@ -12,7 +12,7 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-import static javax0.geci.tools.JDK8Tools.space;
+import static javax0.geci.tools.JVM8Tools.space;
 
 /**
  * <p>Tracing the execution of code generation.</p>

@@ -15,8 +15,8 @@ public class TestCompoundParams {
     @Test
     @DisplayName("Throws IllegalArgumentException when the constructor argument is illegal")
     void testBadConstructorUse(){
-        Assertions.assertThrows(IllegalArgumentException.class , () -> new CompoundParams("theId", JDK8Tools.asMap("a", Arrays.asList(1,2,3))));
-        Assertions.assertThrows(IllegalArgumentException.class , () -> new CompoundParams("theId", JDK8Tools.asMap("a", 3)));
+        Assertions.assertThrows(IllegalArgumentException.class , () -> new CompoundParams("theId", JVM8Tools.asMap("a", Arrays.asList(1,2,3))));
+        Assertions.assertThrows(IllegalArgumentException.class , () -> new CompoundParams("theId", JVM8Tools.asMap("a", 3)));
     }
 
     @Test
@@ -32,7 +32,7 @@ public class TestCompoundParams {
     @Test
     @DisplayName("It proxies a normal map")
     void testFromMap() {
-        final var sut = new CompoundParams("theId", JDK8Tools.asMap("a", "1", "b", "2"));
+        final var sut = new CompoundParams("theId", JVM8Tools.asMap("a", "1", "b", "2"));
         Assertions.assertEquals("theId", sut.get("id"));
         Assertions.assertEquals("1", sut.get("a"));
         Assertions.assertEquals("2", sut.get("b"));
@@ -42,7 +42,7 @@ public class TestCompoundParams {
     @Test
     @DisplayName("KeySet from a normal map")
     void testKeySetFromMap() {
-        final var sut = new CompoundParams("theId", JDK8Tools.asMap("a", "1", "b", "2"));
+        final var sut = new CompoundParams("theId", JVM8Tools.asMap("a", "1", "b", "2"));
         Assertions.assertEquals("a,b",
                 String.join(",", sut.keySet()));
     }
@@ -50,7 +50,7 @@ public class TestCompoundParams {
     @Test
     @DisplayName("It proxies multiple maps and earlier hides the later")
     void testFromMapMultiple() {
-        final var sut = new CompoundParams("theId", JDK8Tools.asMap("a", "1", "b", "2"), JDK8Tools.asMap("a", "4", "b", "4", "c", "5"));
+        final var sut = new CompoundParams("theId", JVM8Tools.asMap("a", "1", "b", "2"), JVM8Tools.asMap("a", "4", "b", "4", "c", "5"));
         Assertions.assertEquals("theId", sut.get("id"));
         Assertions.assertEquals("1", sut.get("a"));
         Assertions.assertEquals("2", sut.get("b"));
@@ -61,7 +61,7 @@ public class TestCompoundParams {
     @Test
     @DisplayName("KeySet from multiple maps")
     void testKeySetFromMapMultiple() {
-        final var sut = new CompoundParams("theId", JDK8Tools.asMap("a", "1", "b", "2"), JDK8Tools.asMap("a", "4", "b", "4", "c", "5"));
+        final var sut = new CompoundParams("theId", JVM8Tools.asMap("a", "1", "b", "2"), JVM8Tools.asMap("a", "4", "b", "4", "c", "5"));
         Assertions.assertEquals("a,b,c",
                 String.join(",", sut.keySet()));
     }
@@ -71,9 +71,9 @@ public class TestCompoundParams {
     void testFromMapMultipleCompound() {
         final var sut = new CompoundParams(
                 new CompoundParams("theId",
-                        JDK8Tools.asMap("a", "1", "b", "2")),
+                        JVM8Tools.asMap("a", "1", "b", "2")),
                 new CompoundParams("otherID-no one cares",
-                        JDK8Tools.asMap("a", "4", "b", "4", "c", "5"))
+                        JVM8Tools.asMap("a", "4", "b", "4", "c", "5"))
         );
         Assertions.assertEquals("theId", sut.get("id"));
         Assertions.assertEquals("1", sut.get("a"));
@@ -87,9 +87,9 @@ public class TestCompoundParams {
     void testKeySetFromMapMultipleCompound() {
         final var sut = new CompoundParams(
                 new CompoundParams("theId",
-                        JDK8Tools.asMap("a", "1", "b", "2")),
+                        JVM8Tools.asMap("a", "1", "b", "2")),
                 new CompoundParams("otherID-no one cares",
-                        JDK8Tools.asMap("a", "4", "b", "4", "c", "5"))
+                        JVM8Tools.asMap("a", "4", "b", "4", "c", "5"))
         );
         Assertions.assertEquals("a,b,c",
                 String.join(",", sut.keySet()));
@@ -101,9 +101,9 @@ public class TestCompoundParams {
         final var sut = new CompoundParams(
                 null,
                 new CompoundParams("theId",
-                        JDK8Tools.asMap("a", "1", "b", "2")),
+                        JVM8Tools.asMap("a", "1", "b", "2")),
                 new CompoundParams("otherID-no one cares",
-                        JDK8Tools.asMap("a", "4", "b", "4", "c", "5"))
+                        JVM8Tools.asMap("a", "4", "b", "4", "c", "5"))
         );
         Assertions.assertEquals("theId", sut.get("id"));
         Assertions.assertEquals("1", sut.get("a"));
@@ -117,9 +117,9 @@ public class TestCompoundParams {
     void testKeySetFromMapMultipleCompoundWithNull() {
         final var sut = new CompoundParams(
                 new CompoundParams("theId",
-                        JDK8Tools.asMap("a", "1", "b", "2")),
+                        JVM8Tools.asMap("a", "1", "b", "2")),
                 new CompoundParams("otherID-no one cares",
-                        JDK8Tools.asMap("a", "4", "b", "4", "c", "5"))
+                        JVM8Tools.asMap("a", "4", "b", "4", "c", "5"))
         );
         Assertions.assertEquals("a,b,c",
                 String.join(",", sut.keySet()));
@@ -130,7 +130,7 @@ public class TestCompoundParams {
     void testConstrainingKeys() {
         final var source = new TestSource();
         final var mnemonic = "TestGen";
-        final var sut = new CompoundParams("theId", JDK8Tools.asMap(
+        final var sut = new CompoundParams("theId", JVM8Tools.asMap(
             "a", "1",
             "b", "2",
             "c", "3")

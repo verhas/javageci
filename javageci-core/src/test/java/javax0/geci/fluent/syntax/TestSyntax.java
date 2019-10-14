@@ -2,7 +2,7 @@ package javax0.geci.fluent.syntax;
 
 import javax0.geci.api.GeciException;
 import javax0.geci.fluent.FluentBuilder;
-import javax0.geci.tools.JDK8Tools;
+import javax0.geci.tools.JVM8Tools;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -119,7 +119,7 @@ public class TestSyntax {
     @Test
     @DisplayName("chained modifiers are okay and are optimized")
     void syntaxChainedModifier() {
-        final Map<String,String> modifierPairs = JDK8Tools.asMap(
+        final Map<String,String> modifierPairs = JVM8Tools.asMap(
                 "**", "*",
                 "*?", "*",
                 "*+", "*",

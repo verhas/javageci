@@ -1,6 +1,6 @@
 package javax0.geci.tools.reflection;
 
-import javax0.geci.tools.JDK8Tools;
+import javax0.geci.tools.JVM8Tools;
 import javax0.geci.tools.MethodTool;
 
 import java.lang.reflect.AnnotatedElement;
@@ -96,7 +96,7 @@ public class Selector<T> {
         converter("enclosingClass", m -> only(m, Class.class) ? ((Class) m).getEnclosingClass() : null);
         converter("enclosingMethod", m -> only(m, Class.class) ? ((Class) m).getEnclosingMethod() : null);
         converter("componentType", m -> only(m, Class.class) ? ((Class) m).getComponentType() : null);
-        converter("nestHost", m -> only(m, Class.class) ? JDK8Tools.getNestHost((Class) m) : null);
+        converter("nestHost", m -> only(m, Class.class) ? JVM8Tools.getNestHost((Class) m) : null);
     }
 
     /**

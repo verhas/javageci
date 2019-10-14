@@ -2,7 +2,7 @@
 {project |jar|
     {GAV ::javageci-api:{VERSION}}
     {parent :javageci-parent}
-    {name|geci api}
+    {name|javageci api}
     {description|Javageci library API interfaces}
 
     {@include ../plugins.jim}

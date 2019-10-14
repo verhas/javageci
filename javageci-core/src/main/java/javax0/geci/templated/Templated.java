@@ -8,7 +8,7 @@ import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
-import javax0.geci.tools.JDK8Tools;
+import javax0.geci.tools.JVM8Tools;
 import javax0.geci.tools.TemplateLoader;
 import javax0.geci.tools.reflection.Selector;
 
@@ -25,7 +25,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static javax0.geci.tools.JDK8Tools.getPackageName;
+import static javax0.geci.tools.JVM8Tools.getPackageName;
 
 @AnnotationBuilder
 @Geci("repeated values='preprocess,processField,processMethod,processClass," +
