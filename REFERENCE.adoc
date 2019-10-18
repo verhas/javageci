@@ -551,7 +551,7 @@ should be used by the generator
 === Accessing the source in the generator
 
 There are many things that you can reach in your generator code through
-the `source` object passed as argument to the method `process()` of the
+the `source` object passed as an argument to the method `process()` of the
 generator you write.
 
 The first that comes in front of us is `getAbsoluteFile()` that will
@@ -559,7 +559,7 @@ return the absolute file name as a string of the source file that the
 generator is actually working on. This is rarely needed because the
 content of the file is available in other ways. It may, however, be
 needed if the generator limits itself to work only on some specific file
-(e.g.: it ready only files with the extension `.xml`), or when the file
+(e.g.: it reads only files with the extension `.xml`), or when the file
 is binary and cannot be accessed line by line.
 
 If the generator needs to read the text in the file then the method
@@ -570,10 +570,15 @@ operating system line ending. The different generators that run in the
 same process one after the other will also share the content. There is
 no need to read the content of the file again and again.
 
+It is also important that the `source` object can be used to modify the
+content of the file, but only through the declared and guaranteed API.
+The generator code should not try to replace the lines returned by the
+method `getLines()`.
+
 === Getting segments to write code into
 
-The source file needing modification may contain named segments. These
-are the lines that are between
+When the generator wants to modify a source file it should use the segments.
+The source file may contain named segments. These are the lines that are between
 
 ----
 <editor-fold id="segment name">
@@ -650,6 +655,29 @@ already optionally existing content of the segment.
 
 (The call `init(id)` is essentially the same as `open(id)`. It just
 happens to be there to emphasize the intent to initialize the segment.)
+
+=== Lexical Modification
+
+Some generators may want to modify the part of the source code that is
+manually maintained. This is a very special way. In this case there is no
+clear separation between the generated and the manual code. The generators
+should only do modifications that take this fact into account.
+
+An example is the record generator. The record generator mimics the behaviour
+of a Java record, which is not available by the time of writing. To mimic a
+Java record a class should have only `final` fields, the class has to be `final`,
+should not extend any other class (except the implicit Object) and should have
+a constructor that initializes the `final` fields and has getters for these fields.
+
+To do this the programmer can insert the fields into the class, but they
+can not be `final` when the programmer edits the file, because the constructor
+does not know about this field yet. The constructor will be modified only
+later to initialize the new field or fields. After the code generation the
+manual code can be altered so that the field becomes `final`.
+
+To ease the life of the programmer the Record generator inserts the `final`
+keywords where they are needed during the code generation when it also generates/modifies
+the constructor.
 
 === Creating, opening new source object
 

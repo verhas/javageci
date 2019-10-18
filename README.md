@@ -123,6 +123,7 @@ For further information visit the following documentations
 * [Tutorials](TUTORIAL.md)
 * [Reference documentation](REFERENCE.md)
 * [Frequently Asked Questions](FAQ.md)
+* [Explanation of the name and the logo](NAME.md)
 * [How to guides](HOWTO.md)
 * [Explanations](EXPLANATION.md)
 * [Module Structure of Java::Geci](MODULES.md)
