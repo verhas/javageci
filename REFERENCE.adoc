@@ -679,6 +679,19 @@ To ease the life of the programmer the Record generator inserts the `final`
 keywords where they are needed during the code generation when it also generates/modifies
 the constructor.
 
+To do that the generator creates a `JavaLexed` object using the source object.
+This `JavaLexed` object contains the java source code lexical elements and provides
+methods to search and modify the list of the lexical elements. At the creation of the
+object it "borrows" the source code from the source object and when it finishes
+and the closes (a `JavaLexed` object is `AutoCloseable`) then it returns the source code
+to the source object. If the list of the lexical elements was changed then the change
+will be reflected in the source strings.
+
+A generator should never modify the source writing into segments while a `JavaLexed`
+object is open.
+
+
+
 === Creating, opening new source object
 
 The generator can call `newSource(fileName)` on a `source` object. This
