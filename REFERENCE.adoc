@@ -690,7 +690,64 @@ will be reflected in the source strings.
 A generator should never modify the source writing into segments while a `JavaLexed`
 object is open.
 
+The recommended pattern to use the `JavaLexed` object is to use it in a try-with-resources
+block:
 
+[source,java]
+----
+try (final var javaLexed = new JavaLexed(source)) {
+    ... analyze the lexical element list and possibly modify it ...
+        }
+----
+
+This is the structure you can see in the Record generator. We will use that generator
+as a sample for the explanation how to use this class. The generator
+defines a selector expression
+
+[source,java]
+----
+private static final Selector<Class<?>> finalClass = Selector.compile("!final");
+----
+
+
+Using this selector expression the code decides whether the class it generated code
+into is final or not:
+
+
+
+[source,java]
+----
+    private void makeClassFinal(Class<?> klass, JavaLexed javaLexed) {
+        if (finalClass.match(klass)) {
+----
+
+This `if` statement is executed when the class is not `final`. The generator, in
+this case, modifies the class to be final, because that is a requirement by the
+JEP defining the "Record" functionality for Java. In case the developer forgot to
+make the class final this can be detected and this also can be changed.
+
+When the class is not final the `javaLexed` object is used to find the declaration
+of the class. This is used utilizing the `find()` and `fromStart()` methods of the
+`JavaLexed` class. This will find the lexemes `class` followed by the name of the
+class in the list of the lexemes. The finding process ignores the spaces between the
+lexemes, because they usually are not important when trying to find some keywords.
+
+When the find is successful the `replaceWith()` method is executed and this replaces
+the "```class``` (spaces) class name" lexeme section in the list with the specified
+"```final class``` class name" sequence. Note that the spaces are important in the
+replace part.
+
+[source,java]
+----
+            javaLexed.find(list("class", klass.getSimpleName())).fromStart()
+                .replaceWith(Lex.of("final class " + klass.getSimpleName()));
+        }
+    }
+----
+
+When the try-with-resources block finishes the modified list of lexical elements
+is converted back to the list of source line strings that is stored in the source
+object.
 
 === Creating, opening new source object
 
