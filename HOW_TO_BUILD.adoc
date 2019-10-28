@@ -8,8 +8,16 @@ create a new release edit the `version.jim` file and set the
 ----
 
 line to whatever version is to be released. If the target is Java 8 then
-the version should be `A.B.C-JVM8`. To create a release the project has
-to be built first. This is simply
+the version should be `A.B.C-JVM8`.
+
+The new version has to be propagated to the POM files. To do that
+execute the command
+
+----
+mvn -f genpom.xml clean
+----
+
+To create a release the project has to be built first. This is simply
 
 ----
 mvn clean install
@@ -23,6 +31,9 @@ mvn -PJVM8 clean install
 
 to target Java 8. The profile `JVM8` will include the
 `com.github.bsideup.jabel` plugin.
+
+The first run of the build will fail as the documentation still contains
+the old version. Run the build command again.
 
 After the successful build run the shell script `release.sh` that
 collects all the files, starts the GPG signature and creates the ZIP
@@ -49,3 +60,5 @@ could also start the `mvn -f genpom.xml clean` command, but that is
 something they do not. It is up to you execute the command or to revert
 the `version.jim` file and start a build for a different target in case
 it was not the version that was wrong but the build command line.
+
+The last command to create the release is ```sh release.sh```.
