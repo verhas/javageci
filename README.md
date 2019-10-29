@@ -121,7 +121,7 @@ code it could generate is already there and the process will not fail.
 For further information visit the following documentations
 
 * [Tutorials](TUTORIAL.md)
-* [Reference documentation](REFERENCE.md)
+* [Reference documentation](REFERENCE.adoc)
 * [Frequently Asked Questions](FAQ.md)
 * [Explanation of the name and the logo](NAME.md)
 * [How to guides](HOWTO.md)
