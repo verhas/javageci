@@ -147,14 +147,34 @@ public class JavaLexed implements AutoCloseable {
         }
     }
 
+    private static final LexicalElement INVALID = new LexicalElement() {
+        @Override
+        public String getLexeme() {
+            return null;
+        }
+
+        @Override
+        public String getFullLexeme() {
+            return null;
+        }
+
+        @Override
+        public Type getType() {
+            return Type.INVALID;
+        }
+    };
+
     /**
      * Get the i-th element from the list of the lexical elements.
      *
      * @param i the index to the element to fetch
-     * @return the element
+     * @return the element or invalid element in case index is out of range
      */
     public LexicalElement get(int i) {
         assertOpen();
+        if( i < 0 || i >= lexicalElements.size()){
+            return null;
+        }
         return lexicalElements.get(i);
     }
 
@@ -284,20 +304,48 @@ public class JavaLexed implements AutoCloseable {
     private Action action = null;
     private int sensitivity;
 
-    public JavaLexed match(BiFunction<JavaLexed, Lexpression, LexMatcher> function) {
-        this.function = function;
+    /**
+     * Prepare a match operation that will be executed later calling
+     * {@link #fromStart()} or {@link #fromIndex(int)}.
+     *
+     * @param expression the expression to be found
+     * @return {@code this}
+     */
+    public JavaLexed match(BiFunction<JavaLexed, Lexpression, LexMatcher> expression) {
+        this.function = expression;
         action = Action.MATCH;
         lastMatchResult = null;
         return this;
     }
 
-    public JavaLexed find(BiFunction<JavaLexed, Lexpression, LexMatcher> function) {
-        this.function = function;
+    /**
+     * Prepare a find operation that will be executed later calling
+     * {@link #fromStart()} or {@link #fromIndex(int)}. A find operation
+     * is the same as repeating the match operation for indexes {@code j
+     * >= i} until a match is found or the end of the lexical element
+     * list is reached.
+     *
+     * @param expression the expression to be found
+     * @return {@code this}
+     */
+    public JavaLexed find(BiFunction<JavaLexed, Lexpression, LexMatcher> expression) {
+        this.function = expression;
         action = Action.FIND;
         lastMatchResult = null;
         return this;
     }
 
+    /**
+     * Set the sensitivity of the lexical analyzer that is going to be
+     * used for the pattern matching.
+     *
+     * @param sensitivity can be 0 (not sensitive to spaces and
+     * comments), 1 (space sensitive, but not comment sensitive), 2 (not
+     * space sensitive, but comment sensitive), 3 (space and comment
+     * sensitive).
+     *
+     * @return {@code this}
+     */
     public JavaLexed sensitivity(int sensitivity) {
         this.sensitivity = sensitivity;
         return this;
@@ -305,12 +353,25 @@ public class JavaLexed implements AutoCloseable {
 
     private Lexpression expression;
 
+    /**
+     * Performs the prepared find or match operation starting at the
+     * start of the list (at the index 0).
+     *
+     * @return {@code this}
+     */
     public JavaLexed fromStart() {
         return fromIndex(0);
     }
 
     private MatchResult lastMatchResult = MatchResult.NO_MATCH;
 
+    /**
+     * Performs the prepared find or match operation starting at index
+     * {@code i}.
+     *
+     * @param i  the index where the operation starts
+     * @return {@code this}
+     */
     public JavaLexed fromIndex(int i) {
         Lexer lexer = new Lexer();
         if ((sensitivity & Lexpression.SPACE_SENSITIVE) > 0) {
@@ -331,14 +392,30 @@ public class JavaLexed implements AutoCloseable {
         throw new IllegalArgumentException("action is " + action + "can only be MATCH or FIND");
     }
 
+    /**
+     * Returns the previously stored regular expression match result
+     * that was associated with the {@code name}.
+     *
+     * @param name identifies the regular expression match
+     * @return an optional that may be empty if the given name was not
+     * matched.
+     */
     public Optional<java.util.regex.MatchResult> regexGroups(final String name) {
         return expression.regexGroups(name);
     }
 
+    /**
+     * @param name identifies the lexical element group
+     * @return the list of the lexical elements that were matched in the
+     * given group
+     */
     public List<javax0.geci.javacomparator.LexicalElement> group(final String name) {
         return expression.group(name);
     }
 
+    /**
+     * @return the last match result
+     */
     public MatchResult result(){
         return lastMatchResult;
     }

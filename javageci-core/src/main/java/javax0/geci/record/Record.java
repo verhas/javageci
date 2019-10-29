@@ -261,7 +261,7 @@ public class Record extends AbstractFilteredFieldsGenerator {
         }
     }
 
-    private static final Selector<Class<?>> finalClass = Selector.compile("!final");
+    private static final Selector<Class<?>> NOT_FINAL = Selector.compile("!final");
 
     /**
      * If the class is not final then insert the {@code final} modifier
@@ -272,7 +272,7 @@ public class Record extends AbstractFilteredFieldsGenerator {
      */
     @SuppressWarnings("unchecked")
     private void makeClassFinal(Class<?> klass, JavaLexed javaLexed) {
-        if (finalClass.match(klass)) {
+        if (NOT_FINAL.match(klass)) {
             javaLexed.find(list("class", klass.getSimpleName())).fromStart()
                 .replaceWith(Lex.of("final class " + klass.getSimpleName()));
         }

@@ -28,6 +28,7 @@
                             {opens/engine/toolsgen}
                             {opens/engine/engine}
                             {opens/core/fluent.syntax}
+                            {opens/core/record}
                             {opens/examples/tutorials.simple}
                             {opens/examples/tutorials.hello}
                             {opens/examples/tutorials.hello/tools}

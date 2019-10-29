@@ -151,13 +151,19 @@ public interface Source {
     List<String> getLines();
 
     /**
-     * <p>A generator may decide to use the lines of the source as they are without the help of the Source object.
-     * To signal this intention it should borrow the lines from the Source. While the lines are borrowed the
-     * Source cannot be modified in any other way calling API that modifies the Source object.</p>
-     * <p>When the generator is ready with the modifications then it has to return the possibly modified
-     * line list calling {@link #returns(List)}</p>
-     * <p>A generator cannot call {@code borrows()} in case it already opened or initialized some segments or
-     * if the lines were already borrowed.</p>
+     * <p>A generator may decide to use the lines of the source as they
+     * are without the help of the Source object. To signal this
+     * intention it should borrow the lines from the Source. While the
+     * lines are borrowed the Source cannot be modified in any way
+     * calling API that modifies the Source object.</p>
+     *
+     * <p>When the generator is ready with the modifications then it has
+     * to return the possibly modified line list calling {@link
+     * #returns(List)}</p>
+     *
+     * <p>A generator cannot call {@code borrows()} if the lines were
+     * already borrowed.</p>
+     *
      * @return the list of the lines
      */
     default List<String> borrows() {

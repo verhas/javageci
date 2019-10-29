@@ -659,39 +659,43 @@ happens to be there to emphasize the intent to initialize the segment.)
 === Lexical Modification
 
 Some generators may want to modify the part of the source code that is
-manually maintained. This is a very special way. In this case there is no
-clear separation between the generated and the manual code. The generators
-should only do modifications that take this fact into account.
+manually maintained. This is a very special way. In this case there is
+no clear separation between the generated and the manual code. The
+generators should only do modifications that take this fact into
+account.
 
-An example is the record generator. The record generator mimics the behaviour
-of a Java record, which is not available by the time of writing. To mimic a
-Java record a class should have only `final` fields, the class has to be `final`,
-should not extend any other class (except the implicit Object) and should have
-a constructor that initializes the `final` fields and has getters for these fields.
+An example is the record generator. The record generator mimics the
+behaviour of a Java record, which is not available by the time of
+writing. To mimic a Java record a class should have only `final` fields,
+the class has to be `final`, should not extend any other class (except
+the implicit Object) and should have a constructor that initializes the
+`final` fields and has getters for these fields.
 
 To do this the programmer can insert the fields into the class, but they
-can not be `final` when the programmer edits the file, because the constructor
-does not know about this field yet. The constructor will be modified only
-later to initialize the new field or fields. After the code generation the
-manual code can be altered so that the field becomes `final`.
+can not be `final` when the programmer edits the file, because the
+constructor does not know about this field yet. The constructor will be
+modified only later to initialize the new field or fields. After the
+code generation the manual code can be altered so that the field becomes
+`final`.
 
-To ease the life of the programmer the Record generator inserts the `final`
-keywords where they are needed during the code generation when it also generates/modifies
-the constructor.
+To ease the life of the programmer the Record generator inserts the
+`final` keywords where they are needed during the code generation when
+it also generates/modifies the constructor.
 
-To do that the generator creates a `JavaLexed` object using the source object.
-This `JavaLexed` object contains the java source code lexical elements and provides
-methods to search and modify the list of the lexical elements. At the creation of the
-object it "borrows" the source code from the source object and when it finishes
-and the closes (a `JavaLexed` object is `AutoCloseable`) then it returns the source code
-to the source object. If the list of the lexical elements was changed then the change
-will be reflected in the source strings.
+To do that the generator creates a `JavaLexed` object using the source
+object. This `JavaLexed` object contains the java source code lexical
+elements and provides methods to search and modify the list of the
+lexical elements. At the creation of the object it "borrows" the source
+code from the source object and when it finishes and the closes (a
+`JavaLexed` object is `AutoCloseable`) then it returns the source code
+to the source object. If the list of the lexical elements was changed
+then the change will be reflected in the source strings.
 
-A generator should never modify the source writing into segments while a `JavaLexed`
-object is open.
+A generator should never modify the source writing into segments while a
+`JavaLexed` object is open.
 
-The recommended pattern to use the `JavaLexed` object is to use it in a try-with-resources
-block:
+The recommended pattern to use the `JavaLexed` object is to use it in a
+try-with-resources block:
 
 [source,java]
 ----
@@ -706,19 +710,17 @@ defines a selector expression
 
 [source,java]
 ----
-private static final Selector<Class<?>> finalClass = Selector.compile("!final");
+private static final Selector<Class<?>> NOT_FINAL = Selector.compile("!final");
 ----
 
 
-Using this selector expression the code decides whether the class it generated code
-into is final or not:
-
-
+Using this selector expression the generator decides whether the class
+it modifies is final or not:
 
 [source,java]
 ----
-    private void makeClassFinal(Class<?> klass, JavaLexed javaLexed) {
-        if (finalClass.match(klass)) {
+private void makeClassFinal(Class<?> klass, JavaLexed javaLexed) {
+    if (NOT_FINAL.match(klass)) {
 ----
 
 This `if` statement is executed when the class is not `final`. The generator, in
@@ -726,28 +728,44 @@ this case, modifies the class to be final, because that is a requirement by the
 JEP defining the "Record" functionality for Java. In case the developer forgot to
 make the class final this can be detected and this also can be changed.
 
-When the class is not final the `javaLexed` object is used to find the declaration
-of the class. This is used utilizing the `find()` and `fromStart()` methods of the
-`JavaLexed` class. This will find the lexemes `class` followed by the name of the
-class in the list of the lexemes. The finding process ignores the spaces between the
-lexemes, because they usually are not important when trying to find some keywords.
+When the class is not final the `javaLexed` object is used to find the
+declaration of the class in the list of the lexical elements. This is
+used utilizing the `find()` and `fromStart()` methods of the `JavaLexed`
+class. This will find the lexemes `class` followed by the name of the
+class in the list of the lexemes. The finding process ignores the spaces
+between the lexemes, because they usually are not important when trying
+to find some keywords.
 
-When the find is successful the `replaceWith()` method is executed and this replaces
-the "```class``` (spaces) class name" lexeme section in the list with the specified
-"```final class``` class name" sequence. Note that the spaces are important in the
-replace part.
+When the find is successful the `replaceWith()` method is executed and
+this replaces the "```class``` (spaces) class name" lexeme section in
+the list with the specified "```final class``` __class__ __name__"
+sequence. Note that the spaces are important in the replace part.
 
 [source,java]
 ----
-            javaLexed.find(list("class", klass.getSimpleName())).fromStart()
-                .replaceWith(Lex.of("final class " + klass.getSimpleName()));
-        }
-    }
+javaLexed.find(list("class", klass.getSimpleName())).fromStart()
+               .replaceWith(Lex.of("final class " + klass.getSimpleName()));
 ----
 
-When the try-with-resources block finishes the modified list of lexical elements
-is converted back to the list of source line strings that is stored in the source
-object.
+When the try-with-resources block finishes the modified list of lexical
+elements is converted back to the list of source line strings that is
+stored in the source object and the generator can go on and continue to
+generate code that will get into the segments.
+
+The lexical elements that the generator can work with are objects that
+are ```javax0.geci.javacomparator.LexicalElement```. The ```javaLexed```
+object can provide an iterator that goes through the elements returned
+by ```lexicalElements()``` , and it can also provide a specific elements
+based on its index when calling ```get(i)``` on the object. It is also
+possible to remove a specific element calling ```remove(i)``` using the
+index `i` and there is a method to remove a range of lexical elements
+calling ```removeRange(i,j)```. (Note that the element with the index
+`i` is removed but the element with the index `j` is not.)
+
+There are also simple and primitive methods to modify the list of the
+lexical elements. You can ```add(i, element)``` to add a single element
+at the position `i`. YOu can also replace a range of elements with a
+list of lexical elements calling ```replace(start, end, elements)```.
 
 === Creating, opening new source object
 

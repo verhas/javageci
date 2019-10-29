@@ -60,6 +60,7 @@
                             --add-opens geci.engine/javax0.geci.toolsgen=ALL-UNNAMED
                             --add-opens geci.engine/javax0.geci.engine=ALL-UNNAMED
                             --add-opens geci.core/javax0.geci.fluent.syntax=ALL-UNNAMED
+                            --add-opens geci.core/javax0.geci.record=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tutorials.simple=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tutorials.hello=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tutorials.hello=geci.tools
