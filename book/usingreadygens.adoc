@@ -132,8 +132,6 @@ To run the generator you have to create a unit test. The structure of
 the unit test will look something like:
 
 // snip book_TestAccessor snippet="TestAccessor" trim="to=0"
-[source,java]
-----
 @Test
 void testAccessor() throws Exception {
     Geci geci;
@@ -143,97 +141,6 @@ void testAccessor() throws Exception {
                     .generate(),
             geci.failed());
 }
-----
-
-This unit test is the actual code of the unit test code for the
-generator accessor. It starts declaring a `Geci` object. This object is
-the one that represents the framework and configures and executes the
-code generations.
-
-On the assertion line this variable get initialized and then it is
-immediately configured using chained method calls. The method `source()`
-defines the location of the source files. There are auxiliary static
-methods and auxiliary classes that let you define the location in a
-readable way. If you use the Maven directory structure, you can use the
-object returned by the static method `maven()` (statically imported into
-the unit test) and the method `module()` and `mainSource()` on that.
-This will configure the main Java source directory of a multi-module
-maven project module named `javageci-examples`.
-
-The next configuration call is `register()` that registers a new
-generator object. In this case this is an `Accessor` object, which is
-created using the built-in builder. Generators usually have built-in
-builders that allow the calling code to configure the instance. In this
-case there is no configuration. After calling the `Accessor.builder()`
-method, which returns a builder instance we call immediately the method
-`build()` that returns the built object.
-
-The final call is `generate()`. It starts the code generation. The
-return value of this method is `false` if it did not generate any new
-code. If there was some code generated or some already generated code
-was changed and hence some source code files were modified then the
-return value if `true`. In this case the unit test should fail because
-it means that the source code was not up-to-date when it was compiled.
-
-To check it the unit test uses the `assertFalse` assertion. The second
-argumen to `assertFalse` is the error message. This is invoked by the
-framework after the generation and the object referenced by the variable
-`geci` will return a detailed error message when the method `failed()`
-is called.
-
-There are many more configuration possibilities for the generator. These
-are documented in the JavaDoc of the interface `javax0.geci.api.Geci`.
-
-=== Configuring Individual Generators
-
-=== Using your own Annotations
-
-=== Sample Generators
-
-These generators are readily available. Most of them are also available
-in other frameworks or the functionality is provided using the
-appropriate menus of the IDE. Using these generators provide some
-advantages. These are the followings.
-
-* These generators run automatically and compilation fails if the code
-  is not up-to-date. That way it is not possible to have, for example,
-  `equals()` and `hashCode()` methods that do not take into account
-  some of the fields introduced into the code after the last
-  time the code generator executed.
-
-* The Java class that generates the code is very simple after you get
-  acquainted with the framework and it is possible to tune the actual
-  generator to your specific needs.
-
-In the following sections we list the most important sample generators.
-
-==== Accessor Generator
-
-The accessor (setter/getter) generator is part of Java::Geci core. It
-can be used to generate setters and getters. To use it you should create
-a test
-
-// snip TestAccessor
-[source,java]
-----
-    @Test
-    void testAccessor() throws Exception {
-        Geci geci;
-        Assertions.assertFalse(
-                (geci = new Geci()).source(maven().module("javageci-examples").mainSource())
-                        .register(Accessor.builder().build())
-                        .generate(),
-                geci.failed());
-    }
-----
-
-that will generate the code during test time.
-
-// snippet The_generator_object_passed
-The generator object passed to the method `register()` is supposed to
-be created using the builder built-into the generator. This is a call
-to `Accessor.builder()`, then configuration method calls and finally
-a call to `build()` to get the actual generator object.
 // end snippet
 
 When you use the builder to generate an instance you can define the

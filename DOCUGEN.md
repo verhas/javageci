@@ -798,7 +798,7 @@ modifications on the different snippets and perform the appending afterwards.
                                         replace='|^~s*/~*||' 
                                         escape='~'"
                                         -->
-##### `snippets = Arrays.asList()`
+##### `snippets = Collections.emptyList()`
 
 
 This configuration parameter defines the snippets that are appended to the base snippet.

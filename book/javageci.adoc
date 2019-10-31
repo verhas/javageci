@@ -7,14 +7,13 @@ v1.0, 2019-09-11
 == Introduction, What is Java::Geci
 
 // snip Geci_GeciReflectionTools_invoke_sample trim="to=0"
-[source,java]
-----
+```java
 String resolver = (String) GeciReflectionTools
     .invoke("resolve")
     .on(tempi)
     .types(String.class)
     .args("this is a template test with no parameters");
-----
+```
 
 ****
 
