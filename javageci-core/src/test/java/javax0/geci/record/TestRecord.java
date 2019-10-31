@@ -1,7 +1,7 @@
 package javax0.geci.record;
 
 import javax0.geci.api.Segment;
-import javax0.geci.testsupport.MockSource;
+import javax0.geci.engine.Source;
 import javax0.geci.util.JavaSegmentSplitHelper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
@@ -16,7 +16,7 @@ public class TestRecord {
     void test() throws IOException {
         // GIVEN
         final var sut = Record.builder().build();
-        final var mockSource = new MockSource("package javax0.geci.record;\n" +
+        final var source = Source.mock(sut).lines("package javax0.geci.record;\n" +
                                                   "\n" +
                                                   "public class ToRecord {\n" +
                                                   "\n" +
@@ -27,17 +27,17 @@ public class TestRecord {
                                                   "    //<editor-fold id=\"record\">\n" +
                                                   "    //</editor-fold>\n" +
                                                   "\n" +
-                                                  "}\n");
-        mockSource.mockSetSplitHelper(new JavaSegmentSplitHelper());
+            "}\n")
+            .getSource();
         Field[] fields = ToRecord.class.getDeclaredFields();
-        Segment segment = mockSource.open("record");
+        Segment segment = source.open("record");
         Assumptions.assumeTrue(segment != null);
 
         // WHEN
-        sut.process(mockSource, ToRecord.class, null, fields, segment);
+        sut.process(source, ToRecord.class, null, fields, segment);
 
         // THEN
-        mockSource.mockConsolidate();
+        source.consolidate();
         Assertions.assertEquals("package javax0.geci.record;\n" +
                                     "\n" +
                                     "public final class ToRecord {\n" +
@@ -71,6 +71,6 @@ public class TestRecord {
                                     "    //</editor-fold>\n" +
                                     "\n" +
                                     "}",
-            String.join("\n", mockSource.getLines()));
+            String.join("\n", source.getLines()));
     }
 }

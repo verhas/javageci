@@ -1,4 +1,4 @@
-package javax0.geci.testsupport;
+package javax0.geci.engine;
 
 import javax0.geci.api.Source;
 
@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class MockSourceStore {
+public class MockSourceStore implements SourceStore {
 
     private final Map<SetFileNameTuple, Source> setSources = new HashMap<>();
     private final Map<String, Source> thisSetSources = new HashMap<>();
@@ -19,10 +19,12 @@ public class MockSourceStore {
         thisSetSources.put(fileName, source);
     }
 
+    @Override
     public Source get(String fileName) {
         return thisSetSources.get(fileName);
     }
 
+    @Override
     public Source get(Source.Set set, String fileName) {
         return setSources.get(new SetFileNameTuple(set, fileName));
     }
@@ -42,7 +44,7 @@ public class MockSourceStore {
             if (o == null || getClass() != o.getClass()) return false;
             SetFileNameTuple that = (SetFileNameTuple) o;
             return set.equals(that.set) &&
-                       fileName.equals(that.fileName);
+                fileName.equals(that.fileName);
         }
 
         @Override

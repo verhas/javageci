@@ -8,6 +8,7 @@ import javax0.geci.api.Generator;
 import javax0.geci.api.Logger;
 import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.tools.GeciReflectionTools;
+import javax0.geci.util.JavaSegmentSplitHelper;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -16,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,10 +26,9 @@ import java.util.function.BiPredicate;
 
 public class Source implements javax0.geci.api.Source {
     final List<String> lines = new ArrayList<>();
-    private final String dir;
     private final String className;
     private final String relativeFile;
-    private final String absoluteFile;
+    final String absoluteFile;
     private final Map<String, Segment> segments = new HashMap<>();
     private final List<String> originals = new ArrayList<>();
     private final FileCollector collector;
@@ -39,6 +40,15 @@ public class Source implements javax0.geci.api.Source {
     boolean allowDefaultSegment = false;
     boolean isBinary = false;
     private boolean isBorrowed = false;
+
+    public MockSourceStore getSourceStore() {
+        if( store instanceof MockSourceStore) {
+            return (MockSourceStore) store;
+        }
+        throw new GeciException("Source.getSourceStore() must be invoked only from test code");
+    }
+
+    private final SourceStore store;
 
     Generator currentGenerator = null;
 
@@ -58,8 +68,84 @@ public class Source implements javax0.geci.api.Source {
     private void assertTouching() {
         if (currentGenerator != null && currentGenerator instanceof Distant) {
             throw new GeciException("The distant generator " + currentGenerator.getClass().getName() +
-                                        " tried to touch the source " + getAbsoluteFile());
+                " tried to touch the source " + getAbsoluteFile());
         }
+    }
+
+    public static class MockBuilder {
+        private final Generator sut;
+        private String className;
+        private String relativeFile;
+        private String absoluteFile;
+        private SegmentSplitHelper splitHelper = new JavaSegmentSplitHelper();
+        final List<String> lines = new ArrayList<>();
+
+        public MockBuilder(Generator sut) {
+            this.sut = sut;
+        }
+
+        public MockBuilder className(String className) {
+            this.className = className;
+            return this;
+        }
+
+        public MockBuilder relativeFile(String relativeFile) {
+            this.relativeFile = relativeFile;
+            return this;
+        }
+
+        public MockBuilder splitHelper(String fileName) {
+            this.splitHelper = splitHelper;
+            return this;
+        }
+
+        public MockBuilder splitHelper(SegmentSplitHelper splitHelper) {
+            this.splitHelper = splitHelper;
+            return this;
+        }
+
+        public MockBuilder lines(String... lines) {
+            for (final var line : lines) {
+                this.lines.addAll(Arrays.asList(line.split("\n")));
+            }
+            return this;
+        }
+
+        public Source getSource() {
+            return new Source(sut, className, relativeFile, absoluteFile, splitHelper, lines);
+        }
+    }
+
+    public static MockBuilder mock(Generator sut) {
+        return new MockBuilder(sut);
+    }
+
+    /**
+     * Private constructor used only when the object is created as a mock.
+     *
+     * @param currentGenerator the generator that is currently tested
+     * @param className the mock class name, usually the real class name
+     * @param relativeFile the relavite file name of the source
+     * @param absoluteFile the absolute file name of the source
+     * @param splitHelper the split helper, which is Java in case nothing else was set in the mock factory
+     * @param lines the lines of the source code.
+     */
+    private Source(Generator currentGenerator,
+                   String className,
+                   String relativeFile,
+                   String absoluteFile,
+                   SegmentSplitHelper splitHelper,
+                   List<String> lines
+    ) {
+        this.currentGenerator = currentGenerator;
+        this.className = className;
+        this.relativeFile = relativeFile;
+        this.absoluteFile = absoluteFile;
+        this.splitHelper = splitHelper;
+        this.lines.addAll(lines);
+        this.collector = null;
+        this.inMemory = true;
+        this.store = new MockSourceStore();
     }
 
     /**
@@ -73,11 +159,11 @@ public class Source implements javax0.geci.api.Source {
      */
     Source(FileCollector collector, String dir, Path path) {
         this.collector = collector;
-        this.dir = dir;
         className = FileCollector.calculateClassName(dir, path);
         relativeFile = FileCollector.calculateRelativeName(dir, path);
         absoluteFile = FileCollector.toAbsolute(path);
         splitHelper = collector.getSegmentSplitHelper(this);
+        store = new FileSystemSourceStore(this.collector, relativeFile, absoluteFile, dir);
     }
 
     /**
@@ -114,38 +200,15 @@ public class Source implements javax0.geci.api.Source {
     }
 
     @Override
-    public Source newSource(Source.Set sourceSet, String fileName) {
+    public javax0.geci.api.Source newSource(Source.Set sourceSet, String fileName) {
         assertTouching();
-        var directory = collector.getDirectory(sourceSet);
-        if (directory == null) {
-            throw new GeciException("SourceSet '" + sourceSet + "' does not exist");
-        }
-        var source = new Source(collector, directory, inDir(directory, fileName));
-        collector.addNewSource(source);
-        return source;
+        return store.get(sourceSet, fileName);
     }
 
     @Override
-    public Source newSource(String fileName) {
+    public javax0.geci.api.Source newSource(String fileName) {
         assertTouching();
-        for (final var source : collector.getNewSources()) {
-            if (this.absoluteFile.equals(source.absoluteFile)) {
-                return source;
-            }
-        }
-        var source = new Source(collector, dir, inDir(dir, fileName));
-        collector.addNewSource(source);
-        return source;
-    }
-
-    private Path inDir(String dir, String fileName) {
-        return Paths.get(FileCollector.normalize(
-            dir +
-                Paths
-                    .get(relativeFile)
-                    .getParent()
-                    .resolve(fileName)
-                    .toString()));
+        return store.get(fileName);
     }
 
     @Override
@@ -340,7 +403,7 @@ public class Source implements javax0.geci.api.Source {
     /**
      * Replace the original content of the segments with the generated lines.
      */
-    void consolidate() {
+    public void consolidate() {
         assertNotBorrowed();
         if (!inMemory && !segments.isEmpty()) {
             throw new GeciException(
@@ -370,7 +433,7 @@ public class Source implements javax0.geci.api.Source {
 
     private void mergeSegment(Segment segment, SegmentDescriptor segmentLocation) {
         if (segmentLocation.startLine < segmentLocation.endLine
-                || segment.lines.size() > 0) {
+            || segment.lines.size() > 0) {
             if (segmentLocation.startLine < segmentLocation.endLine) {
                 lines.subList(segmentLocation.startLine, segmentLocation.endLine).clear();
             }
