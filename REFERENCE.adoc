@@ -659,10 +659,21 @@ happens to be there to emphasize the intent to initialize the segment.)
 === Lexical Modification
 
 Some generators may want to modify the part of the source code that is
-manually maintained. This is a very special way. In this case there is
-no clear separation between the generated and the manual code. The
-generators should only do modifications that take this fact into
-account.
+manually maintained. Like fixing something in the program. For example
+inserting the `final` keyword in front of a field declaration. Or, perhaps
+deleting some modifier. Such modifications are rare and should be programmed
+in the generators with great care. The generators really should know what they do
+as they play with a part of the code that is manually maintained and not
+separated. Such modifications usually focus on some specific part
+of the code. To find the specific part of the code, for example the declaration
+of a given field is very hard to so reading the source as text. The list of
+the lexical elements that is the result of the lexical analysis of the code
+is much better suited for the purpose.
+
+Lexical Modifications work with the list of the lexical elements of the source
+files. A typical modification searches a certain part looking for some
+specific pattern and then insert or replace the found pattern with a given list
+of lexical elements.
 
 An example is the record generator. The record generator mimics the
 behaviour of a Java record, which is not available by the time of
@@ -764,7 +775,7 @@ calling ```removeRange(i,j)```. (Note that the element with the index
 
 There are also simple and primitive methods to modify the list of the
 lexical elements. You can ```add(i, element)``` to add a single element
-at the position `i`. YOu can also replace a range of elements with a
+at the position `i`. You can also replace a range of elements with a
 list of lexical elements calling ```replace(start, end, elements)```.
 
 === Creating, opening new source object

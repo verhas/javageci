@@ -121,7 +121,7 @@ public class Source implements javax0.geci.api.Source {
     }
 
     /**
-     * Private constructor used only when the object is created as a mock.
+     * Constructor used only when the object is created as a mock.
      *
      * @param currentGenerator the generator that is currently tested
      * @param className the mock class name, usually the real class name
