@@ -11,6 +11,7 @@ import javax0.geci.tools.reflection.Selector;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.Function;
@@ -35,7 +36,12 @@ public class Mapper extends AbstractJavaGenerator {
          *
          * * `filter` can be used to to select the define the selector
          * expression to select the fields that will be taken into
-         * account for the map conversion.
+         * account for the map conversion. If a `final` field is
+         * selected by the expression it will be taken in to account
+         * when generatong the `tMap()` method, but it will be excluded
+         * from the `fromMap()` method because being `final` there is no
+         * way the `fromMethod()` could modify the value of the field.
+         *
          */
         private String filter = "!transient & !static";
         /**
@@ -148,6 +154,9 @@ public class Mapper extends AbstractJavaGenerator {
         final var fields = GeciReflectionTools.getAllFieldsSorted(klass);
         segment.write_r(getResourceString("frommap.template"));
         for (final var field : fields) {
+            if (Modifier.isFinal(field.getModifiers())) {
+                continue;
+            }
             final var params = GeciReflectionTools.getParameters(field, mnemonic());
             final var local = localConfig(new CompoundParams(params, global));
             if (Selector.compile(local.filter).match(field)) {

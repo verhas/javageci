@@ -99,11 +99,17 @@ The mapper can be invoked from a test using the following code
 
 ## Configuration parameters
 
-<!-- snip Mapper_configurationParameters snippet="epsilon" append="snippets='Mapper_Config_.*'" -->
+<!-- snip Mapper_configurationParameters snippet="epsilon"
+                               append="snippets='Mapper_Config_.*'" -->
 
 * `filter` can be used to to select the define the selector
 expression to select the fields that will be taken into
-account for the map conversion.
+account for the map conversion. If a `final` field is
+selected by the expression it will be taken in to account
+when generatong the `tMap()` method, but it will be excluded
+from the `fromMap()` method because being `final` there is no
+way the `fromMethod()` could modify the value of the field.
+
 
 * `generatedAnnotation` can ge used to specify the annotation
 that is used to annotate the generated methods. By default it
