@@ -1,5 +1,7 @@
 # Contributor Covenant Code of Conduct
 
+This is the standard text, however, this is not only a placeholder. We mean it.
+
 ## Our Pledge
 
 In the interest of fostering an open and welcoming environment, we as
