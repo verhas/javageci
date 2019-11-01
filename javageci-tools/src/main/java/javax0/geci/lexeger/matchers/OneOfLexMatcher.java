@@ -14,8 +14,19 @@ public class OneOfLexMatcher extends LexMatcher {
     private int next = 0;
 
     @Override
-    public void reset(){
+    void reset() {
+        super.reset();
         next = 0;
+    }
+
+    @Override
+    boolean isConsumed() {
+        return next >= matchers.length;
+    }
+
+    @Override
+    boolean consumed() {
+        return isConsumed();
     }
 
     @Override
@@ -26,6 +37,7 @@ public class OneOfLexMatcher extends LexMatcher {
             matcher.reset();
             final var result = matcher.matchesAt(j);
             if (result.matches) {
+                next++;
                 return result;
             }
         }

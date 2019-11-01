@@ -90,11 +90,11 @@ public class Record extends AbstractFilteredFieldsGenerator {
         final String validator;
         final String argumentDeclaration;
         try (final var javaLexed = new JavaLexed(source)) {
+            validator = getValidatorMethodName(klass);
             makeClassFinal(klass, javaLexed);
             makeFieldsFinal(fields, javaLexed);
             sortedFields = getFieldsSorted(fields, javaLexed);
             argumentDeclaration = calculateArgsDeclaration(sortedFields);
-            validator = getValidatorMethodName(klass);
             fixValidatorArguments(javaLexed, validator, argumentDeclaration);
         }
         generateConstructor(klass, segment, sortedFields, validator, argumentDeclaration);
@@ -228,8 +228,8 @@ public class Record extends AbstractFilteredFieldsGenerator {
      */
     private int getDeclarationStartOfField(JavaLexed javaLexed, Field field) {
         return javaLexed.find(
-            list(zeroOrMore(group("modifiers"), modifier(~Modifier.FINAL)),
-                type(group("fieldType")),
+            list(zeroOrMore(modifier(~Modifier.FINAL)),
+                type(),
                 identifier(field.getName()))).fromStart().result().start;
     }
 

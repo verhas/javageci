@@ -38,6 +38,10 @@ public abstract class LexMatcher implements javax0.geci.lexeger.LexMatcher {
         return isConsumed;
     }
 
+    boolean isConsumed() {
+        return !isReset;
+    }
+
     LexMatcher(Lexpression expression, JavaLexed javaLexed) {
         this.javaLexed = javaLexed;
         this.expression = expression;

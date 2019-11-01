@@ -16,14 +16,18 @@ public class GroupMatcher extends LexMatcher {
         this.name = name;
     }
 
+    @Override
+    void reset() {
+        super.reset();
+        matcher.reset();
+    }
 
     @Override
     public MatchResult matchesAt(final int i) {
-        if( consumed()){
+        if( matcher.isConsumed()){
             remove(name);
             return MatchResult.NO_MATCH;
         }
-        matcher.reset();
         final var result = matcher.matchesAt(i);
         if (result.matches) {
             final var elements = new ArrayList<LexicalElement>(result.end-result.start);

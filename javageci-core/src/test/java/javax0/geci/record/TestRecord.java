@@ -1,19 +1,20 @@
 package javax0.geci.record;
 
-import javax0.geci.api.Segment;
+import javax0.geci.api.GeciException;
 import javax0.geci.engine.Source;
-import javax0.geci.util.JavaSegmentSplitHelper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-public class TestRecord {
+class TestRecord {
 
     @Test
-    void test() throws IOException {
+    @DisplayName("Properly generates the getters, constructor, hashCode and equals and fixes field and class")
+    void testHappyPath() throws IOException {
         // GIVEN
         final var sut = Record.builder().build();
         final var source = Source.mock(sut).lines("package javax0.geci.record;\n" +
@@ -29,8 +30,8 @@ public class TestRecord {
                                                   "\n" +
             "}\n")
             .getSource();
-        Field[] fields = ToRecord.class.getDeclaredFields();
-        Segment segment = source.open("record");
+        final var fields = ToRecord.class.getDeclaredFields();
+        final var segment = source.open("record");
         Assumptions.assumeTrue(segment != null);
 
         // WHEN
@@ -72,5 +73,38 @@ public class TestRecord {
                                     "\n" +
                                     "}",
             String.join("\n", source.getLines()));
+    }
+
+    @Test
+    @DisplayName("Throws exception when class extends other class")
+    void testExtendingClass() throws IOException {
+        // GIVEN
+        final var sut = Record.builder().build();
+        final var source = Source.mock(sut).lines("").getSource();
+
+        // WHEN
+        Assertions.assertThrows(GeciException.class, () -> sut.process(source, ClassExtending.class, null, (Field[]) null, null));
+    }
+
+    @Test
+    @DisplayName("Throws exception when class is abstract")
+    void testAbstractClass() throws IOException {
+        // GIVEN
+        final var sut = Record.builder().build();
+        final var source = Source.mock(sut).lines("").getSource();
+
+        // WHEN
+        Assertions.assertThrows(GeciException.class, () -> sut.process(source, ClassAbstract.class, null, (Field[]) null, null));
+    }
+
+    @Test
+    @DisplayName("Throws exception when class has multiple validators")
+    void testMultipleValidators() throws IOException {
+        // GIVEN
+        final var sut = Record.builder().build();
+        final var source = Source.mock(sut).lines("").getSource();
+
+        // WHEN
+        Assertions.assertThrows(GeciException.class, () -> sut.process(source, ToRecordMultipleValidators.class, null, (Field[]) null, null));
     }
 }

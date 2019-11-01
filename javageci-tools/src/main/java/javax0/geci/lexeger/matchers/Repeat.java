@@ -19,11 +19,15 @@ public class Repeat extends LexMatcher {
 
     @Override
     public void reset() {
+        super.reset();
         currentMax = max;
     }
 
     @Override
     public MatchResult matchesAt(int i) {
+        if( currentMax == 0 && consumed()){
+            return MatchResult.NO_MATCH;
+        }
         int start = skipSpacesAndComments(i);
         int j = start;
         int counter = 0;
@@ -42,7 +46,7 @@ public class Repeat extends LexMatcher {
                 return matching( start, j);
             }
         }
-        currentMax--;
+        currentMax = Math.max(counter - 1, 0);
         if (counter < min) {
             return MatchResult.NO_MATCH;
         } else {
