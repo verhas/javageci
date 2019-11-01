@@ -2,6 +2,12 @@ package javax0.geci.record;
 
 import javax0.geci.api.GeciException;
 import javax0.geci.engine.Source;
+import javax0.geci.record.sutclasses.ClassAbstract;
+import javax0.geci.record.sutclasses.ClassExtending;
+import javax0.geci.record.sutclasses.ToRecord;
+import javax0.geci.record.sutclasses.ToRecordAlreadyFinals;
+import javax0.geci.record.sutclasses.ToRecordMultipleFields;
+import javax0.geci.record.sutclasses.ToRecordMultipleValidators;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
@@ -76,7 +82,7 @@ class TestRecord {
     }
 
     @Test
-    @DisplayName("Properly generates the getters, constructor, hashCode and equals and fixes field and class for multiple fields")
+    @DisplayName("Properly generates ... for multiple fields")
     void testHappyPathMultipleFields() throws IOException {
         // GIVEN
         final var sut = Record.builder().build();

@@ -1,4 +1,4 @@
-package javax0.geci.record;
+package javax0.geci.record.sutclasses;
 
 public class ToRecord {
 
