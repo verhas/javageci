@@ -6,6 +6,8 @@ Java Generate Code Inline
 
 <img src="images/logo.svg" width="100px"/>
 
+Read "[how to contribute](CONTRIBUTE.md)"
+
 Java::Geci is a library for generating Java code. Code generation programs
 implemented using Java::Geci can be executed to generate new source code
 or modify existing Java source files. This way the programmer can use
