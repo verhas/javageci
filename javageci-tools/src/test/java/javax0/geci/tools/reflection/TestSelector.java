@@ -103,6 +103,13 @@ class TestSelector {
     }
 
     @Test
+    @DisplayName("Test that nestHost converter works")
+    void testNestingHost() {
+        Assertions.assertTrue(Selector.compile("nestHost -> (!null & simpleName ~ /^Object/)").match(Object.class));
+        Assertions.assertTrue(Selector.compile("nestHost -> (!null & simpleName ~ /^Map/)").match(Map.Entry.class));
+    }
+
+    @Test
     void testDeclaringClassDemo() throws Exception {
         final var equals = this.getClass().getMethod("equals", Object.class);
         final var hashCode = this.getClass().getMethod("hashCode");

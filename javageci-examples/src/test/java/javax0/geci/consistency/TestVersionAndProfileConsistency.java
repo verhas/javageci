@@ -20,8 +20,11 @@ class TestVersionAndProfileConsistency {
     void testProfileAndVersion() throws IOException {
         final var rootDir = ConsistencyTestUtils.getDirectory();
         Properties properties = ConsistencyTestUtils.loadCompilationProperties();
+        final var version = (String) properties.get("projectVersion");
+        if( version.endsWith("-SNAPSHOT")){
+            return;
+        }
         if ("default".equals(properties.get("profile"))) {
-            final var version = (String) properties.get("projectVersion");
             if (version.endsWith("-JVM8")) {
                 File versionFile = new File(rootDir + "/version.jim");
                 Assertions.assertTrue(versionFile.exists(), "version does not exist ???");
@@ -36,7 +39,6 @@ class TestVersionAndProfileConsistency {
         }
 
         if ("JVM8".equals(properties.get("profile"))) {
-            final var version = (String) properties.get("projectVersion");
             if (!version.endsWith("-JVM8")) {
                 File versionFile = new File(rootDir + "/version.jim");
                 Assertions.assertTrue(versionFile.exists(), "version does not exist ???");

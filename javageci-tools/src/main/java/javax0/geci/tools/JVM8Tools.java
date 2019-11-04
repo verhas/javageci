@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Various static methods that implement functionalities that are available only in JVM8+ and thus cannot be used when
+ * Various static methods that implement functionality that are available only in JVM8+ and thus cannot be used when
  * targeting JVM8 code.
  */
 public class JVM8Tools {

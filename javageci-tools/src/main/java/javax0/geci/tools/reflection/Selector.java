@@ -795,7 +795,7 @@ public class Selector<T> {
             final var converter = ((SelectorNode.Converted) node).converter;
             final Function<T, Object> function = converters.get(converter);
             if (function == null) {
-                throw illegalArgumentException("There is no converted for '" + converter + "'");
+                throw illegalArgumentException("There is no converter for '" + converter + "'");
             } else {
                 return match((T) function.apply(m), ((SelectorNode.Converted) node).subNode);
             }
