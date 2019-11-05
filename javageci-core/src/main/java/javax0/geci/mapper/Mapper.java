@@ -1,5 +1,6 @@
 package javax0.geci.mapper;
 
+import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.core.annotations.AnnotationBuilder;
@@ -79,6 +80,9 @@ public class Mapper extends AbstractJavaGenerator {
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
         final var gid = global.get("id");
         try (final var segment = source.open(gid)) {
+            if (segment == null) {
+                throw new GeciException("There is no segment '" + gid + "' in the source " + source.getAbsoluteFile());
+            }
             final var factory = localConfig(global).factory;
             segment.param("mnemonic", mnemonic(),
                 "generatedBy", config.generatedAnnotation.getCanonicalName(),
@@ -115,7 +119,7 @@ public class Mapper extends AbstractJavaGenerator {
      * Get the resource from the resouce file and remove all \r
      * characters in case it is Windows style.
      *
-     * @param resource the name of the resurce in the same JAR directory
+     * @param resource the name of the resource in the same JAR directory
      *                 where the class is.
      * @return the content of the resource file
      * @throws IOException if the file was not found
