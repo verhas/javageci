@@ -132,7 +132,8 @@ To run the generator you have to create a unit test. The structure of
 the unit test will look something like:
 
 // snip book_TestAccessor snippet="TestAccessor" trim="to=0"
-```java
+[source,java]
+----
 @Test
 void testAccessor() throws Exception {
     Geci geci;
@@ -142,7 +143,7 @@ void testAccessor() throws Exception {
                     .generate(),
             geci.failed());
 }
-```
+----
 
 This unit test is the actual code of the unit test code for the
 generator accessor. It starts declaring a `Geci` object. This object is
@@ -213,7 +214,8 @@ can be used to generate setters and getters. To use it you should create
 a test
 
 // snip TestAccessor
-```java
+[source,java]
+----
     @Test
     void testAccessor() throws Exception {
         Geci geci;
@@ -223,7 +225,7 @@ a test
                         .generate(),
                 geci.failed());
     }
-```
+----
 
 that will generate the code during test time.
 
@@ -280,9 +282,10 @@ following parameters:
 To ignite the code generation for a specific class you have to annotate
 the class as
 
-```java
+[source,java]
+----
 @Geci("accessor ... parameters ...")
-```
+----
 
 The mnemonic of the generator is `accessor`.
 
@@ -299,18 +302,21 @@ specified on the field level they are inherited from the class
 annotation of from the editor-fold parameters if defined there. The
 individual fields can also be annotated with
 
-```java
+[source,java]
+----
 @Geci("accessor ... parameters ...")
-```
+----
 
 Example:
-```java
+
+[source,java]
+----
 @Geci("accessor")
 public class ExampleClass {
     @Geci("accessor getter='isTrue'")
     private boolean truth;
 }
-```
+----
 
 In this example the class is annotated to signal for the generator that
 this class needs the accessor generator to generate setters and getters

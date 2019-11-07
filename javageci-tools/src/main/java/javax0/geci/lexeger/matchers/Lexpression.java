@@ -6,6 +6,7 @@ import javax0.geci.lexeger.JavaLexed;
 import javax0.geci.lexeger.LexpressionBuilder.GroupNameWrapper;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +65,7 @@ public class Lexpression {
         if (groups.containsKey(name)) {
             return groups.get(name);
         }
-        return Arrays.asList();
+        return Collections.emptyList();
     }
 
     public Optional<MatchResult> regexGroups(final String name) {
@@ -243,7 +244,7 @@ public class Lexpression {
     }
 
     public LexMatcher match(String string) {
-        return list(lexer.apply(Arrays.asList(string)));
+        return list(lexer.apply(Collections.singletonList(string)));
     }
 
     public LexMatcher unordered(LexMatcher... matchers) {
@@ -256,7 +257,7 @@ public class Lexpression {
     }
 
     public LexMatcher unordered(String string) {
-        return unordered(lexer.apply(Arrays.asList(string)));
+        return unordered(lexer.apply(Collections.singletonList(string)));
     }
 
     public LexMatcher group(String name, LexMatcher matcher) {
@@ -277,7 +278,7 @@ public class Lexpression {
     }
 
     public LexMatcher not(String string) {
-        return not(lexer.apply(Arrays.asList(string)));
+        return not(lexer.apply(Collections.singletonList(string)));
     }
 
     public LexMatcher anyTill(LexMatcher... matchers) {
@@ -290,7 +291,7 @@ public class Lexpression {
     }
 
     public LexMatcher anyTill(String string) {
-        return anyTill(lexer.apply(Arrays.asList(string)));
+        return anyTill(lexer.apply(Collections.singletonList(string)));
     }
 
     //<editor-fold id="methods">
@@ -530,7 +531,7 @@ public class Lexpression {
     //</editor-fold>
 
     private LexMatcher getMatcher(String string) {
-        final var lexicalElements = lexer.apply(Arrays.asList(string));
+        final var lexicalElements = lexer.apply(Collections.singletonList(string));
         if (lexicalElements.length == 1) {
             return terminal(lexicalElements[0]);
         } else {

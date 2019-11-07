@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 import static javax0.geci.api.Source.Predicates.exists;
 import static javax0.geci.api.Source.Set.set;

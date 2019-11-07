@@ -144,11 +144,12 @@ test and the test fails in case new code was generated.
 To get this correct the code generation in Java::Geci is usually invoked
 from a three-line unit test that has the structure:
 
-```java
+[source,java]
+----
 if( code_was_generated ){
     Assertions.fail("code has changed");
 }
-```
+----
 
 The framework decides if the generated code is different or not from the
 already existing code and writes it back to the source code in the case
@@ -204,7 +205,8 @@ To use Java::Geci you have to have the libraries on the classpath. If
 you use Maven then the easiest way is to define the dependencies in the
 POM file.
 
-```xml
+[source,xml]
+----
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-annotation</artifactId>
@@ -229,14 +231,15 @@ POM file.
     <artifactId>javageci-tools</artifactId>
     <scope>test</scope>
 </dependency>
-```
+----
 
 The structure of the invocation is usually one lines in a unit test:
 
-```java
+[source,java]
+----
 Assertions.assertFalse(configuration and invocation of the code generators,
                                "code has changed");
-```
+----
 
 The `configuration and invocation of the code generators` part of the
 code is a chained method call that starts with creating a new `Geci`
@@ -246,7 +249,8 @@ the call:
 * Example:
 
 // snip TestAccessor
-```java
+[source,java]
+----
     @Test
     void testAccessor() throws Exception {
         Geci geci;
@@ -256,7 +260,7 @@ the call:
                         .generate(),
                 geci.failed());
     }
-```
+----
 
 creates the new `javax0.geci.engine.Geci` object and calls the
 `source()` and `register()` methods to configure the framework. Finally

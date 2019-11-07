@@ -1,7 +1,6 @@
 package javax0.geci.docugen;
 
 import javax0.geci.api.SegmentSplitHelper;
-import javax0.geci.tools.JVM8Tools;
 
 import java.util.List;
 import java.util.regex.Pattern;

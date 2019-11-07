@@ -21,7 +21,7 @@ public class JVM8Tools {
         while( sb.length() < n){
             sb.append(sb);
         }
-        return sb.substring(0,n).toString();
+        return sb.substring(0,n);
     }
 
     private static final Method getNestHostMethod;
@@ -30,7 +30,7 @@ public class JVM8Tools {
         Method _getNestHost = null;
         try {
             _getNestHost = Class.class.getDeclaredMethod("getNestHost");
-        } catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException ignored) {
         }
         getNestHostMethod = _getNestHost;
     }

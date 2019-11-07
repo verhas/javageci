@@ -8,7 +8,6 @@ import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
-import javax0.geci.tools.JVM8Tools;
 import javax0.geci.tools.TemplateLoader;
 import javax0.geci.tools.reflection.Selector;
 
@@ -50,7 +49,7 @@ public class Templated extends AbstractJavaGenerator {
     };
     private static final BiFunction<Context, String, String> BiFuNOOP = (ctx, s) -> s;
 
-    private class Config {
+    private static class Config {
         private Class<? extends Annotation> generatedAnnotation = Generated.class;
         private Context ctx = new Triplet();
         private String fieldFilter = "true";

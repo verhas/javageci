@@ -5,6 +5,7 @@ import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.tools.CompoundParamsBuilder;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -79,7 +80,7 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
         this.startPattern = startPattern;
         this.endPattern = endPattern;
         this.defaultPattern = defaultPattern;
-        this.excludedKeys = Arrays.asList();
+        this.excludedKeys = Collections.emptyList();
     }
 
     public RegexBasedSegmentSplitHelper(Pattern startPattern, Pattern endPattern, Pattern defaultPattern, List<String> excludedKeys) {
@@ -104,7 +105,7 @@ public class RegexBasedSegmentSplitHelper implements SegmentSplitHelper {
                     + startMatcher
                     + "\ndoes not give a second matching group. This is probably a coding error in that class.");
             }
-            attrs = new CompoundParamsBuilder(paramsDef).exclude(excludedKeys.toArray(new String[excludedKeys.size()])).redefineId().build();
+            attrs = new CompoundParamsBuilder(paramsDef).exclude(excludedKeys.toArray(new String[0])).redefineId().build();
             final var startSpaces = getGroup(1, startMatcher);
             if (startSpaces == null) {
                 throw new IllegalArgumentException("Start pattern in "
