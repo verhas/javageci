@@ -132,6 +132,7 @@ To run the generator you have to create a unit test. The structure of
 the unit test will look something like:
 
 // snip book_TestAccessor snippet="TestAccessor" trim="to=0"
+```java
 @Test
 void testAccessor() throws Exception {
     Geci geci;
@@ -141,7 +142,7 @@ void testAccessor() throws Exception {
                     .generate(),
             geci.failed());
 }
-// end snippet
+```
 
 When you use the builder to generate an instance you can define the
 following parameters:
