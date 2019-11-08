@@ -6,6 +6,7 @@ import javax0.geci.javacomparator.lex.LexicalElement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +61,7 @@ public class CompoundParamsBuilder {
         final var lexer = new Lexer();
         final LexicalElement[] elements;
         try {
-            elements = lexer.apply(Arrays.asList(line));
+            elements = lexer.apply(Collections.singletonList(line));
         } catch (IllegalArgumentException iae) {
             throw new GeciException("Cannot parse the line for parameters: " + line, iae);
         }

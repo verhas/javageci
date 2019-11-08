@@ -12,9 +12,6 @@ import static javax0.geci.tools.CaseTools.ucase;
 
 public class ChainedAccessor extends AbstractAccessor {
 
-    private static final Set<String> accessModifiers =
-            new HashSet<>(Arrays.asList("public", "private", "protected", "package"));
-
     public ChainedAccessor(){
         config.setterNameGenerator = name -> "with" + ucase(name);
         config.mnemonic = "caccessor";

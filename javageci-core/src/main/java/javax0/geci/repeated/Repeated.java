@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 
 @AnnotationBuilder
 public class Repeated extends AbstractJavaGenerator {
-    private class Config {
+    private static class Config {
         private String start = ".*//\\s*START\\s*";
         private String matchLine = "(.*)";
         private String end = ".*//\\s*END\\s*";

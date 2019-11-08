@@ -6,6 +6,7 @@ import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.JVM8Tools;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -18,7 +19,7 @@ public class SnippetStore {
     private static final String EPSILON = "epsilon";
 
     SnippetStore() {
-        originals.put(EPSILON, new Snippet(EPSILON, new CompoundParams(EPSILON, JVM8Tools.asMap()), Arrays.asList()));
+        originals.put(EPSILON, new Snippet(EPSILON, new CompoundParams(EPSILON, JVM8Tools.asMap()), Collections.emptyList()));
     }
 
     //snippet SnippetStore_name

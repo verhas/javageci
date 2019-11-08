@@ -16,7 +16,7 @@ import java.util.function.Function;
  * instead of the characters.
  *
  */
-public class Deunicode implements Function<String, String> {
+class Deunicode implements Function<String, String> {
     /**
      * Convert the string removing the unicode segments
      *

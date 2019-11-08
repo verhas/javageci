@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.regex.Pattern;
 
 import static javax0.geci.lexeger.LexpressionBuilder.character;
@@ -32,7 +33,7 @@ class TestMatching {
 
     @Test
     void testSimpleListMatching() {
-        final var source = new TestSource(Arrays.asList("private final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var result = javaLexed.match(match("private final int")).fromIndex(0).result();
             Assertions.assertTrue(result.matches);
@@ -43,7 +44,7 @@ class TestMatching {
 
     @Test
     void testSimpleListFindingWithSpaces() {
-        final var source = new TestSource(Arrays.asList("private final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var result = javaLexed.sensitivity(Lexpression.SPACE_SENSITIVE).find(match("public var h")).fromIndex(0).result();
             Assertions.assertTrue(result.matches);
@@ -54,7 +55,7 @@ class TestMatching {
 
     @Test
     void testSimpleListFindingWithComments() {
-        final var source = new TestSource(Arrays.asList("private final int z = 13;\npublic var //comment\nh = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var //comment\nh = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var result = javaLexed.sensitivity(Lexpression.COMMENT_SENSITIVE).find(list(match("public var "), comment(), match("h"))).fromIndex(0).result();
             Assertions.assertTrue(result.matches);
@@ -65,7 +66,7 @@ class TestMatching {
 
     @Test
     void testSimpleListFindingWithPatternedComments() {
-        final var source = new TestSource(Arrays.asList("private final int z = 13;\npublic var //comment\nh = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var //comment\nh = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var result =
                 javaLexed.sensitivity(Lexpression.COMMENT_SENSITIVE)
@@ -79,7 +80,7 @@ class TestMatching {
 
     @Test
     void testSimpleListFindingWithNamedPatternedComments() {
-        final var source = new TestSource(Arrays.asList("private final int z = 13;\npublic var //comment\nh = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var //comment\nh = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var result =
                 javaLexed.sensitivity(Lexpression.COMMENT_SENSITIVE)
@@ -95,7 +96,7 @@ class TestMatching {
 
     @Test
     void testSimpleListFindingWithTextComments() {
-        final var source = new TestSource(Arrays.asList("private final int z = 13;\npublic var //comment\nh = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var //comment\nh = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var result =
                 javaLexed.sensitivity(Lexpression.COMMENT_SENSITIVE)
@@ -109,7 +110,7 @@ class TestMatching {
 
     @Test
     void testSimpleListFinding() {
-        final var source = new TestSource(Arrays.asList("private final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var result = javaLexed.find(match("public var h")).fromStart().result();
             Assertions.assertTrue(result.matches);
@@ -120,7 +121,7 @@ class TestMatching {
 
     @Test
     void testSimpleGroupCollection() {
-        final var source = new TestSource(Arrays.asList("private final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             final var result = javaLexed.find(list(oneOf(group("protection"), "public", "private"), match("var h"))).fromStart().result();
             Assertions.assertTrue(result.matches);
@@ -134,7 +135,7 @@ class TestMatching {
 
     @Test
     void testSimpleUnmatchedGroup() {
-        final var source = new TestSource(Arrays.asList("private final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.find(list(group("protection", oneOf(match("public"), group("private", match("private")))), match("var h")));
             final var result = javaLexed.fromStart().result();
@@ -148,7 +149,7 @@ class TestMatching {
 
     @Test
     void testSimpleSetFinding() {
-        final var source = new TestSource(Arrays.asList("private final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.find(unordered("h public var"));
             final var result = javaLexed.fromStart().result();
@@ -160,7 +161,7 @@ class TestMatching {
 
     @Test
     void testComplexSetFinding() {
-        final var source = new TestSource(Arrays.asList("private final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.find(unordered(identifier("h"), keyword("public"), match("var")));
             final var result = javaLexed.fromStart().result();
@@ -172,7 +173,7 @@ class TestMatching {
 
     @Test
     void testSimpleSetNotFinding() {
-        final var source = new TestSource(Arrays.asList("private final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
 
             javaLexed.find(unordered("k public var"));
@@ -183,7 +184,7 @@ class TestMatching {
 
     @Test
     void testIdentifiertMatching() {
-        final var source = new TestSource(Arrays.asList("private final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(keyword("private"), identifier("final"), unordered("int")));
             final var result = javaLexed.fromIndex(0).result();
@@ -195,7 +196,7 @@ class TestMatching {
 
     @Test
     void testOrMoretMatching() {
-        final var source = new TestSource(Arrays.asList("private final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(oneOrMore(keyword("private")), zeroOrMore(identifier("final"))
                 , zeroOrMore(identifier("abraka dabra")), unordered("int")));
@@ -208,7 +209,7 @@ class TestMatching {
 
     @Test
     void testOrMoretMatchingMany() {
-        final var source = new TestSource(Arrays.asList("private private private final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private private private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(oneOrMore(keyword("private")), optional(identifier("final"))
                 , optional(identifier("abraka dabra")), unordered("int")));
@@ -221,7 +222,7 @@ class TestMatching {
 
     @Test
     void testrepeatMinNumber() {
-        final var source = new TestSource(Arrays.asList("private private private final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private private private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(repeat(keyword("private"), 3), optional(identifier("final"))
                 , optional(identifier("abraka dabra")), unordered("int")));
@@ -234,7 +235,7 @@ class TestMatching {
 
     @Test
     void testRepeatMinMaxNumber() {
-        final var source = new TestSource(Arrays.asList("private private private final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private private private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(repeat(keyword("private"), 2, 3), optional(identifier("final"))
                 , optional(identifier("abraka dabra")), unordered("int")));
@@ -247,7 +248,7 @@ class TestMatching {
 
     @Test
     void testAnyIdentifier() {
-        final var source = new TestSource(Arrays.asList("private  final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(keyword("private"), optional(identifier())
                 , optional(identifier("abraka dabra")), unordered("int")));
@@ -260,7 +261,7 @@ class TestMatching {
 
     @Test
     void testOneOf() {
-        final var source = new TestSource(Arrays.asList("private  final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(oneOf("final int", "int", "private final int"));
             final var result = javaLexed.fromIndex(0).result();
@@ -272,7 +273,7 @@ class TestMatching {
 
     @Test
     void testPatternedIdentifier() {
-        final var source = new TestSource(Arrays.asList("private  final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(keyword("private"), optional(identifier(Pattern.compile("f.*")))
                 , optional(identifier("abraka dabra")), unordered("int")));
@@ -285,7 +286,7 @@ class TestMatching {
 
     @Test
     void testNamedPatternedIdentifier() {
-        final var source = new TestSource(Arrays.asList("private  final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(keyword("private"), optional(identifier("final", Pattern.compile("f(.*)")))
                 , optional(identifier("abraka dabra")), unordered("int")));
@@ -302,7 +303,7 @@ class TestMatching {
 
     @Test
     void testFloatNumber() {
-        final var source = new TestSource(Arrays.asList("private  final int z = 13.5;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private  final int z = 13.5;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(match("private final int z = "), floatNumber()));
             final var result = javaLexed.fromIndex(0).result();
@@ -314,7 +315,7 @@ class TestMatching {
 
     @Test
     void testFloatNumberWithPredicate() {
-        final var source = new TestSource(Arrays.asList("private  final int z = 13.5;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private  final int z = 13.5;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(match("private final int z = "), floatNumber(f -> f > 13 && f < 14)));
             final var result = javaLexed.fromIndex(0).result();
@@ -326,7 +327,7 @@ class TestMatching {
 
     @Test
     void testFloatNumberWithFailingPredicate() {
-        final var source = new TestSource(Arrays.asList("private  final int z = 13.5;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private  final int z = 13.5;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(match("private final int z = "), floatNumber(f -> false)));
             final var result = javaLexed.fromIndex(0).result();
@@ -337,7 +338,7 @@ class TestMatching {
 
     @Test
     void testIntegerNumber() {
-        final var source = new TestSource(Arrays.asList("private  final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(match("private final int z = "), integerNumber()));
             final var result = javaLexed.fromIndex(0).result();
@@ -349,7 +350,7 @@ class TestMatching {
 
     @Test
     void testIntegerNumberWithPredicate() {
-        final var source = new TestSource(Arrays.asList("private  final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
 
             javaLexed.match(list(match("private final int z = "), integerNumber(f -> f > 12 && f < 14)));
@@ -362,7 +363,7 @@ class TestMatching {
 
     @Test
     void testIntegerNumberWithFailingPredicate() {
-        final var source = new TestSource(Arrays.asList("private  final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
 
             javaLexed.match(list(match("private final int z = "), integerNumber(f -> false)));
@@ -373,7 +374,7 @@ class TestMatching {
 
     @Test
     void testNumber() {
-        final var source = new TestSource(Arrays.asList("private  final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(match("private final int z = "), number()));
             final var result = javaLexed.fromIndex(0).result();
@@ -385,7 +386,7 @@ class TestMatching {
 
     @Test
     void testNumberWithPredicate() {
-        final var source = new TestSource(Arrays.asList("private  final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(match("private final int z = "), number(f -> true)));
             final var result = javaLexed.fromIndex(0).result();
@@ -397,7 +398,7 @@ class TestMatching {
 
     @Test
     void testNumberWithFailingPredicate() {
-        final var source = new TestSource(Arrays.asList("private  final int z = 13;\npublic var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("private  final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(match("private final int z = "), number(f -> false)));
             final var result = javaLexed.fromIndex(0).result();
@@ -407,7 +408,7 @@ class TestMatching {
 
     @Test
     void testType() {
-        final var source = new TestSource(Arrays.asList("List"));
+        final var source = new TestSource(Collections.singletonList("List"));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(type());
             final var result = javaLexed.fromIndex(0).result();
@@ -417,7 +418,7 @@ class TestMatching {
 
     @Test
     void testTypeWithGenerics() {
-        final var source = new TestSource(Arrays.asList("List<Object,?>"));
+        final var source = new TestSource(Collections.singletonList("List<Object,?>"));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(type());
             final var result = javaLexed.fromIndex(0).result();
@@ -429,7 +430,7 @@ class TestMatching {
 
     @Test
     void testTypeWithGenericsAndPackageAndSpace() {
-        final var source = new TestSource(Arrays.asList("java.util.List< Object , ? >"));
+        final var source = new TestSource(Collections.singletonList("java.util.List< Object , ? >"));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(type(group("xx")));
             final var result = javaLexed.fromIndex(0).result();
@@ -455,7 +456,7 @@ class TestMatching {
 
     @Test
     void testString() {
-        final var source = new TestSource(Arrays.asList("public var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("public var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(match("public var h = "), string()));
             final var result = javaLexed.fromIndex(0).result();
@@ -465,7 +466,7 @@ class TestMatching {
 
     @Test
     void testStringWithValue() {
-        final var source = new TestSource(Arrays.asList("public var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("public var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(match("public var h = "), string("kkk")));
             final var result = javaLexed.fromIndex(0).result();
@@ -475,7 +476,7 @@ class TestMatching {
 
     @Test
     void testStringWithPattern() {
-        final var source = new TestSource(Arrays.asList("public var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("public var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(match("public var h = "), string(Pattern.compile("k{3}"))));
             final var result = javaLexed.fromIndex(0).result();
@@ -485,7 +486,7 @@ class TestMatching {
 
     @Test
     void testStringWithNamedPattern() {
-        final var source = new TestSource(Arrays.asList("public var h = \"kkk\""));
+        final var source = new TestSource(Collections.singletonList("public var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(match("public var h = "), string("Zkk", Pattern.compile("(k{3})"))));
             final var result = javaLexed.fromIndex(0).result();
@@ -499,7 +500,7 @@ class TestMatching {
 
     @Test
     void testCharacter() {
-        final var source = new TestSource(Arrays.asList("public var h = 'kkk'"));
+        final var source = new TestSource(Collections.singletonList("public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(match("public var h = "), character()));
             final var result = javaLexed.fromIndex(0).result();
@@ -509,7 +510,7 @@ class TestMatching {
 
     @Test
     void testCharacterWithValue() {
-        final var source = new TestSource(Arrays.asList("public var h = 'kkk'"));
+        final var source = new TestSource(Collections.singletonList("public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(match("public var h = "), character("kkk")));
             final var result = javaLexed.fromIndex(0).result();
@@ -519,7 +520,7 @@ class TestMatching {
 
     @Test
     void testCharacterWithPattern() {
-        final var source = new TestSource(Arrays.asList("public var h = 'kkk'"));
+        final var source = new TestSource(Collections.singletonList("public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(match("public var h = "), character(Pattern.compile("k{3}"))));
             final var result = javaLexed.fromIndex(0).result();
@@ -529,7 +530,7 @@ class TestMatching {
 
     @Test
     void testCharacterWithNamedPattern() {
-        final var source = new TestSource(Arrays.asList("public var h = 'kkk'"));
+        final var source = new TestSource(Collections.singletonList("public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(match("public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
             final var result = javaLexed.fromIndex(0).result();
@@ -542,7 +543,7 @@ class TestMatching {
 
     @Test
     void testModifiers() {
-        final var source = new TestSource(Arrays.asList("public var h = 'kkk'"));
+        final var source = new TestSource(Collections.singletonList("public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             final var result = javaLexed.match(list(modifier(Modifier.PRIVATE | Modifier.PUBLIC), match(" var h = "), character("Zkk", Pattern.compile("(k{3})")))).fromIndex(0).result();
             Assertions.assertTrue(result.matches);
@@ -554,7 +555,7 @@ class TestMatching {
 
     @Test
     void testModifiersNoMatch() {
-        final var source = new TestSource(Arrays.asList("final var h = 'kkk'"));
+        final var source = new TestSource(Collections.singletonList("final var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.find(list(modifier(Modifier.PRIVATE | Modifier.PUBLIC), match(" var h = "), character("Zkk", Pattern.compile("(k{3})"))));
             final var result = javaLexed.fromIndex(0).result();
@@ -564,7 +565,7 @@ class TestMatching {
 
     @Test
     void testBackTrackOneStep() {
-        final var source = new TestSource(Arrays.asList("public public var h = 'kkk'"));
+        final var source = new TestSource(Collections.singletonList("public public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(oneOrMore(match("public")), match("public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
             final var result = javaLexed.fromIndex(0).result();
@@ -577,7 +578,7 @@ class TestMatching {
 
     @Test
     void testBackTrackTwoSteps() {
-        final var source = new TestSource(Arrays.asList("public public var h = 'kkk'"));
+        final var source = new TestSource(Collections.singletonList("public public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(oneOrMore("public"), match("public public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
             final var result = javaLexed.fromIndex(0).result();
@@ -587,7 +588,7 @@ class TestMatching {
 
     @Test
     void testBackTrackTwoStepsSuccessful() {
-        final var source = new TestSource(Arrays.asList("public public var h = 'kkk'"));
+        final var source = new TestSource(Collections.singletonList("public public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             javaLexed.match(list(zeroOrMore(match("public")), match("public public var h = "), character("Zkk", Pattern.compile("(k{3})"))));
             final var result = javaLexed.fromIndex(0).result();
@@ -600,7 +601,7 @@ class TestMatching {
 
     @Test
     void testSimpleReplacement() {
-        final var source = new TestSource(Arrays.asList("/** this is a comment */ public public var h = 'kkk'"));
+        final var source = new TestSource(Collections.singletonList("/** this is a comment */ public public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             final var result = javaLexed
                                    .find(list(zeroOrMore(match("public")), match("public public var h = "), character("Zkk", Pattern.compile("(k{3})"))))
@@ -612,7 +613,7 @@ class TestMatching {
 
     @Test
     void testSimpleReplacement2() {
-        final var source = new TestSource(Arrays.asList("/** this is a comment */ public public var h = 'kkk'"));
+        final var source = new TestSource(Collections.singletonList("/** this is a comment */ public public var h = 'kkk'"));
         try (final var javaLexed = new JavaLexed(source)) {
             final var result = javaLexed
                                    .find(list(zeroOrMore(match("public")), match("public public var h = "), character("Zkk", Pattern.compile("(k{3})"))))

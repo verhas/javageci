@@ -11,12 +11,18 @@ import javax0.geci.api.Source;
 interface SourceStore {
 
     /**
-     * Get the source object associated with  specific file name.
+     * Get the source object associated with specific file name.
      *
-     * @param fileName
-     * @return
+     * @param fileName the name of the file from which the source is read
+     * @return the source object for the file
      */
     Source get(String fileName);
 
+    /**
+     * Get the source object associated with specific file name from a set.
+     * @param set the source set in which the source object should be
+     * @param fileName the name of the file from which the source is read
+     * @return the source object for the file from the given set
+     */
     Source get(Source.Set set, String fileName);
 }
