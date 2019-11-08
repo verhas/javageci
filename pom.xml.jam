@@ -29,6 +29,7 @@
                             {opens/engine/engine}
                             {opens/core/fluent.syntax}
                             {opens/core/record}
+                            {opens/core/repeated}
                             {opens/core/mapper}
                             {opens/examples/tutorials.simple}
                             {opens/examples/tutorials.hello}
