@@ -10,8 +10,9 @@ public class TestHelloWorld2 {
     @Test
     @DisplayName("Start code generator for HelloWorld2")
     void testGenerateCode() throws Exception {
-        Assertions.assertFalse(new Geci()
+        final var geci = new Geci();
+        Assertions.assertFalse(geci
                 .register(new HelloWorldGenerator2())
-                .generate(), Geci.FAILED);
+                .generate(), geci.failed());
     }
 }
