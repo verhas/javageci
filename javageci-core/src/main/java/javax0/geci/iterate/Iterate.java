@@ -3,15 +3,17 @@ package javax0.geci.iterate;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Source;
 import javax0.geci.core.annotations.AnnotationBuilder;
+import javax0.geci.templated.Context;
+import javax0.geci.templated.Triplet;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
-import javax0.geci.tools.TemplateLoader;
-import javax0.geci.tools.Tracer;
+import javax0.geci.tools.Untabber;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 /**
@@ -59,6 +61,8 @@ import java.util.regex.Pattern;
 
 @AnnotationBuilder
 public class Iterate extends AbstractJavaGenerator {
+    private static final Pattern editorFold = Pattern.compile("\\s*//\\s*<\\s*editor-fold.*?\\sid\\s*=\\s*\"(.*?)\".*");
+
     private static class Config {
         // /* TEMPLATE
         private String templateLine = "\\s*/\\*\\s*TEMPLATE\\s*";
@@ -68,49 +72,107 @@ public class Iterate extends AbstractJavaGenerator {
         private String editorFoldLine = "\\s*EDITOR-FOLD-ID\\s+(\\w[\\w\\d]*)\\s*";
         // */
         private String templateEndLine = "^\\s*\\*/\\s*$";
+
+        private String sep1 = ",";
+        private String sep2 = "|";
+
+        private String sep1Line = "\\s*SEP1\\s+([^\\s]*)\\s*";
+        private String sep2Line = "\\s*SEP2\\s+([^\\s]*)\\s*";
+        private String escapeLine = "\\s*ESCAPE\\s*";
+        private Consumer<Context> define = null;
     }
 
     private static class Template {
-        int startLine;
-        private String editorFold;
-        private StringBuilder text = new StringBuilder();
+        private String sep1 = null;
+        private String sep2 = null;
+        private int startLine;
+        private String editorFold = null;
+        private List<String> lines = new ArrayList<>();
         private List<Map<String, String>> values;
     }
 
-    private List<Template> collectTemplates(Source source, CompoundParams params) {
+    private List<Template> collectTemplates(Source source, Config local) {
         final var templates = new ArrayList<Template>();
-        final var local = localConfig(params);
         final var templateLine = Pattern.compile(local.templateLine);
         final var templateEndLine = Pattern.compile(local.templateEndLine);
         final var loopLine = Pattern.compile(local.loopLine);
         final var editorFoldLine = Pattern.compile(local.editorFoldLine);
+        final var sep1Line = Pattern.compile(local.sep1Line);
+        final var sep2Line = Pattern.compile(local.sep2Line);
+        final var escapeLine = Pattern.compile(local.escapeLine);
         Template template = null;
+        Template dainglet = null;
         int lineIndex = 0;
+        boolean escape = false;
         for (final var line : source.getLines()) {
             lineIndex++;
             if (template != null) {
-                if (isLoopLine(source, loopLine, template, line))
-                    continue;
-                if (isEditorFoldIdLine(editorFoldLine, template, line))
-                    continue;
-                if (isTemplateEndLine(templates, templateEndLine, template, line)) {
-                    template = null;
-                    continue;
+                if (!escape) {
+                    if (isLoopLine(source, loopLine, template, line, local))
+                        continue;
+                    if (isEditorFoldIdLine(editorFoldLine, template, line))
+                        continue;
+                    if (isTemplateEndLine(templates, templateEndLine, template, line)) {
+                        if (template.editorFold == null) {
+                            dainglet = template;
+                        } else {
+                            dainglet = null;
+                        }
+                        template = null;
+                        continue;
+                    }
+                    if (isSep1(template, sep1Line, line)) {
+                        continue;
+                    }
+                    if (isSep2(template, sep2Line, line)) {
+                        continue;
+                    }
+                    if (escapeLine.matcher(line).matches()) {
+                        escape = true;
+                        continue;
+                    }
                 }
-                template.text.append(line).append("\n");
+                escape = false;
+                template.lines.add(line);
             } else {
                 if (templateLine.matcher(line).matches()) {
                     template = new Template();
                     template.startLine = lineIndex;
                     continue;
                 }
+                if (dainglet != null) {
+                    final var editorFoldMatcher = editorFold.matcher(line);
+                    if (editorFoldMatcher.matches()) {
+                        dainglet.editorFold = editorFoldMatcher.group(1);
+                        dainglet = null;
+                    }
+                }
             }
         }
         return templates;
     }
 
+    private boolean isSep1(Template template, Pattern sep1Line, String line) {
+        final var sep1LineMatcher = sep1Line.matcher(line);
+        if (sep1LineMatcher.matches()) {
+            template.sep1 = sep1LineMatcher.group(1);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isSep2(Template template, Pattern sep2Line, String line) {
+        final var sep2LineMatcher = sep2Line.matcher(line);
+        if (sep2LineMatcher.matches()) {
+            template.sep2 = sep2LineMatcher.group(1);
+            return true;
+        }
+        return false;
+    }
+
     private boolean isTemplateEndLine(ArrayList<Template> templates, Pattern templateEndLine, Template template, String line) {
         if (templateEndLine.matcher(line).matches()) {
+            template.lines = Untabber.untab(template.lines);
             templates.add(template);
             return true;
         }
@@ -126,36 +188,38 @@ public class Iterate extends AbstractJavaGenerator {
         return false;
     }
 
-    private boolean isLoopLine(Source source, Pattern loopLine, Template template, String line) {
+    private boolean isLoopLine(Source source, Pattern loopLine, Template template, String line, Config local) {
         final var loopMatcher = loopLine.matcher(line);
         if (loopMatcher.matches()) {
-            collectValues(template, loopMatcher.group(1), source);
+            collectValues(template, loopMatcher.group(1), source, local);
             return true;
         }
         return false;
     }
 
-    private void collectValues(Template template, String loopString, Source source) {
+    private void collectValues(Template template, String loopString, Source source, Config local) {
+        final String sep1 = Pattern.quote(template.sep1 != null ? template.sep1 : local.sep1);
+        final String sep2 = Pattern.quote(template.sep2 != null ? template.sep2 : local.sep2);
         final var eqIndex = loopString.indexOf('=');
         if (eqIndex == -1) {
             return;
         }
         final var keysCsv = loopString.substring(0, eqIndex).trim();
-        final var keys = keysCsv.split(",");
-        final var valuesCsvs = loopString.substring(eqIndex + 1).trim().split("\\|");
+        final var keys = keysCsv.split(sep1);
+        final var valuesCsvs = loopString.substring(eqIndex + 1).trim().split(sep2);
         template.values = new ArrayList<>();
         for (final var valuesCsv : valuesCsvs) {
-            final var values = valuesCsv.split(",");
+            final var values = valuesCsv.split(sep1);
             if (values.length != keys.length) {
                 throw new GeciException("Template in " +
-                                            source.getAbsoluteFile() +
-                                            ":" + template.startLine +
-                                            " has different number of keys and values as in\n" +
-                                            "keys:'" + keysCsv + "' values:'" + valuesCsv);
+                    source.getAbsoluteFile() +
+                    ":" + template.startLine +
+                    " has different number of keys and values as in\n" +
+                    "keys:'" + keysCsv + "' values:'" + valuesCsv);
             }
-            final var map = new HashMap<String,String>();
-            for( int i = 0  ; i < keys.length ; i ++ ){
-                map.put(keys[i],values[i]);
+            final var map = new HashMap<String, String>();
+            for (int i = 0; i < keys.length; i++) {
+                map.put(keys[i], values[i]);
             }
             template.values.add(map);
         }
@@ -164,17 +228,31 @@ public class Iterate extends AbstractJavaGenerator {
 
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
-        final var templates = collectTemplates(source,global);
-        for( final var template : templates ){
+        final var local = localConfig(global);
+        final var templates = collectTemplates(source, local);
+        final var ctx = new Triplet();
+        for (final var template : templates) {
+            if (template.editorFold == null) {
+                throw new GeciException("Template staring on the line " +
+                    source.getAbsoluteFile() +
+                    ":" + template.startLine +
+                    " does not have an editor fold specified.");
+            }
             try (final var segment = source.open(template.editorFold)) {
                 if (segment == null) {
                     throw new GeciException("Segment " + template.editorFold + " does not exist");
                 }
-                for( final var map : template.values){
-                    for( final var entry : map.entrySet()){
-                        segment.param(entry.getKey(),entry.getValue());
+                for (final var map : template.values) {
+                    for (final var entry : map.entrySet()) {
+                        segment.param(entry.getKey(), entry.getValue());
                     }
-                    segment.write(template.text.toString());
+                    if (local.define != null) {
+                        ctx.triplet(source, klass, segment);
+                        local.define.accept(ctx);
+                    }
+                    for (final var s : template.lines) {
+                        segment.write(s);
+                    }
                 }
             }
         }
@@ -185,11 +263,12 @@ public class Iterate extends AbstractJavaGenerator {
     private String configuredMnemonic = "repeated";
 
     @Override
-    public String mnemonic(){
+    public String mnemonic() {
         return configuredMnemonic;
     }
 
     private final Config config = new Config();
+
     public static Iterate.Builder builder() {
         return new Iterate().new Builder();
     }
@@ -206,7 +285,13 @@ public class Iterate extends AbstractJavaGenerator {
     public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
+
     public class Builder implements javax0.geci.api.GeneratorBuilder {
+        public Builder define(java.util.function.Consumer<javax0.geci.templated.Context> define) {
+            config.define = define;
+            return this;
+        }
+
         public Builder editorFoldLine(String editorFoldLine) {
             config.editorFoldLine = editorFoldLine;
             return this;
@@ -236,8 +321,10 @@ public class Iterate extends AbstractJavaGenerator {
             return Iterate.this;
         }
     }
-    private Config localConfig(CompoundParams params){
+
+    private Config localConfig(CompoundParams params) {
         final var local = new Config();
+        local.define = config.define;
         local.editorFoldLine = params.get("editorFoldLine", config.editorFoldLine);
         local.loopLine = params.get("loopLine", config.loopLine);
         local.templateEndLine = params.get("templateEndLine", config.templateEndLine);

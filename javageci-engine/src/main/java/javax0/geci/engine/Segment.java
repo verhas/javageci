@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class Segment implements javax0.geci.api.Segment {
@@ -63,6 +64,15 @@ public class Segment implements javax0.geci.api.Segment {
             params.put(keyValuePairs[i], keyValuePairs[i + 1]);
         }
         return this;
+    }
+
+
+    @Override
+    public Optional<String> getParam(String key){
+        if( params.containsKey(key)){
+            return Optional.of(params.get(key));
+        }
+        return Optional.empty();
     }
 
     @Override

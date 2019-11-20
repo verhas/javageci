@@ -37,6 +37,11 @@ mkdir -p release/07docugen
 cp javageci-docugen/target/*jar release/07docugen
 cp javageci-docugen/pom.xml release/07docugen
 
+echo Creating 08core-annotations
+mkdir -p release/08coreannotations
+cp javageci-core-annotations/target/*jar release/08coreannotations
+cp javageci-core-annotations/pom.xml release/08coreannotations
+
 cd release
 for artifact in *
 do

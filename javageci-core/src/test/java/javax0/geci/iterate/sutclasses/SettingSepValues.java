@@ -1,13 +1,14 @@
 package javax0.geci.iterate.sutclasses;
 
-public class IteratePrimitives {
-
+public class SettingSepValues {
     /* TEMPLATE
     {{type}} get_{{type}}Value(){
-      {{type}} z = 0;
-      return z;
+      {{type}} {{variable}} = 0;
+      return {{variable}};
     }
-    LOOP type=int|long|short
+    SEP1 +
+    SEP2 |||
+    LOOP type+variable=int+i|||long+l|||short+s
     EDITOR-FOLD-ID getters
      */
     //<editor-fold id="getters">
