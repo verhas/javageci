@@ -62,6 +62,7 @@
                             --add-opens geci.core/javax0.geci.fluent.syntax=ALL-UNNAMED
                             --add-opens geci.core/javax0.geci.record=ALL-UNNAMED
                             --add-opens geci.core/javax0.geci.repeated=ALL-UNNAMED
+                            --add-opens geci.core/javax0.geci.iterate=ALL-UNNAMED
                             --add-opens geci.core/javax0.geci.mapper=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tutorials.simple=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tutorials.hello=ALL-UNNAMED
