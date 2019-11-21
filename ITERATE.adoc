@@ -132,9 +132,15 @@ second loop and `aShort` in the last loop.
 The templates are processed from the start of the file towards the end
 and the code generated is also prepared in this order. The content of
 the generated code will be inserted into the `editor-fold` segment that
-follows the template directly.
+follows the template directly. Although this way the `id` of the
+`editor-fold` segment is not really interesting you must specify a
+unique `id` for each segment. This is a restriction of the the
+Java::Geci framework.
+
 
 == Advanced Use
+
+=== `EDITOR-FOLD-ID`
 
 It may happen that you have multiple templates looping over different
 values and you want the result to go into the same `editor-fold`
@@ -180,3 +186,24 @@ public class IterateOverMultipleValues {
 }
 ----
 
+the generated code gets into the `editor-fold` that has the `id` name
+`getters` even though this is not the one that follows the template
+definition.
+
+Use this feature to send the generated code into a single segment from
+multiple iterating templates. Usually it is a good practice to keep the
+template and the segment together.
+
+=== `ESCAPE` and `SKIP`
+
+The end of the template is signalled by a line that is `\*/`. This is
+essentially the end of a comment. What happens if you want to include a
+comment, like a JavaDoc into the template. You can write the `*/`
+characters at the end of the comment lines that still has some
+characters in it. This solution is not elegant and it essentially is a
+workaround. To have a line that is exactly a comment closing or just any
+line that would be interpreted by the template processing, like a `LOOP`
+line you should have a line containng nothing else but an `ESCAPE` on
+the previous line. This will tell the template processing to include the
+next line into the template text and continue the normal processing on
+the line after.
