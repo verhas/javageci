@@ -40,3 +40,143 @@ The following example is a very simple repeated code fragment:
 The template is inside the comment and the part between the
 ``editor-fold``s is generated.
 
+== Using the generator
+
+To execute the generator the first thing is to create a unit test that registers the generator into a Geci object and starts the generator framework.
+
+[source,java]
+----
+@Test
+void generate() throws IOException {
+
+    Geci geci = new Geci();
+    Assertions.assertFalse(geci
+                 .register(Iterate.builder().build())
+                 .generate(),
+        geci.failed());
+}
+----
+
+This test generates a Geci object, registers a new Iterate generator
+object created using the builder functinality built-in to the generator
+and then starts generation. When there is any code generated the method
+`generate()` returns `true`. In this case the code has to be compiled
+again, signalled by the fact that the `assertFalse()` fails.
+
+In the Java source files where you want to use the generator you have to
+annotate the class with the annotation `@Geci("iterate")`. You can also
+use the `@Iterate` annotation instead, which is defined in the
+`javageci-core-annotations` module. This will instruct the Geci
+framework that you want to use the Iterator generator on the given
+class.
+
+If you want to avoid this annotation for some reason an alternative
+possibility is to have two lines
+
+[source,java]
+----
+//<editor-fold id="iterate">
+//</editor-fold>
+----
+
+When the framework sees that there is an `editor-fold` with an `id` that
+is the mnemonic of the generator then the framework assumes that the
+generator is needed for that file. Generators many time write into
+`editor-folds` that bear the same name as the generator.
+
+The generator `iterate`, however, is a bit different, because this
+generator can write program code into many different `editor-fold`
+segments. Eventually, no more than one segment can have the `id` name
+`iterate`.
+
+The next thing to use the generator is to insert the templates and the
+corresponding `editor-fold` segments into the Java source code.
+
+A template starts after a line that is `/\*TEMPLATE` or `TEMPLATE`.
+There can be spaces before and after and between the `/*` and the word
+`TEMPLATE` but there should not be anything else on the line. When the
+generator sees such a line it starts to collect the following lines as
+the content of the template.
+
+The end of the template is signalled by a line that has `*/` on it and
+nothing else (except spaces).
+
+The content of the template can contain parameters between `{{` and `}}`
+characters similarly as it is used by the mustache template program.
+(The generator is not using mustache, template handling is simpler.)
+
+While collecting the lines of the template some of the lines are
+recognized as parameter definitions for the template. These lines do not
+get into the trunk of the template. (Command names on these lines are
+always capital.)
+
+As you could see in the introduction the line
+
+    LOOP type=int|long|short
+
+is not part of the template text. It instructs the generator to iterate
+through the types and set the parameter `{{type}}` in the text to `int`
+first, `long` the second and `short` the last. That way you can iterate
+over multiple values of a single parameters.
+
+A more complex template may need more than one parameters. In that case
+you can list them in the `LOOP` line as
+
+    LOOP type,var=int,aInt|long,aLong|short,aShort
+
+This will tell the generator to set the parameter `{{type}}` the same
+way as before for the three iterations but the same time also set the
+parameter `{{var}}` to `aInt` in the first loop, to `aLong` in the
+second loop and `aShort` in the last loop.
+
+The templates are processed from the start of the file towards the end
+and the code generated is also prepared in this order. The content of
+the generated code will be inserted into the `editor-fold` segment that
+follows the template directly.
+
+== Advanced Use
+
+It may happen that you have multiple templates looping over different
+values and you want the result to go into the same `editor-fold`
+segment. It is possible using the `EDITOR_FOLD_ID`.
+
+In the following example
+
+[source,java]
+----
+package javax0.geci.iterate.sutclasses;
+
+public class IterateOverMultipleValues {
+    /* TEMPLATE
+    {{type}} get_{{type}}Value(){
+      {{type}} {{variable}} = 0;
+      return {{variable}};
+    }
+
+    LOOP type,variable=int,i|long,l|short,s
+    EDITOR-FOLD-ID getters
+     */
+    //<editor-fold id="other">
+            // nothing gets here
+    //</editor-fold>
+
+    //<editor-fold id="getters">
+    int get_intValue(){
+      int i = 0;
+      return i;
+    }
+
+    long get_longValue(){
+      long l = 0;
+      return l;
+    }
+
+    short get_shortValue(){
+      short s = 0;
+      return s;
+    }
+
+    //</editor-fold>
+}
+----
+
