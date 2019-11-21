@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-public class TestIterate {
+class TestIterate {
 
     @Test
     @DisplayName("Properly generates Iterated text with single value")
@@ -323,7 +323,7 @@ public class TestIterate {
     }
 
     @Test
-    @DisplayName("Properly generates Iterated text with single value daingling")
+    @DisplayName("Properly generates Iterated text with single value dangling")
     void testSingleValueWithoutExplicitEditorFold() throws Exception {
         // GIVEN
         final var sut = Iterate.builder().build();
@@ -382,5 +382,84 @@ public class TestIterate {
             String.join("\n", source.getLines()));
     }
 
+    @Test
+    @DisplayName("Properly generates Iterated text with lines skipped")
+    void testSingleValueWithSkippedLine() throws Exception {
+        // GIVEN
+        final var sut = Iterate.builder().build();
+        final var source = Source.mock(sut).lines("package javax0.geci.iterate.sutclasses;\n" +
+                                                      "\n" +
+                                                      "public class SkippedLines {\n" +
+                                                      "    /* TEMPLATE\n" +
+                                                      "    /**\n" +
+                                                      "     * A simple zero getter serving as a test example\n" +
+                                                      "     * @return zero in the type {{type}}\n" +
+                                                      "    ESCAPE\n" +
+                                                      "     */\n" +
+                                                      "    // SKIP\n" +
+                                                      "    /*\n" +
+                                                      "    {{type}} get_{{type}}Value(){\n" +
+                                                      "      {{type}} {{variable}} = 0;\n" +
+                                                      "      return {{variable}};\n" +
+                                                      "    }\n" +
+                                                      "    LOOP type,variable=int,i|long,l|short,s\n" +
+                                                      "    EDITOR-FOLD-ID getters\n" +
+                                                      "     */\n" +
+                                                      "    //<editor-fold id=\"getters\">\n" +
+                                                      "    //</editor-fold>\n" +
+                                                      "}\n")
+                               .getSource();
+        final CompoundParams global = new CompoundParamsBuilder("iterate").build();
+        // WHEN
+        sut.process(source, null, global);
 
+        // THEN
+        source.consolidate();
+        Assertions.assertEquals("package javax0.geci.iterate.sutclasses;\n" +
+                                    "\n" +
+                                    "public class SkippedLines {\n" +
+                                    "    /* TEMPLATE\n" +
+                                    "    /**\n" +
+                                    "     * A simple zero getter serving as a test example\n" +
+                                    "     * @return zero in the type {{type}}\n" +
+                                    "    ESCAPE\n" +
+                                    "     */\n" +
+                                    "    // SKIP\n" +
+                                    "    /*\n" +
+                                    "    {{type}} get_{{type}}Value(){\n" +
+                                    "      {{type}} {{variable}} = 0;\n" +
+                                    "      return {{variable}};\n" +
+                                    "    }\n" +
+                                    "    LOOP type,variable=int,i|long,l|short,s\n" +
+                                    "    EDITOR-FOLD-ID getters\n" +
+                                    "     */\n" +
+                                    "    //<editor-fold id=\"getters\">\n" +
+                                    "    /**\n" +
+                                    "     * A simple zero getter serving as a test example\n" +
+                                    "     * @return zero in the type int\n" +
+                                    "     */\n" +
+                                    "    int get_intValue(){\n" +
+                                    "      int i = 0;\n" +
+                                    "      return i;\n" +
+                                    "    }\n" +
+                                    "    /**\n" +
+                                    "     * A simple zero getter serving as a test example\n" +
+                                    "     * @return zero in the type long\n" +
+                                    "     */\n" +
+                                    "    long get_longValue(){\n" +
+                                    "      long l = 0;\n" +
+                                    "      return l;\n" +
+                                    "    }\n" +
+                                    "    /**\n" +
+                                    "     * A simple zero getter serving as a test example\n" +
+                                    "     * @return zero in the type short\n" +
+                                    "     */\n" +
+                                    "    short get_shortValue(){\n" +
+                                    "      short s = 0;\n" +
+                                    "      return s;\n" +
+                                    "    }\n" +
+                                    "    //</editor-fold>\n" +
+                                    "}",
+            String.join("\n", source.getLines()));
+    }
 }

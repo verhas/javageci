@@ -73,12 +73,14 @@ public class Iterate extends AbstractJavaGenerator {
         // */
         private String templateEndLine = "^\\s*\\*/\\s*$";
 
+
         private String sep1 = ",";
         private String sep2 = "|";
 
         private String sep1Line = "\\s*SEP1\\s+([^\\s]*)\\s*";
         private String sep2Line = "\\s*SEP2\\s+([^\\s]*)\\s*";
         private String escapeLine = "\\s*ESCAPE\\s*";
+        private String skipLine = "\\s*(?://)?\\s*SKIP\\s*";
         private Consumer<Context> define = null;
     }
 
@@ -100,24 +102,26 @@ public class Iterate extends AbstractJavaGenerator {
         final var sep1Line = Pattern.compile(local.sep1Line);
         final var sep2Line = Pattern.compile(local.sep2Line);
         final var escapeLine = Pattern.compile(local.escapeLine);
+        final var skipLine = Pattern.compile(local.skipLine);
         Template template = null;
-        Template dainglet = null;
-        int lineIndex = 0;
+        Template danglet = null;
+        int lineIndex = 0; // keep track of line numbers, used only in error messages
         boolean escape = false;
+        boolean skip = false;
         for (final var line : source.getLines()) {
             lineIndex++;
             if (template != null) {
+                if( skip ){
+                    skip = false;
+                    continue;
+                }
                 if (!escape) {
                     if (isLoopLine(source, loopLine, template, line, local))
                         continue;
                     if (isEditorFoldIdLine(editorFoldLine, template, line))
                         continue;
                     if (isTemplateEndLine(templates, templateEndLine, template, line)) {
-                        if (template.editorFold == null) {
-                            dainglet = template;
-                        } else {
-                            dainglet = null;
-                        }
+                        danglet = getDanglingTemplate(template);
                         template = null;
                         continue;
                     }
@@ -131,6 +135,10 @@ public class Iterate extends AbstractJavaGenerator {
                         escape = true;
                         continue;
                     }
+                    if (skipLine.matcher(line).matches()) {
+                        skip = true;
+                        continue;
+                    }
                 }
                 escape = false;
                 template.lines.add(line);
@@ -140,11 +148,11 @@ public class Iterate extends AbstractJavaGenerator {
                     template.startLine = lineIndex;
                     continue;
                 }
-                if (dainglet != null) {
+                if (danglet != null) {
                     final var editorFoldMatcher = editorFold.matcher(line);
                     if (editorFoldMatcher.matches()) {
-                        dainglet.editorFold = editorFoldMatcher.group(1);
-                        dainglet = null;
+                        danglet.editorFold = editorFoldMatcher.group(1);
+                        danglet = null;
                     }
                 }
             }
@@ -152,10 +160,33 @@ public class Iterate extends AbstractJavaGenerator {
         return templates;
     }
 
+    /**
+     * A template is dangling during the template scanning process if
+     * there is no editor fold assigned to it. In this case the next
+     * editor fold will be assigned. The scanning process keeps track of
+     * the last dangling template in the local variable {@code danglet}
+     * and when there is a dangling template and the scanning process
+     * meets a editor fold outside of a template then it will assign the
+     * ID of that editor fold to the dangling template.
+     *
+     * @param template the template that we just finish processing
+     * @return the template if it does not have an editor fold
+     * identifier defined or {@code null}
+     */
+    private Template getDanglingTemplate(Template template) {
+        Template danglet;
+        if (template.editorFold == null) {
+            danglet = template;
+        } else {
+            danglet = null;
+        }
+        return danglet;
+    }
+
     private boolean isSep1(Template template, Pattern sep1Line, String line) {
         final var sep1LineMatcher = sep1Line.matcher(line);
         if (sep1LineMatcher.matches()) {
-            template.sep1 = sep1LineMatcher.group(1);
+            template.sep1 = Pattern.quote(sep1LineMatcher.group(1));
             return true;
         }
         return false;
@@ -164,7 +195,7 @@ public class Iterate extends AbstractJavaGenerator {
     private boolean isSep2(Template template, Pattern sep2Line, String line) {
         final var sep2LineMatcher = sep2Line.matcher(line);
         if (sep2LineMatcher.matches()) {
-            template.sep2 = sep2LineMatcher.group(1);
+            template.sep2 = Pattern.quote(sep2LineMatcher.group(1));
             return true;
         }
         return false;
@@ -198,8 +229,8 @@ public class Iterate extends AbstractJavaGenerator {
     }
 
     private void collectValues(Template template, String loopString, Source source, Config local) {
-        final String sep1 = Pattern.quote(template.sep1 != null ? template.sep1 : local.sep1);
-        final String sep2 = Pattern.quote(template.sep2 != null ? template.sep2 : local.sep2);
+        final String sep1 = template.sep1 != null ? template.sep1 : Pattern.quote(local.sep1);
+        final String sep2 = template.sep2 != null ? template.sep2 : Pattern.quote(local.sep2);
         final var eqIndex = loopString.indexOf('=');
         if (eqIndex == -1) {
             return;
@@ -263,19 +294,24 @@ public class Iterate extends AbstractJavaGenerator {
     private String configuredMnemonic = "repeated";
 
     @Override
-    public String mnemonic() {
+    public String mnemonic(){
         return configuredMnemonic;
     }
 
     private final Config config = new Config();
-
     public static Iterate.Builder builder() {
         return new Iterate().new Builder();
     }
 
     private static final java.util.Set<String> implementedKeys = new java.util.HashSet<>(java.util.Arrays.asList(
         "editorFoldLine",
+        "escapeLine",
         "loopLine",
+        "sep1",
+        "sep1Line",
+        "sep2",
+        "sep2Line",
+        "skipLine",
         "templateEndLine",
         "templateLine",
         "id"
@@ -285,7 +321,6 @@ public class Iterate extends AbstractJavaGenerator {
     public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
-
     public class Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder define(java.util.function.Consumer<javax0.geci.templated.Context> define) {
             config.define = define;
@@ -297,8 +332,39 @@ public class Iterate extends AbstractJavaGenerator {
             return this;
         }
 
+        public Builder escapeLine(String escapeLine) {
+            config.escapeLine = escapeLine;
+            return this;
+        }
+
         public Builder loopLine(String loopLine) {
             config.loopLine = loopLine;
+            return this;
+        }
+
+
+        public Builder sep1(String sep1) {
+            config.sep1 = sep1;
+            return this;
+        }
+
+        public Builder sep1Line(String sep1Line) {
+            config.sep1Line = sep1Line;
+            return this;
+        }
+
+        public Builder sep2(String sep2) {
+            config.sep2 = sep2;
+            return this;
+        }
+
+        public Builder sep2Line(String sep2Line) {
+            config.sep2Line = sep2Line;
+            return this;
+        }
+
+        public Builder skipLine(String skipLine) {
+            config.skipLine = skipLine;
             return this;
         }
 
@@ -321,12 +387,17 @@ public class Iterate extends AbstractJavaGenerator {
             return Iterate.this;
         }
     }
-
-    private Config localConfig(CompoundParams params) {
+    private Config localConfig(CompoundParams params){
         final var local = new Config();
         local.define = config.define;
         local.editorFoldLine = params.get("editorFoldLine", config.editorFoldLine);
+        local.escapeLine = params.get("escapeLine", config.escapeLine);
         local.loopLine = params.get("loopLine", config.loopLine);
+        local.sep1 = params.get("sep1", config.sep1);
+        local.sep1Line = params.get("sep1Line", config.sep1Line);
+        local.sep2 = params.get("sep2", config.sep2);
+        local.sep2Line = params.get("sep2Line", config.sep2Line);
+        local.skipLine = params.get("skipLine", config.skipLine);
         local.templateEndLine = params.get("templateEndLine", config.templateEndLine);
         local.templateLine = params.get("templateLine", config.templateLine);
         return local;

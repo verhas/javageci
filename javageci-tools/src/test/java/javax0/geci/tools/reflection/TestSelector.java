@@ -147,8 +147,8 @@ class TestSelector {
     }
 
     @Test
-    @DisplayName("compiles expression with daingling space")
-    void testDainglingSpace() {
+    @DisplayName("compiles expression with dangling space")
+    void testDanglingSpace() {
         Assertions.assertTrue(Selector.compile("true ").match(IGNORED_MEMBER));
         Assertions.assertTrue(Selector.compile("!false ").match(IGNORED_MEMBER));
     }
