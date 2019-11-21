@@ -8,10 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 class TestIterate {
-
     @Test
     @DisplayName("Properly generates Iterated text with single value")
     void testSingleValue() throws Exception {

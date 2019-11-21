@@ -1,5 +1,6 @@
 package javax0.geci.iterate;
 
+import javax0.geci.annotations.Geci;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Source;
 import javax0.geci.core.annotations.AnnotationBuilder;
@@ -60,6 +61,7 @@ import java.util.regex.Pattern;
  */
 
 @AnnotationBuilder
+@Geci("iterate")
 public class Iterate extends AbstractJavaGenerator {
     private static final Pattern editorFold = Pattern.compile("\\s*//\\s*<\\s*editor-fold.*?\\sid\\s*=\\s*\"(.*?)\".*");
 
@@ -183,6 +185,8 @@ public class Iterate extends AbstractJavaGenerator {
         return danglet;
     }
 
+    /*
+    TEMPLATE
     private boolean isSep1(Template template, Pattern sep1Line, String line) {
         final var sep1LineMatcher = sep1Line.matcher(line);
         if (sep1LineMatcher.matches()) {
@@ -191,7 +195,17 @@ public class Iterate extends AbstractJavaGenerator {
         }
         return false;
     }
-
+    LOOP n=1|2
+    */
+    //<editor-fold id="isSep_n">
+    private boolean isSep1(Template template, Pattern sep1Line, String line) {
+        final var sep1LineMatcher = sep1Line.matcher(line);
+        if (sep1LineMatcher.matches()) {
+            template.sep1 = Pattern.quote(sep1LineMatcher.group(1));
+            return true;
+        }
+        return false;
+    }
     private boolean isSep2(Template template, Pattern sep2Line, String line) {
         final var sep2LineMatcher = sep2Line.matcher(line);
         if (sep2LineMatcher.matches()) {
@@ -200,6 +214,7 @@ public class Iterate extends AbstractJavaGenerator {
         }
         return false;
     }
+    //</editor-fold>
 
     private boolean isTemplateEndLine(ArrayList<Template> templates, Pattern templateEndLine, Template template, String line) {
         if (templateEndLine.matcher(line).matches()) {
@@ -290,8 +305,8 @@ public class Iterate extends AbstractJavaGenerator {
     }
 
 
-    //<editor-fold id="configBuilder" configurableMnemonic="repeated">
-    private String configuredMnemonic = "repeated";
+    //<editor-fold id="configBuilder" configurableMnemonic="iterate">
+    private String configuredMnemonic = "iterate";
 
     @Override
     public String mnemonic(){
