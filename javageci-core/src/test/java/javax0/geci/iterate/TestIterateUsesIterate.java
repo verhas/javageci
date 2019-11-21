@@ -14,7 +14,7 @@ public class TestIterateUsesIterate {
 
         Geci geci = new Geci();
         Assertions.assertFalse(geci
-                                   .register(Iterate.builder().build()).trace("test.xml")
+                                   .register(Iterate.builder().build())
                                    .source(Source.maven().module("javageci-core"))
                                    .generate(),
             geci.failed());
