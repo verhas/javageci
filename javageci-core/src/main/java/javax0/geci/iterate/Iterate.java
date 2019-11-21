@@ -61,13 +61,13 @@ import java.util.regex.Pattern;
  */
 
 @AnnotationBuilder
-@Geci("iterate")
+@javax0.geci.core.annotations.Iterate
 public class Iterate extends AbstractJavaGenerator {
     private static final Pattern editorFold = Pattern.compile("\\s*//\\s*<\\s*editor-fold.*?\\sid\\s*=\\s*\"(.*?)\".*");
 
     private static class Config {
         // /* TEMPLATE
-        private String templateLine = "\\s*/\\*\\s*TEMPLATE\\s*";
+        private String templateLine = "\\s*(?:/\\*\\s*)?TEMPLATE\\s*";
         // LOOP field,type=birth,Date|name,String|age,int
         private String loopLine = "\\s*LOOP\\s+(.*)";
         // EDITOR-FOLD-ID clientSetters
@@ -187,14 +187,15 @@ public class Iterate extends AbstractJavaGenerator {
 
     /*
     TEMPLATE
-    private boolean isSep1(Template template, Pattern sep1Line, String line) {
-        final var sep1LineMatcher = sep1Line.matcher(line);
-        if (sep1LineMatcher.matches()) {
-            template.sep1 = Pattern.quote(sep1LineMatcher.group(1));
+    private boolean isSep{{n}}(Template template, Pattern sep{{n}}Line, String line) {
+        final var sep{{n}}LineMatcher = sep{{n}}Line.matcher(line);
+        if (sep{{n}}LineMatcher.matches()) {
+            template.sep{{n}} = Pattern.quote(sep{{n}}LineMatcher.group(1));
             return true;
         }
         return false;
     }
+
     LOOP n=1|2
     */
     //<editor-fold id="isSep_n">
@@ -206,6 +207,7 @@ public class Iterate extends AbstractJavaGenerator {
         }
         return false;
     }
+
     private boolean isSep2(Template template, Pattern sep2Line, String line) {
         final var sep2LineMatcher = sep2Line.matcher(line);
         if (sep2LineMatcher.matches()) {
@@ -214,6 +216,7 @@ public class Iterate extends AbstractJavaGenerator {
         }
         return false;
     }
+
     //</editor-fold>
 
     private boolean isTemplateEndLine(ArrayList<Template> templates, Pattern templateEndLine, Template template, String line) {
