@@ -201,9 +201,223 @@ essentially the end of a comment. What happens if you want to include a
 comment, like a JavaDoc into the template. You can write the `*/`
 characters at the end of the comment lines that still has some
 characters in it. This solution is not elegant and it essentially is a
-workaround. To have a line that is exactly a comment closing or just any
-line that would be interpreted by the template processing, like a `LOOP`
-line you should have a line containng nothing else but an `ESCAPE` on
-the previous line. This will tell the template processing to include the
+workaround.
+
+To have a line that is exactly a comment closing or just any line that
+would be interpreted by the template processing, like a `LOOP` line you
+should have a line containing nothing else but an `ESCAPE` on the
+previous line. This will tell the template processing to include the
 next line into the template text and continue the normal processing on
 the line after.
+
+Similarly you can have a line `SKIP` to ignore the following line
+altogether. Using these two commands you can include anything into a
+template.
+
+An example shows how you can include a JavaDoc comment into the
+template:
+
+[source,java]
+----
+package javax0.geci.iterate.sutclasses;
+
+public class SkippedLines {
+    /* TEMPLATE
+    /**
+     * A simple zero getter serving as a test example
+     * @return zero in the type {{type}}
+    ESCAPE
+     */
+    // SKIP
+    /*
+    {{type}} get_{{type}}Value(){
+      {{type}} {{variable}} = 0;
+      return {{variable}};
+    }
+    LOOP type,variable=int,i|long,l|short,s
+    EDITOR-FOLD-ID getters
+     */
+    //<editor-fold id="getters">
+    /**
+     * A simple zero getter serving as a test example
+     * @return zero in the type int
+     */
+    int get_intValue(){
+      int i = 0;
+      return i;
+    }
+    /**
+     * A simple zero getter serving as a test example
+     * @return zero in the type long
+     */
+    long get_longValue(){
+      long l = 0;
+      return l;
+    }
+    /**
+     * A simple zero getter serving as a test example
+     * @return zero in the type short
+     */
+    short get_shortValue(){
+      short s = 0;
+      return s;
+    }
+    //</editor-fold>
+}
+----
+
+The template starts with the comment and a comment can actually contain
+any other comment starting. Java comments are not nested. The end of the
+template is, however the line that contains the `\*/` string. We want
+this line to be part of the template thus we precede it with the line
+`ESCAPE` so it will not be interpreted as the end of the template. On
+the other hand, for Java, this ends the comment. To continue the
+template we have to get "back" into comment mode, since we do not want
+the Java compiler to process the template as code. (Last but not least
+because the template using placeholders is probably not a syntactically
+correct Java code fragment.) We need a new `/*` line, which we do not
+want to get into the template. This line is, therefore, preceded with a
+line containing `// SKIP`. (Skip lines can have optional `//` before the
+command.)
+
+The result you can see in the generated code. All methods have the
+proper JavaDoc documentation.
+
+=== `SEP1` and `SEP2`
+
+Looping over the values you have to separate the names of the
+placeholders with `,` and  `|` the list of the values. For example the
+sample above contains
+
+    LOOP type,variable=int,i|long,l|short,s
+
+two placeholder names `type` and `variable` and three values for each.
+Placeholders does not need to contain special characters and it is the
+best if they are standard identifiers. The values, however, may contain
+a comma or a vertical bar. In that case you can redefine the string (not
+only a single character) that the template `LOOP` command can use
+instead of the single character strings `,` and `|`.
+
+For example the line
+
+    SEP1 /
+
+says that the names and the values should be separated by `/` instead of
+only one and
+
+    SEP2 &
+
+the list of the values should be separated by a one character `&`
+string. The `SEP1` and `SEP2` will have effect only if they precede the
+`LOOP` command and they are effective only for the template they are
+used in. Following the above commands the `LOOP` example would look like
+
+    LOOP type/variable=int/i&long/l&short/s
+
+That way there is nothing to prevent us to add another value list
+
+    LOOP type/variable=int/i&long/l&short/s&byte,int/z
+
+which eventually will result a syntax error with the example template,
+but demonstrates the point redefining the name and the value list
+separators.
+
+== Configuration
+
+The generator `iterate` can be configured the same way as any other
+generator. It is possible to define configuration parameters on the
+builder interface in the unit test, in the class annotation and also in
+an `editor-fold` segment with the `id="iterate"`.
+
+Note that configuration parameters that may appear on the `editor-fold`
+segments that accommodate the generated code but bearing an `id` that is
+not `iterate` will be ignored.
+
+Note: when a configuration parameter defines a regular expression it is
+used matching the source line and not "find"-ing a match in the line.
+
+=== `templateLine`
+
+Configures the regular expression that matches the template start. The
+default value is
+
+        private String templateLine = "\\s*(?:/\\*\\s*)?TEMPLATE\\s*";
+
+that means that a line containing the characters `TEMPLATE` optionally
+preceded by `/*` signals the start of the template. Thus the default is
+that a template starts whenever there is a line
+
+    TEMPLATE
+
+or
+    /* TEMPLATE
+
+outside of a template. Inside a template such a line does not start
+another new template.
+
+=== `loopLine`
+
+Configures the regular expression that matches the `LOOP` command. The
+default value is
+
+        private String loopLine = "\\s*LOOP\\s+(.*)";
+
+that means a line starting with the command `LOOP` and then the loop
+names and values behind it. The regular expression should define exactly
+one capture group that will return the expression.
+
+=== `editorFoldLine`
+
+Configures the regular expression that matches the `EDITOR-FOLD-ID`
+command. The default value is
+
+        private String editorFoldLine = "\\s*EDITOR-FOLD-ID\\s+(\\w[\\w\\d]*)\\s*";
+
+that means a line starting with the command `EDITOR-FOLD-ID` and then
+the name of the `editor-fold` segment that will get the generated code.
+The regular expression should define exactly one capture group that will
+return the `editor-fold` identifier.
+
+=== `templateEndLine`
+
+Configures the regular expression that matches the template ending line.
+The default value is
+
+        private String templateEndLine = "\\s*\\*/\\s*";
+
+that means a line ending a Java comment: `*/`
+
+=== `sep1` and `sep2`
+
+These two parameters configure the separator 1 and the separator 2
+strings. The default values are
+
+        private String sep1 = ",";             // simple string
+        private String sep2 = "|";             // NOT a regex
+
+that means the names and the values are separated by commas and the
+comma separated value lists are separated by vertical bars. Note that
+these values are strings and not regular expression. In the
+configuration using the builder of the generator you can redefined these
+strings for the whole project. In the annotation you can redefined these
+strings for the whole source file. The `SEP1` and `SEP2` commands
+redefine these strings only for the one template.
+
+=== `sep1Line` and `sep2Line`
+
+These two parameters configure the `SEP1` and `SEP2` command line
+syntax. The default values are
+
+        private String sep1Line = "\\s*SEP1\\s+([^\\s]*)\\s*";
+        private String sep2Line = "\\s*SEP2\\s+([^\\s]*)\\s*";
+
+that means the line starting with the command `SEPn` (`n` = 1 or 2)
+followed by some string that will be used as separator. The regular
+expressions should define exactly one capture group each that will
+return the separator string.
+
+=== `escapeLine`
+
+        private String escapeLine = "\\s*ESCAPE\\s*";
+        private String skipLine = "\\s*(?://)?\\s*SKIP\\s*";
+        private Consumer<Context> define = null;

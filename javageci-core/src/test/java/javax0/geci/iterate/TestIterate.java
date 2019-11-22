@@ -380,7 +380,7 @@ class TestIterate {
     }
 
     @Test
-    @DisplayName("Properly generates Iterated text with lines skipped")
+    @DisplayName("Properly generates Iterated text with lines escaped and skipped")
     void testSingleValueWithSkippedLine() throws Exception {
         // GIVEN
         final var sut = Iterate.builder().build();

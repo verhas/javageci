@@ -73,7 +73,7 @@ public class Iterate extends AbstractJavaGenerator {
         // EDITOR-FOLD-ID clientSetters
         private String editorFoldLine = "\\s*EDITOR-FOLD-ID\\s+(\\w[\\w\\d]*)\\s*";
         // */
-        private String templateEndLine = "^\\s*\\*/\\s*$";
+        private String templateEndLine = "\\s*\\*/\\s*";
 
 
         private String sep1 = ",";
