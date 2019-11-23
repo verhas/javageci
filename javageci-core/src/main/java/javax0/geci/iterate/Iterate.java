@@ -81,7 +81,7 @@ public class Iterate extends AbstractJavaGenerator {
 
         private String sep1Line = "\\s*SEP1\\s+([^\\s]*)\\s*";
         private String sep2Line = "\\s*SEP2\\s+([^\\s]*)\\s*";
-        private String escapeLine = "\\s*ESCAPE\\s*";
+        private String escapeLine = "\\\\s*(?://)?\\s*ESCAPE\\s*";
         private String skipLine = "\\s*(?://)?\\s*SKIP\\s*";
         private Consumer<Context> define = null;
     }

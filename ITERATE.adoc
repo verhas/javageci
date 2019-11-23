@@ -418,6 +418,37 @@ return the separator string.
 
 === `escapeLine`
 
-        private String escapeLine = "\\s*ESCAPE\\s*";
+Configures the regular expression that matches the ESCAPE line that
+instructs the template collection to collect the next line into the
+template even if the line is something that the template collection
+would interpret anyway (e.g.: end of template as `*/`). The default value is
+
+        private String escapeLine = "\\s*(?://)?\\s*ESCAPE\\s*";
+
+that means that any line that contains nothing else but the word
+`ESCAPE` is an escape line. The word `ESCAPE` may optionally be preceded
+by the Java single line comment starting characters `//`. This may be
+handy if the `ESCAPE` line is not inside a Java comment.
+
+=== `skipLine`
+
+Configures the regular expression that matches the SKIP line that
+instructs the template collection to ignore/skip the next line in the
+code. The default value is
+
         private String skipLine = "\\s*(?://)?\\s*SKIP\\s*";
+
+that means that any line that contains nothing else but the word `SKIP`
+is a skip line. The word `SKIP` may optionally be preceded by the Java
+single line comment starting characters `//`. This may be handy if the
+`SKIP` line is not inside a Java comment.
+
+=== `define`
+
+This configuration parameter is not a String and therefore it can only
+be configured during the creation of the generator object using the
+method `define()` that the builder of the generator provides.
+
+
+
         private Consumer<Context> define = null;
