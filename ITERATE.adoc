@@ -2,10 +2,8 @@
 
 == Introduction
 
-The `iterate` generator can be used when the code contains some kind of
-repeated part that is cumbersome to maintain manually. The generator
-will scan the file looking for templates that contain code and will
-generate core iterating over the values defined in the template.
+The `iterate` generator can be used when the code contains some kind of repeated part that is cumbersome to maintain manually.
+The generator will scan the file looking for templates that contain code and will generate core iterating over the values defined in the template.
 
 The following example is a very simple repeated code fragment:
 
@@ -57,21 +55,17 @@ void generate() throws IOException {
 }
 ----
 
-This test generates a Geci object, registers a new Iterate generator
-object created using the builder functinality built-in to the generator
-and then starts generation. When there is any code generated the method
-`generate()` returns `true`. In this case the code has to be compiled
-again, signalled by the fact that the `assertFalse()` fails.
+This test generates a Geci object, registers a new Iterate generator object created using the builder functinality built-in to the generator and then starts generation.
+When there is any code generated the method
+`generate()` returns `true`.
+In this case the code has to be compiled again, signalled by the fact that the `assertFalse()` fails.
 
-In the Java source files where you want to use the generator you have to
-annotate the class with the annotation `@Geci("iterate")`. You can also
-use the `@Iterate` annotation instead, which is defined in the
-`javageci-core-annotations` module. This will instruct the Geci
-framework that you want to use the Iterator generator on the given
-class.
+In the Java source files where you want to use the generator you have to annotate the class with the annotation `@Geci("iterate")`.
+You can also use the `@Iterate` annotation instead, which is defined in the
+`javageci-core-annotations` module.
+This will instruct the Geci framework that you want to use the Iterator generator on the given class.
 
-If you want to avoid this annotation for some reason an alternative
-possibility is to have two lines
+If you want to avoid this annotation for some reason an alternative possibility is to have two lines
 
 [source,java]
 ----
@@ -79,72 +73,83 @@ possibility is to have two lines
 //</editor-fold>
 ----
 
-When the framework sees that there is an `editor-fold` with an `id` that
-is the mnemonic of the generator then the framework assumes that the
-generator is needed for that file. Generators many time write into
+When the framework sees that there is an `editor-fold` with an `id` that is the mnemonic of the generator then the framework assumes that the generator is needed for that file.
+Generators many time write into
 `editor-folds` that bear the same name as the generator.
 
-The generator `iterate`, however, is a bit different, because this
-generator can write program code into many different `editor-fold`
-segments. Eventually, no more than one segment can have the `id` name
+The generator `iterate`, however, is a bit different, because this generator can write program code into many different `editor-fold`
+segments.
+Eventually, no more than one segment can have the `id` name
 `iterate`.
 
-The next thing to use the generator is to insert the templates and the
-corresponding `editor-fold` segments into the Java source code.
+The next thing to use the generator is to insert the templates and the corresponding `editor-fold` segments into the Java source code.
+
+=== `TEMPLATE`
 
 A template starts after a line that is `/\*TEMPLATE` or `TEMPLATE`.
 There can be spaces before and after and between the `/*` and the word
-`TEMPLATE` but there should not be anything else on the line. When the
-generator sees such a line it starts to collect the following lines as
-the content of the template.
+`TEMPLATE` but there should not be anything else on the line.
+When the generator sees such a line it starts to collect the following lines as the content of the template.
 
-The end of the template is signalled by a line that has `*/` on it and
-nothing else (except spaces).
+The end of the template is signalled by a line that has `*/` on it and nothing else (except spaces).
 
 The content of the template can contain parameters between `{{` and `}}`
 characters similarly as it is used by the mustache template program.
 (The generator is not using mustache, template handling is simpler.)
 
-While collecting the lines of the template some of the lines are
-recognized as parameter definitions for the template. These lines do not
-get into the trunk of the template. (Command names on these lines are
-always capital.)
+=== `LOOP`
+
+While collecting the lines of the template some of the lines are recognized as parameter definitions for the template.
+These lines do not get into the trunk of the template.
+(Command names on these lines are always capital.)
 
 As you could see in the introduction the line
 
     LOOP type=int|long|short
 
-is not part of the template text. It instructs the generator to iterate
-through the types and set the parameter `{{type}}` in the text to `int`
-first, `long` the second and `short` the last. That way you can iterate
-over multiple values of a single parameters.
+is not part of the template text.
+It instructs the generator to iterate through the types and set the parameter `{{type}}` in the text to `int`
+first, `long` the second and `short` the last.
+That way you can iterate over multiple values of a single parameters.
 
-A more complex template may need more than one parameters. In that case
-you can list them in the `LOOP` line as
+A more complex template may need more than one parameters.
+In that case you can list them in the `LOOP` line as
 
     LOOP type,var=int,aInt|long,aLong|short,aShort
 
-This will tell the generator to set the parameter `{{type}}` the same
-way as before for the three iterations but the same time also set the
-parameter `{{var}}` to `aInt` in the first loop, to `aLong` in the
-second loop and `aShort` in the last loop.
+This will tell the generator to set the parameter `{{type}}` the same way as before for the three iterations but the same time also set the parameter `{{var}}` to `aInt` in the first loop, to `aLong` in the second loop and `aShort` in the last loop.
 
-The templates are processed from the start of the file towards the end
-and the code generated is also prepared in this order. The content of
-the generated code will be inserted into the `editor-fold` segment that
-follows the template directly. Although this way the `id` of the
-`editor-fold` segment is not really interesting you must specify a
-unique `id` for each segment. This is a restriction of the the
+If the list of the values is too long it is possible split the list into multiple `LOOP` lines.
+In this case, however, the variables have to be repeated in the second, third and so on `LOOP` lines.
+Their order may be different, but if there is a variable undefined in some of the `LOOP`
+lines then the placeholder referring to it will ne be resolved and remains in the `{{placeholder}}` form.
+
+The above example can also be written
+
+    LOOP type,var=int,aInt
+    LOOP var,type=aLong,long
+    LOOP type,var=short,aShort
+
+and it will result into the same values as the above `LOOP` repeated here:
+
+    LOOP type,var=int,aInt|long,aLong|short,aShort
+
+== Default `editor-fold`
+
+The templates are processed from the start of the file towards the end and the code generated is also prepared in this order.
+The content of the generated code will be inserted into the `editor-fold` segment that follows the template directly.
+Although this way the `id` of the
+`editor-fold` segment is not really interesting you must specify a unique `id` for each segment.
+This is a restriction of the the
 Java::Geci framework.
-
 
 == Advanced Use
 
 === `EDITOR-FOLD-ID`
 
-It may happen that you have multiple templates looping over different
-values and you want the result to go into the same `editor-fold`
-segment. It is possible using the `EDITOR_FOLD_ID`.
+It may happen that you have multiple templates looping over different values and you want the result to go into the same `editor-fold`
+segment.
+It is possible using the `EDITOR_FOLD_ID`.
 
 In the following example
 
@@ -187,35 +192,27 @@ public class IterateOverMultipleValues {
 ----
 
 the generated code gets into the `editor-fold` that has the `id` name
-`getters` even though this is not the one that follows the template
-definition.
+`getters` even though this is not the one that follows the template definition.
 
-Use this feature to send the generated code into a single segment from
-multiple iterating templates. Usually it is a good practice to keep the
-template and the segment together.
+Use this feature to send the generated code into a single segment from multiple iterating templates.
+Usually it is a good practice to keep the template and the segment together.
 
 === `ESCAPE` and `SKIP`
 
-The end of the template is signalled by a line that is `\*/`. This is
-essentially the end of a comment. What happens if you want to include a
-comment, like a JavaDoc into the template. You can write the `*/`
-characters at the end of the comment lines that still has some
-characters in it. This solution is not elegant and it essentially is a
-workaround.
+The end of the template is signalled by a line that is `\*/`.
+This is essentially the end of a comment.
+What happens if you want to include a comment, like a JavaDoc into the template.
+You can write the `*/`
+characters at the end of the comment lines that still has some characters in it.
+This solution is not elegant and it essentially is a workaround.
 
-To have a line that is exactly a comment closing or just any line that
-would be interpreted by the template processing, like a `LOOP` line you
-should have a line containing nothing else but an `ESCAPE` on the
-previous line. This will tell the template processing to include the
-next line into the template text and continue the normal processing on
-the line after.
+To have a line that is exactly a comment closing or just any line that would be interpreted by the template processing, like a `LOOP` line you should have a line containing nothing else but an `ESCAPE` on the previous line.
+This will tell the template processing to include the next line into the template text and continue the normal processing on the line after.
 
-Similarly you can have a line `SKIP` to ignore the following line
-altogether. Using these two commands you can include anything into a
-template.
+Similarly you can have a line `SKIP` to ignore the following line altogether.
+Using these two commands you can include anything into a template.
 
-An example shows how you can include a JavaDoc comment into the
-template:
+An example shows how you can include a JavaDoc comment into the template:
 
 [source,java]
 ----
@@ -266,51 +263,45 @@ public class SkippedLines {
 }
 ----
 
-The template starts with the comment and a comment can actually contain
-any other comment starting. Java comments are not nested. The end of the
-template is, however the line that contains the `\*/` string. We want
-this line to be part of the template thus we precede it with the line
-`ESCAPE` so it will not be interpreted as the end of the template. On
-the other hand, for Java, this ends the comment. To continue the
-template we have to get "back" into comment mode, since we do not want
-the Java compiler to process the template as code. (Last but not least
-because the template using placeholders is probably not a syntactically
-correct Java code fragment.) We need a new `/*` line, which we do not
-want to get into the template. This line is, therefore, preceded with a
-line containing `// SKIP`. (Skip lines can have optional `//` before the
-command.)
+The template starts with the comment and a comment can actually contain any other comment starting.
+Java comments are not nested.
+The end of the template is, however the line that contains the `\*/` string.
+We want this line to be part of the template thus we precede it with the line
+`ESCAPE` so it will not be interpreted as the end of the template.
+On the other hand, for Java, this ends the comment.
+To continue the template we have to get "back" into comment mode, since we do not want the Java compiler to process the template as code.
+(Last but not least because the template using placeholders is probably not a syntactically correct Java code fragment.) We need a new `/*` line, which we do not want to get into the template.
+This line is, therefore, preceded with a line containing `// SKIP`.
+(Skip lines can have optional `//` before the command.)
 
-The result you can see in the generated code. All methods have the
-proper JavaDoc documentation.
+The result you can see in the generated code.
+All methods have the proper JavaDoc documentation.
 
 === `SEP1` and `SEP2`
 
-Looping over the values you have to separate the names of the
-placeholders with `,` and  `|` the list of the values. For example the
-sample above contains
+Looping over the values you have to separate the names of the placeholders with `,` and  `|` the list of the values.
+For example the sample above contains
 
     LOOP type,variable=int,i|long,l|short,s
 
 two placeholder names `type` and `variable` and three values for each.
-Placeholders does not need to contain special characters and it is the
-best if they are standard identifiers. The values, however, may contain
-a comma or a vertical bar. In that case you can redefine the string (not
-only a single character) that the template `LOOP` command can use
-instead of the single character strings `,` and `|`.
+Placeholders does not need to contain special characters and it is the best if they are standard identifiers.
+The values, however, may contain a comma or a vertical bar.
+In that case you can redefine the string (not only a single character) that the template `LOOP` command can use instead of the single character strings `,` and `|`.
 
 For example the line
 
     SEP1 /
 
-says that the names and the values should be separated by `/` instead of
-only one and
+says that the names and the values should be separated by `/` instead of only one and
 
     SEP2 &
 
 the list of the values should be separated by a one character `&`
-string. The `SEP1` and `SEP2` will have effect only if they precede the
-`LOOP` command and they are effective only for the template they are
-used in. Following the above commands the `LOOP` example would look like
+string.
+The `SEP1` and `SEP2` will have effect only if they precede the
+`LOOP` command and they are effective only for the template they are used in.
+Following the above commands the `LOOP` example would look like
 
     LOOP type/variable=int/i&long/l&short/s
 
@@ -318,65 +309,55 @@ That way there is nothing to prevent us to add another value list
 
     LOOP type/variable=int/i&long/l&short/s&byte,int/z
 
-which eventually will result a syntax error with the example template,
-but demonstrates the point redefining the name and the value list
-separators.
+which eventually will result a syntax error with the example template, but demonstrates the point redefining the name and the value list separators.
 
 == Configuration
 
-The generator `iterate` can be configured the same way as any other
-generator. It is possible to define configuration parameters on the
-builder interface in the unit test, in the class annotation and also in
-an `editor-fold` segment with the `id="iterate"`.
+The generator `iterate` can be configured the same way as any other generator.
+It is possible to define configuration parameters on the builder interface in the unit test, in the class annotation and also in an `editor-fold` segment with the `id="iterate"`.
 
 Note that configuration parameters that may appear on the `editor-fold`
-segments that accommodate the generated code but bearing an `id` that is
-not `iterate` will be ignored.
+segments that accommodate the generated code but bearing an `id` that is not `iterate` will be ignored.
 
-Note: when a configuration parameter defines a regular expression it is
-used matching the source line and not "find"-ing a match in the line.
+Note: when a configuration parameter defines a regular expression it is used matching the source line and not "find"-ing a match in the line.
 
 === `templateLine`
 
-Configures the regular expression that matches the template start. The
-default value is
+Configures the regular expression that matches the template start.
+The default value is
 
         private String templateLine = "\\s*(?:/\\*\\s*)?TEMPLATE\\s*";
 
-that means that a line containing the characters `TEMPLATE` optionally
-preceded by `/*` signals the start of the template. Thus the default is
-that a template starts whenever there is a line
+that means that a line containing the characters `TEMPLATE` optionally preceded by `/*` signals the start of the template.
+Thus the default is that a template starts whenever there is a line
 
     TEMPLATE
 
-or
-    /* TEMPLATE
+or /* TEMPLATE
 
-outside of a template. Inside a template such a line does not start
-another new template.
+outside of a template.
+Inside a template such a line does not start another new template.
 
 === `loopLine`
 
-Configures the regular expression that matches the `LOOP` command. The
-default value is
+Configures the regular expression that matches the `LOOP` command.
+The default value is
 
         private String loopLine = "\\s*LOOP\\s+(.*)";
 
-that means a line starting with the command `LOOP` and then the loop
-names and values behind it. The regular expression should define exactly
-one capture group that will return the expression.
+that means a line starting with the command `LOOP` and then the loop names and values behind it.
+The regular expression should define exactly one capture group that will return the expression.
 
 === `editorFoldLine`
 
 Configures the regular expression that matches the `EDITOR-FOLD-ID`
-command. The default value is
+command.
+The default value is
 
         private String editorFoldLine = "\\s*EDITOR-FOLD-ID\\s+(\\w[\\w\\d]*)\\s*";
 
-that means a line starting with the command `EDITOR-FOLD-ID` and then
-the name of the `editor-fold` segment that will get the generated code.
-The regular expression should define exactly one capture group that will
-return the `editor-fold` identifier.
+that means a line starting with the command `EDITOR-FOLD-ID` and then the name of the `editor-fold` segment that will get the generated code.
+The regular expression should define exactly one capture group that will return the `editor-fold` identifier.
 
 === `templateEndLine`
 
@@ -389,66 +370,96 @@ that means a line ending a Java comment: `*/`
 
 === `sep1` and `sep2`
 
-These two parameters configure the separator 1 and the separator 2
-strings. The default values are
+These two parameters configure the separator 1 and the separator 2 strings.
+The default values are
 
         private String sep1 = ",";             // simple string
         private String sep2 = "|";             // NOT a regex
 
-that means the names and the values are separated by commas and the
-comma separated value lists are separated by vertical bars. Note that
-these values are strings and not regular expression. In the
-configuration using the builder of the generator you can redefined these
-strings for the whole project. In the annotation you can redefined these
-strings for the whole source file. The `SEP1` and `SEP2` commands
-redefine these strings only for the one template.
+that means the names and the values are separated by commas and the comma separated value lists are separated by vertical bars.
+Note that these values are strings and not regular expression.
+In the configuration using the builder of the generator you can redefined these strings for the whole project.
+In the annotation you can redefined these strings for the whole source file.
+The `SEP1` and `SEP2` commands redefine these strings only for the one template.
 
 === `sep1Line` and `sep2Line`
 
-These two parameters configure the `SEP1` and `SEP2` command line
-syntax. The default values are
+These two parameters configure the `SEP1` and `SEP2` command line syntax.
+The default values are
 
         private String sep1Line = "\\s*SEP1\\s+([^\\s]*)\\s*";
         private String sep2Line = "\\s*SEP2\\s+([^\\s]*)\\s*";
 
-that means the line starting with the command `SEPn` (`n` = 1 or 2)
-followed by some string that will be used as separator. The regular
-expressions should define exactly one capture group each that will
-return the separator string.
+that means the line starting with the command `SEPn` (`n` = 1 or 2) followed by some string that will be used as separator.
+The regular expressions should define exactly one capture group each that will return the separator string.
 
 === `escapeLine`
 
-Configures the regular expression that matches the ESCAPE line that
-instructs the template collection to collect the next line into the
-template even if the line is something that the template collection
-would interpret anyway (e.g.: end of template as `*/`). The default value is
+Configures the regular expression that matches the ESCAPE line that instructs the template collection to collect the next line into the template even if the line is something that the template collection would interpret anyway (e.g.: end of template as `*/`).
+The default value is
 
         private String escapeLine = "\\s*(?://)?\\s*ESCAPE\\s*";
 
 that means that any line that contains nothing else but the word
-`ESCAPE` is an escape line. The word `ESCAPE` may optionally be preceded
-by the Java single line comment starting characters `//`. This may be
-handy if the `ESCAPE` line is not inside a Java comment.
+`ESCAPE` is an escape line.
+The word `ESCAPE` may optionally be preceded by the Java single line comment starting characters `//`.
+This may be handy if the `ESCAPE` line is not inside a Java comment.
 
 === `skipLine`
 
-Configures the regular expression that matches the SKIP line that
-instructs the template collection to ignore/skip the next line in the
-code. The default value is
+Configures the regular expression that matches the SKIP line that instructs the template collection to ignore/skip the next line in the code.
+The default value is
 
         private String skipLine = "\\s*(?://)?\\s*SKIP\\s*";
 
 that means that any line that contains nothing else but the word `SKIP`
-is a skip line. The word `SKIP` may optionally be preceded by the Java
-single line comment starting characters `//`. This may be handy if the
+is a skip line.
+The word `SKIP` may optionally be preceded by the Java single line comment starting characters `//`.
+This may be handy if the
 `SKIP` line is not inside a Java comment.
 
 === `define`
 
-This configuration parameter is not a String and therefore it can only
-be configured during the creation of the generator object using the
-method `define()` that the builder of the generator provides.
+This configuration parameter is not a String and therefore it can only be configured during the creation of the generator object using the method `define()` that the builder of the generator provides.
 
+Using this configuration you can define a consumer that can create and inject new, calculated segment parameters.
+For example the code
 
+    Iterate.builder()
+        .define( ctx ->
+            ctx.segment().param("Type", CaseTools.ucase(ctx.segment().getParam("type").orElse(""))))
+        .build();
+
+will calculate the `type` with first character upper cased and assigns that value to the name `Type`.
+If a template defines the looping with the parameters
+
+    LOOP type=int|long|short
+
+then using this consumer will have the same effect if we wrote
+
+    LOOP type,Type=int,Int|long,Long|short,Short
+
+The argument to `define()` is a `Consumer<Context>` that consumes a context object.
+A context object contains the `Source` object, the
+`Class` and the actual `Segment` the generator is going to inject the content to.
+This latter can be used as the example shows above to inject new paramaters in a computational way.
+For more information on the
+`Context` object that this consumer gets as a parameter see the JavaDoc documentation of the class `javax0.geci.templated.Context`.
+
+The default value of this parameter is
 
         private Consumer<Context> define = null;
+
+that means no extra calculation is done before the processing of the segment.
+
+== Future
+
+Planned future features include different additional LOOP commands, for example
+
+    LOOP METHODS_OF java.lang.String "annotation ~ /Geci/"
+    LOOP FIELDS_OF java.lang.String "annotation ~ /Geci/"
+
+that will automatically list the methods/fields of a certain class that
+match selector expression and define a predefined set or variables for
+the template, line `{{name}}`, `{{type}}`, `{{argumentList}}`,
+`{{callList}}` etc.

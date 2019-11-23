@@ -1,6 +1,5 @@
 package javax0.geci.iterate;
 
-import javax0.geci.annotations.Geci;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Source;
 import javax0.geci.core.annotations.AnnotationBuilder;
@@ -113,7 +112,7 @@ public class Iterate extends AbstractJavaGenerator {
         for (final var line : source.getLines()) {
             lineIndex++;
             if (template != null) {
-                if( skip ){
+                if (skip) {
                     skip = false;
                     continue;
                 }
@@ -237,6 +236,17 @@ public class Iterate extends AbstractJavaGenerator {
         return false;
     }
 
+    /**
+     * Checks that the current {@code line} is a {@code LOOP} command and in case it is then processes it and stores the
+     * value in the template object.
+     *
+     * @param source   the source code object
+     * @param loopLine the pattern that matches a loopLine
+     * @param template the current template that the loop line belongs to
+     * @param line     the current line
+     * @param local    the local configuration
+     * @return {@code true} in case the line was processed
+     */
     private boolean isLoopLine(Source source, Pattern loopLine, Template template, String line, Config local) {
         final var loopMatcher = loopLine.matcher(line);
         if (loopMatcher.matches()) {
@@ -246,25 +256,42 @@ public class Iterate extends AbstractJavaGenerator {
         return false;
     }
 
+    /**
+     * <p>Collect the values using the {@code loopString} as a definition. In the simplest case the `loopString` has the
+     * format (example):</p>
+     *
+     * <pre>{@code
+     * LOOP type,var=int,aInt|long,aLong|short,aShort
+     * }</pre>
+     *
+     * <p>The values are added to the {@code template.values} list. In case this list does not exists it will be
+     * initialized. SUbsequent calls for the same template will add the values.</p>
+     *
+     * @param template   the current template for which we collect the values
+     * @param loopString the string that describes the loop variables and their values
+     * @param source     the source code object
+     * @param local      the local configuration
+     */
     private void collectValues(Template template, String loopString, Source source, Config local) {
         final String sep1 = template.sep1 != null ? template.sep1 : Pattern.quote(local.sep1);
         final String sep2 = template.sep2 != null ? template.sep2 : Pattern.quote(local.sep2);
         final var eqIndex = loopString.indexOf('=');
         if (eqIndex == -1) {
-            return;
+            throw new GeciException("LOOP line cannot be parsed in template that starts at\n"
+                + errorLocation(template, source));
         }
         final var keysCsv = loopString.substring(0, eqIndex).trim();
         final var keys = keysCsv.split(sep1);
         final var valuesCsvs = loopString.substring(eqIndex + 1).trim().split(sep2);
-        template.values = new ArrayList<>();
+        if (template.values == null) {
+            template.values = new ArrayList<>();
+        }
         for (final var valuesCsv : valuesCsvs) {
             final var values = valuesCsv.split(sep1);
             if (values.length != keys.length) {
-                throw new GeciException("Template in " +
-                    source.getAbsoluteFile() +
-                    ":" + template.startLine +
-                    " has different number of keys and values as in\n" +
-                    "keys:'" + keysCsv + "' values:'" + valuesCsv);
+                throw new GeciException("Template has different number of keys and values as in\n"
+                    + "keys:'" + keysCsv + "' values:'" + valuesCsv + "\n"
+                    + errorLocation(template, source));
             }
             final var map = new HashMap<String, String>();
             for (int i = 0; i < keys.length; i++) {
@@ -274,6 +301,10 @@ public class Iterate extends AbstractJavaGenerator {
         }
     }
 
+
+    private static String errorLocation(Template template, Source source) {
+        return source.getAbsoluteFile() + ":" + template.startLine;
+    }
 
     @Override
     public void process(Source source, Class<?> klass, CompoundParams global) throws Exception {
@@ -312,11 +343,12 @@ public class Iterate extends AbstractJavaGenerator {
     private String configuredMnemonic = "iterate";
 
     @Override
-    public String mnemonic(){
+    public String mnemonic() {
         return configuredMnemonic;
     }
 
     private final Config config = new Config();
+
     public static Iterate.Builder builder() {
         return new Iterate().new Builder();
     }
@@ -339,6 +371,7 @@ public class Iterate extends AbstractJavaGenerator {
     public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
+
     public class Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder define(java.util.function.Consumer<javax0.geci.templated.Context> define) {
             config.define = define;
@@ -405,7 +438,8 @@ public class Iterate extends AbstractJavaGenerator {
             return Iterate.this;
         }
     }
-    private Config localConfig(CompoundParams params){
+
+    private Config localConfig(CompoundParams params) {
         final var local = new Config();
         local.define = config.define;
         local.editorFoldLine = params.get("editorFoldLine", config.editorFoldLine);
