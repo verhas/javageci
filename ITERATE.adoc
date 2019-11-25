@@ -5,7 +5,7 @@
 The `iterate` generator can be used when the code contains some kind of
 repeated part that is cumbersome to maintain manually. The generator
 will scan the file looking for templates that contain code and will
-generate core iterating over the values defined in the template.
+generate code iterating over the values defined in the template.
 
 The following example is a very simple repeated code fragment:
 
@@ -59,11 +59,15 @@ void generate() throws IOException {
 }
 ----
 
-This test generates a Geci object, registers a new Iterate generator
+This test instantiates a Geci object, registers a new Iterate generator
 object created using the builder functionality built-in to the generator
 and then starts generation. When there is any code generated the method
 `generate()` returns `true`. In this case, the code has to be compiled
 again, signaled by the fact that the `assertFalse()` fails.
+
+The value of `geci.fail()` is a string reported to the error output by
+the junit framework and it will describe which souce code files have
+changed.
 
 In the Java source files where you want to use the generator you have to
 annotate the class with the annotation `@Geci("iterate")`. You can also
@@ -83,7 +87,7 @@ possibility is to have two lines
 
 When the framework sees that there is an `editor-fold` with an `id` that
 is the mnemonic of the generator then the framework assumes that the
-generator is needed for that file. Generators many time write into
+generator is needed for that file. Generators many times write into
 `editor-folds` that bear the same name as the generator.
 
 The generator `iterate`, however, is a bit different, because this
