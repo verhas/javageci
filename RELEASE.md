@@ -1,5 +1,16 @@
 # Release History
 
+1.4.0 feature release
+
+* Segment API extended so that you can query individual segment parameters by
+  their key.
+  
+* A bug fixed that was in the experimental and still not fully documented lexer
+  regex macthing implementation
+  
+* There is a new generator `iterate` that aims to replace the `repeated` and
+  later the `templated` generators. The generator `repeated` is deprecated.    
+
 1.3.0 feature release
 
 * Support Java 8
