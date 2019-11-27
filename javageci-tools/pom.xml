@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
     <artifactId>javageci-tools</artifactId>
-    <version>1.4.0-JVM8</version>
+    <version>1.4.1-SNAPSHOT</version>
     <parent>
         <groupId>com.javax0.geci</groupId>
         <artifactId>javageci-parent</artifactId>
-        <version>1.4.0-JVM8</version>
+        <version>1.4.1-SNAPSHOT</version>
     </parent>
     <name>javageci tools</name>
     <description>Javageci tools</description>

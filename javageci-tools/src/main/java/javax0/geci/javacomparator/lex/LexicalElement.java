@@ -56,15 +56,17 @@ public class LexicalElement implements javax0.geci.javacomparator.LexicalElement
 
         public IntegerLiteral(String lexeme) {
             super(lexeme, Type.INTEGER);
+            final int radix;
             if (lexeme.startsWith("0x") || lexeme.startsWith("0X")) {
-                value = Long.parseLong(lexeme.substring(2), 16);
+                radix = 16;
+                lexeme = lexeme.substring(2);
             } else {
-                if (lexeme.toUpperCase().endsWith("L")) {
-                    value = Long.parseLong(lexeme.substring(0, lexeme.length() - 1));
-                } else {
-                    value = Long.parseLong(lexeme);
-                }
+                radix = 10;
             }
+            if (lexeme.toUpperCase().endsWith("L")) {
+                lexeme = lexeme.substring(0, lexeme.length() - 1);
+            }
+            value = Long.parseLong(lexeme, radix);
         }
 
         @Override
