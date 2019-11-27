@@ -1,5 +1,11 @@
 # Release History
 
+1.4.1-SNAPSHOT
+
+* A bug prevented the proper comparing of any Java file that contained
+  hexadecimal long literals. The code was throwing an exception thus
+  code generation was aborted.
+
 1.4.0 feature release
 
 * Segment API extended so that you can query individual segment parameters by
