@@ -231,11 +231,17 @@ POM file.
 </dependency>
 ```
 
+Usually it is enough to have a dependency for `javageci-core`. The other
+dependencies will be pulled in automatically.
+
 The structure of the invocation is usually one lines in a unit test:
 
 ```java
-Assertions.assertFalse(configuration and invocation of the code generators,
-                               "code has changed");
+Assertions.assertFalse( ...configuration
+                           and invocation of
+                           the code generators ...
+                        ,
+                           "error message that code has changed");
 ```
 
 The `configuration and invocation of the code generators` part of the
@@ -260,7 +266,9 @@ the call:
 
 creates the new `javax0.geci.engine.Geci` object and calls the
 `source()` and `register()` methods to configure the framework. Finally
-invoking `generate()` starts the code generation.
+invoking `generate()` starts the code generation. If there was some new
+code generated then the call to `geci.failed()` will return a string
+detailing which source files were changed.
 
 === Geci configuration calls
 
@@ -274,9 +282,9 @@ but at the same time, it can also write generated code to the sources.
 
 The different `source()` methods usually accept a `String` array as
 vararg in the last argument position. This is to specify alternative
-directories where the source set can be and not to specify different
-source sets. If there are more than one source sets to be used then they
-should be defined in consecutive `source()` calls.
+directories where the source set can be. It is *not* to specify
+different source sets. If there are more than one source sets to be used
+then they should be defined in consecutive `source()` calls.
 
 ____
 
@@ -292,10 +300,11 @@ CWD is the project root directory of the parent project.
 ____
 
 The directory or directories for the source set should be the directory
-where the Java code hierarchy starts (in case of Java source directory).
-In other words, it is the directory where the `com` directory is
-corresponding to your `com. ...` package structure. In still another
-words this is the `src/main/java` directory in Maven terms.
+where the Java code hierarchy starts (in case of maven the `java`
+directory under `src/test` or `src/main`). In other words, it is the
+directory where the `com` directory is corresponding to your `com. ...`
+package structure. In still another words this is the `src/main/java` or
+`src/test/java` directory in Maven terms.
 
 You should not specify a directory deeper in order to limit the source
 scanning of the framework, because this will prevent finding the class
