@@ -869,10 +869,88 @@ in the class ```Lexpression```, which is fully documented.
 
 The simplest Lexpression matches a single keyword. To get such an
 Lexpression you can invoke the method
-```LexpressionBuilder.keyword(kw)``` with the string argument `kw`. For
+`LexpressionBuilder.keyword(kw)` with the string argument `kw`. For
 example `keyword("int")` will return an Lexpression that matches a
 single keyword `int`.
 
+NOTE: `int` is not a keyword in Java. When matching a list of lexical
+elements against an Lexpression the analysis does not make difference
+between an identifier and an expression. Because of this the method
+`keyword()` and `identifier()` are interchangeable. It is recommended to
+use `keyword()` for keyword matching and `identifier()` to match an
+identifier.
+
+NOTE: In this section we will refer to the methods using their name
+without the class name. Since the Lexpression describing structures can
+sometimes be fairly complex the recommended approach is to statically
+import these methods from the class
+`javax0.geci.lexeger.LexpressionBuilder`.
+
+The method `keyword()` is not the only one method that results a single,
+one element Lexpression with a so called terminal symbol in it. There
+are different methods, like
+
+* `string()` matching a string literal
+* `character()` matching a character literal
+* `comment()` matching a comment
+* `floatNumber()` matching a floating point literal
+* `integerNumber()` matching an integer literal
+* `number()` matching any number literal (floating point or integer)
+* `match(string)` matching a lexical element that is specified a string
+* `type()` matching a type definition, like `List<String>`
+
+NOTE: the last method, `type()` matches something that is not a single
+lexical element, and thus it is not a terminal symbol. A type literal in
+Java is a complex thing and cannot be described with regular expression
+structure. To overcome this and to provide a matching possibility for
+the generators there is a small syntax analyzer implemented in the class
+`TypeMatcher` that matches a type literal. In the generator code this
+method can be used as if a type literal was really a terminal symbol.
+
+Each of these methods have different forms with different arguments. For
+example the method `integerNumber()` has a version that has a `long`
+predicate as argument. The resulting Lexpression will match an integer
+number literal only the number converted to `long` matches the
+predicate. Similarly the method `string()` has a version that has a
+`String` and one that has a `Pattern` argument. The first version
+matches a string lexical element if the value is the given string. The
+second version matches the regular expression pattern against the actual
+string value of the lexical element.
+
+All of these methods and many other methods have a version where the
+first argument is a `GroupNameWrapper`. When a method `xxx()` has this
+version then calling `xxx(group(name), ...)` is the same as calling
+`goup(name, xxx(...))` with the same `...` arguments.
+
+
+A `GroupNameWrapper` can be created calling the method `group(name)`
+that wraps the string `name` into a `GroupNameWrapper` object. The
+wrapping helps to distinguist the overloaded methods that have already
+first string arguments and the same other arguments.
+
+Groups are identified by the name and they contain the list of lexical
+elements that are matched by the certain sub Lexpression that may be
+part of the whole Lexpression. These groups can be retrieved using the
+name and used in the replacement part later.
+
+Matching single elements is not really useful. To have really useful
+things the builder provides building blocks to compose complex
+structures recursively using the simple methods. The builder class
+defines different versions of the following methods:
+
+* `anyTill()` matches zero or more lexical elements until it finds one
+  that matches one of the arguments
+* `list()` matches the Lexpressions listed as arguments
+* `not()` matches something that is not the Lexpression argument
+* `oneOf()` matches one of the arguments
+* `zeroOrMore()` matches zero or more times the argument
+* `oneOrMore()` matches one or more time the argument
+* `optional()` matches nothing or the argument if possible
+* `repeat()` matches the argument many times, min and max values can be
+  specified
+* `unordered()` matches the arguments, each once but in argitrary order
+
+These methods also have different versions overloading the method name.
 
 === Creating, opening new source object
 
