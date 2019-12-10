@@ -51,6 +51,12 @@ public class TypeMatcher extends AbstractPatternedMatcher {
                 if (lex.getLexeme().equals(">")) {
                     ltCounter--;
                 }
+                if (lex.getLexeme().equals(">>")) {
+                    ltCounter-=2;
+                }
+                if (lex.getLexeme().equals(">>>")) {
+                    ltCounter-=3;
+                }
                 j = skipSpacesAndComments(j + 1);
                 if (ltCounter == 0) {
                     break;

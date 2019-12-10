@@ -416,6 +416,66 @@ class TestMatching {
     }
 
     @Test
+    void testTypeFollowedByEllipsis() {
+        final var source = new TestSource(Collections.singletonList("List..."));
+        try (final var javaLexed = new JavaLexed(source)) {
+            javaLexed.match(type());
+            final var result = javaLexed.fromIndex(0).result();
+            Assertions.assertTrue(result.matches);
+        }
+    }
+
+    @Test
+    void testTypeWithNonType() {
+        final var source = new TestSource(Collections.singletonList("123"));
+        try (final var javaLexed = new JavaLexed(source)) {
+            javaLexed.match(type());
+            final var result = javaLexed.fromIndex(0).result();
+            Assertions.assertFalse(result.matches);
+        }
+    }
+
+    @Test
+    void testTypeWithIncompleteGenerics() {
+        final var source = new TestSource(Collections.singletonList("List<String"));
+        try (final var javaLexed = new JavaLexed(source)) {
+            javaLexed.match(type());
+            final var result = javaLexed.fromIndex(0).result();
+            Assertions.assertFalse(result.matches);
+        }
+    }
+
+    @Test
+    void testTypeWithNestedGenerics() {
+        final var source = new TestSource(Collections.singletonList("List<List<>>"));
+        try (final var javaLexed = new JavaLexed(source)) {
+            javaLexed.match(type());
+            final var result = javaLexed.fromIndex(0).result();
+            Assertions.assertTrue(result.matches);
+        }
+    }
+
+    @Test
+    void testTypeWithNestedNestedGenerics() {
+        final var source = new TestSource(Collections.singletonList("List<List<List<List<List<List<>>>>> >"));
+        try (final var javaLexed = new JavaLexed(source)) {
+            javaLexed.match(type());
+            final var result = javaLexed.fromIndex(0).result();
+            Assertions.assertTrue(result.matches);
+        }
+    }
+
+    @Test
+    void testTypeWithMisplacedDot() {
+        final var source = new TestSource(Collections.singletonList("List.[]"));
+        try (final var javaLexed = new JavaLexed(source)) {
+            javaLexed.match(type());
+            final var result = javaLexed.fromIndex(0).result();
+            Assertions.assertFalse(result.matches);
+        }
+    }
+
+    @Test
     void testTypeWithGenerics() {
         final var source = new TestSource(Collections.singletonList("List<Object,?>"));
         try (final var javaLexed = new JavaLexed(source)) {
@@ -448,6 +508,28 @@ class TestMatching {
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(3, result.end);
+        }
+    }
+
+    @Test
+    void testArrayArrayType() {
+        final var source = new TestSource(Collections.singletonList("List[][][][][]"));
+        try (final var javaLexed = new JavaLexed(source)) {
+            javaLexed.match(type());
+            final var result = javaLexed.fromIndex(0).result();
+            Assertions.assertTrue(result.matches);
+            Assertions.assertEquals(0, result.start);
+            Assertions.assertEquals(11, result.end);
+        }
+    }
+
+    @Test
+    void testUnbalancedArrayType() {
+        final var source = new TestSource(Collections.singletonList("List[][][][]["));
+        try (final var javaLexed = new JavaLexed(source)) {
+            javaLexed.match(type());
+            final var result = javaLexed.fromIndex(0).result();
+            Assertions.assertFalse(result.matches);
         }
     }
 
