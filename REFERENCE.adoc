@@ -669,34 +669,45 @@ happens to be there to emphasize the intent to initialize the segment.)
 
 Some generators may want to modify the part of the source code that is
 manually maintained. Like fixing something in the program. For example
-inserting the `final` keyword in front of a field declaration. Or, perhaps
-deleting some modifier. Such modifications are rare and should be programmed
-in the generators with great care. The generators really should know what they do
-as they play with a part of the code that is manually maintained and not
-separated. Such modifications usually focus on some specific part
-of the code. To find the specific part of the code, for example the declaration
-of a given field is very hard to so reading the source as text. The list of
-the lexical elements that is the result of the lexical analysis of the code
-is much better suited for the purpose.
+inserting the `final` keyword in front of a field declaration. Or,
+perhaps deleting some modifier. Such modifications are rare and should
+be programmed in the generators with great care. The generators really
+should know what they do as they play with a part of the code that is
+manually maintained and not separated. Such modifications usually focus
+on some specific part of the code. To work with a specific part of the
+code, the application has to find the part. To find the specific part of
+the code, for example the declaration of a given field is not simple
+reading the source as text. One can try to apply regular expression
+searched to the source lines, but that is not reliable. What is really
+needed to be done is to do a lexical analysis of the source text. This
+is what Java::Geci can do for the generators.
 
-Lexical Modifications work with the list of the lexical elements of the source
-files. A typical modification searches a certain part looking for some
-specific pattern and then insert or replace the found pattern with a given list
-of lexical elements.
+Lexical Modifications work with the list of the lexical elements of the
+source files. A typical modification searches a certain part looking for
+some specific pattern and then insert or replace the found pattern with
+a given list of lexical elements.
 
 An example is the record generator. The record generator mimics the
 behaviour of a Java record, which is not available by the time of
-writing. To mimic a Java record a class should have only `final` fields,
-the class has to be `final`, should not extend any other class (except
-the implicit Object) and should have a constructor that initializes the
-`final` fields and has getters for these fields.
+writing. To mimic a Java record a class
 
-To do this the programmer can insert the fields into the class, but they
-can not be `final` when the programmer edits the file, because the
-constructor does not know about this field yet. The constructor will be
-modified only later to initialize the new field or fields. After the
-code generation the manual code can be altered so that the field becomes
-`final`.
+* should have only `final` fields,
+
+* the class itself has to be `final`,
+
+* it should not extend any other class (except the implicit Object) and
+
+* it should have a constructor that initializes the `final` fields and
+
+* it has getters for these fields.
+
+The generator reads the fields and creates the constructor as well as
+the getters. When the programmer starts to create the source code of the
+class it can insert the field declarations, but they cannot be denoted
+as `final` because at this point the constructor initializing them does
+not exist. The constructor will be created only later to initialize the
+new field or fields. After the code generation the manual code can be
+altered so that the field becomes `final`.
 
 To ease the life of the programmer the Record generator inserts the
 `final` keywords where they are needed during the code generation when
@@ -724,9 +735,9 @@ try (final var javaLexed = new JavaLexed(source)) {
         }
 ----
 
-This is the structure you can see in the Record generator. We will use that generator
-as a sample for the explanation how to use this class. The generator
-defines a selector expression
+This is the structure you can see in the Record generator. We will use
+that generator as a sample for the explanation how to use this class.
+The generator defines a selector expression
 
 [source,java]
 ----
@@ -746,7 +757,7 @@ private void makeClassFinal(Class<?> klass, JavaLexed javaLexed) {
 This `if` statement is executed when the class is not `final`. The generator, in
 this case, modifies the class to be final, because that is a requirement by the
 JEP defining the "Record" functionality for Java. In case the developer forgot to
-make the class final this can be detected and this also can be changed.
+make the class final this can be detected and this can also be changed.
 
 When the class is not final the `javaLexed` object is used to find the
 declaration of the class in the list of the lexical elements. This is
@@ -757,15 +768,52 @@ between the lexemes, because they usually are not important when trying
 to find some keywords.
 
 When the find is successful the `replaceWith()` method is executed and
-this replaces the "```class``` (spaces) class name" lexeme section in
-the list with the specified "```final class``` __class__ __name__"
-sequence. Note that the spaces are important in the replace part.
+this replaces the
+
+"```class``` (spaces) class name"
+
+lexeme section in the list with the specified "```final class```
+__class__ __name__" sequence.
 
 [source,java]
 ----
 javaLexed.find(list("class", klass.getSimpleName())).fromStart()
                .replaceWith(Lex.of("final class " + klass.getSimpleName()));
 ----
+
+As we mentioned earlier, spaces are not important in the search
+expression. That is because when trying to find a sequence of lexical
+elements the matching algorithm ignores the spaces and the comments that
+may be in the source code as not important.
+
+However, when we insert lexical elements as a replacement for some part
+of the found lexical elements sequence the lexical elements are inserted
+as they are present and the replacement process will not insert
+separating white spaces for us. The code can ignore spaces when they
+come on the input, but they do not know where to put them into the
+output. Therefore in the replacement lexical element list it is important
+to have spaces at the appropriate locations.
+
+For example the string
+
+  "final class " + klass.getSimpleName()
+
+is converted to a list of lexical elements by the method ```Lex.of()```.
+The lexical elements will be
+
+* keyword `final`
+* space
+* keyword `class`
+* space
+* identifier that is the simple name of the class, e.g. `MyClass`.
+
+It is important to have a trailing space after the keyword ```class```
+in the string otherwise the resulting list of lexical elements would not
+have that space lexical element between the keyword `class` and the name
+of the class. That would result ```final classMyClass``` instead of
+`final class MyClass` when the modified list of lexical expression is
+given back to the `Source` object and the list of source lines are
+recreated.
 
 When the try-with-resources block finishes the modified list of lexical
 elements is converted back to the list of source line strings that is
@@ -786,6 +834,32 @@ There are also simple and primitive methods to modify the list of the
 lexical elements. You can ```add(i, element)``` to add a single element
 at the position `i`. You can also replace a range of elements with a
 list of lexical elements calling ```replace(start, end, elements)```.
+
+These are low level and simple modifications that are available as a
+last resort in case the available higher level methods do not suffice.
+The usual way to modify the list of the lexical elements is to use the
+search and then to replace the found parts with something composed of
+new lexical elements and elements taken from the found part.
+
+The example above was a very simple one: it was searching for a simple
+keywords and identifiers as they come one after the other. The search
+method `find()` provides much more powerful possibilities. The
+possibilities are like searching a sub-string literal versus trying to
+match a regular expression in a string.
+
+The argument to the method `find()` is an Lexpression (lexical
+expression), which is similar to a regular expression when we process
+strings. In this case, however, instead of characters we build up the
+expression from lexical elements. Also there is no string representation
+of the Lexpression like regular expressions have. The way to create a
+search Lexpression is to use a fluent API provided for the purpose.
+
+The technical implementation of the expression is a `BiFunction` but it
+should not matter the programmer using the API. This is an internal
+detail.
+
+The way to create such an expression is to use the utility methods
+provided in the class LexpressionBuilder.
 
 === Creating, opening new source object
 
