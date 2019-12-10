@@ -861,6 +861,19 @@ detail.
 The way to create such an expression is to use the utility methods
 provided in the class LexpressionBuilder.
 
+TIP: The utility methods are generated automatically based on the
+methods of the class ```Lexpression```. For this reason the methods that
+the generator is calling directly do not have JavaDoc documentation.
+However, each and every of such method has a method with the same name
+in the class ```Lexpression```, which is fully documented.
+
+The simplest Lexpression matches a single keyword. To get such an
+Lexpression you can invoke the method
+```LexpressionBuilder.keyword(kw)``` with the string argument `kw`. For
+example `keyword("int")` will return an Lexpression that matches a
+single keyword `int`.
+
+
 === Creating, opening new source object
 
 The generator can call `newSource(fileName)` on a `source` object. This

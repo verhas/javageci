@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.regex.Pattern;
 
@@ -425,6 +424,30 @@ class TestMatching {
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(0, result.start);
             Assertions.assertEquals(6, result.end);
+        }
+    }
+
+    @Test
+    void testArrayTypeWithGenerics() {
+        final var source = new TestSource(Collections.singletonList("List<String, List[]>[]"));
+        try (final var javaLexed = new JavaLexed(source)) {
+            javaLexed.match(type());
+            final var result = javaLexed.fromIndex(0).result();
+            Assertions.assertTrue(result.matches);
+            Assertions.assertEquals(0, result.start);
+            Assertions.assertEquals(11, result.end);
+        }
+    }
+
+    @Test
+    void testArrayType() {
+        final var source = new TestSource(Collections.singletonList("List[]"));
+        try (final var javaLexed = new JavaLexed(source)) {
+            javaLexed.match(type());
+            final var result = javaLexed.fromIndex(0).result();
+            Assertions.assertTrue(result.matches);
+            Assertions.assertEquals(0, result.start);
+            Assertions.assertEquals(3, result.end);
         }
     }
 
