@@ -682,6 +682,8 @@ searched to the source lines, but that is not reliable. What is really
 needed to be done is to do a lexical analysis of the source text. This
 is what Java::Geci can do for the generators.
 
+==== Overview
+
 Lexical Modifications work with the list of the lexical elements of the
 source files. A typical modification searches a certain part looking for
 some specific pattern and then insert or replace the found pattern with
@@ -830,6 +832,8 @@ index `i` and there is a method to remove a range of lexical elements
 calling ```removeRange(i,j)```. (Note that the element with the index
 `i` is removed but the element with the index `j` is not.)
 
+==== Simple Modification Methods
+
 There are also simple and primitive methods to modify the list of the
 lexical elements. You can ```add(i, element)``` to add a single element
 at the position `i`. You can also replace a range of elements with a
@@ -847,12 +851,14 @@ method `find()` provides much more powerful possibilities. The
 possibilities are like searching a sub-string literal versus trying to
 match a regular expression in a string.
 
-The argument to the method `find()` is an Lexpression (lexical
+==== Finding and Replacing LEXPRESSIONS
+
+The argument to the method `find()` is an `Lexpression` (lexical
 expression), which is similar to a regular expression when we process
 strings. In this case, however, instead of characters we build up the
 expression from lexical elements. Also there is no string representation
-of the Lexpression like regular expressions have. The way to create a
-search Lexpression is to use a fluent API provided for the purpose.
+of the `Lexpression` like regular expressions have. The way to create a
+search `Lexpression` is to use a fluent API provided for the purpose.
 
 The technical implementation of the expression is a `BiFunction` but it
 should not matter the programmer using the API. This is an internal
@@ -867,27 +873,27 @@ the generator is calling directly do not have JavaDoc documentation.
 However, each and every of such method has a method with the same name
 in the class ```Lexpression```, which is fully documented.
 
-The simplest Lexpression matches a single keyword. To get such an
-Lexpression you can invoke the method
+The simplest `Lexpression` matches a single keyword. To get such an
+`Lexpression` you can invoke the method
 `LexpressionBuilder.keyword(kw)` with the string argument `kw`. For
-example `keyword("int")` will return an Lexpression that matches a
+example `keyword("int")` will return an `Lexpression` that matches a
 single keyword `int`.
 
 NOTE: `int` is not a keyword in Java. When matching a list of lexical
-elements against an Lexpression the analysis does not make difference
+elements against an `Lexpression` the analysis does not make difference
 between an identifier and an expression. Because of this the method
 `keyword()` and `identifier()` are interchangeable. It is recommended to
 use `keyword()` for keyword matching and `identifier()` to match an
 identifier.
 
 NOTE: In this section we will refer to the methods using their name
-without the class name. Since the Lexpression describing structures can
+without the class name. Since the `Lexpression` describing structures can
 sometimes be fairly complex the recommended approach is to statically
 import these methods from the class
 `javax0.geci.lexeger.LexpressionBuilder`.
 
 The method `keyword()` is not the only one method that results a single,
-one element Lexpression with a so called terminal symbol in it. There
+one element `Lexpression` with a so called terminal symbol in it. There
 are different methods, like
 
 * `string()` matching a string literal
@@ -909,7 +915,7 @@ method can be used as if a type literal was really a terminal symbol.
 
 Each of these methods have different forms with different arguments. For
 example the method `integerNumber()` has a version that has a `long`
-predicate as argument. The resulting Lexpression will match an integer
+predicate as argument. The resulting `Lexpression` will match an integer
 number literal only the number converted to `long` matches the
 predicate. Similarly the method `string()` has a version that has a
 `String` and one that has a `Pattern` argument. The first version
@@ -929,8 +935,8 @@ wrapping helps to distinguist the overloaded methods that have already
 first string arguments and the same other arguments.
 
 Groups are identified by the name and they contain the list of lexical
-elements that are matched by the certain sub Lexpression that may be
-part of the whole Lexpression. These groups can be retrieved using the
+elements that are matched by the certain sub `Lexpression` that may be
+part of the whole `Lexpression`. These groups can be retrieved using the
 name and used in the replacement part later.
 
 Matching single elements is not really useful. To have really useful
@@ -940,8 +946,8 @@ defines different versions of the following methods:
 
 * `anyTill()` matches zero or more lexical elements until it finds one
   that matches one of the arguments
-* `list()` matches the Lexpressions listed as arguments
-* `not()` matches something that is not the Lexpression argument
+* `list()` matches the `Lexpression`s listed as arguments
+* `not()` matches something that is not the `Lexpression` argument
 * `oneOf()` matches one of the arguments
 * `zeroOrMore()` matches zero or more times the argument
 * `oneOrMore()` matches one or more time the argument
@@ -951,6 +957,166 @@ defines different versions of the following methods:
 * `unordered()` matches the arguments, each once but in argitrary order
 
 These methods also have different versions overloading the method name.
+
+==== Examples
+
+In this section we will list some of the test methods that are
+implemented in the class `javax0.geci.lexeger.TestMatching` in the
+module `javageci-tools`. We list here only some of the methods that are
+of exemplary values. In the class you can find more examples without
+detailed explanation.
+
+In the tests the class `TestSource` is an implementation of the
+interface `Source` that gets the lines as the constructor argument. In
+these tests usually there are only one line in the source code and thus
+the argument is created calling the static method
+`Collections.singletonList()`.
+
+The `JavaLexed` object is created from the source object in a
+try-with-resources block, essentially implicitly closing it at the end
+of the test.
+
+// snip testSimpleListFinding trim="to=0" number="from=2 to=7"
+```java
+   @Test
+   void testSimpleListFinding() {
+1.     final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
+2.     try (final var javaLexed = new JavaLexed(source)) {
+3.         final MatchResult result = javaLexed.find(match("public var h")).fromStart().result();
+4.         Assertions.assertTrue(result.matches);
+5.         Assertions.assertEquals(13, result.start);
+           Assertions.assertEquals(18, result.end);
+       }
+   }
+```
+
+This test uses the source code as seen on the line #1. The variable
+`result` gets the result of the matchign operation. The call chain first
+specifies the `Lexpression` to find then it executes the operation
+starting at the beginning of the source and finally the result object is
+fetched from the result of the search operation.
+
+What we find here is a list of lexical tokens: `public`, `var`, and `h`.
+This is simply written as `match("public var h")` which performs a quick
+lexical analysis on the input string and creates an `Lexpression` that
+is the list of the terminal elements that are in the string.
+
+The `result.matches()` is `true` when the `Lexpression` was found. The
+result can also be queried for the start position (inclusive) and the
+end position (exclusive) of the found match. In this case the lexical
+elements are
+
+[start=0]
+0. `private`
+0. space
+0. `final`
+0. space
+0. `int`
+0. space
+0. `z`
+0. space
+0. `=`
+0. space
+0. `13`
+0. `;`
+0. new-line
+0. `public`
+0. space
+0. `var`
+0. space
+0. `h`
+0. space
+0. `=`
+0. space
+0. `"kkk"`
+
+Note that spaces do not matter when matching, but it does not mean that
+they are not there. It is only the comparison that ignores the spaces.
+In this case the `Lexpression` given as `"public var h"` starts at the
+position 13 in the list of the lexical elements and ends before the
+elements at the position 18. These positions can be, but need not be
+used later in replacement operations.
+
+There are different methods that replace the part of the lexical list of
+the source code between two indices or between the `star` and `end`
+indices of a `MatchResult`. The simplest way is, however, calling the
+method `replaceWith()` that has only one argument, the list of the
+lexical elements that will be inserted into the place of the matched
+part only in case the match was successful.
+
+The next sample stores part of the match in a group.
+
+// snip testSimpleGroupCollection trim="to=0" number="start=1 format='%02d. '"
+```java
+01. @Test
+02. void testSimpleGroupCollection() {
+03.     final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
+04.     try (final var javaLexed = new JavaLexed(source)) {
+05.         final var result = javaLexed.find(list(oneOf(group("protection"), "public", "private"), match("var h"))).fromStart().result();
+06.         Assertions.assertTrue(result.matches);
+07.         Assertions.assertEquals(13, result.start);
+08.         Assertions.assertEquals(18, result.end);
+09.         Assertions.assertEquals(1, javaLexed.group("protection").size());
+10.         Assertions.assertEquals("public", javaLexed.group("protection").get(0).getLexeme());
+11.     }
+12. }
+```
+
+What we are searching is a list of `Lexpression`s. The list consists two
+elements. The first one is a `oneOf()` `public` and `private` element,
+the second is `var h`. The list is created calling the `list()` utility
+method that has variable number of `Lexpression` arguments. The method
+`oneOf()` has many overloaded versions. This version has a first
+argument that specifies a group by name. The rest of the arguments are
+strings. This is a convenience method that converts the individual
+strings into simple `Lexpression`s each. Thus
+
+    oneOf(group("protection"), "public", "private")
+
+is the same as
+
+    oneOf(group("protection"), match("public"), match("private"))
+
+When this part of the expression matches then the list of lexical
+elements that are matched by this part of the expression is stored in a
+new list and is associated with the name and can later be retrieved from
+the `JavaLexed` object. The assertions on the line 9 and 10 are doing
+exactly this. They retrieve the list of the lexical elements that were
+associated with the group named `protection`. Line 9 asserts that the
+number of lexical elements in the list is one and the line 10 asserts
+that this is `public` as it is matched before the `var h` part of the
+source.
+
+The following example uses a matching group that is not matched during
+the search operation. Because the structure of the test is practically
+the same as that of the previous we skipped some lines that you can also
+see from the line numbering.
+
+// snip testSimpleUnmatchedGroup skip="do" trim="do" number="do"
+```java
+1. javaLexed.find(list(group("protection", oneOf(match("public"), group("private", match("private")))), match("var h")));
+7. Assertions.assertEquals(0, javaLexed.group("private").size());
+8. Assertions.assertEquals(1, javaLexed.group("protection").size());
+```
+
+In this case the method `oneOf()` has ``Lexpression``s. You cannot mix
+strings with ``Lexpression``s and because the second argument
+`group("private", match("private"))` is already an `Lexpression` the
+first one also has to be. Thus we cannot write there simply `"public"`
+instead of `match("public")`.
+
+In this example we also use the version of the method `group()`, which
+is not inside but around the the matching elements that are to form the
+group. Using `group("protection", oneOf(...))` is the same as the
+version of `oneOf(group("protection",...))` that has a group identifier
+in the first argument (created calling the single string argument of the
+utility method `group()`).
+
+Because the access modifier in front of `var h` is public the group
+named `private` does not match anything thus the size of it is zero. On
+the other hand the group named `protection` contains one element. This
+is the same as in the previous example. If the access modifier was
+`private` then both groups would contain a single element list.
 
 === Creating, opening new source object
 

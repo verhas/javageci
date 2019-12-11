@@ -107,17 +107,20 @@ class TestMatching {
         }
     }
 
+    //snippet testSimpleListFinding
     @Test
     void testSimpleListFinding() {
         final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
-            final var result = javaLexed.find(match("public var h")).fromStart().result();
+            final MatchResult result = javaLexed.find(match("public var h")).fromStart().result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
             Assertions.assertEquals(18, result.end);
         }
     }
+    //end snippet
 
+    //snippet testSimpleGroupCollection
     @Test
     void testSimpleGroupCollection() {
         final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
@@ -127,22 +130,25 @@ class TestMatching {
             Assertions.assertEquals(13, result.start);
             Assertions.assertEquals(18, result.end);
             Assertions.assertEquals(1, javaLexed.group("protection").size());
-            Assertions.assertEquals(1, javaLexed.group("protection").size());
             Assertions.assertEquals("public", javaLexed.group("protection").get(0).getLexeme());
         }
     }
+    //end snippet
 
     @Test
     void testSimpleUnmatchedGroup() {
         final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
         try (final var javaLexed = new JavaLexed(source)) {
+            //snippet testSimpleUnmatchedGroup
             javaLexed.find(list(group("protection", oneOf(match("public"), group("private", match("private")))), match("var h")));
+            // skip 4 lines
             final var result = javaLexed.fromStart().result();
             Assertions.assertTrue(result.matches);
             Assertions.assertEquals(13, result.start);
             Assertions.assertEquals(18, result.end);
             Assertions.assertEquals(0, javaLexed.group("private").size());
             Assertions.assertEquals(1, javaLexed.group("protection").size());
+            // end snippet
         }
     }
 
