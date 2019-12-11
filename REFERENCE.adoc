@@ -286,7 +286,7 @@ directories where the source set can be. It is *not* to specify
 different source sets. If there are more than one source sets to be used
 then they should be defined in consecutive `source()` calls.
 
-____
+====
 
 The need for this is because there is no guaranteed current working
 directory (CWD) when the unit tests are started. Many times it is not a
@@ -297,7 +297,7 @@ the IDE then the CWD will be the root directory of the module project by
 default. If you start `mvn clean install` in the parent project then the
 CWD is the project root directory of the parent project.
 
-____
+====
 
 The directory or directories for the source set should be the directory
 where the Java code hierarchy starts (in case of maven the `java`
@@ -534,7 +534,7 @@ The last call after the chain of configuration calls has to be
 asserted to be `false` in the tests and fail in case there was new code
 generated.
 
-== Writing a Generator
+== Programming a Generator
 
 A generator is a class that implements the interface
 `javax0.geci.api.Generator`. This interface defines a single method
@@ -1485,7 +1485,7 @@ iteration starts and `postprocess()` is invoked after that.
 
 == Error messages
 
-* The generators did not touch any source
+* `The generators did not touch any source`
 
 When the execution finishes and none of the generators generated any
 source into any existing or new source file then this error happens. If
@@ -1496,7 +1496,7 @@ error, because if none of the generators generate anything then why to
 have them in the actual project. They are configured to run, most
 probably they are supposed to do something.
 
-* SourceSet "…" does not exist
+* `SourceSet "…" does not exist`
 
 When you configure the sources using the `source()` method in the test
 executing the generations you can define different source sets and you
@@ -1513,8 +1513,8 @@ wired into the generator or the generator may use the configuration
 (either annotation, comment string or the segment start in the source
 file).
 
-* Global segment was opened when the there were already opened segments
-* Segment was opened after the global segment was already created.
+* `Global segment was opened when the there were already opened segments`
+* `Segment was opened after the global segment was already created.`
 
 These errors are certainly an error in one of the generators executing in
 the test phase. Generators can write certain parts of a source file.
@@ -1541,7 +1541,7 @@ same time. Even different generators should not do that. That way one
 change would simply overwrite the other change. When this happens the
 Geci framework throws one of these exceptions.
 
-* Segment "…" disappeared from source "file name"
+* `Segment "…" disappeared from source "file name"`
 
 This error is certainly an error in one of the generators executing in
 the test phase. When this happens it means that the code generation
@@ -1551,7 +1551,7 @@ when the changes are to be written back. This may happen if one of the
 generators changes the source object directly. It may also be an
 internal error in the framework.
 
-* "Source directory [ list of directories ] is not found"
+* `Source directory [ list of directories ] is not found`
 
 This error happens when the framework cannot find a configured source
 set. The source sets are configured with alternative directories. This
@@ -1564,7 +1564,7 @@ If this error happens you should check the configuration in the method
 call `source()` in the test and you should also check which CWD the code
 generation execution was started in.
 
-* None of the configured directories { [ ... ] } are found
+* `None of the configured directories { [ ... ] } are found`
 
 This is a very similar error as the previous one. This error is thrown
 if none of the configured source sets can be found. When you configure
