@@ -45,10 +45,10 @@ public interface Source {
      * @param root the directory to the root module where the top level
      *             {@code pom.xml} containing the
      *             <pre>
-     *                                                                                                   {@code <modules>
-     *                                                                                                       <module>...</module>
-     *                                                                                                     </modules>}
-     *                                                                                                   </pre>
+     *             {@code <modules>
+     *                 <module>...</module>
+     *               </modules>}
+     *             </pre>
      *             declaration is.
      * @return a new Maven source directory configuration object.
      */
@@ -418,7 +418,7 @@ public interface Source {
          * @return the predicate
          */
         public static Predicate<String> hasTheFile(String anchor) {
-            return exists().and(file -> new File(file + anchor).exists());
+            return hasAllTheFiles(anchor);
         }
 
         /**
@@ -434,8 +434,8 @@ public interface Source {
          */
         public static Predicate<String> hasOneOfTheFiles(String... anchors) {
             return exists().and(file ->
-                                    Arrays.stream(anchors).anyMatch(anchor ->
-                                                                        new File(file + anchor).exists()));
+                Arrays.stream(anchors).anyMatch(anchor ->
+                    new File(file + anchor).exists()));
         }
 
         /**
@@ -451,8 +451,8 @@ public interface Source {
          */
         public static Predicate<String> hasAllTheFiles(String... anchors) {
             return exists().and(file ->
-                                    Arrays.stream(anchors).allMatch(anchor ->
-                                                                        new File(file + anchor).exists()));
+                Arrays.stream(anchors).allMatch(anchor ->
+                    new File(file + anchor).exists()));
         }
     }
 
