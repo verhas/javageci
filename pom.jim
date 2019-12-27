@@ -1,34 +1,46 @@
 {@import version.jim}
-{@define project(_packaging,_projectContent)=<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+{@define project($packaging,$projectContent)=<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
                             xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 <modelVersion>4.0.0</modelVersion>
-<packaging>_packaging</packaging>_projectContent</project>
+<packaging>$packaging</packaging>$projectContent</project>
 }
 
-{@define tag(_x)={@define _x(_y)=<_x>_y</_x>}}
-{#eval {@for _tag in (name,groupId,artifactId,version,scope,packaging,description,url,properties,build,pluginManagement,plugins,plugin,dependencyManagement,dependencies,scm,connection,developerConnection,executions,execution,id,goals,goal)=
+{@define tag($x)={@define $x($y)=<$x>$y</$x>}}
+
+{@define $forsep=\s*,\s*} this lets us to split the list of the tags into multiple lines
+
+because the macro "eval" is preceded with the character # first the macro "for" is evaluated
+the result (output) of the macro "for" is a series of "define" macros. Each defines a new macro
+with the name of the tag. When this is ready then this output is processed by the macro "eval"
+essentially executing the "define" macros and at this point the tags are defined as macros.
+
+{#eval {@for _tag in (name,groupId,artifactId,version,scope,packaging,
+                      description,url,properties,build,pluginManagement,
+                      plugins,plugin,dependencyManagement,dependencies,
+                      scm,connection,developerConnection,executions,
+                      execution,id,goals,goal)=
 {tag/_tag}}}
 
 {@define JAMAL=com.javax0.jamal}
 
-{@define GAV(_groupId,_artifactId,_version)=
-    {#if|_groupId|{groupId :_groupId}}
-    {#if|_artifactId|{artifactId :_artifactId}}
-    {#if|_version|{version :_version}}
+{@define GAV($groupId,$artifactId,$version)=
+    {#if|$groupId|{groupId :$groupId}}
+    {#if|$artifactId|{artifactId :$artifactId}}
+    {#if|$version|{version :$version}}
 }
 
-{@define parent(_id)=
+{@define parent($id)=
 <parent>
-    {GAV :{GROUPID}:_id:{VERSION}}
+    {GAV :{GROUPID}:$id:{VERSION}}
 </parent>
 }
 
-{@define dependency(_groupId,_artifactId,_version,_scope)=
+{@define dependency($groupId,$artifactId,$version,$scope)=
 <dependency>
-    {#if|_groupId|{groupId :_groupId}}
-    {#if|_artifactId|{artifactId :_artifactId}}
-    {#if|_version|{version :_version}}
-    {#if|_scope|{scope :_scope}}
+    {#if|$groupId|{groupId :$groupId}}
+    {#if|$artifactId|{artifactId :$artifactId}}
+    {#if|$version|{version :$version}}
+    {#if|$scope|{scope :$scope}}
 </dependency>
 }
 
@@ -38,33 +50,33 @@
   </modules>
 }
 
-{@define license(_name,_url)=
+{@define license($name,$url)=
 <licenses>
     <license>
-        <name>_name</name>
-        <url>_url</url>
+        <name>$name</name>
+        <url>$url</url>
     </license>
 </licenses>
 }
 
-{@define property(_name,_value)=<_name>_value</_name>}
+{@define property($name,$value)=<$name>$value</$name>}
 
-{@define developer(_name,_email)=
+{@define developer($name,$email)=
 <developers>
     <developer>
-        <name>_name</name>
-        <email>_email</email>
+        <name>$name</name>
+        <email>$email</email>
     </developer>
 </developers>
 }
 
-{@define github(_developer,_project)=
+{@define github($developer,$project)=
     {scm|
-        {connection |scm:git:git://github.com/_developer/_project.git}
-        {developerConnection|scm:git:ssh://github.com/_developer/_project.git}
-        {url|https:/github.com/_developer/_project/tree/master}
+        {connection |scm:git:git://github.com/$developer/$project.git}
+        {developerConnection|scm:git:ssh://github.com/$developer/$project.git}
+        {url|https:/github.com/$developer/$project/tree/master}
     }
-    {url|https:/github.com/_developer/_project/tree/master}
+    {url|https:/github.com/$developer/$project/tree/master}
 }
 {@define opens($module,$package,$to)=--add-opens geci.$module/javax0.geci.$package={#if/$to/geci.$to/ALL-UNNAMED}}
 {@define exports($module,$package,$to)=--add-exports geci.$module/javax0.geci.$package={#if/$to/geci.$to/ALL-UNNAMED}}

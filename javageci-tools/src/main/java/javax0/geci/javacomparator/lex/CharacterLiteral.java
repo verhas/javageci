@@ -10,24 +10,25 @@ import static javax0.geci.javacomparator.lex.Escape.handleNormalCharacter;
  */
 public class CharacterLiteral implements LexEater {
     private static final String CHARACTER = "Character";
+    private final char ENCLOSING = '\'';
 
     @Override
     public LexicalElement.CharacterLiteral apply(StringBuilder sb) {
-        if (sb.length() == 0 || sb.charAt(0) != '\'') {
+        if (sb.length() == 0 || sb.charAt(0) != ENCLOSING) {
             return null;
         }
         final StringBuilder output = createOutput(sb, CHARACTER);
         sb.deleteCharAt(0);
-        while (sb.length() > 0 && sb.charAt(0) != '\'') {
+        while (sb.length() > 0 && sb.charAt(0) != ENCLOSING) {
             final char ch = sb.charAt(0);
             if (ch == '\\') {
                 handleEscape(sb, output);
             } else {
-                handleNormalCharacter(sb, output, ch);
+                handleNormalCharacter(sb, output);
             }
         }
         if (sb.length() == 0) {
-            throw new IllegalArgumentException(CHARACTER + " is not terminated before eol");
+            throw new IllegalArgumentException("Character is not terminated before eol");
         }
         sb.deleteCharAt(0);
         return new LexicalElement.CharacterLiteral(output.toString());
