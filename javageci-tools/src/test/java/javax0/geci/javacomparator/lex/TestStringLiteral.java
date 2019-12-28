@@ -62,4 +62,14 @@ public class TestStringLiteral {
         Assertions.assertThrows(IllegalArgumentException.class, () -> sut.apply(new StringBuilder("\"\\")));
         Assertions.assertThrows(IllegalArgumentException.class, () -> sut.apply(new StringBuilder("\"bababa")));
     }
+
+    @Test
+    @DisplayName("Test multi line string literals that are syntactically incorrect")
+    void testBadMultiLineStringLiterals() {
+        final var sut = new StringLiteral();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> sut.apply(new StringBuilder("\"\"\"")));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> sut.apply(new StringBuilder("\"\"\"\"")));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> sut.apply(new StringBuilder("\"\"\"\"\"")));
+    }
+
 }

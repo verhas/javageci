@@ -634,10 +634,12 @@ nothing to write there. However, the framework will interpret this that
 the generator does not want to touch the segment and the old value
 remains.
 
-For example, there is a code that creates a `LC_` prefixed field for every
+Assume that, there is a generator that creates a `LC_` prefixed field for every
 `final` and `static` `String` field which will contain the lowercase
-version of the original string. These `LC_` prefixed variables go into
-a special segment, like
+version of the original string. There is no such generator written but for the
+sake of the example, let us imagine one hypothetically.
+The `LC_` prefixed variables created by our hypothetical generator go into a
+special segment, like
 
 [source,java]
 ----
@@ -650,12 +652,14 @@ final static String LC_myString = "hello, world!";
 ----
 
 when the generator does not find any `final` and `static` `String` field
-it does not have to write anything into the segment `lowerCase` and thus
-it does not open it. This works so long as long as there is no `final`
-and `static` `String` field in the class. However, when there is some
-and we happen to delete the last one then this will leave the
-`lowerCase` segment intact and there will be the remaining last
-`LC_myString` field.
+it does not have to write anything into the segment named `lowerCase` and thus
+it does not open it. This works so long as long there is no `final`
+`static` `String` field in the class. However, when there are some
+and we happen to delete them all then this will leave the
+`lowerCase` segment intact and there will be the remaining last few
+`LC_...` field. That is because the generator does not see any field to be
+generated and thus it does not try to write into the segment anything. When
+none of the generators write a segment then the segment will remain as it was.
 
 To tell the framework that the segment is to be modified even if no
 `open(id)` is invoked for the specific segment the generator has to call

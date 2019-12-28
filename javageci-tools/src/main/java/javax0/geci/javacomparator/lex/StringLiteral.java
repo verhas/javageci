@@ -26,7 +26,7 @@ public class StringLiteral implements LexEater {
             return null;
         }
         final var output = createOutput(sb, STRING);
-        if (sb.length() > 3 && sb.subSequence(0, 3).equals(MULTI_LINE_STRING_DELIMITER)) {
+        if (sb.length() >= 3 && sb.subSequence(0, 3).equals(MULTI_LINE_STRING_DELIMITER)) {
             return getMultiLineStringLiteral(sb, output);
         } else {
             return getSimpleStringLiteral(sb, output);
