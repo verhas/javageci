@@ -984,7 +984,7 @@ of the test.
 ```java
    @Test
    void testSimpleListFinding() {
-1.     final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
+1.     final var source = new TestSource("private final int z = 13;\npublic var h = \"kkk\"");
 2.     try (final var javaLexed = new JavaLexed(source)) {
 3.         final MatchResult result = javaLexed.find(match("public var h")).fromStart().result();
 4.         Assertions.assertTrue(result.matches);
@@ -995,7 +995,7 @@ of the test.
 ```
 
 This test uses the source code as seen on the line #1. The variable
-`result` gets the result of the matchign operation. The call chain first
+`result` gets the result of the matching operation. The call chain first
 specifies the `Lexpression` to find then it executes the operation
 starting at the beginning of the source and finally the result object is
 fetched from the result of the search operation.
@@ -1005,7 +1005,7 @@ This is simply written as `match("public var h")` which performs a quick
 lexical analysis on the input string and creates an `Lexpression` that
 is the list of the terminal elements that are in the string.
 
-The `result.matches()` is `true` when the `Lexpression` was found. The
+The `result.matches` is `true` when the `Lexpression` was found. The
 result can also be queried for the start position (inclusive) and the
 end position (exclusive) of the found match. In this case the lexical
 elements are
@@ -1054,7 +1054,7 @@ The next sample stores part of the match in a group.
 ```java
 01. @Test
 02. void testSimpleGroupCollection() {
-03.     final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
+03.     final var source = new TestSource("private final int z = 13;\npublic var h = \"kkk\"");
 04.     try (final var javaLexed = new JavaLexed(source)) {
 05.         final var result = javaLexed.find(list(oneOf(group("protection"), "public", "private"), match("var h"))).fromStart().result();
 06.         Assertions.assertTrue(result.matches);

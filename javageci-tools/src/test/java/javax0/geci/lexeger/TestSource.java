@@ -2,6 +2,7 @@ package javax0.geci.lexeger;
 
 import javax0.geci.tools.AbstractTestSource;
 
+import java.util.Collections;
 import java.util.List;
 
 class TestSource extends AbstractTestSource {
@@ -9,6 +10,9 @@ class TestSource extends AbstractTestSource {
 
     TestSource(List<String> lines) {
         this.lines = lines;
+    }
+    TestSource(String line) {
+        this.lines = Collections.singletonList(line);
     }
 
     @Override
