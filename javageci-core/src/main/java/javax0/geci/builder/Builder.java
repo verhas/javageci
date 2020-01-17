@@ -220,9 +220,9 @@ public class Builder extends AbstractFilteredFieldsGenerator {
         writeGenerated(segment, config.generatedAnnotation);
         segment.write_r("public static %s.%s %s() {", klass.getSimpleName(), local.builderName, local.builderFactoryMethod)
                 .write("return %s.new %s();", factory, local.builderName)
-                .write_l("}")
-                .newline()
-                .write_r("public class %s {", local.builderName);
+                .write_l("}");
+        writeGenerated(segment, config.generatedAnnotation);
+        segment.write_r("public class %s {", local.builderName);
     }
 
     @Override
