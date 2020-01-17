@@ -14,15 +14,14 @@ public class LexicalElement implements javax0.geci.javacomparator.LexicalElement
     }
 
     public String getFullLexeme(){
-        var lexeme = this.lexeme;
         if (type == javax0.geci.javacomparator.LexicalElement.Type.STRING) {
-            final char enclosing = ((StringLiteral) this).enclosing;
-            lexeme = enclosing + lexeme + enclosing;
+            final String enclosing = ((StringLiteral) this).enclosing;
+            return enclosing + this.lexeme + enclosing;
         }
         if (type == javax0.geci.javacomparator.LexicalElement.Type.CHARACTER) {
-            lexeme = "'" + lexeme + "'";
+            return  "'" + this.lexeme + "'";
         }
-        return lexeme;
+        return this.lexeme;
     }
 
     @Override
@@ -112,8 +111,8 @@ public class LexicalElement implements javax0.geci.javacomparator.LexicalElement
     }
 
     public static class StringLiteral extends LexicalElement {
-        public final char enclosing;
-        StringLiteral(String lexeme, char enclosing) {
+        public final String enclosing;
+        StringLiteral(String lexeme, String enclosing) {
             super(lexeme, Type.STRING);
             this.enclosing = enclosing;
         }

@@ -24,6 +24,14 @@ public class JVM8Tools {
         return sb.substring(0,n);
     }
 
+    public static String string(char c ,int n) {
+        final StringBuilder sb = new StringBuilder(""+c);
+        while (sb.length() < n) {
+            sb.append(sb);
+        }
+        return sb.substring(0, n);
+    }
+
     private static final Method getNestHostMethod;
 
     static {

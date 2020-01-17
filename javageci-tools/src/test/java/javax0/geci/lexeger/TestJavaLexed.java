@@ -92,7 +92,7 @@ public class TestJavaLexed {
     @Test
     @DisplayName("JavaLexed can't be used after being closed.")
     void cantBeUsedOutOfScope() {
-        final var source = new TestSource(Collections.singletonList(""));
+        final var source = new TestSource("");
         final var sut = new JavaLexed(source);
         try {
         } finally {
@@ -104,7 +104,7 @@ public class TestJavaLexed {
     @Test
     @DisplayName("Can't remove range with bigger start than end.")
     void removeRangeThrowsExceptionWhenWrongStartEndOrder() {
-        final var source = new TestSource(Collections.singletonList(""));
+        final var source = new TestSource("");
         try(final var sut = new JavaLexed(source)) {
             Assertions.assertThrows(IllegalArgumentException.class, () -> sut.removeRange(2, 1));
         }
@@ -113,7 +113,7 @@ public class TestJavaLexed {
     @Test
     @DisplayName("Can't remove range if end is out of bounds.")
     void removeRangeThrowsExceptionWhenEndOutOfBounds() {
-        final var source = new TestSource(Collections.singletonList("public final"));
+        final var source = new TestSource("public final");
         try(final var sut = new JavaLexed(source)) {
             Assertions.assertThrows(IndexOutOfBoundsException.class, () -> sut.removeRange(1, 5));
         }
@@ -122,7 +122,7 @@ public class TestJavaLexed {
     @Test
     @DisplayName("Can't remove range if start is out of bounds.")
     void removeRangeThrowsExceptionWhenStartOutOfBounds() {
-        final var source = new TestSource(Collections.singletonList("public final"));
+        final var source = new TestSource("public final");
         try(final var sut = new JavaLexed(source)) {
             Assertions.assertThrows(IndexOutOfBoundsException.class, () -> sut.removeRange(-1, 2));
         }
@@ -131,7 +131,7 @@ public class TestJavaLexed {
     @Test
     @DisplayName("Can remove a single lexical element.")
     void removesElement() {
-        final var source = new TestSource(Collections.singletonList("public static final"));
+        final var source = new TestSource("public static final");
         final String lexed;
         try(final var sut = new JavaLexed(source)) {
             sut.remove(2);
@@ -146,7 +146,7 @@ public class TestJavaLexed {
     @Test
     @DisplayName("Can't remove element from out of bounds.")
     void removeElementThrowsExceptionOutOfBounds() {
-        final var source = new TestSource(Collections.singletonList("public final"));
+        final var source = new TestSource("public final");
         try(final var sut = new JavaLexed(source)) {
             Assertions.assertThrows(IndexOutOfBoundsException.class, () -> sut.remove(-1));
             Assertions.assertThrows(IndexOutOfBoundsException.class, () -> sut.remove(5));
@@ -156,7 +156,7 @@ public class TestJavaLexed {
     @Test
     @DisplayName("Can get a single lexical element by position.")
     void getsElement() {
-        final var source = new TestSource(Collections.singletonList("public static final"));
+        final var source = new TestSource("public static final");
         try(final var sut = new JavaLexed(source)) {
             final var lexicalElement = sut.get(2);
             Assertions.assertEquals(javax0.geci.javacomparator.LexicalElement.Type.IDENTIFIER, lexicalElement.getType());
@@ -167,7 +167,7 @@ public class TestJavaLexed {
     @Test
     @DisplayName("Can remove a range of lexical elements.")
     void removesRange() {
-        final var source = new TestSource(Collections.singletonList("final static private"));
+        final var source = new TestSource("final static private");
         final String lexed;
         try(final var sut = new JavaLexed(source)) {
             sut.removeRange(1, 3);
@@ -181,8 +181,8 @@ public class TestJavaLexed {
     @Test
     @DisplayName("Can replace a range of lexical elements at the start.")
     void replacesRangeStart() {
-        final var source = new TestSource(Collections.singletonList("final private"));
-        final var source3 = new TestSource(Collections.singletonList("private var"));
+        final var source = new TestSource("final private");
+        final var source3 = new TestSource("private var");
         final String lexed;
         try(final var sut = new JavaLexed(source)) {
             sut.replace(0, 2, Arrays.asList(new LexicalElement.Identifier("static"), new LexicalElement.Spacing("   ")));
@@ -196,7 +196,7 @@ public class TestJavaLexed {
     @Test
     @DisplayName("Can replace a range of lexical elements between the start and the end.")
     void replacesRangeMiddle() {
-        final var source = new TestSource(Collections.singletonList("public final static var"));
+        final var source = new TestSource("public final static var");
         final String lexed;
         try(final var sut = new JavaLexed(source)) {
             sut.replace(2, 4, Arrays.asList(new LexicalElement.Identifier("static"), new LexicalElement.Spacing("   ")));
@@ -214,7 +214,7 @@ public class TestJavaLexed {
     @Test
     @DisplayName("Can replace a range of lexical elements at the end.")
     void replacesRangeEnd() {
-        final var source = new TestSource(Collections.singletonList("public final static"));
+        final var source = new TestSource("public final static");
         final String lexed;
         try(final var sut = new JavaLexed(source)) {
             sut.replace(2, 5, Arrays.asList(new LexicalElement.Identifier("static"), new LexicalElement.Spacing("   ")));
@@ -229,7 +229,7 @@ public class TestJavaLexed {
     @Test
     @DisplayName("Can replace a range of lexical elements with the Lex utility class.")
     void replacesRangeWithLex() {
-        final var source = new TestSource(Collections.singletonList("final private"));
+        final var source = new TestSource("final private");
         final String lexed;
         try(final var sut = new JavaLexed(source)) {
             sut.replace(0, 2, Lex.of("static   "));

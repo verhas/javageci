@@ -5,9 +5,10 @@
 Java::Geci is a code generation framework/library that makes it very easy to
 write Java code generating tools. It also
 
-* comes with off the shelf code generators that can replace other
+* comes with off the shelf code generators that can either replace other
  widely used code generation tools like the those implemented in the
- IDEs or Lombok
+ IDEs or Lombok or solve unique tasks that are not available anywhere else, like
+ fluent API generators,
 * provides services and interfaces to write code generators that need to
  focus on the very core task of the code generation and let everything
  else to be done by the framework.
@@ -634,10 +635,12 @@ nothing to write there. However, the framework will interpret this that
 the generator does not want to touch the segment and the old value
 remains.
 
-For example, there is a code that creates a `LC_` prefixed field for every
+Assume that, there is a generator that creates a `LC_` prefixed field for every
 `final` and `static` `String` field which will contain the lowercase
-version of the original string. These `LC_` prefixed variables go into
-a special segment, like
+version of the original string. There is no such generator written but for the
+sake of the example, let us imagine one hypothetically.
+The `LC_` prefixed variables created by our hypothetical generator go into a
+special segment, like
 
 [source,java]
 ----
@@ -650,12 +653,14 @@ final static String LC_myString = "hello, world!";
 ----
 
 when the generator does not find any `final` and `static` `String` field
-it does not have to write anything into the segment `lowerCase` and thus
-it does not open it. This works so long as long as there is no `final`
-and `static` `String` field in the class. However, when there is some
-and we happen to delete the last one then this will leave the
-`lowerCase` segment intact and there will be the remaining last
-`LC_myString` field.
+it does not have to write anything into the segment named `lowerCase` and thus
+it does not open it. This works so long as long there is no `final`
+`static` `String` field in the class. However, when there are some
+and we happen to delete them all then this will leave the
+`lowerCase` segment intact and there will be the remaining last few
+`LC_...` field. That is because the generator does not see any field to be
+generated and thus it does not try to write into the segment anything. When
+none of the generators write a segment then the segment will remain as it was.
 
 To tell the framework that the segment is to be modified even if no
 `open(id)` is invoked for the specific segment the generator has to call
@@ -980,7 +985,7 @@ of the test.
 ```java
    @Test
    void testSimpleListFinding() {
-1.     final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
+1.     final var source = new TestSource("private final int z = 13;\npublic var h = \"kkk\"");
 2.     try (final var javaLexed = new JavaLexed(source)) {
 3.         final MatchResult result = javaLexed.find(match("public var h")).fromStart().result();
 4.         Assertions.assertTrue(result.matches);
@@ -991,7 +996,7 @@ of the test.
 ```
 
 This test uses the source code as seen on the line #1. The variable
-`result` gets the result of the matchign operation. The call chain first
+`result` gets the result of the matching operation. The call chain first
 specifies the `Lexpression` to find then it executes the operation
 starting at the beginning of the source and finally the result object is
 fetched from the result of the search operation.
@@ -1001,7 +1006,7 @@ This is simply written as `match("public var h")` which performs a quick
 lexical analysis on the input string and creates an `Lexpression` that
 is the list of the terminal elements that are in the string.
 
-The `result.matches()` is `true` when the `Lexpression` was found. The
+The `result.matches` is `true` when the `Lexpression` was found. The
 result can also be queried for the start position (inclusive) and the
 end position (exclusive) of the found match. In this case the lexical
 elements are
@@ -1050,7 +1055,7 @@ The next sample stores part of the match in a group.
 ```java
 01. @Test
 02. void testSimpleGroupCollection() {
-03.     final var source = new TestSource(Collections.singletonList("private final int z = 13;\npublic var h = \"kkk\""));
+03.     final var source = new TestSource("private final int z = 13;\npublic var h = \"kkk\"");
 04.     try (final var javaLexed = new JavaLexed(source)) {
 05.         final var result = javaLexed.find(list(oneOf(group("protection"), "public", "private"), match("var h"))).fromStart().result();
 06.         Assertions.assertTrue(result.matches);
@@ -1393,13 +1398,15 @@ interface `javax0.geci.api.Generator`. The library contains abstract
 classes that implement the interface and do some specific task that may
 be the same for a variety of generators.
 
-These abstract classes are defined in the package `javax0.geci.tools`.
-This documentation lists some, but you have to consult the actual and
-up-to-date JavaDoc documentation. 
+These abstract classes are defined in the package `javax0.geci.tools`
+in the module `javageci-tools`. This documentation lists some of the
+classes giving some introduction, but it is still recommended that you
+have to consult the actual and up-to-date JavaDoc documentation.
 
 * `AbstractGeneratorEx` can be extended by generators that may throw
  exception. Note that the signature of the method `process()` in the
- interface `Generator` does not throw any exceptions.
+ interface `Generator` does not throw any exceptions. This abstract class
+ catches any exception and rethrows it as a `RuntimeException`.
 * `AbstractGenerator` is to be extended by generators that work only on
  Java source files and need the compiled class of the source.
 * `AbstractDeclaredFieldsGenerator` is for generators that want to
