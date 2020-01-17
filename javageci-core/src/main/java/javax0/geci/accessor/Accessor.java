@@ -14,7 +14,7 @@ public class Accessor extends AbstractAccessor {
     @Override
     protected void writeSetter(Field field, String name, String setterName,
                                String type, String access, Segment segment) {
-        segment._r("%s void %s(%s %s) {",
+        segment._r("%svoid %s(%s %s) {",
                 access, setterName, type, name)
                 .write("this.%s = %s;", name, name)
                 ._l("}")
