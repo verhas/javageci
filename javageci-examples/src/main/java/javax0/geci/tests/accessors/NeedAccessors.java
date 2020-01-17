@@ -44,11 +44,11 @@ public class NeedAccessors {
         return birnen;
     }
 
-    void setTruth(boolean truth) {
+     void setTruth(boolean truth) {
         this.truth = truth;
     }
 
-    boolean isTrue() {
+     boolean isTrue() {
         return truth;
     }
 
