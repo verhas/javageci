@@ -5,9 +5,10 @@
 Java::Geci is a code generation framework/library that makes it very easy to
 write Java code generating tools. It also
 
-* comes with off the shelf code generators that can replace other
+* comes with off the shelf code generators that can either replace other
  widely used code generation tools like the those implemented in the
- IDEs or Lombok
+ IDEs or Lombok or solve unique tasks that are not available anywhere else, like
+ fluent API generators,
 * provides services and interfaces to write code generators that need to
  focus on the very core task of the code generation and let everything
  else to be done by the framework.
@@ -1397,13 +1398,15 @@ interface `javax0.geci.api.Generator`. The library contains abstract
 classes that implement the interface and do some specific task that may
 be the same for a variety of generators.
 
-These abstract classes are defined in the package `javax0.geci.tools`.
-This documentation lists some, but you have to consult the actual and
-up-to-date JavaDoc documentation. 
+These abstract classes are defined in the package `javax0.geci.tools`
+in the module `javageci-tools`. This documentation lists some of the
+classes giving some introduction, but it is still recommended that you
+have to consult the actual and up-to-date JavaDoc documentation.
 
 * `AbstractGeneratorEx` can be extended by generators that may throw
  exception. Note that the signature of the method `process()` in the
- interface `Generator` does not throw any exceptions.
+ interface `Generator` does not throw any exceptions. This abstract class
+ catches any exception and rethrows it as a `RuntimeException`.
 * `AbstractGenerator` is to be extended by generators that work only on
  Java source files and need the compiled class of the source.
 * `AbstractDeclaredFieldsGenerator` is for generators that want to
