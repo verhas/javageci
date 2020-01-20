@@ -318,11 +318,9 @@ public class Source implements javax0.geci.api.Source {
      * @return the modified string array
      */
     private String[] mnemonize(String id, String... s) {
-        final String[] res = new String[s.length];
-        for (int i = 0; i < s.length; i++) {
-            res[i] = s[i].replaceAll("\\{\\{mnemonic}}", id);
-        }
-        return res;
+        return Arrays.stream(s)
+            .map(item -> item.replaceAll("\\{\\{mnemonic}}", id))
+            .toArray(String[]::new);
     }
 
     @Override
@@ -410,20 +408,20 @@ public class Source implements javax0.geci.api.Source {
                 "This is an internal error: source was not read into memory but segments were generated");
         }
         if (globalSegment == null) {
-            for (var entry : segments.entrySet()) {
-                touched = true;
-                var id = entry.getKey();
-                Segment segment = entry.getValue();
-                touchBits |= segment.touch(0);
-                var segmentLocation = findSegment(id);
-                if (segmentLocation == null) {
-                    segmentLocation = findDefaultSegment();
+            segments.forEach(
+                (id, segment) -> {
+                    touched = true;
+                    touchBits |= segment.touch(0);
+                    var segmentLocation = findSegment(id);
                     if (segmentLocation == null) {
-                        throw new GeciException("Segment " + id + " disappeared from source" + absoluteFile);
+                        segmentLocation = findDefaultSegment();
+                        if (segmentLocation == null) {
+                            throw new GeciException("Segment " + id + " disappeared from source" + absoluteFile);
+                        }
                     }
+                    mergeSegment(segment, segmentLocation);
                 }
-                mergeSegment(segment, segmentLocation);
-            }
+            );
         } else {
             touched = true;
             lines.clear();
