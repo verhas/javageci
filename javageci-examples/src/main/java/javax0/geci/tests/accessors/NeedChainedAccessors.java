@@ -33,25 +33,25 @@ public class NeedChainedAccessors<T> {
 
 
     //<editor-fold id="caccessor" desc="setters">
-    public String getApple(){
+    public String getApple() {
         return apple;
     }
 
-    public NeedChainedAccessors<T> withBirnen(int birnen){
+    public NeedChainedAccessors<T> withBirnen(int birnen) {
         this.birnen = birnen;
         return this;
     }
 
-    public int getBirnen(){
+    public int getBirnen() {
         return birnen;
     }
 
-    public NeedChainedAccessors<T> withTruth(boolean truth){
+    public NeedChainedAccessors<T> withTruth(boolean truth) {
         this.truth = truth;
         return this;
     }
 
-    public boolean getTruth(){
+    public boolean getTruth() {
         return truth;
     }
 
