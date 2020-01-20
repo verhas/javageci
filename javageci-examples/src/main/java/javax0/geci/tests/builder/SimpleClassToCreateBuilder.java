@@ -45,6 +45,7 @@ public class SimpleClassToCreateBuilder {
         return factory().new Builder();
     }
 
+    @javax0.geci.annotations.Generated("builder")
     public class Builder {
         @javax0.geci.annotations.Generated("builder")
         public Builder withD(final Double x) {
