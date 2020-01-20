@@ -37,7 +37,7 @@ public class NeedChainedAccessors<T> {
         return apple;
     }
 
-    public NeedChainedAccessors<T> withBirnen(int birnen){
+    public NeedChainedAccessors<T> withBirnen(int birnen) {
         this.birnen = birnen;
         return this;
     }
@@ -46,7 +46,7 @@ public class NeedChainedAccessors<T> {
         return birnen;
     }
 
-    public NeedChainedAccessors<T> withTruth(boolean truth){
+    public NeedChainedAccessors<T> withTruth(boolean truth) {
         this.truth = truth;
         return this;
     }

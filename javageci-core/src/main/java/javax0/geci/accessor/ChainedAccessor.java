@@ -22,8 +22,8 @@ public class ChainedAccessor extends AbstractAccessor {
                                String type, String access, Segment segment) {
         final var klass = field.getDeclaringClass();
         final var fullyQualified = GeciReflectionTools.getSimpleGenericClassName(klass);
-        segment._r("%s %s %s(%s %s){",
-                access, fullyQualified, setterName, type, name)
+        segment._r("%s%s%s %s(%s %s) {",
+                access, conditionalSpace(access), fullyQualified, setterName, type, name)
                 .write("this.%s = %s;", name, name)
                 .write("return this;")
                 ._l("}")
