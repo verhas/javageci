@@ -1,6 +1,7 @@
 package javax0.geci.api;
 
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -226,10 +227,9 @@ public interface Geci {
      * @return {@code this}
      */
     default Geci register(GeneratorBuilder ...generatorBuilders){
-        final var generators = new Generator[generatorBuilders.length];
-        for( int i = 0 ; i < generatorBuilders.length ; i++){
-            generators[i] = generatorBuilders[i].build();
-        }
+        final var generators = Arrays.stream(generatorBuilders)
+            .map(GeneratorBuilder::build)
+            .toArray(Generator[]::new);
         return register(generators);
     }
 
