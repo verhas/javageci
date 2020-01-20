@@ -226,7 +226,7 @@ class TestRecord {
 
     @Test
     @DisplayName("Throws exception when class extends other class")
-    void testExtendingClass() throws IOException {
+    void testExtendingClass() {
         // GIVEN
         final var sut = Record.builder().build();
         final var source = Source.mock(sut).lines("").getSource();
@@ -237,7 +237,7 @@ class TestRecord {
 
     @Test
     @DisplayName("Throws exception when class is abstract")
-    void testAbstractClass() throws IOException {
+    void testAbstractClass() {
         // GIVEN
         final var sut = Record.builder().build();
         final var source = Source.mock(sut).lines("").getSource();
@@ -248,7 +248,7 @@ class TestRecord {
 
     @Test
     @DisplayName("Throws exception when class has multiple validators")
-    void testMultipleValidators() throws IOException {
+    void testMultipleValidators() {
         // GIVEN
         final var sut = Record.builder().build();
         final var source = Source.mock(sut).lines("").getSource();

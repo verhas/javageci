@@ -1,5 +1,8 @@
 package javax0.geci.javacomparator.lex;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import javax0.geci.api.GeciException;
 import javax0.geci.javacomparator.LexicalElement;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -29,5 +32,10 @@ class TestCommentLiteral {
         testAndAssert("/* vo\nuw */");
         testAndAssert("/** vouw */");
         testAndAssert("// vouw */");
+    }
+
+    @Test
+    void testBadComment() {
+        assertThrows(GeciException.class, () -> testAndAssert("/* notclosed"));
     }
 }

@@ -1,6 +1,5 @@
 package javax0.geci.engine;
 
-
 import javax0.geci.api.CompoundParams;
 import javax0.geci.api.Distant;
 import javax0.geci.api.GeciException;
@@ -318,11 +317,9 @@ public class Source implements javax0.geci.api.Source {
      * @return the modified string array
      */
     private String[] mnemonize(String id, String... s) {
-        final String[] res = new String[s.length];
-        for (int i = 0; i < s.length; i++) {
-            res[i] = s[i].replaceAll("\\{\\{mnemonic}}", id);
-        }
-        return res;
+        return Arrays.stream(s)
+            .map(item -> item.replaceAll("\\{\\{mnemonic}}", id))
+            .toArray(String[]::new);
     }
 
     @Override

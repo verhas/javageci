@@ -47,7 +47,7 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
 
     protected void writeGetter(Field field, String name, String getterName,
                                String type, String access, Segment segment) {
-        segment._r("%s%s %s() {", access, type, getterName)
+        segment._r("%s%s%s %s() {", access, optionalSpace(access), type, getterName)
                 .write("return %s;", config.getterReturnValueDecorator.apply(name))
                 ._l("}")
                 .newline();
@@ -78,9 +78,15 @@ public class AbstractAccessor extends AbstractFilteredFieldsGenerator {
         if (modifiedAccess.equals("package")) {
             return "";
         }
-        return modifiedAccess + " ";
+        return modifiedAccess;
     }
 
+    protected String optionalSpace(String access) {
+        if (access.equals("")) {
+            return "";
+        }
+        return " ";
+    }
 
     @Override
     public void process(Source source, Class<?> klass,

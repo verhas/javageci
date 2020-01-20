@@ -1,18 +1,19 @@
 package javax0.geci.engine;
 
-import javax0.geci.api.Source;
-import javax0.geci.tools.JVM8Tools;
-import javax0.geci.util.DirectoryLocator;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import static javax0.geci.api.Source.Predicates.exists;
+import static javax0.geci.api.Source.Set.set;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.Map;
 
-import static javax0.geci.api.Source.Predicates.exists;
-import static javax0.geci.api.Source.Set.set;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import javax0.geci.api.Source;
+import javax0.geci.tools.JVM8Tools;
+import javax0.geci.util.DirectoryLocator;
 
 public class TestFileCollector {
     @Test
@@ -22,10 +23,7 @@ public class TestFileCollector {
         var collector = new FileCollector(sources);
         collector.collect(null,null, Collections.emptySet());
         assertEquals(4, collector.getSources().size());
-        for( final var source : collector.getSources() ){
-            if( source.getKlassName().endsWith("TestFileCollector"))
-                return;
-        }
-        Assertions.fail("TestFileCollector was not found by the collector");
+        assertTrue(collector.getSources().stream().anyMatch(source -> source.getKlassName().endsWith("TestFileCollector")),
+            "TestFileCollector was not found by the collector");
     }
 }
