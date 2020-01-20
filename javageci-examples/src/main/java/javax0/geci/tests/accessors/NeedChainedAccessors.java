@@ -33,7 +33,7 @@ public class NeedChainedAccessors<T> {
 
 
     //<editor-fold id="caccessor" desc="setters">
-    public String getApple(){
+    public String getApple() {
         return apple;
     }
 
@@ -42,7 +42,7 @@ public class NeedChainedAccessors<T> {
         return this;
     }
 
-    public int getBirnen(){
+    public int getBirnen() {
         return birnen;
     }
 
@@ -51,7 +51,7 @@ public class NeedChainedAccessors<T> {
         return this;
     }
 
-    public boolean getTruth(){
+    public boolean getTruth() {
         return truth;
     }
 
