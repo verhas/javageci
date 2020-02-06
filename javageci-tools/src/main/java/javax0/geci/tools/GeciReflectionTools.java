@@ -23,7 +23,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -379,17 +378,17 @@ public class GeciReflectionTools {
      * @return the sorted array of fields
      */
     public static Field[] getAllFieldsSorted(Class<?> klass) {
-        Set<Field> fields = new HashSet<>(Arrays.asList(klass.getDeclaredFields()));
+        Set<Field> allFields = new HashSet<>(Arrays.asList(klass.getDeclaredFields()));
         var superClass = klass.getSuperclass();
         var samePackage = klass.getPackage() == superClass.getPackage();
         while (superClass != null) {
-            collectFields(samePackage, superClass, fields);
+            collectFields(samePackage, superClass, allFields);
             superClass = superClass.getSuperclass();
             samePackage = samePackage && klass.getPackage() == superClass.getPackage();
         }
-        final var allFields = fields.toArray(new Field[0]);
-        Arrays.sort(allFields, Comparator.comparing(Field::getName));
-        return allFields;
+        final var fieldsArray = allFields.toArray(new Field[0]);
+        Arrays.sort(fieldsArray, Comparator.comparing(Field::getName));
+        return fieldsArray;
     }
 
     /**
@@ -403,11 +402,9 @@ public class GeciReflectionTools {
     private static void collectFields(boolean isSamePackage, Class<?> actualClass, Set<Field> fields) {
         final var declaredFields = actualClass.getDeclaredFields();
         final var selector = isSamePackage ? inheritedField : inheritedFieldDifferentPackage;
-        for (final var field : declaredFields) {
-            if (selector.match(field)) {
-                fields.add(field);
-            }
-        }
+        Arrays.stream(declaredFields)
+            .filter(selector::match)
+            .forEach(fields::add);
     }
 
     /**
@@ -452,36 +449,39 @@ public class GeciReflectionTools {
      * @return the array of the methods of the class
      */
     public static Method[] getAllMethodsSorted(final Class<?> klass) {
-        final var allMethods = new ArrayList<Method>();
-        var samePackage = true;
-        for (var currentClass = klass; currentClass != null; currentClass = currentClass.getSuperclass()) {
-            samePackage =  samePackage && klass.getPackage() == currentClass.getPackage() ;
-            for (final var currentMethod : currentClass.getDeclaredMethods()) {
-                if (klass == currentClass) {
-                    allMethods.add(currentMethod);
-                } else {
-                    final var modifier = currentMethod.getModifiers();
-                    if (isProtected(modifier) || isPublic(modifier) ||
-                        (samePackage && !isPublic(modifier) && ! isProtected(modifier) && !isPrivate(modifier))) {
-                        final var overridden = new AtomicBoolean(false);
-                        for (Method collectedMethod : allMethods) {
-                            if (collectedMethod.getName().equals(currentMethod.getName())
-                                && Arrays.deepEquals(currentMethod.getParameterTypes(), collectedMethod
-                                .getParameterTypes())) {
-                                overridden.set(true);
-                                break;
-                            }
-                        }
-
-                        if (!overridden.get())
-                            allMethods.add(currentMethod);
-                    }
-                }
-            }
+        final var allMethods = new ArrayList<>(Arrays.asList(klass.getDeclaredMethods()));
+        var superClass = klass.getSuperclass();
+        var samePackage = klass.getPackage() == superClass.getPackage();
+        while (superClass != null) {
+            collectMethods(samePackage, superClass, allMethods);
+            superClass = superClass.getSuperclass();
+            samePackage =  samePackage && klass.getPackage() == superClass.getPackage();
         }
         final Method[] methodArray = allMethods.toArray(new Method[0]);
         Arrays.sort(methodArray, Comparator.comparing(MethodTool::methodSignature));
         return methodArray;
+    }
+
+    private static void collectMethods(boolean samePackage, Class<?> currentClass, ArrayList<Method> allMethods) {
+        Arrays.stream(currentClass.getDeclaredMethods())
+            .filter(method -> isVisible(method, samePackage))
+            .filter(method -> isNotOverridden(method, allMethods))
+            .forEach(allMethods::add);
+    }
+
+    private static boolean isNotOverridden(Method currentMethod, ArrayList<Method> allMethods) {
+        return allMethods.stream()
+            .filter(method -> method.getName().equals(currentMethod.getName()))
+            .filter(method -> Arrays.deepEquals(method.getParameterTypes(), currentMethod.getParameterTypes()))
+            .findFirst()
+            .isEmpty();
+    }
+
+    private static boolean isVisible(Method method, boolean samePackage) {
+        final var modifier = method.getModifiers();
+        return isProtected(modifier)
+            || isPublic(modifier)
+            || (samePackage && !isPublic(modifier) && ! isProtected(modifier) && !isPrivate(modifier));
     }
 
     /**

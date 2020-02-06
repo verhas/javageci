@@ -82,9 +82,7 @@ public class Segment implements javax0.geci.api.Segment {
 
     @Override
     public void traceParams() {
-        for (final var key : paramKeySet()) {
-            Tracer.log(key, params.get(key));
-        }
+        params.forEach(Tracer::log);
     }
 
     @Override
