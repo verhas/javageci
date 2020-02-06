@@ -185,6 +185,12 @@ public class TestGeciReflectionTools {
     }
 
     @Test
+    @DisplayName("Does not throw an error even when collecting methods from java.lang.")
+    public void doesNotDependOnImplicitPackageBreaking() {
+        Assertions.assertDoesNotThrow(() -> GeciReflectionTools.getAllMethodsSorted(java.lang.String.class));
+    }
+
+    @Test
     @DisplayName("Get private field from base class.")
     public void getOwnField() {
         Assertions.assertDoesNotThrow(() -> GeciReflectionTools.getField(ChildClass.class, "ownField"));

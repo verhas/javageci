@@ -380,11 +380,11 @@ public class GeciReflectionTools {
     public static Field[] getAllFieldsSorted(Class<?> klass) {
         Set<Field> allFields = new HashSet<>(Arrays.asList(klass.getDeclaredFields()));
         var superClass = klass.getSuperclass();
-        var samePackage = klass.getPackage() == superClass.getPackage();
+        var samePackage = superClass != null && klass.getPackage() == superClass.getPackage();
         while (superClass != null) {
             collectFields(samePackage, superClass, allFields);
             superClass = superClass.getSuperclass();
-            samePackage = samePackage && klass.getPackage() == superClass.getPackage();
+            samePackage = samePackage && superClass != null && klass.getPackage() == superClass.getPackage();
         }
         final var fieldsArray = allFields.toArray(new Field[0]);
         Arrays.sort(fieldsArray, Comparator.comparing(Field::getName));
@@ -451,11 +451,11 @@ public class GeciReflectionTools {
     public static Method[] getAllMethodsSorted(final Class<?> klass) {
         final var allMethods = new ArrayList<>(Arrays.asList(klass.getDeclaredMethods()));
         var superClass = klass.getSuperclass();
-        var samePackage = klass.getPackage() == superClass.getPackage();
+        var samePackage = superClass != null && klass.getPackage() == superClass.getPackage();
         while (superClass != null) {
             collectMethods(samePackage, superClass, allMethods);
             superClass = superClass.getSuperclass();
-            samePackage =  samePackage && klass.getPackage() == superClass.getPackage();
+            samePackage =  samePackage && superClass != null && klass.getPackage() == superClass.getPackage();
         }
         final Method[] methodArray = allMethods.toArray(new Method[0]);
         Arrays.sort(methodArray, Comparator.comparing(MethodTool::methodSignature));
