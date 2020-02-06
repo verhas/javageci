@@ -186,8 +186,14 @@ public class TestGeciReflectionTools {
 
     @Test
     @DisplayName("Does not throw an error even when collecting methods from java.lang.")
-    public void doesNotDependOnImplicitPackageBreaking() {
+    public void collectsAllMethodFromJavaLang() {
         Assertions.assertDoesNotThrow(() -> GeciReflectionTools.getAllMethodsSorted(java.lang.String.class));
+    }
+
+    @Test
+    @DisplayName("Does not throw an error when collecting methods from java.lang.Object")
+    public void collectsAllMethodsFromJavaLangObject() {
+        Assertions.assertDoesNotThrow(() -> GeciReflectionTools.getAllMethodsSorted(java.lang.Object.class));
     }
 
     @Test
@@ -224,6 +230,18 @@ public class TestGeciReflectionTools {
     @DisplayName("Get field from superclass even if packages are not the same in the inheritance line.")
     public void findInheritedFieldEvenIfPackageInheritanceIsBroken() {
         Assertions.assertDoesNotThrow(() -> GeciReflectionTools.getField(ChildClass.class, "inheritedFromGrandparentField"));
+    }
+
+    @Test
+    @DisplayName("Does not throw an error even when collecting fields from java.lang.")
+    public void collectsAllFieldsFromJavaLang() {
+        Assertions.assertDoesNotThrow(() -> GeciReflectionTools.getAllFieldsSorted(java.lang.String.class));
+    }
+
+    @Test
+    @DisplayName("Does not throw an error even when collecting fields from java.lang.Object")
+    public void collectsAllFieldsFromObjectClass() {
+        Assertions.assertDoesNotThrow(() -> GeciReflectionTools.getAllFieldsSorted(java.lang.Object.class));
     }
 
     @Test
