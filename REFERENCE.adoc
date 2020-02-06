@@ -11,7 +11,10 @@ write Java code generating tools. It also
  fluent API generators,
 * provides services and interfaces to write code generators that need to
  focus on the very core task of the code generation and let everything
- else to be done by the framework.
+ else to be done by the framework,
+* contains very simple generators that can be used as samples and as a starting
+ point to write your own generators. Also, the creation of generators is supported
+ by code generation tools.
 
 The services provided by Java::Geci for the code generators include
 
