@@ -466,11 +466,11 @@ public class GeciReflectionTools {
     }
 
     private static boolean isNotOverridden(Method currentMethod, ArrayList<Method> allMethods) {
-        return allMethods.stream()
+        return !allMethods.stream()
             .filter(method -> method.getName().equals(currentMethod.getName()))
             .filter(method -> Arrays.deepEquals(method.getParameterTypes(), currentMethod.getParameterTypes()))
             .findFirst()
-            .isEmpty();
+            .isPresent();
     }
 
     private static boolean isVisible(Method method, boolean samePackage) {
