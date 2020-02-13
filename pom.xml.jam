@@ -77,7 +77,6 @@
                         <detectLinks>false</detectLinks>
                         <failOnError>false</failOnError>
                     }
-                    {dependencies|{dependency :org.ow2.asm:asm:7.0:}}
                     {executions|
                         {execution|
                             {id|attach-javadocs}

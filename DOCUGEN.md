@@ -77,6 +77,8 @@ generate code. They, however, implement the `Generator` interface and
 thus work inside the Java::Geci framework and they can be configured the
 same way as many other generators.
 
+![types of snippet handling generators](images/docugentypes.png)
+
 There are three types of snippet handling generators:
 
 1. **Snippet collectors** that read the source files that the Java::Geci
@@ -197,7 +199,25 @@ Assertions.assertFalse(
             "\\.git", "\\.idea", "\\.iml$",
             "javageci-livetemplates", "target")
         .log(Geci.MODIFIED)
-        .register(Register.register().ordered().fileExtensions("md", "java", "adoc").allSnippetGenerators())
+        // outdated registration of the document generators, see the real example in the documentation below
+        .register(SnippetCollector.builder().files("\\.md$|\\.java$|\\.adoc$")
+            .phase(0).build())
+        .register(SnippetAppender.builder().files("\\.md$|\\.java$|\\.adoc$")
+            .phase(1).build())
+        .register(SnippetTrim.builder().files("\\.md$|\\.java$|\\.adoc$")
+            .phase(2).build())
+        .register(SnippetNumberer.builder().mnemonic("prenumber").files("\\.md$|\\.java$|\\.adoc$")
+            .phase(3).build())
+        .register(SnippetRegex.builder().files("\\.md$|\\.java$|\\.adoc$")
+            .phase(4).build())
+        .register(SnipetLineSkipper.builder().files("\\.md$|\\.java$|\\.adoc$")
+            .phase(5).build())
+        .register(SnippetNumberer.builder().files("\\.md$|\\.java$|\\.adoc$")
+            .phase(6).build())
+        .register(MarkdownCodeInserter.builder()
+            .phase(7).build())
+        .register(JavaDocSnippetInserter.builder()
+            .phase(8).build())
         .splitHelper("adoc", new AdocSegmentSplitHelper())
         .splitHelper("md", new MarkdownSegmentSplitHelper())
         .splitHelper("java", new JavaDocSegmentSplitHelper())
@@ -205,14 +225,8 @@ Assertions.assertFalse(
     geci.failed());
 ```
 
-
->NOTE: The sample already uses the register helper that registers all the snippet handlers in the default order,
-but the text still explains the manual way when we register the document snippet handlers individually.
-It would make sense to have here the old version, explain and then another sample that explains the shortcut in
-case there is no need for a specific ordering.
-
 The generators are registered in the order they are to be executed and
-the call to `phase(i++)` registers the phases 0, 1, 2 ... and so on.
+the calls to `phase(0)`, `phase(1)` ...  register the phases 0, 1, 2 ... and so on.
 
 There is another possibility to have the generators executed the
 appropriate order. You can create several execution environment (Geci
@@ -220,6 +234,48 @@ objects) and then invoke `generate()` on those one after the other. To
 share the context between these objects you can use the method
 `context()` either without argument to retrieve the context of the Geci
 object or with argument to set the context.
+
+It is recommended, however, to use the phased execution because that way the directory parsing
+and the collection of the files to work on is executed only once. This type of
+ordering support is implemented in the convenience class `javax0.geci.docugen.Register`
+that implements methods that help registering all the docugen generators in their usual
+order. Using that class the eight calls to the `.register()` method can be replaced with
+one single call as the following: 
+
+<!-- snip RegisteringAllSnippets snippet="RegisteringAllSnippets" 
+          trim="to=0"
+                 -->
+```java
+.register(Register.allSnippetHandlers())
+```
+
+This call will register the 
+
+<!-- snip A0FE5632374 snippet="List_of_All_Generators_in_Register" 
+          regex="replace='|.builder~(~),?.*||' replace='|^~s*|1. |' escape='~'"
+          trim="to=0"
+                 -->
+1. SnippetCollector
+1. SnippetAppender
+1. SnippetTrim
+1. SnippetNumberer
+1. SnippetRegex
+1. SnipetLineSkipper
+1. SnippetNumberer
+1. MarkdownCodeInserter
+1. JavaDocSnippetInserter
+<!-- end snip -->
+
+You can see that the generator `SnippetNumberer` is listed twice. The method registers two
+different instances of this generator. The first one is instantiated setting the mnemonic
+to "`prenumber`" (4). The second one uses the default mnemonic "`number`" (7). That way
+it is possible to number something before the regular expressions and the line skipping
+are handled. That is feasible when we want line numbering that shows that some of the lines
+are not displayed in the snippet. 
+
+The actual unit test that executes the document generation for Java::Geci is
+using this form, but you can also find the old, more verbose version in the unit test
+file with commented-out `@Test` annotation.
 
 In the example above the Geci object `fragmentCollector` is created and
 used separately to collect the documentation fragments from the Java
@@ -251,8 +307,8 @@ inner class of the generator `SnippetCollector`:
 
 <!-- snip SnippetCollector_config trim="to=0" regex="replace='/snippetEnd/snippetEnd  /' replace='/private Pattern//' replace='/~);//' replace='/Pattern.compile~(//' escape='~'"-->
 ```java
-snippetStart = "(?://|/\\*)\\s*snipp?et\\s+(.*)$"
-snippetEnd   = "(?://\\s*end\\s+snipp?et|end\\s+snipp?et\\s*\\*/)"
+ snippetStart = "(?://|/\\*)\\s*snipp?et\\s+(.*)$"
+ snippetEnd   = "(?://\\s*end\\s+snipp?et|end\\s+snipp?et\\s*\\*/)"
 ```
 
 The characters that follow the `snippet` to the end of the line are
@@ -285,11 +341,11 @@ snippet. The default values are fitting Java:
                                           replace='/Pattern.compile~(//' 
                                           escape='~'"-->
 ```java
-snippetStart = "^\\s*\\*\\s*-(?:\\s+(.*))?$"
-snippetEnd   = "^\\s*\\*/\\s*$"
-transform = line ->
-   line.replaceAll("^\\s*\\*\\s?","")
-   .replaceAll("^\\s*</?p>\\s*$","");
+ snippetStart = "^\\s*\\*\\s*-(?:\\s+(.*))?$"
+ snippetEnd   = "^\\s*\\*/\\s*$"
+ transform = line ->
+    line.replaceAll("^\\s*\\*\\s?","")
+    .replaceAll("^\\s*</?p>\\s*$","");
 ```
 
 The regular expression capture group after the `*-` can specify part of
@@ -406,12 +462,30 @@ to create this documentation:
 18.             "\\.git", "\\.idea", "\\.iml$",
 19.             "javageci-livetemplates", "target")
 20.         .log(Geci.MODIFIED)
-21.         .register(Register.register().ordered().fileExtensions("md", "java", "adoc").allSnippetGenerators())
-22.         .splitHelper("adoc", new AdocSegmentSplitHelper())
-23.         .splitHelper("md", new MarkdownSegmentSplitHelper())
-24.         .splitHelper("java", new JavaDocSegmentSplitHelper())
-25.         .generate(),
-26.     geci.failed());
+21.         // outdated registration of the document generators, see the real example in the documentation below
+22.         .register(SnippetCollector.builder().files("\\.md$|\\.java$|\\.adoc$")
+23.             .phase(0).build())
+24.         .register(SnippetAppender.builder().files("\\.md$|\\.java$|\\.adoc$")
+25.             .phase(1).build())
+26.         .register(SnippetTrim.builder().files("\\.md$|\\.java$|\\.adoc$")
+27.             .phase(2).build())
+28.         .register(SnippetNumberer.builder().mnemonic("prenumber").files("\\.md$|\\.java$|\\.adoc$")
+29.             .phase(3).build())
+30.         .register(SnippetRegex.builder().files("\\.md$|\\.java$|\\.adoc$")
+31.             .phase(4).build())
+32.         .register(SnipetLineSkipper.builder().files("\\.md$|\\.java$|\\.adoc$")
+33.             .phase(5).build())
+34.         .register(SnippetNumberer.builder().files("\\.md$|\\.java$|\\.adoc$")
+35.             .phase(6).build())
+36.         .register(MarkdownCodeInserter.builder()
+37.             .phase(7).build())
+38.         .register(JavaDocSnippetInserter.builder()
+39.             .phase(8).build())
+40.         .splitHelper("adoc", new AdocSegmentSplitHelper())
+41.         .splitHelper("md", new MarkdownSegmentSplitHelper())
+42.         .splitHelper("java", new JavaDocSegmentSplitHelper())
+43.         .generate(),
+44.     geci.failed());
 ```
 
 we can have a look at line 14. It registers the

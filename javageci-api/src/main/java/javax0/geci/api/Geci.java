@@ -215,11 +215,16 @@ public interface Geci {
     Geci register(Generator... generatorArr);
 
     /**
-     * This is a convenience version of the register method that simply
+     * <p>This is a convenience version of the register method that simply
      * calls the {@code build()} on the arguments and then registers the
      * generators. This is simply to make the code less repetitive
      * not requiring to write {@code .build()} at the end of the builder
-     * chain when registering a generator created using a builder.
+     * chain when registering a generator created using a builder.</p>
+     *
+     * <p>This method can also be used by tools that generate a list of
+     * configured generators to be registered. For example it can be used
+     * to accept the array of generator builders created by
+     * {@code javax0.geci.docugen.Register.allSnippetGenerators()}</p>
      *
      * @param generatorBuilders the builders that contain a built
      *                          generator waiting only to call the

@@ -1100,7 +1100,7 @@ the search operation. Because the structure of the test is practically
 the same as that of the previous we skipped some lines that you can also
 see from the line numbering.
 
-// snip testSimpleUnmatchedGroup skip="do" trim="do" number="do"
+// snip testSimpleUnmatchedGroup skip="do" trim="do" prenumber="do"
 ```java
 1. javaLexed.find(list(group("protection", oneOf(match("public"), group("private", match("private")))), match("var h")));
 7. Assertions.assertEquals(0, javaLexed.group("private").size());
