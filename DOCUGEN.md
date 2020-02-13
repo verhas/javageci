@@ -195,7 +195,7 @@ Assertions.assertFalse(
         .ignoreBinary()
         .ignore(
             "\\.git", "\\.idea", "\\.iml$",
-            "target")
+            "javageci-livetemplates", "target")
         .log(Geci.MODIFIED)
         .register(Register.register().ordered().fileExtensions("md", "java", "adoc").allSnippetGenerators())
         .splitHelper("adoc", new AdocSegmentSplitHelper())
@@ -404,7 +404,7 @@ to create this documentation:
 16.         .ignoreBinary()
 17.         .ignore(
 18.             "\\.git", "\\.idea", "\\.iml$",
-19.             "target")
+19.             "javageci-livetemplates", "target")
 20.         .log(Geci.MODIFIED)
 21.         .register(Register.register().ordered().fileExtensions("md", "java", "adoc").allSnippetGenerators())
 22.         .splitHelper("adoc", new AdocSegmentSplitHelper())
