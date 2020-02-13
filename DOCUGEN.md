@@ -21,7 +21,7 @@ documentation.
 
 Documentation has to follow the change of the code. If the code changes
 the relevant, but only the relevant parts of the documentation has to be
-updates.
+updated.
 
 If the copy and paste or update operations are performed each time the
 original text or the code changes then the documentation is up-to-date.
@@ -74,7 +74,7 @@ snippet starting or ending characters.
 Snippet handling is implemented by many different generators. Thes are
 not conventional generators in the sense that many of them  do not
 generate code. They, however, implement the `Generator` interface and
-thus work inside the Java::geci framework and they can be configured the
+thus work inside the Java::Geci framework and they can be configured the
 same way as many other generators.
 
 There are three types of snippet handling generators:
@@ -86,9 +86,10 @@ Since this context is shared between the different generators the
 `SippetStore` object is available to all snippet handling generators
 that run controlled by the same Geci object or by Geci objects that
 they share the same context. The `SnippetStore` can store a
-snippet and can also retrieve a snippet using its name.
+snippet and can also retrieve a snippet using its name. This functionality
+is used by the snipped modifier generators.
 
-1. **Snippet modifiers** that modify the already collected snippets.
+1. **Snippet modifiers** are generators that modify the already collected snippets.
 There are snippet modifying generators that trim off the spaces on the
 left of the lines, perform search and replace on the lines using regular
 expression, delete certain lines from snippets, join different snippets
@@ -102,7 +103,7 @@ copies of the snippets they modify.
 into the text where they are needed in different segments. These are
 real generators in the sense that they really modify the code, even if
 the code is documentation. They do it the standard way Java::Geci
-support writing segments and possibly failing the unit test when the
+supports writing segments and possibly failing the unit test when the
 documentation *was* not up-to-date.
 
 Later in this document, we will write about the available snippet
@@ -156,14 +157,15 @@ lines so that the text can reference the individual code lines in the
 explanation. In this case, numbering comes after the deletion of
 certain lines. A different code sample, however, needs to number the
 lines first and then delete the lines that we do not want in the
-documentation. That way the numbering follows the numbering of the
+documentation. That way the deletion follows the numbering of the
 original lines in the code sample and it clearly shows in the
 documentation that some of the lines were deleted.
 
 The ordering of the execution of the generators is generally up to the
-framework, but generators can decide in which phase they want to run.
+framework and it is not guaranteed, but generators can decide in which 
+phase they want to run.
 The framework executes the generators in multiple phases many times and
-it consults each generator in each phase whether it needs execution that
+it consults each generator in each phase whether it needs execution in that
 phase or not.
 
 Snippet handling generators need execution only in a single phase and
@@ -202,6 +204,12 @@ Assertions.assertFalse(
         .generate(),
     geci.failed());
 ```
+
+
+>NOTE: The sample already uses the register helper that registers all the snippet handlers in the default order,
+but the text still explains the manual way when we register the document snippet handlers individually.
+It would make sense to have here the old version, explain and then another sample that explains the shortcut in
+case there is no need for a specific ordering.
 
 The generators are registered in the order they are to be executed and
 the call to `phase(i++)` registers the phases 0, 1, 2 ... and so on.

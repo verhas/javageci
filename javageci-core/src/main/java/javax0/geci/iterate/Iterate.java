@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  * base, though it is going to be deprecated.</p>
  *
  * <p>Iterate uses a templates and values assigned to the templates
- * to generate code. For example:</p>
+ * in order to generate code. For example:</p>
  *
  * <pre>{@code
  *   /*TEMPLATE
