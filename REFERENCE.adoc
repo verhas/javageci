@@ -1587,7 +1587,7 @@ defaults are used then the source set discovery works in a lenient mode.
 It is not an error if some of the source sets are not defined. In that
 the previous error will not be displayed. However, it is a serious issue
 if none of the source sets can be found. In that case there is no source
-to work on. Also when you define a source set yourself and not using
+to work on. Also, when you define a source set yourself and not using
 defaults then it has to be there on the disk.
 
 If you see this error check the CWD if that is the project root or the
