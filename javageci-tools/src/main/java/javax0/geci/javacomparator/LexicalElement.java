@@ -12,6 +12,12 @@ public interface LexicalElement {
     String getLexeme();
 
     /**
+     * Replace the existing lexeme with a new string.
+     * @param lexeme the new lexeme string.
+     */
+    void setLexeme(String lexeme);
+
+    /**
      *
      * @return the full lexeme of the lexical element. This string
      * contains the delimiting characters as they are in the source

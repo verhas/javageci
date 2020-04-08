@@ -13,6 +13,10 @@ public class LexicalElement implements javax0.geci.javacomparator.LexicalElement
         return lexeme;
     }
 
+    public void setLexeme(final String lexeme){
+        this.lexeme = lexeme;
+    }
+
     public String getFullLexeme(){
         if (type == javax0.geci.javacomparator.LexicalElement.Type.STRING) {
             final String enclosing = ((StringLiteral) this).enclosing;
@@ -47,7 +51,7 @@ public class LexicalElement implements javax0.geci.javacomparator.LexicalElement
         return type.toString() + "[" + lexeme + "]";
     }
 
-    public final String lexeme;
+    public String lexeme;
     public final Type type;
 
     public static class IntegerLiteral extends LexicalElement {

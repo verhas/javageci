@@ -110,8 +110,8 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
             }
 
             final CompoundParams annotationParams;
-            var nullableAannotationParams = GeciReflectionTools.getParameters(klass, mnemonic());
-            if (nullableAannotationParams == null) {
+            var nullableAnnotationParams = GeciReflectionTools.getParameters(klass, mnemonic());
+            if (nullableAnnotationParams == null) {
                 Tracer.log("Parameters were not found in annotation");
                 var commentParams = GeciAnnotationTools.getParameters(source, mnemonic(), "//", CLASS_LINE);
                 if (commentParams == null) {
@@ -123,7 +123,7 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
                 }
             } else {
                 Tracer.push("Parameters collected from the annotation");
-                annotationParams = nullableAannotationParams;
+                annotationParams = nullableAnnotationParams;
             }
             if (annotationParams != null) {
                 annotationParams.trace();
@@ -146,11 +146,11 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
             try (final var pos = Tracer.push("setting the constraint on the parameters keys=[" + (implementedKeys() == null ? "" : String.join(",", implementedKeys())) + "]")) {
                 global.setConstraints(source, mnemonic(), implementedKeys());
             }
-            if (nullableAannotationParams != null || processAllClasses()) {
+            if (nullableAnnotationParams != null || processAllClasses()) {
                 Tracer.log("Allowing default segment");
                 source.allowDefaultSegment();
             }
-            if (nullableAannotationParams != null || editorFoldParams != null || processAllClasses()) {
+            if (nullableAnnotationParams != null || editorFoldParams != null || processAllClasses()) {
                 try (final var tracePosition = Tracer.push("Start", this.getClass().getName() + ".process( source=" + klass.getName() + " )")) {
                     process(source, klass, global);
                 }
@@ -171,7 +171,7 @@ public abstract class AbstractJavaGenerator extends AbstractGeneratorEx {
      * Concrete classes can return an immutable set of the keys that the
      * generator processes. The method {@code processEx()} checks the
      * actual configuration keys against this set and in case there is
-     * any configuration key that is not used by the generator then it
+     * any configuration key not used by the generator then it
      * throws {@code GeciException}.
      *
      * @return {@code null}. Concrete implementations should return the
