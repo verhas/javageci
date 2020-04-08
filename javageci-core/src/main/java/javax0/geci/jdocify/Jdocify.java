@@ -10,6 +10,7 @@ import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
 
 import java.lang.reflect.Modifier;
+import java.util.function.Predicate;
 
 @AnnotationBuilder
 public class Jdocify extends AbstractJavaGenerator {
@@ -33,6 +34,7 @@ public class Jdocify extends AbstractJavaGenerator {
      * @return {@code true} if the comment was modified.
      */
     private boolean modifyComment(final StringBuilder comment, final Source source, final Class<?> klass) {
+        boolean changed = false;
         int pos = 0;
         int start;
         final int lenCODEStart = config.commentCODEStart.length();
@@ -40,26 +42,52 @@ public class Jdocify extends AbstractJavaGenerator {
         while ((start = comment.indexOf(config.commentCODEStart, pos)) > -1) {
             int commentEnd = comment.indexOf(config.commentCODEEnd, start + lenCODEStart);
             if (commentEnd > -1) {
-                int fieldNameStart = start + lenCODEStart;
-                while (fieldNameStart < commentEnd && separatorCharacter(comment.charAt(fieldNameStart))) {
-                    fieldNameStart++;
+                if (commentEnd + lenCODEEnd + "{@code ".length() >= comment.length()) {
+                    throw new GeciException("There is no {@code ... following the <!--CODE ...--> in the file '" +
+                        source.getAbsoluteFile() + "'");
                 }
-                int filedNameEnd = fieldNameStart + 1;
-                while (filedNameEnd < commentEnd && !separatorCharacter(comment.charAt(filedNameEnd))) {
-                    filedNameEnd++;
-                }
-                final String fieldName = comment.substring(fieldNameStart, filedNameEnd);
+                int fieldNameStart = findPosition(comment, start + lenCODEStart, commentEnd, Jdocify::separatorCharacter);
+                int fieldNameEnd = findPosition(comment, fieldNameStart + 1, commentEnd, Predicate.not(Jdocify::separatorCharacter));
+                final String fieldName = comment.substring(fieldNameStart, fieldNameEnd);
                 String fieldValue = fetchFieldValue(klass, fieldName);
                 if (fieldValue == null) {
                     throw new GeciException("In the source '" + source.getAbsoluteFile() + "' there is a " +
                         config.commentCODEStart + fieldName + config.commentCODEEnd +
                         " reference, but the field cannot be found, is not static or not final.");
                 }
+                int templateStart = findPosition(comment, fieldNameEnd, commentEnd, Jdocify::separatorCharacter);
+                final String template;
+                if (templateStart < commentEnd) {
+                    template = comment.substring(templateStart, commentEnd);
+                } else {
+                    template = fieldName;
+                }
+                int codeContentStart = findPosition(comment, commentEnd + lenCODEEnd + "{@code ".length(),
+                    comment.length(), Jdocify::separatorCharacter);
+                if (codeContentStart == comment.length()) {
+                    throw new GeciException("{@code is not finished before the end of the comment in '" +
+                        source.getAbsoluteFile() + "'");
+                }
+                int codeContentEnd = findPosition(comment, codeContentStart, comment.length(), ch -> ch != '}');
+                final String newContent = template.replace(fieldName, fieldValue);
+                if (!comment.substring(codeContentStart, codeContentEnd).equals(newContent)) {
+                    comment.delete(codeContentStart, codeContentEnd).insert(codeContentStart, newContent);
+                    changed = true;
+                }
+                pos = codeContentEnd + 1;
             } else {
                 pos = start + lenCODEStart;
             }
         }
-        return false;
+        return changed;
+    }
+
+    private int findPosition(StringBuilder comment, int start, int commentEnd, Predicate<Character> isSepa) {
+        int fieldNameStart = start;
+        while (fieldNameStart < commentEnd && isSepa.test(comment.charAt(fieldNameStart))) {
+            fieldNameStart++;
+        }
+        return fieldNameStart;
     }
 
     /**
@@ -86,6 +114,22 @@ public class Jdocify extends AbstractJavaGenerator {
         return null;
     }
 
+    /**
+     * Any space character is a separator and also {@code *} because in JavaDoc the lines start with a {@code *}
+     * character and the
+     *
+     * <pre>{@code
+     *    * <!--CODE
+     *    * .... -->{@code
+     *    * ...}
+     *
+     * }</pre>
+     * <p>
+     * sequence may be split into several lines.
+     *
+     * @param ch the character to judge
+     * @return {@code true} if it is a whitespace or {@code *}
+     */
     private static boolean separatorCharacter(char ch) {
         return Character.isWhitespace(ch) || ch == '*';
     }
