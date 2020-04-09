@@ -1,0 +1,65 @@
+= Jdocify Generator
+
+== Introduction
+
+Jdocify is a simple generator that helps you to keep Javadoc up-to-date.
+
+Sometimes it happens that you want to use the values of some fields in the JavaDoc documentation.
+For example the documentation of License3j contains the following JavaDoc fragment:
+
+[source]
+----
+* <li>Add the digest algorithm string to the license as a feature. The feature name is
+* {@code signatureDigest} (name is defined in the constant {@link #DIGEST_KEY} in this
+* class).</li>
+----
+
+It may happen that during the lifetime of the code the value defined in the variable `DIGEST_KEY` gets
+changed from `signatureDigest` to `digestKey`. (Just because why not.) Unless the developer performing
+the maintenance does a through serach the JavaDoc becomes outdated.
+
+Jdocify automatize the update of the JavaDoc. The JavaDoc has to be extended with a HTML comment of
+the form `<!--CODE FINAL_STATIC_FIELD_NAME-->` like in the following sample:
+
+[source]
+----
+* <li>Add the digest algorithm string to the license as a feature. The feature name is <!--CODE
+* DIGEST_KEY-->{@code signatureDigest} (name is defined in the constant {@link #DIGEST_KEY} in this
+* class).</li>
+----
+
+When Jdocify processes the file it checks that the `{@code ...}` after the
+
+    <!--CODE DIGEST_KEY-->
+
+is the same as the value of the `static` `final` field `DIGEST_KEY` and in case it is different it
+updates the `{@code ...}` in the JavaDoc.
+
+== Details
+
+The full form of the HTML comment used for the purpose is:
+
+  <!--CODE fieldName template string -->
+
+if the template string is missing, as in the example in the introduction, then the value will be used by
+itself. If there is a template then the name of the field in the template will be replaced with the
+value of the field. For example:
+
+  final static String FIELD = "fieldValue";
+  <!--CODE FIELD ${FIELD}-->{@code ${fieldValue}}
+
+You can also use `{` and `}` characters in the template, but they have to be balanced.
+
+== Configuration
+
+DO NOT configure the generator. Use the default values.
+
+You can configure the boolean parameter `processAllClasses` to control if the generator should do its work
+on all classes or onlyon those that are annotated with the `@Jdocify` annotation. The default is `false`,
+which means that you have to annotate the classes that need the service of the generator.
+
+It is possible to configure the start and the end string of the HTML comment:
+
+  commentCODEStart = "<!--CODE";
+  commentCODEEnd = "-->";
+

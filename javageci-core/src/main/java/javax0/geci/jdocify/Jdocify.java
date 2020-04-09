@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 public class Jdocify extends AbstractJavaGenerator {
 
     private static class Config {
-        private boolean processAllClasses = true;
+        private boolean processAllClasses = false;
         private String commentCODEStart = "<!--CODE";
         private String commentCODEEnd = "-->";
     }
