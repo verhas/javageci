@@ -17,7 +17,7 @@ public class Jdocify extends AbstractJavaGenerator {
 
     private static class Config {
         private boolean processAllClasses = true;
-        private String commentCODEStart = "<!--CODE ";
+        private String commentCODEStart = "<!--CODE";
         private String commentCODEEnd = "-->";
     }
 
@@ -70,7 +70,7 @@ public class Jdocify extends AbstractJavaGenerator {
                 }
                 int codeContentEnd = findPosition(comment, codeContentStart, comment.length(), ch -> ch != '}');
                 final String newContent = template.replace(fieldName, fieldValue);
-                if (!comment.substring(codeContentStart, codeContentEnd).equals(newContent)) {
+                if (!areEqual(comment.substring(codeContentStart, codeContentEnd), newContent)) {
                     comment.delete(codeContentStart, codeContentEnd).insert(codeContentStart, newContent);
                     changed = true;
                 }
@@ -80,6 +80,46 @@ public class Jdocify extends AbstractJavaGenerator {
             }
         }
         return changed;
+    }
+
+    /**
+     * Compare the code and the replacement. If the string in the code, that comes from the source file as it is now
+     * berween the {@code code} keyword and the closing brace is the same as the replacement then we do not need to
+     * replace the code and the source may remain intact.
+     *
+     * <p>
+     * The trick in the comparison is that the code as it is now and formatted may contain {@code' \n * '} parts that
+     * can match a single space in the replacement.
+     *
+     * @param code        the text in the JavaDoc code
+     * @param replacement the text it should be
+     * @return {@code true} if the two texts match
+     */
+    private boolean areEqual(final String code, final String replacement) {
+        int ci = 0;
+        int ri = 0;
+        while (ci < code.length() && ri < replacement.length()) {
+            if (code.substring(ci).startsWith("\n * ")) {
+                if (!Character.isWhitespace(replacement.charAt(ri))) {
+                    return false;
+                }
+                ri++;
+                ci += 4;
+                continue;
+            }
+            if (Character.isWhitespace(code.charAt(ci)) && Character.isWhitespace(replacement.charAt(ri))) {
+                ri++;
+                ci++;
+                continue;
+            }
+            if (code.charAt(ci) == replacement.charAt(ri)) {
+                ci++;
+                ri++;
+                continue;
+            }
+            return false;
+        }
+        return true;
     }
 
     private int findPosition(StringBuilder comment, int start, int commentEnd, Predicate<Character> isSepa) {
