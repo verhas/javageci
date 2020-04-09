@@ -50,7 +50,7 @@ public class Jdocify extends AbstractJavaGenerator {
                     source.getAbsoluteFile() + "'");
             }
             int fieldNameStart = findPosition(comment, start + lenCODEStart, commentEnd, Jdocify::separatorCharacter);
-            int fieldNameEnd = findPosition(comment, fieldNameStart + 1, commentEnd, Predicate.not(Jdocify::separatorCharacter));
+            int fieldNameEnd = findPosition(comment, fieldNameStart + 1, commentEnd, ch -> !separatorCharacter(ch));
             final String fieldName = comment.substring(fieldNameStart, fieldNameEnd);
             String fieldValue = fetchFieldValue(klass, fieldName);
             if (fieldValue == null) {
