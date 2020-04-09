@@ -31,6 +31,7 @@
                             {opens/core/record}
                             {opens/core/repeated}
                             {opens/core/iterate}
+                            {opens/core/jdocify}
                             {opens/core/mapper}
                             {opens/examples/tutorials.simple}
                             {opens/examples/tutorials.hello}
