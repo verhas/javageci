@@ -41,45 +41,76 @@ public class Jdocify extends AbstractJavaGenerator {
         int lenCODEEnd = config.commentCODEEnd.length();
         while ((start = comment.indexOf(config.commentCODEStart, pos)) > -1) {
             int commentEnd = comment.indexOf(config.commentCODEEnd, start + lenCODEStart);
-            if (commentEnd > -1) {
-                if (commentEnd + lenCODEEnd + "{@code ".length() >= comment.length()) {
-                    throw new GeciException("There is no {@code ... following the <!--CODE ...--> in the file '" +
-                        source.getAbsoluteFile() + "'");
-                }
-                int fieldNameStart = findPosition(comment, start + lenCODEStart, commentEnd, Jdocify::separatorCharacter);
-                int fieldNameEnd = findPosition(comment, fieldNameStart + 1, commentEnd, Predicate.not(Jdocify::separatorCharacter));
-                final String fieldName = comment.substring(fieldNameStart, fieldNameEnd);
-                String fieldValue = fetchFieldValue(klass, fieldName);
-                if (fieldValue == null) {
-                    throw new GeciException("In the source '" + source.getAbsoluteFile() + "' there is a " +
-                        config.commentCODEStart + fieldName + config.commentCODEEnd +
-                        " reference, but the field cannot be found, is not static or not final.");
-                }
-                int templateStart = findPosition(comment, fieldNameEnd, commentEnd, Jdocify::separatorCharacter);
-                final String template;
-                if (templateStart < commentEnd) {
-                    template = comment.substring(templateStart, commentEnd);
-                } else {
-                    template = fieldName;
-                }
-                int codeContentStart = findPosition(comment, commentEnd + lenCODEEnd + "{@code ".length(),
-                    comment.length(), Jdocify::separatorCharacter);
-                if (codeContentStart == comment.length()) {
-                    throw new GeciException("{@code is not finished before the end of the comment in '" +
-                        source.getAbsoluteFile() + "'");
-                }
-                int codeContentEnd = findPosition(comment, codeContentStart, comment.length(), ch -> ch != '}');
-                final String newContent = template.replace(fieldName, fieldValue);
-                if (!areEqual(comment.substring(codeContentStart, codeContentEnd), newContent)) {
-                    comment.delete(codeContentStart, codeContentEnd).insert(codeContentStart, newContent);
-                    changed = true;
-                }
-                pos = codeContentEnd + 1;
-            } else {
-                pos = start + lenCODEStart;
+            if (commentEnd == -1) {
+                throw new GeciException("There is no --> after the <!--CODE in the file '" +
+                    source.getAbsoluteFile() + "'");
             }
+            if (commentEnd + lenCODEEnd + "{@code".length() >= comment.length()) {
+                throw new GeciException("There is no {@code ... following the <!--CODE ...--> in the file '" +
+                    source.getAbsoluteFile() + "'");
+            }
+            int fieldNameStart = findPosition(comment, start + lenCODEStart, commentEnd, Jdocify::separatorCharacter);
+            int fieldNameEnd = findPosition(comment, fieldNameStart + 1, commentEnd, Predicate.not(Jdocify::separatorCharacter));
+            final String fieldName = comment.substring(fieldNameStart, fieldNameEnd);
+            String fieldValue = fetchFieldValue(klass, fieldName);
+            if (fieldValue == null) {
+                throw new GeciException("In the source '" + source.getAbsoluteFile() + "' there is a " +
+                    config.commentCODEStart + fieldName + config.commentCODEEnd +
+                    " reference, but the field cannot be found, is not static or not final.");
+            }
+            int templateStart = findPosition(comment, fieldNameEnd, commentEnd, Jdocify::separatorCharacter);
+            final String template;
+            if (templateStart < commentEnd) {
+                template = comment.substring(templateStart, commentEnd);
+            } else {
+                template = fieldName;
+            }
+            int codeContentStart = findPosition(comment, commentEnd + lenCODEEnd + "{@code".length(),
+                comment.length(), Jdocify::separatorCharacter);
+            if (codeContentStart == comment.length()) {
+                throw new GeciException("{@code is not finished before the end of the comment in '" +
+                    source.getAbsoluteFile() + "'");
+            }
+            int codeContentEnd = findCodeEnd(comment, codeContentStart, comment.length());
+            if (codeContentEnd == comment.length()) {
+                throw new GeciException("{@code is not closed in a JavaDoc comment " +
+                    "following a <!--CODE ...--> in the file '" + source.getAbsoluteFile() + "'");
+            }
+            final String newContent = getNewContent(comment, fieldName, fieldValue, template, codeContentStart);
+            if (!isBalanced(newContent)) {
+                throw new GeciException("The value to be inserted after {@code is not balanced, " +
+                    "has different number of { and } characters in the file'" +
+                    source.getAbsoluteFile() + "'. The actual value is: '" + newContent + "'");
+            }
+            if (!areEqual(comment.substring(codeContentStart, codeContentEnd), newContent)) {
+                comment.delete(codeContentStart, codeContentEnd).insert(codeContentStart, newContent);
+                changed = true;
+            }
+            pos = codeContentEnd + 1;
         }
         return changed;
+    }
+
+    /**
+     * Replace the name with the value in the template and add an extra space in front of them in case there is no space
+     * before the current value. This can only happen when the code looks like { @ {@code code} } without any spaces in
+     * between.
+     *
+     * @param comment  the whole comment
+     * @param name     the name of the parameter to be replaced in the template
+     * @param value    the value that has to be used in the template
+     * @param template the template
+     * @param start    the position in the comment where the old value starts
+     * @return the new content that has to replace the old one. Possibly the same as the old one.
+     */
+    private String getNewContent(StringBuilder comment, String name, String value, String template, int start) {
+        final String separator;
+        if (start > 0 && !Character.isWhitespace(comment.charAt(start - 1))) {
+            separator = " ";
+        } else {
+            separator = "";
+        }
+        return separator + template.replace(name, value);
     }
 
     /**
@@ -119,15 +150,55 @@ public class Jdocify extends AbstractJavaGenerator {
             }
             return false;
         }
-        return true;
+        return ci == code.length() && ri == replacement.length();
     }
 
     private int findPosition(StringBuilder comment, int start, int commentEnd, Predicate<Character> isSepa) {
-        int fieldNameStart = start;
-        while (fieldNameStart < commentEnd && isSepa.test(comment.charAt(fieldNameStart))) {
-            fieldNameStart++;
+        int pos = start;
+        while (pos < commentEnd && isSepa.test(comment.charAt(pos))) {
+            pos++;
         }
-        return fieldNameStart;
+        return pos;
+    }
+
+    /**
+     * Returns true if there are the same number of { character in the string as } characters.
+     *
+     * @param newContent the text to check
+     * @return {@code true} if the { and } characters are balanced in the string.
+     */
+    private boolean isBalanced(final String newContent) {
+        int open = 0;
+        int close = 0;
+        for (char ch : newContent.toCharArray()) {
+            if (ch == '{') open++;
+            if (ch == '}') close++;
+        }
+        return open == close;
+    }
+
+    /**
+     * Find the end of the started {@code {@code ...}} sequence. This is essentially finding the next } character with
+     * counting the openign and closing { and } characters between.
+     *
+     * @param comment    the comment that contains the code javadoc directive
+     * @param start      where the {@code XXX} starts in the {@code {@code XXX}} structure
+     * @param commentEnd the length of the whole comment not run out of the buffer
+     * @return the position of the closing }
+     */
+    private int findCodeEnd(StringBuilder comment, int start, int commentEnd) {
+        int braceCounter = 0;
+        int codeEnd = start;
+        while (codeEnd < commentEnd && (braceCounter > 0 || comment.charAt(codeEnd) != '}')) {
+            if (comment.charAt(codeEnd) == '}') {
+                braceCounter--;
+            }
+            if (comment.charAt(codeEnd) == '{') {
+                braceCounter++;
+            }
+            codeEnd++;
+        }
+        return codeEnd;
     }
 
     /**

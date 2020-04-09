@@ -1,5 +1,6 @@
 package javax0.geci.jdocify;
 
+import javax0.geci.api.GeciException;
 import javax0.geci.engine.testsupport.GeneratorTester;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +34,71 @@ public class TestJdocify {
     }
 
     @Test
+    @DisplayName("Simple CODE replacement with template that has { and } characters in it works/1")
+    void simpleReplaceEmbeddedBrace1() throws Exception {
+        check(generator()
+            .source(
+                "/**",
+                " * This is to <!--CODE REPLACE ${REPLACE} ... ${REPLACE}-->{@code ${replaced indeed} ... ${replaced indeed}} be replaced",
+                "*/")
+            .noChange()
+        );
+    }
+
+    @Test
+    @DisplayName("Simple CODE replacement with template that has { and } characters in it works/2")
+    void simpleReplaceEmbeddedBrace2() throws Exception {
+        check(generator()
+            .source(
+                "/**",
+                " * This is to <!--CODE REPLACE ${REPLACE} ... ${REPLACE}-->{@code} be replaced",
+                "*/")
+            .expected("/**",
+                " * This is to <!--CODE REPLACE ${REPLACE} ... ${REPLACE}-->{@code ${replaced indeed} ... ${replaced indeed}} be replaced",
+                "*/")
+        );
+    }
+
+    @Test
+    @DisplayName("Simple CODE replacement with template that has { and } characters in it works/3")
+    void simpleReplaceEmbeddedBrace3() throws Exception {
+        check(generator()
+            .source(
+                "/**",
+                " * This is to <!--CODE REPLACE ${REPLACE}-->{@code${rirareplacidea}} be replaced",
+                "*/")
+            .expected("/**",
+                " * This is to <!--CODE REPLACE ${REPLACE}-->{@code ${replaced indeed}} be replaced",
+                "*/")
+        );
+    }
+
+    @Test
+    @DisplayName("Throws exception when {@code is not closed inside the comment")
+    void unclosedCode() throws Exception {
+        Assertions.assertThrows(GeciException.class, () -> generator()
+            .source(
+                "/**",
+                " * This is to <!--CODE REPLACE ${REPLACE}-->{@code${rirareplacidea} be replaced",
+                "*/")
+            .test()
+        );
+    }
+
+    @Test
+    @DisplayName("Throws exception when <!--CODE is not closed")
+    void unclosedCODE() throws Exception {
+        Assertions.assertThrows(GeciException.class, () ->
+            generator()
+                .source(
+                    "/**",
+                    " * This is to <!--CODE REPLACE ${REPLACE}->{@code${rirareplacidea} be replaced",
+                    "*/")
+                .test()
+        );
+    }
+
+    @Test
     @DisplayName("Multi line CODE replacement without template works")
     void multiReplace() throws Exception {
         check(generator()
@@ -47,6 +113,65 @@ public class TestJdocify {
                 "/**",
                 " * This is to <!--CODE",
                 " * REPLACE-->{@code replaced indeed} be replaced",
+                "*/"
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Simple line CODE insertion without template when there is nothing in the {@code}")
+    void simpleInsert() throws Exception {
+        check(generator()
+            .source(
+                "/**",
+                " * This is to <!--CODE",
+                " * REPLACE-->{@code} be replaced",
+                "*/"
+            )
+            .expected(
+                "/**",
+                " * This is to <!--CODE",
+                " * REPLACE-->{@code replaced indeed} be replaced",
+                "*/"
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Simple line CODE insertion without template when there is a single space in the {@code } like here")
+    void simpleInsertspace() throws Exception {
+        check(generator()
+            .source(
+                "/**",
+                " * This is to <!--CODE",
+                " * REPLACE-->{@code } be replaced",
+                "*/"
+            )
+            .expected(
+                "/**",
+                " * This is to <!--CODE",
+                " * REPLACE-->{@code replaced indeed} be replaced",
+                "*/"
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("Simple line CODE insertion without template when there is some space and \n in the {@code \n * } like here")
+    void multiInsertspace() throws Exception {
+        check(generator()
+            .source(
+                "/**",
+                " * This is to <!--CODE",
+                " * REPLACE-->{@code",
+                " * } be replaced",
+                "*/"
+            )
+            .expected(
+                "/**",
+                " * This is to <!--CODE",
+                " * REPLACE-->{@code",
+                " * replaced indeed} be replaced",
                 "*/"
             )
         );
