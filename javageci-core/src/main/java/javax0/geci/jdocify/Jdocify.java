@@ -15,6 +15,8 @@ import java.util.function.Predicate;
 @AnnotationBuilder
 public class Jdocify extends AbstractJavaGenerator {
 
+    final int CODE_LENGTH = "{@code".length();
+
     private static class Config {
         private boolean processAllClasses = false;
         private String commentCODEStart = "<!--CODE";
@@ -26,6 +28,26 @@ public class Jdocify extends AbstractJavaGenerator {
         return config.processAllClasses;
     }
 
+
+    private static class State {
+        int pos;
+        int lenCODEStart;
+        int lenCODEEnd;
+        int commentStart;
+        int fieldNameStart;
+        int fieldNameEnd;
+        int templateStart;
+        int codeContentStart;
+        int commentEnd;
+        int codeContentEnd;
+        String template;
+        String fieldName;
+        String fieldValue;
+        String newContent;
+        boolean changed;
+        StringBuilder comment;
+    }
+
     /**
      * Modify the comment if there is any inconsistency in the code.
      *
@@ -34,61 +56,101 @@ public class Jdocify extends AbstractJavaGenerator {
      * @return {@code true} if the comment was modified.
      */
     private boolean modifyComment(final StringBuilder comment, final Source source, final Class<?> klass) {
-        boolean changed = false;
-        int pos = 0;
-        int start;
-        final int lenCODEStart = config.commentCODEStart.length();
-        int lenCODEEnd = config.commentCODEEnd.length();
-        while ((start = comment.indexOf(config.commentCODEStart, pos)) > -1) {
-            int commentEnd = comment.indexOf(config.commentCODEEnd, start + lenCODEStart);
-            if (commentEnd == -1) {
-                throw new GeciException("There is no --> after the <!--CODE in the file '" +
-                    source.getAbsoluteFile() + "'");
+        final String file = source.getAbsoluteFile();
+        final State state = new State();
+        state.comment = comment;
+        state.changed = false;
+        state.pos = 0;
+
+        state.lenCODEStart = config.commentCODEStart.length();
+        state.lenCODEEnd = config.commentCODEEnd.length();
+
+        while ((state.commentStart = state.comment.indexOf(config.commentCODEStart, state.pos)) > -1) {
+            findCommentEnd(state);
+            assertCodeAndCommentSyntax(file, state);
+            getFieldNameAndValue(klass, state, file);
+            getTemplate(state);
+            getCurrentContentPositions(file, state);
+            getNewContent(file, state);
+            if (contentNeedsReplacement(state)) {
+                replaceOldContentWithNew(state);
             }
-            if (commentEnd + lenCODEEnd + "{@code".length() >= comment.length()) {
-                throw new GeciException("There is no {@code ... following the <!--CODE ...--> in the file '" +
-                    source.getAbsoluteFile() + "'");
-            }
-            int fieldNameStart = findPosition(comment, start + lenCODEStart, commentEnd, Jdocify::separatorCharacter);
-            int fieldNameEnd = findPosition(comment, fieldNameStart + 1, commentEnd, ch -> !separatorCharacter(ch));
-            final String fieldName = comment.substring(fieldNameStart, fieldNameEnd);
-            String fieldValue = fetchFieldValue(klass, fieldName);
-            if (fieldValue == null) {
-                throw new GeciException("In the source '" + source.getAbsoluteFile() + "' there is a " +
-                    config.commentCODEStart + fieldName + config.commentCODEEnd +
-                    " reference, but the field cannot be found, is not static or not final.");
-            }
-            int templateStart = findPosition(comment, fieldNameEnd, commentEnd, Jdocify::separatorCharacter);
-            final String template;
-            if (templateStart < commentEnd) {
-                template = comment.substring(templateStart, commentEnd);
-            } else {
-                template = fieldName;
-            }
-            int codeContentStart = findPosition(comment, commentEnd + lenCODEEnd + "{@code".length(),
-                comment.length(), Jdocify::separatorCharacter);
-            if (codeContentStart == comment.length()) {
-                throw new GeciException("{@code is not finished before the end of the comment in '" +
-                    source.getAbsoluteFile() + "'");
-            }
-            int codeContentEnd = findCodeEnd(comment, codeContentStart, comment.length());
-            if (codeContentEnd == comment.length()) {
-                throw new GeciException("{@code is not closed in a JavaDoc comment " +
-                    "following a <!--CODE ...--> in the file '" + source.getAbsoluteFile() + "'");
-            }
-            final String newContent = getNewContent(comment, fieldName, fieldValue, template, codeContentStart);
-            if (!isBalanced(newContent)) {
-                throw new GeciException("The value to be inserted after {@code is not balanced, " +
-                    "has different number of { and } characters in the file'" +
-                    source.getAbsoluteFile() + "'. The actual value is: '" + newContent + "'");
-            }
-            if (!areEqual(comment.substring(codeContentStart, codeContentEnd), newContent)) {
-                comment.delete(codeContentStart, codeContentEnd).insert(codeContentStart, newContent);
-                changed = true;
-            }
-            pos = codeContentEnd + 1;
+            state.pos = state.codeContentEnd + 1;
         }
-        return changed;
+        return state.changed;
+    }
+
+    /**
+     * Set the field {@code commentEnd} to the position where the comment ends finding the {@code -->} string following
+     * the last found {@code <!--CODE}.
+     *
+     * @param state to be modified
+     */
+    private void findCommentEnd(State state) {
+        state.commentEnd = state.comment.indexOf(config.commentCODEEnd, state.commentStart + state.lenCODEStart);
+    }
+
+    private boolean contentNeedsReplacement(State state) {
+        return !areEqual(state.comment.substring(state.codeContentStart, state.codeContentEnd), state.newContent);
+    }
+
+    private void replaceOldContentWithNew(State state) {
+        state.comment.delete(state.codeContentStart, state.codeContentEnd).insert(state.codeContentStart, state.newContent);
+        state.changed = true;
+    }
+
+    private void getNewContent(String file, State state) {
+        state.newContent = getNewContent(state.comment, state.fieldName, state.fieldValue, state.template, state.codeContentStart);
+        asserts(!isBalanced(state.newContent),
+            "The value to be inserted after {@code is not balanced, " +
+                "has different number of { and } characters in the file'" +
+                file + "'. The actual value is: '" + state.newContent + "'");
+    }
+
+    private void getCurrentContentPositions(String file, State state) {
+        state.codeContentStart = findPosition(state.comment, state.commentEnd + state.lenCODEEnd + CODE_LENGTH,
+            state.comment.length(), Jdocify::separatorCharacter);
+        asserts(state.codeContentStart == state.comment.length(),
+            "{@code is not finished before the end of the comment in '" +
+                file + "'");
+
+        state.codeContentEnd = findCodeEnd(state.comment, state.codeContentStart, state.comment.length());
+        asserts(state.codeContentEnd == state.comment.length(),
+            "{@code is not closed in a JavaDoc comment " +
+                "following a <!--CODE ...--> in the file '" + file + "'");
+    }
+
+    private void getTemplate(State state) {
+        state.templateStart = findPosition(state.comment, state.fieldNameEnd, state.commentEnd, Jdocify::separatorCharacter);
+        if (state.templateStart < state.commentEnd) {
+            state.template = state.comment.substring(state.templateStart, state.commentEnd);
+        } else {
+            state.template = state.fieldName;
+        }
+    }
+
+    private void assertCodeAndCommentSyntax(String file, State state) {
+        asserts(state.commentEnd == -1,
+            "There is no --> after the <!--CODE in the file '" + file + "'");
+        asserts(state.commentEnd + state.lenCODEEnd + CODE_LENGTH >= state.comment.length(),
+            "There is no {@code ... following the <!--CODE ...--> in the file '" + file + "'");
+    }
+
+    private void getFieldNameAndValue(Class<?> klass, State state, String file) {
+        state.fieldNameStart = findPosition(state.comment, state.commentStart + state.lenCODEStart, state.commentEnd, Jdocify::separatorCharacter);
+        state.fieldNameEnd = findPosition(state.comment, state.fieldNameStart + 1, state.commentEnd, ch -> !separatorCharacter(ch));
+        state.fieldName = state.comment.substring(state.fieldNameStart, state.fieldNameEnd);
+        state.fieldValue = fetchFieldValue(klass, state.fieldName);
+        asserts(state.fieldValue == null,
+            "In the source '" + file + "' there is a " +
+                config.commentCODEStart + state.fieldName + config.commentCODEEnd +
+                " reference, but the field cannot be found, is not static or not final.");
+    }
+
+    private static void asserts(boolean flag, String message) {
+        if (flag) {
+            throw new GeciException(message);
+        }
     }
 
     /**
