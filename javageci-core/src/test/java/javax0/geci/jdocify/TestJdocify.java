@@ -209,4 +209,51 @@ public class TestJdocify {
         );
     }
 
+    @Test
+    @DisplayName("Simple DEFINE and use of the variable")
+    void simpleDEFINE() throws Exception {
+        check(generator()
+            .source(
+                "//DEFINE VARIABLE=This is the value of the variable.",
+                "/**",
+                " * This is to <!--VARIABLE-->This is not the code of the variable<!--/-->",
+                "*/")
+            .expected(
+                "//DEFINE VARIABLE=This is the value of the variable.",
+                "/**",
+                " * This is to <!--VARIABLE-->This is the value of the variable.<!--/-->",
+                "*/")
+        );
+    }
+
+    @Test
+
+    @DisplayName("Simple DEFINE and use of the variable when original value is reformatted")
+    void multilDEFINE() throws Exception {
+        check(generator()
+            .source(
+                "//DEFINE VARIABLE=This is the value of the variable.",
+                "/**",
+                " * This is to <!--VARIABLE-->This is not the",
+                " * code of the variable<!--/-->",
+                " */")
+            .expected(
+                "//DEFINE VARIABLE=This is the value of the variable.",
+                "/**",
+                " * This is to <!--VARIABLE-->This is the value of the variable.<!--/-->",
+                " */")
+        );
+    }
+
+    @DisplayName("Simple DEFINE and use of the variable when original value is reformatted but is okay")
+    void multilDEFINERemains() throws Exception {
+        check(generator()
+            .source(
+                "//DEFINE VARIABLE=This is the value of the variable.",
+                "/**",
+                " * This is to <!--VARIABLE-->This is the",
+                " * value of the variable.<!--/-->",
+                " */").noChange()
+        );
+    }
 }
