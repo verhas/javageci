@@ -91,12 +91,13 @@ public class Register {
      * possible. The method will use all the generators in the usual order.</p>
      *
      * <p>The generators for which the builders are used in the order as they will be in the output array:</p>
-     * <p>
+     *
      * <!--
      * This snip pulls all the generators that are listed in this method in the code (the snippet is inside the method)
      * removes the '::builder,' part from the end of the line replacing it with </li> and then adds an <li> tag at the
      * start. This is a simple example how you can use snippet handling to document the code using the code.
      * -->
+     *
      * <ol>
      * <!-- snip List_of_All_Generators_in_Register regex="replace='|.builder~(~),?.*|</li>|' replace='|^~s*|<li>|' escape='~'"-->
      * <li>SnippetCollector</li>
