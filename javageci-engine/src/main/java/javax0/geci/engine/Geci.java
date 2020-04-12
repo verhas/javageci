@@ -63,6 +63,14 @@ public class Geci implements javax0.geci.api.Geci {
     private boolean ignoreBinary = false;
     private String traceFileName = null;
 
+// Jdocify constants to be used in Javadoc
+//DEFINE EXCEPTIONS=the list of exceptions that are cought and deferred
+//DEFINE PHASES=the number of the phases to execute the generators in
+//DEFINE PHASE=the serial number of the current phase between {@code 0} and {@code phases-1}
+//DEFINE COLLECTOR=the object where the sources are collected and kept
+//DEFINE SOURCE=the source object that the generator works on
+//DEFINE GENERATOR=to be invoked
+
     @Override
     public Geci source(String... directory) {
         return source(exists(), directory);
@@ -398,7 +406,7 @@ public class Geci implements javax0.geci.api.Geci {
      * <p>Consolidate all the sources and throw an exception if the generators did not touch any source though they
      * should have.</p>
      *
-     * @param collector that collected the files
+     * @param collector <!--COLLECTOR--><!--/-->
      */
     private void consolidateSources(FileCollector collector) {
         if (!sourcesConsolidate(collector)) {
@@ -433,9 +441,9 @@ public class Geci implements javax0.geci.api.Geci {
      * Invoke all the generators for all the sources that were collecte by the collector for all the phases from {@code
      * 0} to {@code phases-1}.
      *
-     * @param exceptions the list of exceptions
-     * @param phases     the number of the phases to execute the generators in
-     * @param collector  the collector that collected the sources
+     * @param exceptions <!--EXCEPTIONS--><!--/-->
+     * @param phases     <!--PHASES--><!--/-->
+     * @param collector  <!--COLLECTOR--><!--/-->
      */
     private void invokeGeneratorsOnAllSourcesForAllPhases(ArrayList<String> exceptions, int phases, FileCollector collector) {
         for (int phase = 0; phase < phases; phase++) {
@@ -448,9 +456,9 @@ public class Geci implements javax0.geci.api.Geci {
     /**
      * Invoke the generators on all the sources that the collector collected.
      *
-     * @param collector  that collected the sources
-     * @param exceptions list of the exceptions
-     * @param phase      the actual phase number
+     * @param collector  <!--COLLECTOR--><!--/-->
+     * @param exceptions <!--EXCEPTIONS--><!--/-->
+     * @param phase      <!--PHASE--><!--/-->
      */
     private void invokeGeneratorsOnAllSources(FileCollector collector, List<String> exceptions, int phase) {
         for (final var source : collector.getSources()) {
@@ -464,9 +472,9 @@ public class Geci implements javax0.geci.api.Geci {
      * Invoke all generators on sources that are not binary. In case the source seems to be binary then only trace the
      * fact that no generators are invoked.
      *
-     * @param source     the source that may be binary
-     * @param exceptions the list of exceptions
-     * @param phase      the current execution phase number
+     * @param source     <!--SOURCE--><!--/-->
+     * @param exceptions <!--EXCEPTIONS--><!--/-->
+     * @param phase      <!--PHASES--><!--/-->
      */
     private void invokeGeneratorsOnNonBinary(javax0.geci.engine.Source source, List<String> exceptions, int phase) {
         if (!source.isBinary) {
@@ -481,9 +489,9 @@ public class Geci implements javax0.geci.api.Geci {
     /**
      * Invoke all configured generators in a loop.
      *
-     * @param source     the source object on which the generators may work
-     * @param exceptions the list of possible exceptions
-     * @param phase      the current execution phase number
+     * @param source     <!--SOURCE--><!--/-->
+     * @param exceptions <!--EXCEPTIONS--><!--/-->
+     * @param phase      <!--PHASES--><!--/-->
      */
     private void invokeGenerators(javax0.geci.engine.Source source, List<String> exceptions, int phase) {
         for (var generator : generators) {
@@ -497,10 +505,10 @@ public class Geci implements javax0.geci.api.Geci {
      * Invoke the generator if it is active in this phase. If the generator is not active in this phase then just trace
      * that the generator was not invoked.
      *
-     * @param generator  to be invoked or not
-     * @param source     the source on which the generator may work
-     * @param exceptions the list of exceptions
-     * @param phase      the current phase in which the generator may be active or not
+     * @param generator  <!--GENERATOR><!--/-->
+     * @param source     <!--SOURCE--><!--/-->
+     * @param exceptions <!--EXCEPTIONS--><!--/-->
+     * @param phase      <!--PHASE--><!--/-->
      */
     private void invokeGeneratorIfActiveInPhase(Generator generator, javax0.geci.engine.Source source, List<String> exceptions, int phase) {
         if (generator.activeIn(phase)) {
@@ -520,9 +528,9 @@ public class Geci implements javax0.geci.api.Geci {
      * In case the generator throws a different {@link GeciException} then add the source definition to it and rethrow
      * it. (Technically it creates a new {@link SourcedGeciException} from the original exception.)
      *
-     * @param generator  to beinvoked
-     * @param source     the source object
-     * @param exceptions list of exceptions to add any new exception not to be rethrown to
+     * @param generator  <!--GENERATOR><!--/-->
+     * @param source     <!--SOURCE--><!--/-->
+     * @param exceptions <!--EXCEPTIONS--><!--/-->
      */
     private void invokeGenerator(Generator generator, javax0.geci.engine.Source source, List<String> exceptions) {
         try {
@@ -538,7 +546,7 @@ public class Geci implements javax0.geci.api.Geci {
     /**
      * Save the sources that were modified and return true if there was any source that was modified and thus saved.
      *
-     * @param collector that provides the sources
+     * @param collector <!--COLLECTOR--><!--/-->
      * @return {@code true} if there was something saved
      * @throws IOException when some file cannot be written
      */
@@ -620,7 +628,7 @@ public class Geci implements javax0.geci.api.Geci {
      * other sources and did not necessarily existed before) and consolidate them (create the final source code from the
      * segments).</p>
      *
-     * @param collector the collector that collected the sources
+     * @param collector <!--COLLECTOR--><!--/-->
      * @return {@code true} if at least one source was touched.
      */
     private boolean sourcesConsolidate(FileCollector collector) {
