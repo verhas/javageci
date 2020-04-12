@@ -2,6 +2,7 @@ package javax0.geci.lexeger;
 
 import javax0.geci.api.Source;
 import javax0.geci.javacomparator.LexicalElement;
+import javax0.geci.javacomparator.lex.Escape;
 import javax0.geci.javacomparator.lex.Lexer;
 import javax0.geci.lexeger.matchers.Lexpression;
 
@@ -65,7 +66,12 @@ public class JavaLexed implements AutoCloseable {
         final var lines = new ArrayList<String>();
         final var currentLine = new StringBuilder();
         for (final var lex : lexicalElements) {
-            var lexeme = lex.getFullLexeme();
+            String lexeme;
+            if (lex.getType() == LexicalElement.Type.CHARACTER || lex.getType() == LexicalElement.Type.STRING) {
+                lexeme = lex.getOriginalLexeme();
+            } else {
+                lexeme = lex.getFullLexeme();
+            }
             while (lexeme.contains("\n")) {
                 final var nlpos = lexeme.indexOf("\n");
                 final var start = lexeme.substring(0, nlpos);
@@ -159,6 +165,11 @@ public class JavaLexed implements AutoCloseable {
 
         @Override
         public String getFullLexeme() {
+            return null;
+        }
+
+        @Override
+        public String getOriginalLexeme() {
             return null;
         }
 

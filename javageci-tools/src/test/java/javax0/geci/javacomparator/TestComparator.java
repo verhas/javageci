@@ -86,4 +86,16 @@ class TestComparator {
             "    }";
         Assertions.assertTrue( new Comparator().commentSensitive().test(sourceList(s1), sourceList(s2)));
     }
+
+    @Test
+    @DisplayName("Code comparison handles character constants that have new line.")
+    void testCompareCharacterLiteralsNewLine(){
+        final var s1 = "final var sb = new StringBuilder();\n" +
+                "        sb.append('\\n');\n" +
+                "        sb.append(FAILED).append('\\n');";
+        final var s2 = "final var sb = new StringBuilder();\n" +
+                "        sb.append('\\n');\n" +
+                "        sb.append(FAILED).append('\\n');";
+        Assertions.assertFalse( new Comparator().commentSensitive().test(sourceList(s1), sourceList(s2)));
+    }
 }

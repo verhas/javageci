@@ -60,10 +60,9 @@ public class Jdocify extends AbstractJavaGenerator {
         String newContent;
         boolean changed;
         StringBuilder comment;
-        String file;
     }
 
-    private boolean modifyDefinesInComment(StringBuilder comment, Source source, Class<?> klass) {
+    private boolean modifyDefinesInComment(StringBuilder comment) {
         final State state = new State();
         state.pos = 0;
         state.comment = comment;
@@ -82,11 +81,10 @@ public class Jdocify extends AbstractJavaGenerator {
                     state.pos = state.contentEnd + REF_END_LEN;
                 } else {
                     throw new GeciException("The variable '" +
-                        variable + "' was referenced in JavaDoc HTML comment, but was not DEFINEd in the file '" +
-                        state.file + "'");
+                        variable + "' was referenced in JavaDoc HTML comment, but was not DEFINEd");
                 }
-            }else {
-                state.pos = state.commentEnd+HTML_COMMENT_END_LEN;
+            } else {
+                state.pos = state.commentEnd + HTML_COMMENT_END_LEN;
             }
         }
         return state.changed;
@@ -99,9 +97,8 @@ public class Jdocify extends AbstractJavaGenerator {
      * @param klass   the klass to fetch the reference values from via reflection
      * @return {@code true} if the comment was modified.
      */
-    private boolean modifyCodesInComment(final StringBuilder comment, final Source source, final Class<?> klass) {
+    private boolean modifyCodesInComment(final StringBuilder comment, final Class<?> klass) {
         final State state = new State();
-        state.file = source.getAbsoluteFile();
         state.comment = comment;
         state.changed = false;
         state.pos = 0;
@@ -151,13 +148,12 @@ public class Jdocify extends AbstractJavaGenerator {
         state.contentStart = findPosition(state.comment, state.commentEnd + state.lenCODEEnd + CODE_LENGTH,
             state.comment.length(), Jdocify::separatorCharacter);
         asserts(state.contentStart == state.comment.length(),
-            "{@code is not finished before the end of the comment in '" +
-                state.file + "'");
+            "{@code is not finished before the end of the comment.");
 
         state.contentEnd = findCodeEnd(state.comment, state.contentStart, state.comment.length());
         asserts(state.contentEnd == state.comment.length(),
             "{@code is not closed in a JavaDoc comment " +
-                "following a <!--CODE ...--> in the file '" + state.file + "'");
+                "following a <!--CODE ...-->");
     }
 
     private void getTemplate(State state) {
@@ -171,15 +167,15 @@ public class Jdocify extends AbstractJavaGenerator {
 
     private void assertCodeAndCommentSyntax(State state) {
         asserts(state.commentEnd == -1,
-            "There is no --> after the <!--CODE in the file '" + state.file + "'");
+            "There is no --> after the <!--CODE");
         asserts(state.commentEnd + state.lenCODEEnd + CODE_LENGTH >= state.comment.length(),
-            "There is no {@code ... following the <!--CODE ...--> in the file '" + state.file + "'");
+            "There is no {@code ... following the <!--CODE ...-->");
     }
 
     /**
      * Calculate the file name and the value.
      *
-     * @param klass the class that we are processing
+     * @param klass the class we are processing
      * @param state the state of the processing, see {@link State}
      */
     private void getFieldNameAndValue(Class<?> klass, State state) {
@@ -188,8 +184,7 @@ public class Jdocify extends AbstractJavaGenerator {
         state.fieldName = state.comment.substring(state.fieldNameStart, state.fieldNameEnd);
         state.fieldValue = fetchFieldValue(klass, state.fieldName);
         asserts(state.fieldValue == null,
-            "In the source '" + state.file + "' there is a " +
-                COMMENT_CODE_START + state.fieldName + HTML_COMMENT_END +
+            "There is a " + COMMENT_CODE_START + state.fieldName + HTML_COMMENT_END +
                 " reference, but the field cannot be found, is not static or not final.");
     }
 
@@ -220,18 +215,16 @@ public class Jdocify extends AbstractJavaGenerator {
         state.newContent = separator + state.template.replace(state.fieldName, state.fieldValue);
         asserts(!isBalanced(state.newContent),
             "The value to be inserted after {@code is not balanced, " +
-                "has different number of { and } characters in the file'" +
-                state.file + "'. The actual value is: '" + state.newContent + "'");
+                "has different number of { and } characters. The actual value is: '" + state.newContent + "'");
     }
 
     /**
-     * Compare the code and the replacement. If the string in the code, that comes from the source file as it is now
-     * berween the {@code code} keyword and the closing brace is the same as the replacement then we do not need to
-     * replace the code and the source may remain intact.
+     * <p>Compare the code and the replacement. If the string in the code, that comes from the source file as it is now
+     * between the {@code code} keyword, and the closing brace is the same as the replacement then we do not need to
+     * replace the code, and the source may remain intact.</p>
      *
-     * <p>
-     * The trick in the comparison is that the code as it is now and formatted may contain {@code' \n * '} parts that
-     * can match a single space in the replacement.
+     * <p>The trick in the comparison is that the code as it is now and formatted may contain {@code ' \n * '} parts that
+     * can match a single space in the replacement.</p>
      *
      * @param code        the text in the JavaDoc code
      * @param replacement the text it should be
@@ -290,7 +283,7 @@ public class Jdocify extends AbstractJavaGenerator {
 
     /**
      * Find the end of the started {@code {@code ...}} sequence. This is essentially finding the next } character with
-     * counting the openign and closing { and } characters between.
+     * counting the opening and closing { and } characters between.
      *
      * @param comment    the comment that contains the code javadoc directive
      * @param start      where the {@code XXX} starts in the {@code {@code XXX}} structure
@@ -313,15 +306,13 @@ public class Jdocify extends AbstractJavaGenerator {
     }
 
     /**
-     * Fetch the value of the field if it is a declared or inherited {@code final static} field.
+     * <p>Fetch the value of the field if it is a declared or inherited {@code final static} field.</p>
      *
-     * <p>
-     * <p>
-     * If there is no such field then we return null.
+     *  <p>If there is no such field then we return null.</p>
      *
      * @param klass     the class in which we are looking for the field
      * @param fieldName the name of the field we need the value of
-     * @return the value of the field converted to String or null in case there in no appropriate field
+     * @return the value of the field converted to String or {@code null} in case there in no appropriate field
      */
     private static String fetchFieldValue(Class<?> klass, String fieldName) {
         try {
@@ -331,9 +322,10 @@ public class Jdocify extends AbstractJavaGenerator {
                 field.setAccessible(true);
                 return "" + field.get(null);
             }
+            return null;
         } catch (Exception e) {
+            return null;
         }
-        return null;
     }
 
     /**
@@ -373,8 +365,8 @@ public class Jdocify extends AbstractJavaGenerator {
                         define(lex.getLexeme());
                     } else {
                         final var comment = new StringBuilder(lex.getLexeme());
-                        final var code = modifyCodesInComment(comment, source, klass);
-                        final var def = modifyDefinesInComment(comment, source, klass);
+                        final var code = modifyCodesInComment(comment, klass);
+                        final var def = modifyDefinesInComment(comment);
                         if (code || def) {
                             lex.setLexeme(comment.toString());
                         }

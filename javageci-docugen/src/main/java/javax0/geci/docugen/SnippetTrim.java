@@ -38,7 +38,7 @@ public class SnippetTrim extends AbstractSnippeter {
         try {
             to = Integer.parseInt(params.get("to", config.to));
         } catch (NumberFormatException nfe) {
-            throw new GeciException("Can not interpret 'to' parameter " + params.get("to", config.to) + " as a number in snippet " + snippet.name() + " in source " + source.getAbsoluteFile());
+            throw new GeciException("Can not interpret 'to' parameter " + params.get("to", config.to) + " as a number in snippet " + snippet.name());
         }
 
         final var untabbed = Untabber.untab(snippet.lines(),to);

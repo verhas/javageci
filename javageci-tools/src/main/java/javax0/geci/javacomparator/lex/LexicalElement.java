@@ -9,21 +9,32 @@ public class LexicalElement implements javax0.geci.javacomparator.LexicalElement
         this.type = type;
     }
 
-    public String getLexeme(){
+    public String getLexeme() {
         return lexeme;
     }
 
-    public void setLexeme(final String lexeme){
+    public void setLexeme(final String lexeme) {
         this.lexeme = lexeme;
     }
 
-    public String getFullLexeme(){
+    public String getOriginalLexeme() {
+        if (type == javax0.geci.javacomparator.LexicalElement.Type.STRING) {
+            final String enclosing = ((StringLiteral) this).enclosing;
+            return enclosing + this.original + enclosing;
+        }
+        if (type == javax0.geci.javacomparator.LexicalElement.Type.CHARACTER) {
+            return "'" + this.original + "'";
+        }
+        return this.original;
+    }
+
+    public String getFullLexeme() {
         if (type == javax0.geci.javacomparator.LexicalElement.Type.STRING) {
             final String enclosing = ((StringLiteral) this).enclosing;
             return enclosing + this.lexeme + enclosing;
         }
         if (type == javax0.geci.javacomparator.LexicalElement.Type.CHARACTER) {
-            return  "'" + this.lexeme + "'";
+            return "'" + this.lexeme + "'";
         }
         return this.lexeme;
     }
@@ -52,6 +63,7 @@ public class LexicalElement implements javax0.geci.javacomparator.LexicalElement
     }
 
     public String lexeme;
+    public String original;
     public final Type type;
 
     public static class IntegerLiteral extends LexicalElement {
@@ -116,15 +128,18 @@ public class LexicalElement implements javax0.geci.javacomparator.LexicalElement
 
     public static class StringLiteral extends LexicalElement {
         public final String enclosing;
-        StringLiteral(String lexeme, String enclosing) {
+
+        StringLiteral(String lexeme, String original, String enclosing) {
             super(lexeme, Type.STRING);
+            this.original = original;
             this.enclosing = enclosing;
         }
     }
 
     public static class CharacterLiteral extends LexicalElement {
-        public CharacterLiteral(String lexeme) {
+        public CharacterLiteral(String lexeme, String original) {
             super(lexeme, Type.CHARACTER);
+            this.original = original;
         }
     }
 

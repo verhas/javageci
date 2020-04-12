@@ -7,7 +7,7 @@ package javax0.geci.api;
  * auxiliary generator collecting information from the existing source
  * code and usually storing it in the context of the Geci object.</p>
  *
- * <p> The framework will not treat it as an error if there are only
+ * <p>The framework will not treat it as an error if there are only
  * Distant generators in a run. In other cases the fact that the
  * generators do not touch any source code throws an exception.</p>
  *

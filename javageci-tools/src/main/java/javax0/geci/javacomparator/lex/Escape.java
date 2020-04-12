@@ -1,13 +1,15 @@
 package javax0.geci.javacomparator.lex;
 
+import javax0.geci.api.GeciException;
 import javax0.geci.tools.JVM8Tools;
 
 public class Escape {
-    static char octal(StringBuilder sb, int maxLen) {
+    static char octal(StringBuilder sb, int maxLen, StringBuilder original) {
         int i = maxLen;
         int occ = 0;
         while (i > 0 && sb.length() > 0 && sb.charAt(0) >= '0' && sb.charAt(0) <= '7') {
             occ = 8 * occ + sb.charAt(0) - '0';
+            original.append(sb.charAt(0));
             sb.deleteCharAt(0);
             i--;
         }
@@ -18,7 +20,8 @@ public class Escape {
     private static final String escaped = "\b\t\n\f\r\"'\\";
 
 
-    static void handleEscape(StringBuilder sb, StringBuilder output) {
+    static void handleEscape(StringBuilder sb, StringBuilder output, StringBuilder original) {
+        original.append(sb.charAt(0));
         sb.deleteCharAt(0);
         if (sb.length() == 0) {
             throw new IllegalArgumentException("Source ended inside a string.");
@@ -27,24 +30,26 @@ public class Escape {
         final int esindex = escapes.indexOf(nextCh);
         if (esindex == -1) {
             if (nextCh >= '0' && nextCh <= '3') {
-                output.append(octal(sb, 3));
+                output.append(octal(sb, 3, original));
             } else if (nextCh >= '4' && nextCh <= '7') {
-                output.append(octal(sb, 2));
+                output.append(octal(sb, 2, original));
             } else {
                 throw new IllegalArgumentException("Invalid escape sequence in string: \\" + nextCh);
             }
         } else {
+            original.append(nextCh);
             output.append(escaped.charAt(esindex));
             sb.deleteCharAt(0);
         }
     }
 
-    static void handleNormalCharacter(StringBuilder sb, StringBuilder output) {
+    static void handleNormalCharacter(StringBuilder sb, StringBuilder output, StringBuilder original) {
         final char ch = sb.charAt(0);
         if (ch == '\n' || ch == '\r') {
-            throw new IllegalArgumentException("String not terminated before eol.");
+            throw new GeciException("String not terminated before eol:\n" + sb.substring(1, sb.length() > 60 ? 60 : sb.length()) + "...");
         }
         output.append(ch);
+        original.append(ch);
         sb.deleteCharAt(0);
     }
 

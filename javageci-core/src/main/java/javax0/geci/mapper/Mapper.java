@@ -81,7 +81,7 @@ public class Mapper extends AbstractJavaGenerator {
         final var gid = global.get("id");
         try (final var segment = source.open(gid)) {
             if (segment == null) {
-                throw new GeciException("There is no segment '" + gid + "' in the source " + source.getAbsoluteFile());
+                throw new GeciException("There is no segment '" + gid + "'.");
             }
             final var factory = localConfig(global).factory;
             segment.param("mnemonic", mnemonic(),

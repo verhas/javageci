@@ -5,7 +5,7 @@ public class GeciException extends RuntimeException {
         super();
     }
 
-    public GeciException(String message, Object ... args) {
+    public GeciException(String message, Object... args) {
         super(String.format(message, args));
     }
 

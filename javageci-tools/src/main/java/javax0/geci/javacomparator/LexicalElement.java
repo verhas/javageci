@@ -30,6 +30,8 @@ public interface LexicalElement {
      */
     String getFullLexeme();
 
+    String getOriginalLexeme();
+
     /**
      *
      * @return the type of the lexeme, which is an embedded enum type of

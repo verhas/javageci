@@ -6,7 +6,6 @@ import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -93,8 +92,8 @@ public class SnippetAppender extends AbstractSnippeter {
                     thereWereSomeSnippets.set(true);
                 });
             if (!thereWereSomeSnippets.get()) {
-                throw new GeciException("There is no snippet matching the pattern " + pattern + " in source\n"
-                    + source.getAbsoluteFile() + " used by the segment " + segmentName);
+                throw new GeciException("There is no snippet matching the pattern " + pattern +
+                    " used by the segment " + segmentName + ".");
             }
         }
     }

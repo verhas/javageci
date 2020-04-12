@@ -1,5 +1,6 @@
 package javax0.geci.javacomparator.lex;
 
+import javax0.geci.api.GeciException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,10 +31,10 @@ public class TestCharacterLiteral {
 
     @Test
     @DisplayName("Test character literals that are syntactically incorrect")
-    void testBadStringLiterals(){
+    void testBadStringLiterals() {
         final var sut = new CharacterLiteral();
-        Assertions.assertThrows(IllegalArgumentException.class, () -> sut.apply(character("\n")));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> sut.apply(character("\r")));
+        Assertions.assertThrows(GeciException.class, () -> sut.apply(character("\n")));
+        Assertions.assertThrows(GeciException.class, () -> sut.apply(character("\r")));
         Assertions.assertThrows(IllegalArgumentException.class, () -> sut.apply(character("\\z")));
         Assertions.assertThrows(IllegalArgumentException.class, () -> sut.apply(character("\\")));
         Assertions.assertThrows(IllegalArgumentException.class, () -> sut.apply(new StringBuilder("\'")));
