@@ -24,7 +24,7 @@ import java.util.function.BiPredicate;
  * <p>The two files are the same if there is difference only in spacing
  * and/or difference is only in content of comments, or comments are
  * missing or new comments are added, and/or numbers are expressed
- * differently but they still have the same value.</p>
+ * differently, but they still have the same value.</p>
  */
 public class Comparator implements BiPredicate<List<String>, List<String>> {
     private boolean checkComments = false;

@@ -11,7 +11,7 @@ version in a maven property because that cannot be used to reference the parent.
 {@define MODULE_PREFIX=geci.}
 -- the current version of the project as in the development. When releasing it has to be modified here and then
 -- I have to execute `mvn -f genpom.xml clean` to generate all the pom.xml files
-{@define VERSION=1.4.1-SNAPSHOT}
+{@define VERSION=1.5.0-SNAPSHOT}
 
 -- the different plugin and dependency versions we use
 {@define JUPITER_VERSION=5.6.0}
