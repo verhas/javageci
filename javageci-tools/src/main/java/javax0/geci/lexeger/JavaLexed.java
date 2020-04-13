@@ -164,6 +164,10 @@ public class JavaLexed implements AutoCloseable {
         }
 
         @Override
+        public void setOriginal(String original) {
+        }
+
+        @Override
         public String getFullLexeme() {
             return null;
         }

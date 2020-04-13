@@ -19,6 +19,21 @@ public class Escape {
     private static final String escapes = "btnfr\"'\\";
     private static final String escaped = "\b\t\n\f\r\"'\\";
 
+    static String escape(String original) {
+        final var sb = new StringBuilder(original);
+        final var output = new StringBuilder();
+        final var ignored = new StringBuilder();
+        while (sb.length() > 0) {
+            final char ch = sb.charAt(0);
+            if (ch == '\\') {
+                handleEscape(sb, output, ignored);
+            } else {
+                output.append(ch);
+                sb.deleteCharAt(0);
+            }
+        }
+        return output.toString();
+    }
 
     static void handleEscape(StringBuilder sb, StringBuilder output, StringBuilder original) {
         original.append(sb.charAt(0));
@@ -53,28 +68,45 @@ public class Escape {
         sb.deleteCharAt(0);
     }
 
-    static void handleNormalMultiLineStringCharacter(StringBuilder sb, StringBuilder output) {
+    static void handleNormalMultiLineStringCharacter(StringBuilder sb, StringBuilder output, StringBuilder original) {
         char ch = sb.charAt(0);
         if (ch == '\n' || ch == '\r') {
-            normalizedNewLines(sb, output);
+            normalizedNewLines(sb, output, original);
         } else {
             output.append(ch);
+            original.append(ch);
             sb.deleteCharAt(0);
         }
     }
 
-    private static void normalizedNewLines(StringBuilder sb, StringBuilder output) {
+    /**
+     * <p>Convert many subsequent {@code \n} and {@code \r} characters to {@code \n} only. There will be as many {@code
+     * \n} characters in the output as many there were in the input and the {@code \r} characters are simply ignored.
+     * The only exception is, when there are no {@code \n} characters. In this case there will be one {@code \n} in the
+     * output.</p>
+     *
+     * <p>The method deletes the characters from the start of the input StringBuilder {@code sb} and appent the output
+     * to the {@code output}. The original characters will be appended to the end of {@code original} without any
+     * conversion.</p>
+     *
+     * @param sb       the string builder input, from which the characters are consumed.
+     * @param output   where the converted newline are appended to
+     * @param original where the original characters removed from {@code sb} are appended
+     */
+    private static void normalizedNewLines(StringBuilder sb, StringBuilder output, StringBuilder original) {
         char ch = sb.charAt(0);
         int countNewLines = 0;
-        while (sb.length() > 0 && ch == '\n' || ch == '\r') {
+        while (sb.length() > 0 && (ch == '\n' || ch == '\r')) {
             if (ch == '\n') {
                 countNewLines++;
             }
             sb.deleteCharAt(0);
+            original.append(ch);
             if (sb.length() > 0) {
                 ch = sb.charAt(0);
             }
         }
+        // if there was a single, or multiple \r without any \n
         if (countNewLines == 0) {
             countNewLines++;
         }

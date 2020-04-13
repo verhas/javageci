@@ -106,6 +106,7 @@
             {@for MODULE in (api,engine)={dependency :org.junit.jupiter:junit-jupiter-MODULE:{JUPITER_VERSION}:test}}
             {dependency :com.javax0.jamal:jamal-engine:{JAMAL_VERSION}:}
             {dependency :com.javax0.jamal:jamal-testsupport:{JAMAL_VERSION}:test}
+            {dependency :org.assertj:assertj-core:{ASSERTJ_VERSION}:test}
         }
     }
 

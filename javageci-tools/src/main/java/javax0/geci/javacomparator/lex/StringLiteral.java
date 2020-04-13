@@ -36,12 +36,12 @@ public class StringLiteral implements LexEater {
 
     private LexicalElement.StringLiteral getMultiLineStringLiteral(StringBuilder sb, StringBuilder output, StringBuilder original) {
         deleteMultiLineStringDelimiter(sb);
-        while (sb.length() > 3 && !sb.subSequence(0, 3).equals(MULTI_LINE_STRING_DELIMITER)) {
+        while (sb.length() >= 3 && !sb.subSequence(0, 3).equals(MULTI_LINE_STRING_DELIMITER)) {
             final char ch = sb.charAt(0);
             if (ch == '\\') {
-                handleEscape(sb, output,original);
+                handleEscape(sb, output, original);
             } else {
-                handleNormalMultiLineStringCharacter(sb, output);
+                handleNormalMultiLineStringCharacter(sb, output, original);
             }
         }
         if (sb.length() < 3) {

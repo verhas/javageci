@@ -1,5 +1,7 @@
 package javax0.geci.javacomparator;
 
+import javax0.geci.api.GeciException;
+
 public interface LexicalElement {
 
     /**
@@ -13,9 +15,30 @@ public interface LexicalElement {
 
     /**
      * Replace the existing lexeme with a new string.
+     *
      * @param lexeme the new lexeme string.
      */
     void setLexeme(String lexeme);
+
+    /**
+     * <p>Replace the existing original with a new original string.</p>
+     *
+     * <p>The original contains the original text of a string or character literal as it is in the source code without
+     * the delimiter characters. The {@code lexeme} contains the actual character or string. The difference is that
+     * the {@code lexeme} does not contain escape sequences. When the value for the {@code lexeme} field is created
+     * the escape sequences (octal, \n, \r etc) are replaced with the actual character. The {@code original} field
+     * contains these in their original sequence.</p>
+     *
+     * <p>When the original is set then this setter calculates the escaped string converting all escape sequences
+     * replacing them with the character they mean and it is stored in the field {@code lexeme}. That way there is no
+     * need to call {@link #setLexeme(String)} after calling this method.</p>
+     *
+     * <p>This method should be called only in case the lexical element is a CHARACTER or STRING. Calling this method on
+     * any other type of lexical element will throw a {@link GeciException}.</p>
+     *
+     * @param original the new "original" string
+     */
+    void setOriginal(final String original);
 
     /**
      *

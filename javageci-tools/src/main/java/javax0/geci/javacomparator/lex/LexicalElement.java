@@ -1,5 +1,7 @@
 package javax0.geci.javacomparator.lex;
 
+import javax0.geci.api.GeciException;
+
 import java.util.Objects;
 
 public class LexicalElement implements javax0.geci.javacomparator.LexicalElement {
@@ -15,6 +17,15 @@ public class LexicalElement implements javax0.geci.javacomparator.LexicalElement
 
     public void setLexeme(final String lexeme) {
         this.lexeme = lexeme;
+    }
+
+    public void setOriginal(final String original) {
+        if( type != Type.CHARACTER && type != Type.STRING ){
+            throw new GeciException("Setting the original is possible only in case the lexeme is character or string");
+        }
+        this.original = original;
+        this.lexeme = Escape.escape(original);
+
     }
 
     public String getOriginalLexeme() {
