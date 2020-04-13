@@ -34,9 +34,7 @@ public abstract class AbstractGeneratorEx implements Generator {
                 throw (GeciException) e;
             } else {
                 throw new GeciException("There was an "
-                    + e.getClass().getSimpleName()
-                    + " processing "
-                    + source.getAbsoluteFile(), e);
+                    + e.getClass().getSimpleName(), e);
             }
         }
     }

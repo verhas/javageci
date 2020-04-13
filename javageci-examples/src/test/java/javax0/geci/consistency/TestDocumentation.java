@@ -16,7 +16,7 @@ class TestDocumentation {
     final private StringBuilder messages = new StringBuilder();
 
     /**
-     * Check that the version in the parent POM is the same as the
+     * Check the version in the parent POM is the same as the
      * parent pom versions in the module poms. Since the poms are
      * generated using Jamal this is less of an issue though.
      * <p>
@@ -44,17 +44,20 @@ class TestDocumentation {
             for (final var module : modules) {
                 checkModuleParentVersion(rootDir, module, version);
             }
-            final var readme = new File(rootDir + "/README.md");
             final var documentationVersion = version.replaceAll("-JVM8$","");
-            Assertions.assertTrue(readme.exists(), "readme does not exist the second time... ???");
-            new ConsistencyTestUtils(messages).modifyLines(
-                s -> s.replaceAll("<version>(.*?)</version>", "<version>" + documentationVersion + "</version>"),
-                readme
-            );
-            if (messages.length() > 0) {
-                Assertions.fail("Version number was updated in README.md. Commit changes for the release and run build again.");
+
+            for( final String fn : new String[]{"/README.md","/TUTORIAL_USE.md"}) {
+                final var readme = new File(rootDir + fn);
+                Assertions.assertTrue(readme.exists(), fn+"does not exist?");
+                new ConsistencyTestUtils(messages).modifyLines(
+                        s -> s.replaceAll("<version>(.*?)</version>", "<version>" + documentationVersion + "</version>"),
+                        readme
+                );
+                if (messages.length() > 0) {
+                    Assertions.fail("Version number was updated in README.md. Commit changes for the release and run build again.");
+                }
+                Assertions.assertEquals(0, messages.length(), messages.toString());
             }
-            Assertions.assertEquals(0, messages.length(), messages.toString());
         } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
             Assertions.fail("Cannot parse pom.xml", e);
         }

@@ -18,21 +18,31 @@ these jar files are
     <artifactId>javageci-MODULE</artifactId>
     <version>version</version>
     
-The JPMS module names are `geci.MODULE`
+expressed as Maven dependency.
     
-There are 7 modules (each can stand in place of `MODULE` above):
+The JPMS module names have the form `geci.MODULE`. Here `geci.` is a
+constant prefix, `MODULE` is the individual module name.
+    
+There are 8 modules (each can stand in place of `MODULE` above):
 
-1. `api` the API interfaces.
-2. `engine` the framework implementation.
-3. `annotations` annotation interfaces, for example `@Geci` and
-    `@Generated`
-4. `core` generators developed inside the project
-5. `tools` helper classes that are not inherent part of the framework
-6. `examples` example code using the code generators and some code
-    generators that are for example purposes and are not meant to be
-    used in production
-7. `jamal` an experimental code generator that uses the Jamal macro
-    processor
+* `api` defines the interfaces.
+* `engine` is the framework implementation.
+* `annotations` defines annotation interfaces, for example `@Geci` and
+  `@Generated`
+* `core` contains the generators developed inside the project
+* `core-annotations` defines annotation interfaces for each of the generators,
+   which are defined in the module `core`. When using a generator the code
+   can use one of these annotations instead of using `@Geci("...")` with the
+   generator name in the annotation string.
+* `tools` contains helper classes that are not inherent part of the framework,
+   but are very handy when writing generators 
+* `examples` example code using the code generators and some code
+   generators that are for example purposes. They are not meant to be
+   used in production.
+* `jamal` an experimental code generator that uses the Jamal macro
+   processor. This module is not developed further and is deprecated.
+   New versions are automatically released with the other modules, but there
+   is no change in the functionality.
     
 ## Modules
 
@@ -44,15 +54,15 @@ module, because this module contains the `Generator` interface that the
 generator classes have to implement.
 
 Note that most of the generators also depend on the `tools` module for
-support library use and also to extend the readily available abstract
-generator classes instead of implementing the interface from zero.
+support library use and to extend the readily available abstract
+generator classes instead of implementing the interface from scratch.
 
-The module `engine` implements the interfaces of this module except the
-`Generator`.
+The module `engine` implements the interfaces defined in this module
+except the interface `Generator`.
  
 ### `engine`
 
-This module contans the framework that does all the support work for the
+This module contains the framework that does all the support work for the
 generators like scanning the file system for source code; starting up
 the generators that are needed by the individual source codes and
 writing back changes into source files in case some generator created
@@ -79,9 +89,10 @@ during the production execution the scope of the dependency should be
 `compile` (this is the default dependency in Maven).
 
 Note that the use of this module is not a must. The framework is
-flexible and automatically will use any annotation that is named `@Geci`
-or just any annotation that itself is annotated with `@Geci` or with an
-annotation that was annotated similarly (any level).
+flexible and automatically will recognize any annotation that is named `@Geci`
+or just any annotation that itself is annotated with `@Geci` (not a specific
+one, just an annotation named `@Geci`) or with an
+annotation that was annotated similarly (any level recursively).
 
 Developers may decide to drop the dependency and use their own
 annotations named `@Geci` or any other name. (At least one annotation
@@ -96,8 +107,8 @@ generator.
 *Note:* that there is an annotation interface named `Generated` in the
 JDK. That annotation has a retention policy `SOURCE`, which means that
 the compiled class byte code does not contain this annotation and thus
-cannot be reflectively queried. This there is the need for this
-annotation.
+cannot be reflectively queried. This is the reason why there is the need
+for the `@Generated` annotation in this module.
 
 ### `core`
 
@@ -111,30 +122,58 @@ part of the Java::Geci project. These include
 * factory
 * fluent
 * mapper
+* jdocify
+* iterator
 
 Programs that use one of these generators should have a dependency on
 this module. Since this module has a transitive dependency on the module
 `engine` there is no need for explicitly require dependency on the
 `engine` module for programs that use the code generators.
 
+### `core-annotations`
+
+This module defines annotation interfaces for each and every generator,
+which is defned in the module `core`. These interfaces are automatically
+generated using a special generator 
+`javax0.geci.annotationbuilder.AnnotationBuilder`
+which is in the `core` module.
+
+When an annotation interface is annotated with `@Geci("xxx")` then the
+annotation itself can be used instead of using the annotation `@Geci("xxx")`
+on the class that needs the generator. For example the annotation interface
+`Builder` has the annotation `@Geci("builder")` as
+
+```java
+@Geci("builder")
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Builder {
+...
+``` 
+which means that whenever we need the `Builder` generator to work on
+a class we can use the annotation `@Builder` instead of `@Geci("builder")`. 
+
 ### `tools`
 
 This module contains support tools that many code generators use. This
 module contains also the abstract generator classes that actual
 generator implementation may extend instead of implementing the
-`Generator` interface directly.
+`Generator` interface directly. When writing a new generator you are
+free to use these classes. As a matter of fact, you can use the classes
+in this module totally independent of Java::Geci if you wish.
 
 ### `examples`
 
-Examples contain sample use of code generators; some code generators,
+Examples contain sample use of code generators. There are some code generators,
 like the "Hello, World" code generator, which are not meant to be used
-in production; and also the tests for the generators in core.
+in production. There are also some integration tests for some of the generators
+implemented in the module `core`.
 
 ### `jamal`
 
 This module contains an experimental code generator that lets you
 program your Java code with a preprocessor. The usability of the tool is
-questionable, thus this is still an experiment.
+questionable, thus this is still an experiment and is currently deprecated.
+Later the deprecation may be removed or the module may totally be eliminated.
 
 ## Recommendations
 
@@ -148,6 +187,5 @@ generator will have a `test` scope dependency on the generator project.
 
 When you develop one or more generator in a separate project and you use
 JPMS then it is recommended to `require transitive geci.engine`. This
-will release the programs that use the generator from the burden to
-express their dependency on the `engine` module, which they do have if
-they use the generator.
+will release the generator using programs from the burden to
+express their dependency on the `engine` module.

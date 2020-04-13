@@ -688,7 +688,7 @@ public class Geci implements javax0.geci.api.Geci {
      */
     private static final class SourcedGeciException extends GeciException {
         private SourcedGeciException(Source source, GeciException e) {
-            super(e.getMessage() + (source == null ? "" : "\nSource: " + source.getAbsoluteFile()));
+            super(e.getMessage() + (source == null ? "" : "\nSource: " + source.getAbsoluteFile()),e.getCause());
             this.setStackTrace(e.getStackTrace());
         }
     }

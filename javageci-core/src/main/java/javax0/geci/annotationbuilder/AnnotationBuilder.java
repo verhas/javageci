@@ -83,7 +83,11 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
 
     private List<String> getImplementedKeysSorted(final Class<?> klass) {
         try {
-            return ((AbstractJavaGenerator) klass.getConstructor().newInstance()).implementedKeys().stream().sorted().collect(Collectors.toList());
+            final var implementedKeys =  ((AbstractJavaGenerator) klass.getConstructor().newInstance()).implementedKeys();
+            if( implementedKeys == null ){
+                return List.of();
+            }
+            return implementedKeys.stream().sorted().collect(Collectors.toList());
         } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException ex) {
             throw new GeciException("Cannot generate annotation for " + klass.getName() + " because it does not have an implementedKeys() method.", ex);
         }

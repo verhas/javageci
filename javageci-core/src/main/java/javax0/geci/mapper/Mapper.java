@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 /**
  * Code generator class that generates toMap and fromMap methods that will convert the object and possibly contained
- * other objects recursively (and also circular object references) into Map and back.
+ * other objects recursively (also circular object references) into Map and back.
  * <p>
  * The {@code fromMap()} method creates a new object. To do that it uses the factory that can be configured
  * in the Geci annotation of the class, or else it just tries to use the default constructor of the class.
