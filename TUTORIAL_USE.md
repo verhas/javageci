@@ -17,13 +17,13 @@ to use Java::Geci, add the following dependency to your project:
      <!-- This is optional, you can use your own annotations or comment config -->
      <groupId>com.javax0.geci</groupId>
      <artifactId>javageci-annotation</artifactId>
-     <version>1.1.2-SNAPSHOT</version>
+     <version>1.5.0-SNAPSHOT</version>
  </dependency>
  <dependency>
      <groupId>com.javax0.geci</groupId>
      <artifactId>javageci-engine</artifactId>
      <scope>test</scope>
-     <version>1.1.2-SNAPSHOT</version>
+     <version>1.5.0-SNAPSHOT</version>
  </dependency>
  ```
 There are other modules, but you do not need to declare dependency on
@@ -64,6 +64,10 @@ This means:
   foo **and** bar. 
 * Call `source("foo", "bar")` if you have sources in **either** foo
   **or** bar.
+
+If you have a simple Maven project and your source code is in the 
+`src/main/java` directory then you do not need to specify any source
+location. `src/main/java` is the default setting for Java::Geci.
 
 The method `register()` can register one or more source code generators.
 You can also chain `register()` calls and register your generator

@@ -54,7 +54,7 @@ class TestDocumentation {
                         readme
                 );
                 if (messages.length() > 0) {
-                    Assertions.fail("Version number was updated in README.md. Commit changes for the release and run build again.");
+                    Assertions.fail("Version number was updated in " + fn + ". Commit changes for the release and run build again.");
                 }
                 Assertions.assertEquals(0, messages.length(), messages.toString());
             }

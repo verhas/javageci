@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xl="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="170 331 1809 748" width="1809" height="748">
+  <defs>
+    <font-face font-family="Helvetica Neue" font-size="600" panose-1="2 0 8 3 0 0 0 9 0 4" units-per-em="1000" underline-position="-100" underline-thickness="50" slope="0" x-height="517" cap-height="714" ascent="975.0061" descent="-216.99524" font-weight="700">
+      <font-face-src>
+        <font-face-name name="HelveticaNeue-Bold"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.15 
+    <dc:date>2020-04-13 16:04:43 +0000</dc:date>
+  </metadata>
+  <g id="commandaltj" stroke-dasharray="none" stroke="none" stroke-opacity="1" fill="none" fill-opacity="1">
+    <title>commandaltj</title>
+    <g id="commandaltj: Layer 1">
+      <title>Layer 1</title>
+      <g id="Group_18">
+        <g id="Group_3">
+          <title>g2202</title>
+          <g id="Graphic_10">
+            <title>rect2204</title>
+            <rect x="170.07874" y="466.2992" width="481.20685" height="481.20685" fill="white"/>
+          </g>
+          <g id="Graphic_9">
+            <title>path2206</title>
+            <path d="M 536.48056 671.1577 L 494.08697 671.1577 L 494.08697 741.9893 L 536.48056 741.9893 C 586.64194 741.9893 627.0607 782.408 627.0607 832.3061 C 627.0607 882.5991 586.64194 922.8862 536.48056 922.8862 C 486.45085 922.8862 446.0321 882.5991 446.0321 832.3061 L 446.0321 790.0441 L 375.4639 790.0441 L 375.4639 832.3061 C 375.4639 882.5991 334.9135 922.8862 285.01543 922.8862 C 234.85405 922.8862 194.30366 882.5991 194.30366 832.3061 C 194.30366 782.408 234.85405 741.9893 285.01543 741.9893 L 327.40902 741.9893 L 327.40902 671.1577 L 285.01543 671.1577 C 235.11737 671.5527 194.30366 630.739 194.30366 580.5776 C 194.30366 530.67956 234.85405 490.12916 285.01543 490.12916 C 334.9135 490.12916 375.4639 530.67956 375.4639 580.5776 L 375.4639 623.2345 L 446.0321 623.2345 L 446.0321 580.5776 C 445.7688 530.67956 486.45085 490.12916 536.48056 490.12916 C 586.64194 490.12916 627.0607 530.67956 627.0607 580.5776 C 627.0607 630.739 586.64194 671.1577 536.48056 671.1577 Z" fill="black"/>
+          </g>
+          <g id="Graphic_8">
+            <title>rect2208</title>
+            <rect x="375.4639" y="671.2894" width="70.69989" height="70.69989" fill="white"/>
+          </g>
+          <g id="Graphic_7">
+            <title>path2210</title>
+            <path d="M 327.40902 580.44596 C 327.40902 557.14265 308.4504 538.184 285.14708 538.184 C 261.4488 538.184 242.49017 557.14265 242.49017 580.44596 C 242.49017 604.14425 261.4488 623.1029 285.14708 623.1029 L 327.40902 623.1029 Z" fill="white"/>
+          </g>
+          <g id="Graphic_6">
+            <title>path2212</title>
+            <path d="M 327.40902 832.3061 L 327.40902 790.0441 L 285.14708 790.0441 C 261.4488 790.0441 242.49017 809.0028 242.49017 832.3061 C 242.49017 856.0044 261.4488 874.963 285.14708 874.963 C 308.4504 874.963 327.40902 856.0044 327.40902 832.3061 Z" fill="white"/>
+          </g>
+          <g id="Graphic_5">
+            <title>path2214</title>
+            <path d="M 494.08697 832.3061 C 494.08697 856.0044 513.0456 874.963 536.3489 874.963 C 560.0472 874.963 579.0058 856.0044 579.0058 832.3061 C 579.0058 809.0028 560.0472 790.0441 536.3489 790.0441 L 494.08697 790.0441 Z" fill="white"/>
+          </g>
+          <g id="Graphic_4">
+            <title>path2216</title>
+            <path d="M 494.08697 623.1029 L 494.08697 580.44596 C 494.08697 557.14265 513.0456 538.184 536.3489 538.184 C 560.0472 538.184 579.0058 557.14265 579.0058 580.44596 C 579.0058 604.14425 560.0472 623.1029 536.3489 623.1029 Z" fill="white"/>
+          </g>
+        </g>
+        <g id="Graphic_11">
+          <rect x="744.0945" y="629.29134" width="49.6063" height="169.00288" fill="black"/>
+          <rect x="744.0945" y="629.29134" width="49.6063" height="169.00288" stroke="#a5a5a5" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        </g>
+        <g id="Graphic_12">
+          <rect x="685.3962" y="689.9896" width="169.00288" height="49.6063" fill="black"/>
+          <rect x="685.3962" y="689.9896" width="169.00288" height="49.6063" stroke="#a5a5a5" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        </g>
+        <g id="Graphic_13">
+          <text transform="translate(829.8819 336.65355)" fill="black">
+            <tspan font-family="Helvetica Neue" font-size="600" font-weight="700" fill="black" x="0" y="585">Alt</tspan>
+          </text>
+        </g>
+        <g id="Graphic_16">
+          <rect x="1691.4542" y="630.29134" width="49.6063" height="169.00288" fill="black"/>
+          <rect x="1691.4542" y="630.29134" width="49.6063" height="169.00288" stroke="#a5a5a5" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        </g>
+        <g id="Graphic_15">
+          <rect x="1632.756" y="690.9896" width="169.00288" height="49.6063" fill="black"/>
+          <rect x="1632.756" y="690.9896" width="169.00288" height="49.6063" stroke="#a5a5a5" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        </g>
+        <g id="Graphic_17">
+          <text transform="translate(1806.7588 340.70055)" fill="black">
+            <tspan font-family="Helvetica Neue" font-size="600" font-weight="700" fill="black" x="0" y="585">j</tspan>
+          </text>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

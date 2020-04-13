@@ -1,28 +1,32 @@
 # Configuring Generators
 
-Generators are classes that implement the `Generator` interface, thus
-their configuration very much depends on how they are implemented.
-Their implementation is out of the control of the Java::Geci library.
-After all, this is the major goal of the framework: anyone can develop a
-generator and it is up to them how their code can be configured.
+Generators are classes that implement the `Generator` interface. Because
+this interface is simple and does not specify anything about the configuration
+the actual configuration of a generator depends on how it is implemented.
 
-Having said that, however, there are guidelines for the code generator
+Their implementation is out of the control of the Java::Geci library.
+It is only a recommendation to use the tools and structures that are
+provided in the form of some generators and libraries.
+
+There are guidelines for the code generator
 development that also includes configuration management for code
 generators. This document describes how to develop a code generator that
-follows these guidelines and also how a generator following those
+follows these guidelines, and how a generator following those
 guidelines can be configured.
 
-The advantage following these guidelines is twofold:
+The advantage following these guidelines is:
 
-1. There are tools readily available for code generators to handle
+*   There are tools readily available for code generators to handle
     configuration data. Using these tools the code generator code can
     focus on what the core functionality of the code generator is and
     does not need to have excessive configuration handling code.
+    (At the end of the day it will have, but they will be generated so
+    the maintenance of the code is marginal.)
 
-2. Developers who use the code generator do not need to learn the
+*   Developers who use the code generator do not need to learn the
     specific configuration handling of the actual code generator. They
-    understand the configuration keys and their meaning and the coding,
-    api to set those values are the same for all code generators.
+    understand the configuration keys and their meaning. The coding
+    to set those values are the same for all code generators.
 
 From now on in this document when talking about a code generator we
 assume that the actual implementation fully follows these guidelines.
@@ -30,7 +34,7 @@ assume that the actual implementation fully follows these guidelines.
 ## Configuration scopes
 
 Code generators can be configured with many scopes. The smaller scope
-configuration usually overrides the larger scope configuration. For
+usually overrides the larger scope. For
 example, a configuration value can be set
 
 * default values are coded in the generator code by the programmer and

@@ -51,10 +51,15 @@ during the test phase of the build process.
 Java::Geci already includes several readily available code generators.
 These are packaged with the core package and can generate
 
-* setter and getter
-* delegation methods (under development)
 * fluent API classes and interfaces
-* others will be under development
+* internal builders into the class
+* repetitive code iteratively
+* record classes (that are Java 8 compatible and
+  can easily be replace with Java 14 records later)
+* code that converts an object to a `Map` and back  
+* delegation methods (under development)
+* setter and getter (just as an example, there are so many
+  setter/getter generators...)
 
 ## How to use Java::Geci
 

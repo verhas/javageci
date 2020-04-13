@@ -33,7 +33,7 @@ to target Java 8. The profile `JVM8` will include the
 `com.github.bsideup.jabel` plugin.
 
 The first run of the build will fail as the documentation still contains
-the old version. Run the build command again.
+the old version. Commit the changes and run the build command again.
 
 After the successful build run the shell script `release.sh` that
 collects all the files, starts the GPG signature and creates the ZIP
