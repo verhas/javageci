@@ -119,7 +119,7 @@ multi-module project you may want to separate the annotations from the generator
 The reason for that can be that the generators are test scope dependencies. On the other hand the
 annotations, albeit not used during run-time are compile scope dependencies. That is because these
 annotations have run-time retention and are put into the JVM byte code by the compiler. Even though they are
-not used during non-test run-time, they are there and thus the JAR defining them must me on the class/module
+not used during non-test run-time, they are there and thus the JAR defining them must be on the class/module
 path.
 
 Use this configuration either calling `set(""name-of-source-set")` in the test code when building the

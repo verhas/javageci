@@ -42,8 +42,8 @@ public class SnippetStore {
      */
     void put(String name, Snippet snippet, Source source) {
         if (originals.containsKey(name)) {
-            throw new GeciException("Snippet '" + name + "' is defined multiple times in sources\n" +
-                    source.getAbsoluteFile() + "\n" + sourceTracking.get(name).getAbsoluteFile());
+            throw new GeciException("Snippet '" + name + "' is defined multiple times in sources\n"
+                + sourceTracking.get(name).getAbsoluteFile());
         }
         originals.put(name, snippet);
         sourceTracking.put(name, source);

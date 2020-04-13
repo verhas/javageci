@@ -81,7 +81,7 @@ public class SnippetCollector extends AbstractSnippeter implements Distant {
             }
         }
         if (builder != null) {
-            throw new GeciException("Snippet " + builder.snippetName() + " was not finished before end of the file " + source.getAbsoluteFile());
+            throw new GeciException("Snippet " + builder.snippetName() + " was not finished before end of the file.");
         }
         Tracer.log("SnippetCollector", "Finishing snippet collector for source '" + source.getAbsoluteFile() + "'");
     }

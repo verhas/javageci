@@ -468,9 +468,7 @@ public class GeciReflectionTools {
     private static boolean isNotOverridden(Method currentMethod, ArrayList<Method> allMethods) {
         return !allMethods.stream()
             .filter(method -> method.getName().equals(currentMethod.getName()))
-            .filter(method -> Arrays.deepEquals(method.getParameterTypes(), currentMethod.getParameterTypes()))
-            .findFirst()
-            .isPresent();
+            .anyMatch(method -> Arrays.deepEquals(method.getParameterTypes(), currentMethod.getParameterTypes()));
     }
 
     private static boolean isVisible(Method method, boolean samePackage) {

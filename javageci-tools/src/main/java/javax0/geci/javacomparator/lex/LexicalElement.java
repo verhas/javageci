@@ -1,5 +1,7 @@
 package javax0.geci.javacomparator.lex;
 
+import javax0.geci.api.GeciException;
+
 import java.util.Objects;
 
 public class LexicalElement implements javax0.geci.javacomparator.LexicalElement {
@@ -9,17 +11,41 @@ public class LexicalElement implements javax0.geci.javacomparator.LexicalElement
         this.type = type;
     }
 
-    public String getLexeme(){
+    public String getLexeme() {
         return lexeme;
     }
 
-    public String getFullLexeme(){
+    public void setLexeme(final String lexeme) {
+        this.lexeme = lexeme;
+    }
+
+    public void setOriginal(final String original) {
+        if( type != Type.CHARACTER && type != Type.STRING ){
+            throw new GeciException("Setting the original is possible only in case the lexeme is character or string");
+        }
+        this.original = original;
+        this.lexeme = Escape.escape(original);
+
+    }
+
+    public String getOriginalLexeme() {
+        if (type == javax0.geci.javacomparator.LexicalElement.Type.STRING) {
+            final String enclosing = ((StringLiteral) this).enclosing;
+            return enclosing + this.original + enclosing;
+        }
+        if (type == javax0.geci.javacomparator.LexicalElement.Type.CHARACTER) {
+            return "'" + this.original + "'";
+        }
+        return this.original;
+    }
+
+    public String getFullLexeme() {
         if (type == javax0.geci.javacomparator.LexicalElement.Type.STRING) {
             final String enclosing = ((StringLiteral) this).enclosing;
             return enclosing + this.lexeme + enclosing;
         }
         if (type == javax0.geci.javacomparator.LexicalElement.Type.CHARACTER) {
-            return  "'" + this.lexeme + "'";
+            return "'" + this.lexeme + "'";
         }
         return this.lexeme;
     }
@@ -47,7 +73,8 @@ public class LexicalElement implements javax0.geci.javacomparator.LexicalElement
         return type.toString() + "[" + lexeme + "]";
     }
 
-    public final String lexeme;
+    public String lexeme;
+    public String original;
     public final Type type;
 
     public static class IntegerLiteral extends LexicalElement {
@@ -112,15 +139,18 @@ public class LexicalElement implements javax0.geci.javacomparator.LexicalElement
 
     public static class StringLiteral extends LexicalElement {
         public final String enclosing;
-        StringLiteral(String lexeme, String enclosing) {
+
+        StringLiteral(String lexeme, String original, String enclosing) {
             super(lexeme, Type.STRING);
+            this.original = original;
             this.enclosing = enclosing;
         }
     }
 
     public static class CharacterLiteral extends LexicalElement {
-        public CharacterLiteral(String lexeme) {
+        public CharacterLiteral(String lexeme, String original) {
             super(lexeme, Type.CHARACTER);
+            this.original = original;
         }
     }
 

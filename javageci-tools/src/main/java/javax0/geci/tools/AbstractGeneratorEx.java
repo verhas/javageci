@@ -46,7 +46,7 @@ public abstract class AbstractGeneratorEx implements Generator {
      * AbstractGeneratorEx} have to define this method. This method is
      * essentially the same as the method {@link
      * Generator#process(Source)} but this method can throw an
-     * exception.
+     * exception. (Hence the name has an {@code Ex} at the end.)
      *
      * @param source the source code the generator works on
      * @throws Exception any exception thrown by the generator

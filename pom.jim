@@ -1,15 +1,46 @@
+Note that this is a file imported and everything that is not a macro, like this text,
+will be discarded by Jamal, thus it is essentially comment.
+
+----------------------------------------------------------------------------------------
+The file `version.jim` is used to define the different versions of the plugins, Java,
+project and so on. Many versions could be defined in the parent pom and then inherited
+into the modules except the parent POM version.
+
+In this project the parent POM and the modules have the same version. Whenever a new module
+is release the whole project, all the modules are release. This the project version is
+essentially the version of the parent POM. This version cannot be inherited from the parent
+POM because the module does not know which version of parent to inherit from. This can only
+be inserted into the modules manually or using a preprocessor, like Jamal.
+
+When we do it then it is better to have all the versions collected and managed in a single file.
+
 {@import version.jim}
+----------------------------------------------------------------------------------------
+The topmost macro to start the pom.xml.jam file after the import pom.jim
+
+There are two arguments. One is the pachaging, the rest is the actual content of the project file.
+
 {@define project($packaging,$projectContent)=<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
                             xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 <modelVersion>4.0.0</modelVersion>
 <packaging>$packaging</packaging>$projectContent</project>
 }
+----------------------------------------------------------------------------------------
+
+This is an auxilliary macro and not used in the pom.xml.jam files. This macro, when invoked
+defines a simple macro that will, when used generate an XML tag.
 
 {@define tag($x)={@define $x($y)=<$x>$y</$x>}}
 
 {@define $forsep=\s*,\s*} this lets us to split the list of the tags into multiple lines
 
-because the macro "eval" is preceded with the character # first the macro "for" is evaluated
+Define all the macros that are to be used as XML tags. After that instead of writing
+
+                   <long_tag_nam>some long content</long_tag_name>
+
+you write [long_tag_nam some long content] (where [ and ] are the actual macro brackets).
+
+Because the macro "eval" is preceded with the character # first the macro "for" is evaluated
 the result (output) of the macro "for" is a series of "define" macros. Each defines a new macro
 with the name of the tag. When this is ready then this output is processed by the macro "eval"
 essentially executing the "define" macros and at this point the tags are defined as macros.
@@ -18,22 +49,46 @@ essentially executing the "define" macros and at this point the tags are defined
                       description,url,properties,build,pluginManagement,
                       plugins,plugin,dependencyManagement,dependencies,
                       scm,connection,developerConnection,executions,
-                      execution,id,goals,goal)=
+                      execution,id,goals,goal,release,configuration,
+                      source,target,encoding,excludes,exclude,
+                      annotationProcessorPaths,annotationProcessorPath,
+                      annotationProcessors,annotationProcessor,
+                      profiles,profile,
+                      resources,resource,
+                      directory,filtering,
+                      repositories,argLine)=
 {tag/_tag}}}
 
+{@define repository($id,$url)=<repository><id>$id</id><url>$url</url></repository>}
+{@define profile($id,$profileContent)=<profile><id>$id</id>$profileContent</profile>}
+----------------------------------------------------------------------------------------
+The groupId for Jamal.
+
 {@define JAMAL=com.javax0.jamal}
+----------------------------------------------------------------------------------------
+The GAV macro can be used to define groupId, artifactId and version tags. Each of the
+elements may be missing, it is checked by the macro definitions using the 'if' macro.
+It is recommended to use : as argument separators for this macro in the pom.xml.jam
+
+To skip the groupId, for example, you can write [GAV ::artifa-ct:1.0.0]
 
 {@define GAV($groupId,$artifactId,$version)=
     {#if|$groupId|{groupId :$groupId}}
     {#if|$artifactId|{artifactId :$artifactId}}
     {#if|$version|{version :$version}}
 }
+----------------------------------------------------------------------------------------
+Define the parent of a module. The parent version and the groupid for the project is
+defined in the version.jim file.
 
 {@define parent($id)=
 <parent>
     {GAV :{GROUPID}:$id:{VERSION}}
 </parent>
 }
+----------------------------------------------------------------------------------------
+Define a dependency. The arguments are the ... you see. Each of the arguments are
+optinal. If one is missing there will be no corresponding XML tag generated.
 
 {@define dependency($groupId,$artifactId,$version,$scope)=
 <dependency>
@@ -44,12 +99,18 @@ essentially executing the "define" macros and at this point the tags are defined
 </dependency>
 }
 
+----------------------------------------------------------------------------------------
+Use this marco to define the modules in the patent pom.xml.jam
+Simply list the names of the modules comma separated, like
+[modules module1,module2,module3]
+
 {@define modules($Z)=
   <modules>
     {@for MODULE in ($Z)=<module>MODULE</module>}
   </modules>
 }
-
+----------------------------------------------------------------------------------------
+Define a license type with the name and the URL
 {@define license($name,$url)=
 <licenses>
     <license>
@@ -58,6 +119,7 @@ essentially executing the "define" macros and at this point the tags are defined
     </license>
 </licenses>
 }
+----------------------------------------------------------------------------------------
 
 {@define property($name,$value)=<$name>$value</$name>}
 
@@ -78,8 +140,12 @@ essentially executing the "define" macros and at this point the tags are defined
     }
     {url|https:/github.com/$developer/$project/tree/master}
 }
-{@define opens($module,$package,$to)=--add-opens geci.$module/javax0.geci.$package={#if/$to/geci.$to/ALL-UNNAMED}}
-{@define exports($module,$package,$to)=--add-exports geci.$module/javax0.geci.$package={#if/$to/geci.$to/ALL-UNNAMED}}
+----------------------------------------------------------------------------------------
+Defines an --add-opens option to the compiler. In case the
+{@define opens($module,$package,$to)=--add-opens {MODULE_PREFIX}$module/{PACKAGE_PREFIX}$package={#if/$to/geci.$to/ALL-UNNAMED}}
+----------------------------------------------------------------------------------------
+{@define exports($module,$package,$to)=--add-exports {MODULE_PREFIX}$module/{PACKAGE_PREFIX}$package={#if/$to/geci.$to/ALL-UNNAMED}}
+----------------------------------------------------------------------------------------
 {@define configuration($data)=<configuration>
     $data
 </configuration>

@@ -28,6 +28,8 @@ public class FragmentCollector extends AbstractSnippeter implements Distant {
             .replaceAll("^\\s*</?p>\\s*$","");
         // end snippet
         private String param = null;
+        // used by the config generator to invoke the setter, and
+        // to generate the regex() method in the config builder
         private String regex = null;
 
         private void setRegex(String regex) {
@@ -85,7 +87,7 @@ public class FragmentCollector extends AbstractSnippeter implements Distant {
             }
         }
         if (builder != null) {
-            throw new GeciException("Snippet " + builder.snippetName() + " was not finished before end of the file " + source.getAbsoluteFile());
+            throw new GeciException("Snippet " + builder.snippetName() + " was not finished before end of the file.");
         }
     }
 

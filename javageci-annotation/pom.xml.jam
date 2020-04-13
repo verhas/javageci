@@ -4,6 +4,5 @@
     {parent :javageci-parent}
     {name|javageci annotation}
     {description|Javageci annotations}
-
     {@include ../plugins.jim}
 }

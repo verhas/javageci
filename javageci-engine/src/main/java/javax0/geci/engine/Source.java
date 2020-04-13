@@ -75,13 +75,19 @@ public class Source implements javax0.geci.api.Source {
     public static class MockBuilder {
         private final Generator sut;
         private String className;
-        private String relativeFile;
-        private String absoluteFile;
+        private String relativeFile = "DIRECTORY\\MOCKED_FILE.MOCKED";
+        private String absoluteFile = "C:\\MOCKED\\DIRECTORY\\MOCKED_FILE.MOCKED";
         private SegmentSplitHelper splitHelper = new JavaSegmentSplitHelper();
         final List<String> lines = new ArrayList<>();
+        private Source mockedSource;
 
         public MockBuilder(Generator sut) {
             this.sut = sut;
+        }
+
+        public MockBuilder absoluteFile(String absoluteFile) {
+            this.absoluteFile = absoluteFile;
+            return this;
         }
 
         public MockBuilder className(String className) {
@@ -111,8 +117,16 @@ public class Source implements javax0.geci.api.Source {
             return this;
         }
 
+        public boolean isTouched() {
+            return mockedSource.isTouched();
+        }
+
+        public boolean isModified(BiPredicate<List<String>, List<String>> sourceModified) {
+            return mockedSource.isModified(sourceModified);
+        }
+
         public Source getSource() {
-            return new Source(sut, className, relativeFile, absoluteFile, splitHelper, lines);
+            return mockedSource = new Source(sut, className, relativeFile, absoluteFile, splitHelper, lines);
         }
     }
 
@@ -143,6 +157,7 @@ public class Source implements javax0.geci.api.Source {
         this.absoluteFile = absoluteFile;
         this.splitHelper = splitHelper;
         this.lines.addAll(lines);
+        this.originals.addAll(lines);
         this.collector = null;
         this.inMemory = true;
         this.store = new MockSourceStore();
@@ -237,6 +252,7 @@ public class Source implements javax0.geci.api.Source {
             this.lines.addAll(lines);
         }
         isBorrowed = false;
+        touched = true;
     }
 
     @Override
