@@ -20,7 +20,7 @@
       <option name="OTHER" value="true" />
     </context>
   </template>
-  <template name="aaa-snip-to-html" value="&lt;!-- snip $snippetName$ snippet=&quot;$snippetName$&quot; &#10;          regex=&quot;replace='$replace$'&#10;                 kill='$killPattern$&quot;&#10;                 escape='$escape$'&quot;&#10;          trim=&quot;to=0&quot;&#10;          number=&quot;start=1 step=1 from=0 format='%d. ' to=5&quot;&#10;                 --&gt;&#10;&lt;!-- end snip --&gt;" description="insert a Java::Geci snipping segment into HTML/XML" toReformat="false" toShortenFQNames="true">
+  <template name="aaa-snip-to-html" value="&lt;!-- snip $snippetName$ snippet=&quot;$snippetName$&quot; &#10;          regex=&quot;replace='$replace$'&#10;                 kill='$killPattern$'&quot;&#10;                 escape='$escape$'&quot;&#10;          trim=&quot;to=0&quot;&#10;          number=&quot;start=1 step=1 from=0 format='%d. ' to=5&quot;&#10;                 --&gt;&#10;&lt;!-- end snip --&gt;" description="insert a Java::Geci snipping segment into HTML/XML" toReformat="false" toShortenFQNames="true">
     <variable name="snippetName" expression="" defaultValue="&quot;snippet id&quot;" alwaysStopAt="true" />
     <variable name="replace" expression="" defaultValue="&quot;/^~s*~*~s?//&quot;" alwaysStopAt="true" />
     <variable name="killPattern" expression="" defaultValue="&quot;regex pattern for lines to kill/delete&quot;" alwaysStopAt="true" />

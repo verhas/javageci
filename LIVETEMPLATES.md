@@ -70,6 +70,23 @@ $END$
 
 ### insert Java::Geci iterate template
 
+Use this template to insert an iterate TEMPLATE into the source code. The
+inserted ITERATE template is a Java comment that contains all the possible
+commands that are available in such a template. The `SEP1` and `SEP2` lines
+define the separators and the default value in the live template is the
+value, which is the default value for the iterate TEMPLATE. In case you just
+want to use thos you can delete the `SEP1` and `SEP2` lines and you have to
+keep those lines if you set the separator values to something different from
+the default.
+
+The created sample template also contains sample LOOP command, and the default
+EDITOR-FOLD-ID that can also deleted if the default value is used.
+
+The content in the `editor-fold` segment is a Java comment that describes the
+use of the iterator as a gentle remainder. When the actual template content is
+edited and the generator is executed this comment will automatically be deleted
+by the generator and replaced by the generated iterated content. 
+
 Abbreviation: `aaa-iterate-template`
 
 ```
@@ -99,6 +116,13 @@ EDITOR-FOLD-ID $editorfoldId$
 
 ### insert a Java::Geci snipping segment into HTML/XML
 
+This template inserts a Java snip into the code using HTML/XML comment.
+It can be used in HTML/XML based documents
+(e.g.: Markdown) to reference and include
+a snippet into the documentation. The inserted code contains all the docugen snippet
+handler configuration, like `regex replace`, `trim`, `number`, etc.
+You can delete those that are not needed.
+
 Abbreviation: `aaa-snip-java-sample-to-md`
 
 ```xml
@@ -114,7 +138,13 @@ Abbreviation: `aaa-snip-java-sample-to-md`
 ```
 
 
-### insert a Java::Geci snipping segment into Asccidoc
+### insert a Java::Geci snipping segment into Asciidoc
+
+This template inserts a snip into the code using Asciidoc comment. It can be used
+in Asciidoc documents to reference and include
+a snippet into the documentation. The inserted code contains all the docugen snippet
+handler configuration, like `regex replace`, `trim`, `number`, etc.
+You can delete those that are not needed.
 
 Abbreviation: `aaa-snip-to-adoc`
 
@@ -131,6 +161,16 @@ Abbreviation: `aaa-snip-to-adoc`
 
 ### insert a Java::Geci snipping segment into HTML/XML
 
+This template inserts a snip into the code using HTML/XML comment.
+It can be used in HTML/XML based documents
+(e.g.: Markdown) to reference and include
+a snippet into the documentation. The inserted code contains all the docugen snippet
+handler configuration, like `regex replace`, `trim`, `number`, etc.
+You can delete those that are not needed.
+
+It is almost the same as `aaa-snip-java-sample-to-md` but the code
+is not a Java code sample.
+
 Abbreviation: `aaa-snip-to-html`
 
 ```
@@ -146,6 +186,20 @@ Abbreviation: `aaa-snip-to-html`
 
 ### create a new Java::Geci documentation snippet
 
+Use this template to create a snippet (a piece of code that will
+be fetched by the snippet collector and be used in a snip later).
+
+You can
+
+* just start typing `aaa-snippet-java` in your code and select
+  the template from the pop-up menu or you can
+
+* select the code you want to be in the snippet and press
+  `Control + Alt + j` on Windows or
+  `Command + Alt + j` on MacOs and select the template from the menu.
+  The selected text will be surrounded by the snippet starting and snippet
+  ending line. 
+
 Abbreviation: `aaa-snippet-java`
 
 ```
@@ -154,5 +208,3 @@ $SELECTION$
 // end snippet
 $END$
 ```
-
-## Using live templates

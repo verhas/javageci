@@ -29,7 +29,9 @@ class TestGenerateJavageciDocumentation {
                 .ignoreBinary()
                 .ignore(
                     "\\.git", "\\.idea", "\\.iml$",
-                    "javageci-livetemplates", "target")
+                    "javageci-livetemplates", "target",
+                        "LIVETEMPLATES.md" // contains sample snip codes that should not be processed
+                )
                 .log(Geci.MODIFIED)
                 // snippet RegisteringAllSnippets
                 .register(Register.allSnippetHandlers())
