@@ -30,7 +30,7 @@ public class TestEscape {
                 k /= 8;
             }
             assertThat(Escape.escape("this is a \\" + oct + " octal char"))
-                    .isEqualTo("this is a " + Character.toString(i) + " octal char");
+                    .isEqualTo("this is a " + Character.toString((char)i) + " octal char");
         }
     }
 

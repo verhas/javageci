@@ -687,8 +687,14 @@ public class Geci implements javax0.geci.api.Geci {
      * the method {@link #generate()} after catching the original {@link GeciException}.
      */
     private static final class SourcedGeciException extends GeciException {
+
+        @Override
+        public synchronized Throwable fillInStackTrace() {
+            return this;
+        }
+
         private SourcedGeciException(Source source, GeciException e) {
-            super(e.getMessage() + (source == null ? "" : "\nSource: " + source.getAbsoluteFile()),e.getCause());
+            super(e.getMessage() + (source == null ? "" : "\nSource: " + source.getAbsoluteFile()), e.getCause());
             this.setStackTrace(e.getStackTrace());
         }
     }

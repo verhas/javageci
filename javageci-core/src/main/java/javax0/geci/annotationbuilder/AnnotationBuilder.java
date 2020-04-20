@@ -8,6 +8,7 @@ import javax0.geci.tools.CaseTools;
 import javax0.geci.tools.CompoundParams;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,7 +86,7 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
         try {
             final var implementedKeys =  ((AbstractJavaGenerator) klass.getConstructor().newInstance()).implementedKeys();
             if( implementedKeys == null ){
-                return List.of();
+                return Collections.emptyList();
             }
             return implementedKeys.stream().sorted().collect(Collectors.toList());
         } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException ex) {
