@@ -11,7 +11,7 @@ Read "[how to contribute](CONTRIBUTE.md)"
 Java::Geci is a library for generating Java code. Code generation programs
 implemented using Java::Geci can be executed to generate new source code
 or modify existing Java source files. This way the programmer can use
-meta programming to express code in a shorter and more expressive way
+metaprogramming to express code in a shorter and more expressive way
 than it would be possible in pure Java.
 
 The framework discovers the files that need generated code, provides
@@ -27,13 +27,13 @@ IntelliJ). They can create setters, getters, constructors, `equals()`
 and `hashCode()` methods in different ways. There are two major problems
 with that solution.
 
-* One is that the code generation is manual, and in case the developer
-  forgets to re-generate the code after an influencing change the code
-  becomes outdated.
+* One is that the code generation happens manually, and in case the developer
+  forgets to re-generate the code after an influencing, relevant change, the
+  generated code becomes outdated.
 
 * The other problem is that the code generation possibilities are not
-  extendable. There is a limited set of code that the tools can generate
-  and the developer cannot easily extend these possibilities. 
+  extendable. There is only a very limited set of code that the tools can generate
+  and the developer cannot easily extend these. 
 
 Java::Geci eliminates these two problems. It has an execution mode to
 check if all code generation is up-to-date and this can be used as a
@@ -43,18 +43,18 @@ will fail. (As a matter of fact the test also updates the generated
 code, you only need to start the build phase again.)
 
 Java::Geci also has an extremely simple API supporting code generators
-so it is extremely simple to create new code generators that are project
+so it is very simple to create new code generators that are project
 specific. You do not even need to package your code generator classes.
 Just put them into some of the test packages and execute Java::Geci
 during the test phase of the build process.
 
 Java::Geci already includes several readily available code generators.
-These are packaged with the core package and can generate
+These are packaged with the core package and can generate:
 
 * setter and getter
 * delegation methods (under development)
 * fluent API classes and interfaces
-* others will be under development
+* and others are also planned.
 
 ## How to use Java::Geci
 
@@ -97,8 +97,8 @@ Simply copy the `Geci.java` and `Gecis.java` to your project into any of
 your packages and Java::Geci will recognize that they are to configure a
 generator.
 
-If you look at the test code `TestAccessor.java` in the test module you
-can see that this is a proof of concept demonstration sample code:
+If you have a look at the test code `TestAccessor.java` in the test module you
+can see the following sample code:
 
 <!-- snip TestAccessor -->
 ```java
@@ -113,14 +113,14 @@ can see that this is a proof of concept demonstration sample code:
     }
 ```
 
-The test runs during the build process and it generates files if that is
+The test runs during the build process and it generates files, whenever that is
 needed. If files were generated it means that the code was not up to
 date and a new compilation has to be done. In this case the
 `Assertions.fail()` will be invoked and you have to start the build
 process again. Second time the code generation will recognize that the
 code it could generate is already there and the process will not fail.
 
-For further information visit the following documentations
+For further information see the following content:
 
 * [Tutorials](TUTORIAL.md)
 * [Reference documentation](REFERENCE.adoc)
