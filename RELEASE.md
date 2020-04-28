@@ -1,6 +1,57 @@
 # Release History
 
-1.3.0 feature release
+This document contains the release history of Java::Geci from the newest
+to the oldest release. If you see that the first "release" in this document
+is `-SNAPSHOT` is means that the version is not yet released. However, the
+changes are already collected in the file.
+
+There is no guarantee that a `-SNAPSHOT` version will ever be released. For
+example the `1.4.1-SNAPSHOT` version was in this file for some time and then
+the cumulated changes were so significant, the version became
+`1.5.0-SNAPSHOT` without releasing `1.4.1` ever.
+
+# 1.5.0-SNAPSHOT
+
+* Fluent generator was annotated with `@AnnotationBuilder` and hence, there
+  is a `@Fluent` annotation in `core-annorations`.
+
+* Jdocify was developed.
+
+* GeciException thrown from the generators are caught, enriched with the
+  source file information the generator was working on and then thrown
+  again in the Geci process. This eliminates the need to fetch the file name
+  from the source code and to add it to the exception where it is originally
+  thrown. 
+
+* Lexical analyser keeps the original format of the characters and strings
+  and it can also be queried in case the generator needs to know the exact
+  escape sequences in the string or character literal.
+
+* Generators replying on the lexical analysis do not need to delete a
+  lexical element from the list of lexical elements of a source file and
+  insert a new one when it can simply be done replacing the lexeme string.
+  It is not possible to change the type of the lexical element though.
+
+* A bug prevented the proper comparing of any Java file that contained
+  string or character with `\n` or `\r` literals.
+  The code was throwing an exception thus code generation was aborted.
+
+* A bug prevented the proper comparing of any Java file that contained
+  hexadecimal long literals. The code was throwing an exception thus
+  code generation was aborted.
+
+# 1.4.0 feature release (2019-11-25)
+
+* Segment API extended so that you can query individual segment parameters by
+  their key.
+  
+* A bug fixed that was in the experimental and still not fully documented lexer
+  regex macthing implementation
+  
+* There is a new generator `iterate` that aims to replace the `repeated` and
+  later the `templated` generators. The generator `repeated` is deprecated.    
+
+# 1.3.0 feature release (2019-10-28)
 
 * Support Java 8
 
@@ -32,7 +83,7 @@
   generator (the special code inserter is part of the library now).
 
 
-1.2.0 feature release
+# 1.2.0 feature release (2019-07-26)
 
 * Documentation generation snippet support
 
@@ -50,7 +101,7 @@
 * Java generated code is compared on the lexical level and thus
   reformatted code is not regenerated
 
-1.1.0 feature release
+# 1.1.0 feature release (2019-01-29)
 
 * Fluent API changes:
   * Fluent API can be defined in a single string using a simple syntax definition calling the fluent API building
@@ -71,4 +122,4 @@
   * Generation throws an error if generators are configured so that they do not work on any source.
 
 
-1.0.0 initial release
+# 1.0.0 initial release (2019-01-19)

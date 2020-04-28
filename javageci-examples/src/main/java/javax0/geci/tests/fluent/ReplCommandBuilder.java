@@ -63,7 +63,7 @@ public class ReplCommandBuilder {
 
     private void parameter(String parameter) {
         if (parameters == null) {
-            this.parameters = new HashSet<>(Arrays.asList(parameter));
+            this.parameters = new HashSet<>(Collections.singletonList(parameter));
         } else {
             this.parameters.add(parameter);
         }

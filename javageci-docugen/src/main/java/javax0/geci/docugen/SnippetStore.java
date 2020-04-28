@@ -6,6 +6,7 @@ import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.JVM8Tools;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -18,7 +19,7 @@ public class SnippetStore {
     private static final String EPSILON = "epsilon";
 
     SnippetStore() {
-        originals.put(EPSILON, new Snippet(EPSILON, new CompoundParams(EPSILON, JVM8Tools.asMap()), Arrays.asList()));
+        originals.put(EPSILON, new Snippet(EPSILON, new CompoundParams(EPSILON, JVM8Tools.asMap()), Collections.emptyList()));
     }
 
     //snippet SnippetStore_name
@@ -41,8 +42,8 @@ public class SnippetStore {
      */
     void put(String name, Snippet snippet, Source source) {
         if (originals.containsKey(name)) {
-            throw new GeciException("Snippet '" + name + "' is defined multiple times in sources\n" +
-                    source.getAbsoluteFile() + "\n" + sourceTracking.get(name).getAbsoluteFile());
+            throw new GeciException("Snippet '" + name + "' is defined multiple times in sources\n"
+                + sourceTracking.get(name).getAbsoluteFile());
         }
         originals.put(name, snippet);
         sourceTracking.put(name, source);

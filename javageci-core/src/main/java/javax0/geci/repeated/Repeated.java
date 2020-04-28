@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 
 @AnnotationBuilder
 public class Repeated extends AbstractJavaGenerator {
-    private class Config {
+    private static class Config {
         private String start = ".*//\\s*START\\s*";
         private String matchLine = "(.*)";
         private String end = ".*//\\s*END\\s*";
@@ -174,28 +174,32 @@ public class Repeated extends AbstractJavaGenerator {
                     segmentKey = key;
                 }
                 try(final var segment = source.open(segmentKey)) {
-                    final var template = config.templatesMap.get(key);
-                    if (template != null) {
-                        Tracer.log("Template", null, template);
-                        config.ctx.triplet(source, klass, segment);
-                        final var resolver = config.resolverMap.get(key);
-                        final var define = config.defineMap.get(key);
-                        final var templateContent = TemplateLoader.getTemplateContent(template);
-                        Tracer.log("TemplateContent", null, templateContent);
-                        final var resolvedTemplate = resolver == null ? templateContent : resolver.apply(config.ctx, templateContent);
-                        for (final var loopVar : loopVars) {
-                            segment.param("value", loopVar);
-                            if (define != null) {
-                                define.accept(config.ctx, loopVar);
-                            }
-                            try (final var segmentParamsPos = Tracer.push("SegmentParams", null)) {
-                                segment.traceParams();
-                                segment.write(resolvedTemplate);
-                            }
-                        }
-                        segment.traceLines();
+                    if (segment == null) {
+                        throw new GeciException("Segment " + segmentKey + " does not exist");
                     } else {
-                        Tracer.log("Template " + key + " does not exist");
+                        final var template = config.templatesMap.get(key);
+                        if (template != null) {
+                            Tracer.log("Template", null, template);
+                            config.ctx.triplet(source, klass, segment);
+                            final var resolver = config.resolverMap.get(key);
+                            final var define = config.defineMap.get(key);
+                            final var templateContent = TemplateLoader.getTemplateContent(template);
+                            Tracer.log("TemplateContent", null, templateContent);
+                            final var resolvedTemplate = resolver == null ? templateContent : resolver.apply(config.ctx, templateContent);
+                            for (final var loopVar : loopVars) {
+                                segment.param("value", loopVar);
+                                if (define != null) {
+                                    define.accept(config.ctx, loopVar);
+                                }
+                                try (final var segmentParamsPos = Tracer.push("SegmentParams", null)) {
+                                    segment.traceParams();
+                                    segment.write(resolvedTemplate);
+                                }
+                            }
+                            segment.traceLines();
+                        } else {
+                            Tracer.log("Template " + key + " does not exist");
+                        }
                     }
                 }
             }

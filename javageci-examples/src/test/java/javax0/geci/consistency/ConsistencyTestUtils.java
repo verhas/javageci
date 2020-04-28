@@ -66,7 +66,7 @@ public class ConsistencyTestUtils {
                 lines.add(modLine);
                 if (!modLine.equals(line)) {
                     modifiedLines++;
-                    messages.append("The file "+file.getName()+" was modified by the tests.");
+                    messages.append("The file ").append(file.getName()).append(" was modified by the tests.");
                 }
             }
         }

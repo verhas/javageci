@@ -1,0 +1,50 @@
+<templateSet group="javageci">
+  <template name="aaa-editor-fold" value="//&lt;editor-fold id=&quot;$id$&quot;&gt;&#10;//&lt;/editor-fold&gt;&#10;$END$" description="insert Java::Geci editor-fold into the text" toReformat="false" toShortenFQNames="true">
+    <variable name="id" expression="" defaultValue="&quot;generatorName&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="aaa-iterate-template" value="/*TEMPLATE&#10;ESCAPE&#10;    // this line is not interpreted as a command&#10;SKIP&#10;    // this line does not get into the template&#10;SEP1 $sep1$&#10;SEP2 $sep2$&#10;LOOP field,type=birth$sep1$Date$sep2$name$sep1$String$sep2$age$sep1$int&#10;EDITOR-FOLD-ID $editorfoldId$&#10;    $templateContent$$END$&#10;*/&#10;//&lt;editor-fold id=&quot;$editorfoldId$&quot;&gt;&#10;/* THIS WILL BE DELETED BY THE CODE GENERATOR, DON'T WORRY&#10; have at least one editor-fold named 'iterate' or&#10; annotate the class with @javax0.geci.core.annotations.Iterate&#10; default value for SEP1 is , if your use this you can delete the SEP1 line&#10; default value for SEP2 is | if your use this you can delete the SEP2 line&#10; you can have many loop lines, just have the same names before the =&#10; a single line after ESCAPE will be in the template even if it is a SEP1, SEP2, LOOP or EDITOR-FOLD-ID line&#10; a single line after SKIP will be skipped altogether&#10; */&#10;//&lt;/editor-fold&gt;" description="insert Java::Geci iterate template" toReformat="false" toShortenFQNames="true">
+    <variable name="sep1" expression="" defaultValue="&quot;,&quot;" alwaysStopAt="true" />
+    <variable name="sep2" expression="" defaultValue="&quot;|&quot;" alwaysStopAt="true" />
+    <variable name="editorfoldId" expression="" defaultValue="&quot;iterate&quot;" alwaysStopAt="true" />
+    <variable name="templateContent" expression="" defaultValue="&quot;void set{{Field}}({{type}} x){ this.{{field}} = x; }&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="aaa-snippet-java" value="// snippet $name$&#10;$SELECTION$&#10;// end snippet&#10;$END$" description="create a new Java::Geci documentation snippet" toReformat="false" toShortenFQNames="true">
+    <variable name="name" expression="" defaultValue="&quot;snippet id&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="OTHER" value="true" />
+    </context>
+  </template>
+  <template name="aaa-snip-to-html" value="&lt;!-- snip $snippetName$ snippet=&quot;$snippetName$&quot; &#10;          regex=&quot;replace='$replace$'&#10;                 kill='$killPattern$'&quot;&#10;                 escape='$escape$'&quot;&#10;          trim=&quot;to=0&quot;&#10;          number=&quot;start=1 step=1 from=0 format='%d. ' to=5&quot;&#10;                 --&gt;&#10;&lt;!-- end snip --&gt;" description="insert a Java::Geci snipping segment into HTML/XML" toReformat="false" toShortenFQNames="true">
+    <variable name="snippetName" expression="" defaultValue="&quot;snippet id&quot;" alwaysStopAt="true" />
+    <variable name="replace" expression="" defaultValue="&quot;/^~s*~*~s?//&quot;" alwaysStopAt="true" />
+    <variable name="killPattern" expression="" defaultValue="&quot;regex pattern for lines to kill/delete&quot;" alwaysStopAt="true" />
+    <variable name="escape" expression="" defaultValue="&quot;~&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="OTHER" value="true" />
+    </context>
+  </template>
+  <template name="aaa-snip-java-sample-to-md" value="&lt;!-- snip $snippetName$ snippet=&quot;$snippetName$&quot; &#10;          regex=&quot;replace='$replace$'&#10;                 kill='$killPattern$&quot;&#10;                 escape='$escape$'&quot;&#10;          trim=&quot;to=0&quot;&#10;          number=&quot;start=1 step=1 from=0 format='%d. ' to=5&quot;&#10;                 --&gt;&#10;```java                 &#10;```" description="insert a Java::Geci snipping segment into HTML/XML" toReformat="false" toShortenFQNames="true">
+    <variable name="snippetName" expression="" defaultValue="&quot;snippet id&quot;" alwaysStopAt="true" />
+    <variable name="replace" expression="" defaultValue="&quot;/^~s*~*~s?//&quot;" alwaysStopAt="true" />
+    <variable name="killPattern" expression="" defaultValue="&quot;regex pattern for lines to kill/delete&quot;" alwaysStopAt="true" />
+    <variable name="escape" expression="" defaultValue="&quot;~&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="OTHER" value="true" />
+    </context>
+  </template>
+  <template name="aaa-snip-to-adoc" value="// snip $snippetName$ snippet=&quot;$snippetName$&quot;&#10;//          regex=&quot;replace='$replace$'&#10;//                 kill='$killPattern$&quot;&#10;//                 escape='$escape$'&quot;&#10;//          trim=&quot;to=0&quot;&#10;//          number=&quot;start=1 step=1 from=0 format='%d. ' to=5&quot;&#10; this is the content of the snippet, will be overwritten&#10;// end snip" description="insert a Java::Geci snipping segment into Asccidoc" toReformat="false" toShortenFQNames="true">
+    <variable name="snippetName" expression="" defaultValue="&quot;snippet id&quot;" alwaysStopAt="true" />
+    <variable name="replace" expression="" defaultValue="&quot;/^~s*~*~s?//&quot;" alwaysStopAt="true" />
+    <variable name="killPattern" expression="" defaultValue="&quot;regex pattern for lines to kill/delete&quot;" alwaysStopAt="true" />
+    <variable name="escape" expression="" defaultValue="&quot;~&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="AsciiDoc" value="true" />
+    </context>
+  </template>
+</templateSet>

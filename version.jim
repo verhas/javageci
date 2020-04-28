@@ -1,12 +1,24 @@
-{@comment This file defines the version of the project. This is more effective than defining the project
+This file defines the version of the project. This is more effective than defining the project
 version in a maven property because that cannot be used to reference the parent.
-}
-{@define VERSION=1.3.1-SNAPSHOT}
+
+-- the java version to be used
 {@define JAVA_RELEASE=11}
+-- the project groupId. It has to start with com. and a registered domain name or else it cannot get into maven central
 {@define GROUPID=com.javax0.geci}
-{@define JUPITER_VERSION=5.5.1}
-{@define SUREFIRE_VERSION=3.0.0-M3}
-{@define MAVEN_SOURCE_PLUGIN_VERSION=3.0.1}
+-- package names are less restrictive and it is not likely that anyone else would use javax0 as top level package
+{@define PACKAGE_PREFIX=javax0.geci.}
+-- module names are geci.XXX
+{@define MODULE_PREFIX=geci.}
+-- the current version of the project as in the development. When releasing it has to be modified here and then
+-- I have to execute `mvn -f genpom.xml clean` to generate all the pom.xml files
+{@define VERSION=1.5.0-SNAPSHOT}
+
+-- the different plugin and dependency versions we use
+{@define JUPITER_VERSION=5.6.0}
+{@define SUREFIRE_VERSION=3.0.0-M4}
+{@define MAVEN_SOURCE_PLUGIN_VERSION=3.2.1}
 {@define MAVEN_COMPILER_PLUGIN_VERSION=3.8.1}
-{@define MAVEN_JAVADOC_PLUGIN_VERSION=3.1.0}
+{@define MAVEN_JAVADOC_PLUGIN_VERSION=3.1.1}
 {@define JAMAL_VERSION=1.0.3}
+{@define JABEL_VERSION=0.2.0}
+{@define ASSERTJ_VERSION=3.9.1}

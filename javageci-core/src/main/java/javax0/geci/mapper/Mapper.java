@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 /**
  * Code generator class that generates toMap and fromMap methods that will convert the object and possibly contained
- * other objects recursively (and also circular object references) into Map and back.
+ * other objects recursively (also circular object references) into Map and back.
  * <p>
  * The {@code fromMap()} method creates a new object. To do that it uses the factory that can be configured
  * in the Geci annotation of the class, or else it just tries to use the default constructor of the class.
@@ -81,7 +81,7 @@ public class Mapper extends AbstractJavaGenerator {
         final var gid = global.get("id");
         try (final var segment = source.open(gid)) {
             if (segment == null) {
-                throw new GeciException("There is no segment '" + gid + "' in the source " + source.getAbsoluteFile());
+                throw new GeciException("There is no segment '" + gid + "'.");
             }
             final var factory = localConfig(global).factory;
             segment.param("mnemonic", mnemonic(),

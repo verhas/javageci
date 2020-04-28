@@ -12,9 +12,6 @@ import static javax0.geci.tools.CaseTools.ucase;
 
 public class ChainedAccessor extends AbstractAccessor {
 
-    private static final Set<String> accessModifiers =
-            new HashSet<>(Arrays.asList("public", "private", "protected", "package"));
-
     public ChainedAccessor(){
         config.setterNameGenerator = name -> "with" + ucase(name);
         config.mnemonic = "caccessor";
@@ -25,8 +22,8 @@ public class ChainedAccessor extends AbstractAccessor {
                                String type, String access, Segment segment) {
         final var klass = field.getDeclaringClass();
         final var fullyQualified = GeciReflectionTools.getSimpleGenericClassName(klass);
-        segment._r("%s %s %s(%s %s){",
-                access, fullyQualified, setterName, type, name)
+        segment._r("%s%s%s %s(%s %s) {",
+                access, conditionalSpace(access), fullyQualified, setterName, type, name)
                 .write("this.%s = %s;", name, name)
                 .write("return this;")
                 ._l("}")

@@ -1,7 +1,6 @@
 package javax0.geci.docugen;
 
 import javax0.geci.api.SegmentSplitHelper;
-import javax0.geci.tools.JVM8Tools;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -37,7 +36,7 @@ import static javax0.geci.tools.JVM8Tools.stripLeading;
  *
  * <p>three back ticks.</p>
  *
- * <p>The latter can be used to insert verbaring code fragments into
+ * <p>The latter can be used to insert verbatim code fragments into
  * the documentation exactly the same way as it is used to insert code
  * fragments into markdown files. As a matter of fact the snippet code
  * inserter to be used with asciidoc *is* the

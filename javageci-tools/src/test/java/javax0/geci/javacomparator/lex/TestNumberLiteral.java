@@ -22,6 +22,7 @@ public class TestNumberLiteral {
         testNumber("00abbab", "00", javax0.geci.javacomparator.LexicalElement.Type.INTEGER, "abbab");
         testNumber("0x0abbab", "0x0abbab", javax0.geci.javacomparator.LexicalElement.Type.INTEGER, "");
         testNumber("0xF0abbab", "0xF0abbab", javax0.geci.javacomparator.LexicalElement.Type.INTEGER, "");
+        testNumber("0x7EFEFEFEFEFEFEFEL", "0x7EFEFEFEFEFEFEFEL", javax0.geci.javacomparator.LexicalElement.Type.INTEGER, "");
     }
     @Test
     void testFloatNumbers() {

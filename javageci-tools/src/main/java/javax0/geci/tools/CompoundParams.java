@@ -6,6 +6,7 @@ import javax0.geci.api.Source;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +94,7 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
         if (value instanceof List) {
             return assertListOfStrings((List)value);
         } else if (value instanceof String) {
-            return new ArrayList(Arrays.asList((String) value));
+            return new ArrayList(Collections.singletonList((String) value));
         } else {
             throw new IllegalArgumentException(value.getClass()
                                                    + " cannot be used in "
@@ -340,7 +341,7 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
                        .filter(p -> p.containsKey(key))
                        .map(p -> p.get(key))
                        .findFirst()
-                       .orElse("id".equals(key) ? Arrays.asList(id) : null);
+                       .orElse("id".equals(key) ? Collections.singletonList(id) : null);
         }
         if (cparams != null) {
             return Arrays.stream(cparams)
@@ -348,10 +349,10 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
                        .map(p -> p.getValueList(key))
                        .filter(Objects::nonNull)
                        .findFirst()
-                       .orElse("id".equals(key) ? Arrays.asList(id) : null);
+                       .orElse("id".equals(key) ? Collections.singletonList(id) : null);
         }
         if ("id".equals(key)) {
-            return Arrays.asList(id);
+            return Collections.singletonList(id);
         }
         return null;
     }

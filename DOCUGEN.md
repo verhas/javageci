@@ -21,7 +21,7 @@ documentation.
 
 Documentation has to follow the change of the code. If the code changes
 the relevant, but only the relevant parts of the documentation has to be
-updates.
+updated.
 
 If the copy and paste or update operations are performed each time the
 original text or the code changes then the documentation is up-to-date.
@@ -74,8 +74,10 @@ snippet starting or ending characters.
 Snippet handling is implemented by many different generators. Thes are
 not conventional generators in the sense that many of them  do not
 generate code. They, however, implement the `Generator` interface and
-thus work inside the Java::geci framework and they can be configured the
+thus work inside the Java::Geci framework and they can be configured the
 same way as many other generators.
+
+![types of snippet handling generators](images/docugentypes.png)
 
 There are three types of snippet handling generators:
 
@@ -86,9 +88,10 @@ Since this context is shared between the different generators the
 `SippetStore` object is available to all snippet handling generators
 that run controlled by the same Geci object or by Geci objects that
 they share the same context. The `SnippetStore` can store a
-snippet and can also retrieve a snippet using its name.
+snippet and can also retrieve a snippet using its name. This functionality
+is used by the snipped modifier generators.
 
-1. **Snippet modifiers** that modify the already collected snippets.
+1. **Snippet modifiers** are generators that modify the already collected snippets.
 There are snippet modifying generators that trim off the spaces on the
 left of the lines, perform search and replace on the lines using regular
 expression, delete certain lines from snippets, join different snippets
@@ -102,7 +105,7 @@ copies of the snippets they modify.
 into the text where they are needed in different segments. These are
 real generators in the sense that they really modify the code, even if
 the code is documentation. They do it the standard way Java::Geci
-support writing segments and possibly failing the unit test when the
+supports writing segments and possibly failing the unit test when the
 documentation *was* not up-to-date.
 
 Later in this document, we will write about the available snippet
@@ -156,14 +159,15 @@ lines so that the text can reference the individual code lines in the
 explanation. In this case, numbering comes after the deletion of
 certain lines. A different code sample, however, needs to number the
 lines first and then delete the lines that we do not want in the
-documentation. That way the numbering follows the numbering of the
+documentation. That way the deletion follows the numbering of the
 original lines in the code sample and it clearly shows in the
 documentation that some of the lines were deleted.
 
 The ordering of the execution of the generators is generally up to the
-framework, but generators can decide in which phase they want to run.
+framework and it is not guaranteed, but generators can decide in which 
+phase they want to run.
 The framework executes the generators in multiple phases many times and
-it consults each generator in each phase whether it needs execution that
+it consults each generator in each phase whether it needs execution in that
 phase or not.
 
 Snippet handling generators need execution only in a single phase and
@@ -193,9 +197,27 @@ Assertions.assertFalse(
         .ignoreBinary()
         .ignore(
             "\\.git", "\\.idea", "\\.iml$",
-            "target")
+            "javageci-livetemplates", "target")
         .log(Geci.MODIFIED)
-        .register(Register.register().ordered().fileExtensions("md", "java", "adoc").allSnippetGenerators())
+        // outdated registration of the document generators, see the real example in the documentation below
+        .register(SnippetCollector.builder().files("\\.md$|\\.java$|\\.adoc$")
+            .phase(0).build())
+        .register(SnippetAppender.builder().files("\\.md$|\\.java$|\\.adoc$")
+            .phase(1).build())
+        .register(SnippetTrim.builder().files("\\.md$|\\.java$|\\.adoc$")
+            .phase(2).build())
+        .register(SnippetNumberer.builder().mnemonic("prenumber").files("\\.md$|\\.java$|\\.adoc$")
+            .phase(3).build())
+        .register(SnippetRegex.builder().files("\\.md$|\\.java$|\\.adoc$")
+            .phase(4).build())
+        .register(SnipetLineSkipper.builder().files("\\.md$|\\.java$|\\.adoc$")
+            .phase(5).build())
+        .register(SnippetNumberer.builder().files("\\.md$|\\.java$|\\.adoc$")
+            .phase(6).build())
+        .register(MarkdownCodeInserter.builder()
+            .phase(7).build())
+        .register(JavaDocSnippetInserter.builder()
+            .phase(8).build())
         .splitHelper("adoc", new AdocSegmentSplitHelper())
         .splitHelper("md", new MarkdownSegmentSplitHelper())
         .splitHelper("java", new JavaDocSegmentSplitHelper())
@@ -204,7 +226,7 @@ Assertions.assertFalse(
 ```
 
 The generators are registered in the order they are to be executed and
-the call to `phase(i++)` registers the phases 0, 1, 2 ... and so on.
+the calls to `phase(0)`, `phase(1)` ...  register the phases 0, 1, 2 ... and so on.
 
 There is another possibility to have the generators executed the
 appropriate order. You can create several execution environment (Geci
@@ -212,6 +234,48 @@ objects) and then invoke `generate()` on those one after the other. To
 share the context between these objects you can use the method
 `context()` either without argument to retrieve the context of the Geci
 object or with argument to set the context.
+
+It is recommended, however, to use the phased execution because that way the directory parsing
+and the collection of the files to work on is executed only once. This type of
+ordering support is implemented in the convenience class `javax0.geci.docugen.Register`
+that implements methods that help registering all the docugen generators in their usual
+order. Using that class the eight calls to the `.register()` method can be replaced with
+one single call as the following: 
+
+<!-- snip RegisteringAllSnippets snippet="RegisteringAllSnippets" 
+          trim="to=0"
+                 -->
+```java
+.register(Register.allSnippetHandlers())
+```
+
+This call will register the 
+
+<!-- snip A0FE5632374 snippet="List_of_All_Generators_in_Register" 
+          regex="replace='|.builder~(~),?.*||' replace='|^~s*|1. |' escape='~'"
+          trim="to=0"
+                 -->
+1. SnippetCollector
+1. SnippetAppender
+1. SnippetTrim
+1. SnippetNumberer
+1. SnippetRegex
+1. SnipetLineSkipper
+1. SnippetNumberer
+1. MarkdownCodeInserter
+1. JavaDocSnippetInserter
+<!-- end snip -->
+
+You can see that the generator `SnippetNumberer` is listed twice. The method registers two
+different instances of this generator. The first one is instantiated setting the mnemonic
+to "`prenumber`" (4). The second one uses the default mnemonic "`number`" (7). That way
+it is possible to number something before the regular expressions and the line skipping
+are handled. That is feasible when we want line numbering that shows that some of the lines
+are not displayed in the snippet. 
+
+The actual unit test that executes the document generation for Java::Geci is
+using this form, but you can also find the old, more verbose version in the unit test
+file with commented-out `@Test` annotation.
 
 In the example above the Geci object `fragmentCollector` is created and
 used separately to collect the documentation fragments from the Java
@@ -243,8 +307,8 @@ inner class of the generator `SnippetCollector`:
 
 <!-- snip SnippetCollector_config trim="to=0" regex="replace='/snippetEnd/snippetEnd  /' replace='/private Pattern//' replace='/~);//' replace='/Pattern.compile~(//' escape='~'"-->
 ```java
-snippetStart = "(?://|/\\*)\\s*snipp?et\\s+(.*)$"
-snippetEnd   = "(?://\\s*end\\s+snipp?et|end\\s+snipp?et\\s*\\*/)"
+ snippetStart = "(?://|/\\*)\\s*snipp?et\\s+(.*)$"
+ snippetEnd   = "(?://\\s*end\\s+snipp?et|end\\s+snipp?et\\s*\\*/)"
 ```
 
 The characters that follow the `snippet` to the end of the line are
@@ -277,11 +341,11 @@ snippet. The default values are fitting Java:
                                           replace='/Pattern.compile~(//' 
                                           escape='~'"-->
 ```java
-snippetStart = "^\\s*\\*\\s*-(?:\\s+(.*))?$"
-snippetEnd   = "^\\s*\\*/\\s*$"
-transform = line ->
-   line.replaceAll("^\\s*\\*\\s?","")
-   .replaceAll("^\\s*</?p>\\s*$","");
+ snippetStart = "^\\s*\\*\\s*-(?:\\s+(.*))?$"
+ snippetEnd   = "^\\s*\\*/\\s*$"
+ transform = line ->
+    line.replaceAll("^\\s*\\*\\s?","")
+    .replaceAll("^\\s*</?p>\\s*$","");
 ```
 
 The regular expression capture group after the `*-` can specify part of
@@ -396,14 +460,32 @@ to create this documentation:
 16.         .ignoreBinary()
 17.         .ignore(
 18.             "\\.git", "\\.idea", "\\.iml$",
-19.             "target")
+19.             "javageci-livetemplates", "target")
 20.         .log(Geci.MODIFIED)
-21.         .register(Register.register().ordered().fileExtensions("md", "java", "adoc").allSnippetGenerators())
-22.         .splitHelper("adoc", new AdocSegmentSplitHelper())
-23.         .splitHelper("md", new MarkdownSegmentSplitHelper())
-24.         .splitHelper("java", new JavaDocSegmentSplitHelper())
-25.         .generate(),
-26.     geci.failed());
+21.         // outdated registration of the document generators, see the real example in the documentation below
+22.         .register(SnippetCollector.builder().files("\\.md$|\\.java$|\\.adoc$")
+23.             .phase(0).build())
+24.         .register(SnippetAppender.builder().files("\\.md$|\\.java$|\\.adoc$")
+25.             .phase(1).build())
+26.         .register(SnippetTrim.builder().files("\\.md$|\\.java$|\\.adoc$")
+27.             .phase(2).build())
+28.         .register(SnippetNumberer.builder().mnemonic("prenumber").files("\\.md$|\\.java$|\\.adoc$")
+29.             .phase(3).build())
+30.         .register(SnippetRegex.builder().files("\\.md$|\\.java$|\\.adoc$")
+31.             .phase(4).build())
+32.         .register(SnipetLineSkipper.builder().files("\\.md$|\\.java$|\\.adoc$")
+33.             .phase(5).build())
+34.         .register(SnippetNumberer.builder().files("\\.md$|\\.java$|\\.adoc$")
+35.             .phase(6).build())
+36.         .register(MarkdownCodeInserter.builder()
+37.             .phase(7).build())
+38.         .register(JavaDocSnippetInserter.builder()
+39.             .phase(8).build())
+40.         .splitHelper("adoc", new AdocSegmentSplitHelper())
+41.         .splitHelper("md", new MarkdownSegmentSplitHelper())
+42.         .splitHelper("java", new JavaDocSegmentSplitHelper())
+43.         .generate(),
+44.     geci.failed());
 ```
 
 we can have a look at line 14. It registers the
@@ -798,7 +880,7 @@ modifications on the different snippets and perform the appending afterwards.
                                         replace='|^~s*/~*||' 
                                         escape='~'"
                                         -->
-##### `snippets = Arrays.asList()`
+##### `snippets = Collections.emptyList()`
 
 
 This configuration parameter defines the snippets that are appended to the base snippet.

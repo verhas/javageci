@@ -311,7 +311,7 @@ public class Tracer implements AutoCloseable {
              final var pw = new PrintWriter(sw)) {
             e.printStackTrace(pw);
             result = sw.toString();
-        } catch (IOException ioegnored) {
+        } catch (IOException ignored) {
         }
         return result;
     }

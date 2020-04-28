@@ -3,6 +3,7 @@ package javax0.geci.util;
 import javax0.geci.engine.RegexBasedSegmentSplitHelper;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.regex.Pattern;
 
 public class JavaSegmentSplitHelper extends RegexBasedSegmentSplitHelper {
@@ -10,7 +11,7 @@ public class JavaSegmentSplitHelper extends RegexBasedSegmentSplitHelper {
         super(Pattern.compile("^(\\s*)//\\s*<\\s*editor-fold\\s+(.*)>\\s*$"),
                 Pattern.compile("^\\s*//\\s*<\\s*/\\s*editor-fold\\s*>\\s*$"),
                 Pattern.compile("^(\\s*)}\\s*(//.*)?\\s*$"),
-                Arrays.asList("desc"));
+            Collections.singletonList("desc"));
         setSegmentPreface("//<editor-fold id=\"{{mnemonic}}\">");
         setSegmentPostface("//</editor-fold>");
         defaultOffset = 4;

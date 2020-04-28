@@ -5,7 +5,7 @@ documentation and are not general terms.
 
 ## Generator
 
-A _generator_ is a class that implements the `javax0.geci.api.Generator`
+A _generator_ is a class, which implements the `javax0.geci.api.Generator`
 interface. Generators usually generate code, but it is not a must. There
 are generators that only collect information from the source code and
 make it available for other code generators. 
@@ -22,6 +22,15 @@ file.
 A _segment_ starts and ends with special lines that are recognized by
 segment split helpers.
 
+When using Java::Geci with Java then the segments are `editor-fold` HTML
+comment like segments, as in the following example:
+
+```java
+   <!--editor-fold id="segmentId"-->
+     anything here is the content of the segment
+   <!--/editor-fold-->
+```
+
 ## Segment Split Helper
 
 A segment split helper is a class that helps the framework to split a
@@ -34,12 +43,12 @@ the start and the end of a segment.
 ## Snippet
 
 The term _snippet_ is used in the document management generators. A
-_snippet_ is a piece of source code, which is copied from the source
-code and inserted into some documentation file after optional
+_snippet_ is a piece of text, which is copied from the source
+code and inserted into some documentation file after some
 transformation.
 
 A _snippet_ usually starts ends with special lines that are recognized
-by regular expressions.
+by regular expressions used in Snippet Collectors.
 
 ## Snippet Collector
 
@@ -51,7 +60,8 @@ into segments.
 
 ## Target Class
 
-When a generator executes it creates a new class or it injects code into
-the source code of an already existing class. The class that the
-generator creates or the class into which the generator injects new,
-generated code is called _target class_.
+When a Java generator executes it creates a new class source code or it 
+injects code into the source code of an already existing class. The
+class (source code) that the generator creates or the class (source code)
+into which the generator injects new, generated code is called
+_target class_.

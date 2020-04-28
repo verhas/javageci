@@ -1,0 +1,16 @@
+Batch Scripts Support
+CMD Support
+Docker
+PythonCore
+com.alayouni.ansiHighlight
+com.andrewbrookins.wrap_to_column
+com.intellij.ideolog
+com.jetbrains.jbre.bintray.downloader
+com.perl5
+de.sgalinski.typoscript.enterprise.plugin.id
+lermitage.intellij.extra.icons
+org.asciidoctor.intellij.asciidoc
+org.intellij.scala
+org.rust.lang
+org.toml.lang
+tanvd.grazi

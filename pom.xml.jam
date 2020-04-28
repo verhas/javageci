@@ -16,7 +16,7 @@
                 {plugin|
                     {GAV :org.apache.maven.plugins:maven-surefire-plugin:{SUREFIRE_VERSION}}
                     {configuration|
-                        <argLine>
+                        {argLine|
                             {opens/api/api}
                             {opens/tools/tools}
                             {opens/tools/tools.syntax}
@@ -29,6 +29,9 @@
                             {opens/engine/engine}
                             {opens/core/fluent.syntax}
                             {opens/core/record}
+                            {opens/core/repeated}
+                            {opens/core/iterate}
+                            {opens/core/jdocify}
                             {opens/core/mapper}
                             {opens/examples/tutorials.simple}
                             {opens/examples/tutorials.hello}
@@ -53,8 +56,8 @@
                             {exports/examples/buildfluent/core}
                             {opens/examples/jamal}
                             {opens/examples/jamal.util}
-                            --add-exports geci.examples/javax0.geci.jamal.reflection=ALL-UNNAMED
-                        </argLine>
+                            {exports/examples/jamal.reflection}
+                        }
                     }
                     {dependencies|
                         {dependency :org.junit.jupiter:junit-jupiter-engine:{JUPITER_VERSION}:}
@@ -75,7 +78,6 @@
                         <detectLinks>false</detectLinks>
                         <failOnError>false</failOnError>
                     }
-                    {dependencies|{dependency :org.ow2.asm:asm:7.0:}}
                     {executions|
                         {execution|
                             {id|attach-javadocs}
@@ -86,17 +88,17 @@
                 {plugin|
                     {GAV :org.apache.maven.plugins:maven-compiler-plugin:{MAVEN_COMPILER_PLUGIN_VERSION}}
                     {configuration|
-                        <release>{JAVA_RELEASE}</release>
+                        {release :{JAVA_RELEASE}}
                     }
                 }
             }
         }
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
+        {resources|
+            {resource|
+                {directory :src/main/resources}
+                {filtering :true}
+            }
+        }
     }
     {dependencyManagement|
         {dependencies|
@@ -104,51 +106,41 @@
             {@for MODULE in (api,engine)={dependency :org.junit.jupiter:junit-jupiter-MODULE:{JUPITER_VERSION}:test}}
             {dependency :com.javax0.jamal:jamal-engine:{JAMAL_VERSION}:}
             {dependency :com.javax0.jamal:jamal-testsupport:{JAMAL_VERSION}:test}
+            {dependency :org.assertj:assertj-core:{ASSERTJ_VERSION}:test}
         }
     }
 
-    <profiles>
-        <profile>
-            <id>JVM8</id>
-                {properties|
-                    {property :profile:JVM8}
+    {profiles|
+        {profile|JVM8|
+            {properties|{property :profile:JVM8}}
+            {build|
+                {plugins|
+                    {plugin|
+                        {GAV :org.apache.maven.plugins:maven-compiler-plugin:{MAVEN_COMPILER_PLUGIN_VERSION}}
+                        {configuration|
+                            {excludes|
+                                {exclude :module-info.java}
+                                {exclude :javax0/geci/log/LoggerJDK9.java}
+                            }
+                            {encoding :UTF-8}
+                            {release :8}
+                            {annotationProcessorPaths|
+                                {annotationProcessorPath|
+                                    {GAV :com.github.bsideup.jabel:jabel-javac-plugin:{JABEL_VERSION}}
+                                }
+                            }
+                            {annotationProcessors|
+                                {annotationProcessor|com.github.bsideup.jabel.JabelJavacProcessor}
+                            }
+                            {source :13}
+                            {target :13}
+                        }
+                    }
                 }
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>{MAVEN_COMPILER_PLUGIN_VERSION}</version>
-                        <configuration>
-                            <excludes>
-                                <exclude>module-info.java</exclude>
-                                <exclude>javax0/geci/log/LoggerJDK9.java</exclude>
-                            </excludes>
-                            <encoding>UTF-8</encoding>
-                            <release>8</release>
-                            <annotationProcessorPaths>
-                                <annotationProcessorPath>
-                                    <groupId>com.github.bsideup.jabel</groupId>
-                                    <artifactId>jabel-javac-plugin</artifactId>
-                                    <version>0.2.0</version>
-                                </annotationProcessorPath>
-                            </annotationProcessorPaths>
-                            <annotationProcessors>
-                                <annotationProcessor>com.github.bsideup.jabel.JabelJavacProcessor</annotationProcessor>
-                            </annotationProcessors>
-                            <source>13</source>
-                            <target>13</target>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-
-            <repositories>
-                <repository>
-                    <id>jitpack.io</id>
-                    <url>https://jitpack.io</url>
-                </repository>
-            </repositories>
-        </profile>
-    </profiles>
+            }
+            {repositories|
+                {repository |jitpack.io|https://jitpack.io}
+            }
+        }
+    }
 }

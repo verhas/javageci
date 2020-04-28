@@ -1,5 +1,7 @@
 package javax0.geci.javacomparator.lex;
 
+import javax0.geci.api.GeciException;
+
 import java.util.Objects;
 
 public class LexicalElement implements javax0.geci.javacomparator.LexicalElement {
@@ -9,20 +11,43 @@ public class LexicalElement implements javax0.geci.javacomparator.LexicalElement
         this.type = type;
     }
 
-    public String getLexeme(){
+    public String getLexeme() {
         return lexeme;
     }
 
-    public String getFullLexeme(){
-        var lexeme = this.lexeme;
+    public void setLexeme(final String lexeme) {
+        this.lexeme = lexeme;
+    }
+
+    public void setOriginal(final String original) {
+        if( type != Type.CHARACTER && type != Type.STRING ){
+            throw new GeciException("Setting the original is possible only in case the lexeme is character or string");
+        }
+        this.original = original;
+        this.lexeme = Escape.escape(original);
+
+    }
+
+    public String getOriginalLexeme() {
         if (type == javax0.geci.javacomparator.LexicalElement.Type.STRING) {
-            final char enclosing = ((StringLiteral) this).enclosing;
-            lexeme = enclosing + lexeme + enclosing;
+            final String enclosing = ((StringLiteral) this).enclosing;
+            return enclosing + this.original + enclosing;
         }
         if (type == javax0.geci.javacomparator.LexicalElement.Type.CHARACTER) {
-            lexeme = "'" + lexeme + "'";
+            return "'" + this.original + "'";
         }
-        return lexeme;
+        return this.original;
+    }
+
+    public String getFullLexeme() {
+        if (type == javax0.geci.javacomparator.LexicalElement.Type.STRING) {
+            final String enclosing = ((StringLiteral) this).enclosing;
+            return enclosing + this.lexeme + enclosing;
+        }
+        if (type == javax0.geci.javacomparator.LexicalElement.Type.CHARACTER) {
+            return "'" + this.lexeme + "'";
+        }
+        return this.lexeme;
     }
 
     @Override
@@ -48,7 +73,8 @@ public class LexicalElement implements javax0.geci.javacomparator.LexicalElement
         return type.toString() + "[" + lexeme + "]";
     }
 
-    public final String lexeme;
+    public String lexeme;
+    public String original;
     public final Type type;
 
     public static class IntegerLiteral extends LexicalElement {
@@ -56,15 +82,17 @@ public class LexicalElement implements javax0.geci.javacomparator.LexicalElement
 
         public IntegerLiteral(String lexeme) {
             super(lexeme, Type.INTEGER);
+            final int radix;
             if (lexeme.startsWith("0x") || lexeme.startsWith("0X")) {
-                value = Long.parseLong(lexeme.substring(2), 16);
+                radix = 16;
+                lexeme = lexeme.substring(2);
             } else {
-                if (lexeme.toUpperCase().endsWith("L")) {
-                    value = Long.parseLong(lexeme.substring(0, lexeme.length() - 1));
-                } else {
-                    value = Long.parseLong(lexeme);
-                }
+                radix = 10;
             }
+            if (lexeme.toUpperCase().endsWith("L")) {
+                lexeme = lexeme.substring(0, lexeme.length() - 1);
+            }
+            value = Long.parseLong(lexeme, radix);
         }
 
         @Override
@@ -110,16 +138,19 @@ public class LexicalElement implements javax0.geci.javacomparator.LexicalElement
     }
 
     public static class StringLiteral extends LexicalElement {
-        public final char enclosing;
-        StringLiteral(String lexeme, char enclosing) {
+        public final String enclosing;
+
+        StringLiteral(String lexeme, String original, String enclosing) {
             super(lexeme, Type.STRING);
+            this.original = original;
             this.enclosing = enclosing;
         }
     }
 
     public static class CharacterLiteral extends LexicalElement {
-        public CharacterLiteral(String lexeme) {
+        public CharacterLiteral(String lexeme, String original) {
             super(lexeme, Type.CHARACTER);
+            this.original = original;
         }
     }
 

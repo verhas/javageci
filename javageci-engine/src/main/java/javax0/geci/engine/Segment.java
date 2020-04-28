@@ -6,10 +6,12 @@ import javax0.geci.tools.Template;
 import javax0.geci.tools.Tracer;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class Segment implements javax0.geci.api.Segment {
@@ -28,7 +30,7 @@ public class Segment implements javax0.geci.api.Segment {
         this.openingTabStop = tabStop;
         this.tabStop = tabStop;
         this.cparams = new javax0.geci.tools.CompoundParams();
-        this.originals = Arrays.asList();
+        this.originals = Collections.emptyList();
     }
 
     public Segment(int tabStop, CompoundParams cparams, List<String> originals) {
@@ -64,6 +66,15 @@ public class Segment implements javax0.geci.api.Segment {
         return this;
     }
 
+
+    @Override
+    public Optional<String> getParam(String key){
+        if( params.containsKey(key)){
+            return Optional.of(params.get(key));
+        }
+        return Optional.empty();
+    }
+
     @Override
     public Set<String> paramKeySet() {
         return params.keySet();
@@ -71,9 +82,7 @@ public class Segment implements javax0.geci.api.Segment {
 
     @Override
     public void traceParams() {
-        for (final var key : paramKeySet()) {
-            Tracer.log(key, params.get(key));
-        }
+        params.forEach(Tracer::log);
     }
 
     @Override

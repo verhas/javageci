@@ -163,24 +163,18 @@ public class SnippetRegex extends AbstractSnippeter {
         if (replaceString.length() < 3) {
             throw new GeciException("Replace parameter in snippet "
                     + snippet.name()
-                    + " in source "
-                    + source.getAbsoluteFile()
                     + " is too short (3, like '///' is the minimum).");
         }
         final var startChar = replaceString.substring(0, 1);
         if (!replaceString.endsWith(startChar)) {
             throw new GeciException("Replace parameter in snippet "
                     + snippet.name()
-                    + " in source "
-                    + source.getAbsoluteFile()
                     + " does not end with the character it starts with.");
         }
         final var mid = replaceString.indexOf(startChar, 1);
         if (mid == replaceString.length() - 1) {
             throw new GeciException("Replace parameter in snippet "
                     + snippet.name()
-                    + " in source "
-                    + source.getAbsoluteFile()
                     + " does not have two parts only one.");
         }
         final var part = new String[2];
@@ -204,8 +198,6 @@ public class SnippetRegex extends AbstractSnippeter {
         } catch (Exception e) {
             throw new GeciException("Line kill pattern '" + regex + "' in "
                     + snippet.name()
-                    + " in source "
-                    + source.getAbsoluteFile()
                     + " cannot be compiled.", e);
         }
     }
@@ -242,9 +234,7 @@ public class SnippetRegex extends AbstractSnippeter {
                     throw new GeciException("There is a problem with the pattern\n"
                             + search.get(i)
                             + "in snippet "
-                            + snippet.name()
-                            + " in source "
-                            + source.getAbsoluteFile(), pse);
+                            + snippet.name(), pse);
                 }
             }
             if (!params.is("killFirst") && lineIsKilled(kill, s, source, segment, snippet)) {

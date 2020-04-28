@@ -62,7 +62,14 @@ public class Geci implements javax0.geci.api.Geci {
     private Source.Set lastSet = null;
     private boolean ignoreBinary = false;
     private String traceFileName = null;
-    private int phaseCounter = 0;
+
+// Jdocify constants to be used in Javadoc
+//DEFINE EXCEPTIONS=the list of exceptions that are caught and deferred
+//DEFINE PHASES=the number of the phases to execute the generators in
+//DEFINE PHASE=the serial number of the current phase between {@code 0} and {@code phases-1}
+//DEFINE COLLECTOR=the object where the sources are collected and kept
+//DEFINE SOURCE=the source object that the generator works on
+//DEFINE GENERATOR=to be invoked
 
     @Override
     public Geci source(String... directory) {
@@ -250,7 +257,7 @@ public class Geci implements javax0.geci.api.Geci {
 
     /**
      * A simple utility class that converts the regular expression into
-     * a predicate and the same time the {@code toString()} of the
+     * a predicate, and the same time the {@code toString()} of the
      * object returns the regular expression itself to aid debugging.
      */
     private static class PatternPredicate implements Predicate<Path> {
@@ -371,74 +378,183 @@ public class Geci implements javax0.geci.api.Geci {
             collector.collect(onlys, ignores, outputSet);
             Tracer.pop();
 
-            for (int phase = 0; phase < phases; phase++) {
-                try (final var posPhase = Tracer.push("Phase", "Starting phase " + phase)) {
-                    for (final var source : collector.getSources()) {
-                        try (final var posSource = Tracer.push("Source", source.getAbsoluteFile())) {
-                            if (!source.isBinary) {
-                                try (final var posGenerators = Tracer.push("Generators", null)) {
-                                    for (var generator : generators) {
-                                        try (final var posGenerator = Tracer.push("Generator." + generator.getClass().getSimpleName(), generator.getClass().getName())) {
-                                            if (generator.activeIn(phase)) {
-                                                Tracer.log("ACTIVE");
-                                                source.allowDefaultSegment = false;
-                                                source.currentGenerator = generator;
-                                                try {
-                                                    generator.process(source);
-                                                } catch (javax0.geci.engine.Source.SourceIsBinary e) {
-                                                    Tracer.log("source processing failed, it is a binary file");
-                                                    exceptions.add(e.getAbsoluteFile());
-                                                }
-                                            } else {
-                                                Tracer.log("INACTIVE");
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                Tracer.log(source.getAbsoluteFile() + " seems to be binary, skipped");
-                            }
-                        }
-                    }
-                }
-            }
-            try (final var pos1 = Tracer.push("GlobalGenerators", null)) {
-                for (var generator : generators) {
-                    if (generator instanceof GlobalGenerator) {
-                        try (final var pos2 = Tracer.push("GlobalGenerator." + generator.getClass().getSimpleName(), generator.getClass().getName())) {
-                            ((GlobalGenerator) generator).process();
-                        }
-                    }
-                }
-            }
-            if (exceptions.size() > 0 && !ignoreBinary) {
-                try (final var pos = Tracer.push("Exceptions")) {
-                    exceptions.forEach(Tracer::log);
-                }
-                throw new GeciException("Cannot read the files\n" + String.join("\n", exceptions) + "\nThey are probably binary file. Use '.ignore()' to filter binary files out");
-            }
-            if (!sourcesConsolidate(collector)) {
-                if (generators.stream().anyMatch(g -> !(g instanceof Distant))) {
-                    throw new GeciException("The generators did not touch any source");
-                }
-            }
+            invokeGeneratorsOnAllSourcesForAllPhases(exceptions, phases, collector);
+            invokeGlobalGenerators();
+            logAndThrowDeferredExceptionsIfAny(exceptions);
+            consolidateSources(collector);
+
             return sourcesModifiedAndSave(collector);
         } finally {
-            if (traceFileName != null) {
-                try {
-                    Tracer.dumpXML(traceFileName);
-                } catch (IOException e) {
-                    LoggerFactory.getLogger().error("Trace cannot be written into '" + traceFileName + "'", e);
+            dumpCollectedTracesAsXML();
+        }
+    }
+
+    /**
+     * <p>Create the hierarchical trace log information in XML format into the trace file.</p>
+     */
+    private void dumpCollectedTracesAsXML() {
+        if (traceFileName != null) {
+            try {
+                Tracer.dumpXML(traceFileName);
+            } catch (IOException e) {
+                LoggerFactory.getLogger().error("Trace cannot be written into '" + traceFileName + "'", e);
+            }
+        }
+    }
+
+    /**
+     * <p>Consolidate all the sources and throw an exception if the generators did not touch any source though they
+     * should have.</p>
+     *
+     * @param collector <!--COLLECTOR-->the object where the sources are collected and kept<!--/-->
+     */
+    private void consolidateSources(FileCollector collector) {
+        if (!sourcesConsolidate(collector)) {
+            if (generators.stream().anyMatch(g -> !(g instanceof Distant))) {
+                throw new GeciException("The generators did not touch any source");
+            }
+        }
+    }
+
+    /**
+     * <p>Log the exceptios that the different generators were throwing and then create a compound exception
+     * containing the messages of all the exceptions and throw this aggregate.</p>
+     *
+     * <p>Return only if there was no any exceptions.</p>
+     *
+     * @param exceptions <!--EXCEPTIONS-->the list of exceptions that are caught and deferred<!--/-->
+     */
+    private void logAndThrowDeferredExceptionsIfAny(List<String> exceptions) {
+        if (exceptions.size() > 0 && !ignoreBinary) {
+            try (final var pos = Tracer.push("Exceptions")) {
+                exceptions.forEach(Tracer::log);
+            }
+            throw new GeciException("Cannot read the files\n" + String.join("\n", exceptions) + "\nThey are probably binary file. Use '.ignore()' to filter binary files out");
+        }
+    }
+
+    private void invokeGlobalGenerators() {
+        try (final var pos1 = Tracer.push("GlobalGenerators", null)) {
+            for (var generator : generators) {
+                if (generator instanceof GlobalGenerator) {
+                    try (final var pos2 = Tracer.push("GlobalGenerator." + generator.getClass().getSimpleName(), generator.getClass().getName())) {
+                        ((GlobalGenerator) generator).process();
+                    }
                 }
             }
         }
     }
 
     /**
-     * Save the sources that were modified and return true if there was
-     * any source that was modified and thus saved.
+     * Invoke all the generators for all the sources that were collecte by the collector for all the phases from {@code
+     * 0} to {@code phases-1}.
      *
-     * @param collector that provides the sources
+     * @param exceptions <!--EXCEPTIONS-->the list of exceptions that are caught and deferred<!--/-->
+     * @param phases     <!--PHASES-->the number of the phases to execute the generators in<!--/-->
+     * @param collector  <!--COLLECTOR-->the object where the sources are collected and kept<!--/-->
+     */
+    private void invokeGeneratorsOnAllSourcesForAllPhases(ArrayList<String> exceptions, int phases, FileCollector collector) {
+        for (int phase = 0; phase < phases; phase++) {
+            try (final var posPhase = Tracer.push("Phase", "Starting phase " + phase)) {
+                invokeGeneratorsOnAllSources(collector, exceptions, phase);
+            }
+        }
+    }
+
+    /**
+     * Invoke the generators on all the sources that the collector collected.
+     *
+     * @param collector  <!--COLLECTOR-->the object where the sources are collected and kept<!--/-->
+     * @param exceptions <!--EXCEPTIONS-->the list of exceptions that are caught and deferred<!--/-->
+     * @param phase      <!--PHASE-->the serial number of the current phase between {@code 0} and {@code phases-1}<!--/-->
+     */
+    private void invokeGeneratorsOnAllSources(FileCollector collector, List<String> exceptions, int phase) {
+        for (final var source : collector.getSources()) {
+            try (final var posSource = Tracer.push("Source", source.getAbsoluteFile())) {
+                invokeGeneratorsOnNonBinary(source, exceptions, phase);
+            }
+        }
+    }
+
+    /**
+     * Invoke all generators on sources that are not binary. In case the source seems to be binary then only trace the
+     * fact that no generators are invoked.
+     *
+     * @param source     <!--SOURCE-->the source object that the generator works on<!--/-->
+     * @param exceptions <!--EXCEPTIONS-->the list of exceptions that are caught and deferred<!--/-->
+     * @param phase      <!--PHASES-->the number of the phases to execute the generators in<!--/-->
+     */
+    private void invokeGeneratorsOnNonBinary(javax0.geci.engine.Source source, List<String> exceptions, int phase) {
+        if (!source.isBinary) {
+            try (final var posGenerators = Tracer.push("Generators", null)) {
+                invokeGenerators(source, exceptions, phase);
+            }
+        } else {
+            Tracer.log(source.getAbsoluteFile() + " seems to be binary, skipped");
+        }
+    }
+
+    /**
+     * Invoke all configured generators in a loop.
+     *
+     * @param source     <!--SOURCE-->the source object that the generator works on<!--/-->
+     * @param exceptions <!--EXCEPTIONS-->the list of exceptions that are caught and deferred<!--/-->
+     * @param phase      <!--PHASES-->the number of the phases to execute the generators in<!--/-->
+     */
+    private void invokeGenerators(javax0.geci.engine.Source source, List<String> exceptions, int phase) {
+        for (var generator : generators) {
+            try (final var posGenerator = Tracer.push("Generator." + generator.getClass().getSimpleName(), generator.getClass().getName())) {
+                invokeGeneratorIfActiveInPhase(generator, source, exceptions, phase);
+            }
+        }
+    }
+
+    /**
+     * Invoke the generator if it is active in this phase. If the generator is not active in this phase then just trace
+     * that the generator was not invoked.
+     *
+     * @param generator  <!--GENERATOR><!--/-->
+     * @param source     <!--SOURCE-->the source object that the generator works on<!--/-->
+     * @param exceptions <!--EXCEPTIONS-->the list of exceptions that are caught and deferred<!--/-->
+     * @param phase      <!--PHASE-->the serial number of the current phase between {@code 0} and {@code phases-1}<!--/-->
+     */
+    private void invokeGeneratorIfActiveInPhase(Generator generator, javax0.geci.engine.Source source, List<String> exceptions, int phase) {
+        if (generator.activeIn(phase)) {
+            Tracer.log("ACTIVE");
+            source.allowDefaultSegment = false;
+            source.currentGenerator = generator;
+            invokeGenerator(generator, source, exceptions);
+        } else {
+            Tracer.log("INACTIVE");
+        }
+    }
+
+    /**
+     * Invoke the generator and handle the exceptions. In case the generator throws an {@link
+     * javax0.geci.engine.Source.SourceIsBinary} exception then trace it and add it to the list of exceptions.
+     * <p>
+     * In case the generator throws a different {@link GeciException} then add the source definition to it and rethrow
+     * it. (Technically it creates a new {@link SourcedGeciException} from the original exception.)
+     *
+     * @param generator  <!--GENERATOR><!--/-->
+     * @param source     <!--SOURCE-->the source object that the generator works on<!--/-->
+     * @param exceptions <!--EXCEPTIONS-->the list of exceptions that are caught and deferred<!--/-->
+     */
+    private void invokeGenerator(Generator generator, javax0.geci.engine.Source source, List<String> exceptions) {
+        try {
+            generator.process(source);
+        } catch (javax0.geci.engine.Source.SourceIsBinary e) {
+            Tracer.log("source processing failed, it is a binary file");
+            exceptions.add(e.getAbsoluteFile());
+        } catch (GeciException e) {
+            throw new SourcedGeciException(source, e);
+        }
+    }
+
+    /**
+     * Save the sources that were modified and return true if there was any source that was modified and thus saved.
+     *
+     * @param collector <!--COLLECTOR-->the object where the sources are collected and kept<!--/-->
      * @return {@code true} if there was something saved
      * @throws IOException when some file cannot be written
      */
@@ -450,13 +566,17 @@ public class Geci implements javax0.geci.api.Geci {
                 collector.getNewSources().stream()
             ).collect(Collectors.toSet());
             for (var source : allSources) {
-                if (source.isTouched() && source.isModified(getSourceComparator(source))) {
-                    Tracer.log("SaveSource", source.getAbsoluteFile());
-                    source.save();
-                    modifiedSources.add(source);
-                    generated = true;
-                } else {
-                    Tracer.log("SourceUnchanged", source.getAbsoluteFile());
+                try {
+                    if (source.isTouched() && source.isModified(getSourceComparator(source))) {
+                        Tracer.log("SaveSource", source.getAbsoluteFile());
+                        source.save();
+                        modifiedSources.add(source);
+                        generated = true;
+                    } else {
+                        Tracer.log("SourceUnchanged", source.getAbsoluteFile());
+                    }
+                }catch(GeciException e){
+                    throw new SourcedGeciException(source,e);
                 }
             }
             for (var source : Stream.concat(collector.getSources().stream(), collector.getNewSources().stream()).collect(Collectors.toSet())) {
@@ -511,6 +631,14 @@ public class Geci implements javax0.geci.api.Geci {
         }
     }
 
+    /**
+     * <p>Go through all the old (already existing) sources and also all the new sources (those that are generated from
+     * other sources and did not necessarily existed before) and consolidate them (create the final source code from the
+     * segments).</p>
+     *
+     * @param collector <!--COLLECTOR-->the object where the sources are collected and kept<!--/-->
+     * @return {@code true} if at least one source was touched.
+     */
     private boolean sourcesConsolidate(FileCollector collector) {
         try (final var pos1 = Tracer.push("SourceConsolidation", null)) {
             var touched = false;
@@ -551,5 +679,23 @@ public class Geci implements javax0.geci.api.Geci {
             context = new javax0.geci.engine.Context();
         }
         generators.forEach(g -> g.context(context));
+    }
+
+    /**
+     * A new exception, which is a {@link GeciException} but the message contains the absolute file name of the source
+     * in a new line and the stack trace of the new exception is the same as the old one. This exception is thrown in
+     * the method {@link #generate()} after catching the original {@link GeciException}.
+     */
+    private static final class SourcedGeciException extends GeciException {
+
+        @Override
+        public synchronized Throwable fillInStackTrace() {
+            return this;
+        }
+
+        private SourcedGeciException(Source source, GeciException e) {
+            super(e.getMessage() + (source == null ? "" : "\nSource: " + source.getAbsoluteFile()), e.getCause());
+            this.setStackTrace(e.getStackTrace());
+        }
     }
 }

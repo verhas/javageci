@@ -2,6 +2,7 @@ package javax0.geci.fluent;
 
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Source;
+import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.fluent.internal.ClassBuilder;
 import javax0.geci.fluent.internal.FluentBuilderImpl;
 import javax0.geci.fluent.tree.Node;
@@ -16,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+@AnnotationBuilder
 public class Fluent extends AbstractJavaGenerator {
     private static final Logger LOG = LoggerFactory.getLogger();
 

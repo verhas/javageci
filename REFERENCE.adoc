@@ -5,12 +5,16 @@
 Java::Geci is a code generation framework/library that makes it very easy to
 write Java code generating tools. It also
 
-* comes with off the shelf code generators that can replace other
+* comes with off the shelf code generators that can either replace other
  widely used code generation tools like the those implemented in the
- IDEs or Lombok
+ IDEs or Lombok or solve unique tasks that are not available anywhere else, like
+ fluent API generators,
 * provides services and interfaces to write code generators that need to
  focus on the very core task of the code generation and let everything
- else to be done by the framework.
+ else to be done by the framework,
+* contains very simple generators that can be used as samples and as a starting
+ point to write your own generators. Also, the creation of generators is supported
+ by code generation tools.
 
 The services provided by Java::Geci for the code generators include
 
@@ -231,11 +235,17 @@ POM file.
 </dependency>
 ```
 
+Usually it is enough to have a dependency for `javageci-core`. The other
+dependencies will be pulled in automatically.
+
 The structure of the invocation is usually one lines in a unit test:
 
 ```java
-Assertions.assertFalse(configuration and invocation of the code generators,
-                               "code has changed");
+Assertions.assertFalse( ...configuration
+                           and invocation of
+                           the code generators ...
+                        ,
+                           "error message that code has changed");
 ```
 
 The `configuration and invocation of the code generators` part of the
@@ -260,7 +270,9 @@ the call:
 
 creates the new `javax0.geci.engine.Geci` object and calls the
 `source()` and `register()` methods to configure the framework. Finally
-invoking `generate()` starts the code generation.
+invoking `generate()` starts the code generation. If there was some new
+code generated then the call to `geci.failed()` will return a string
+detailing which source files were changed.
 
 === Geci configuration calls
 
@@ -274,11 +286,11 @@ but at the same time, it can also write generated code to the sources.
 
 The different `source()` methods usually accept a `String` array as
 vararg in the last argument position. This is to specify alternative
-directories where the source set can be and not to specify different
-source sets. If there are more than one source sets to be used then they
-should be defined in consecutive `source()` calls.
+directories where the source set can be. It is *not* to specify
+different source sets. If there are more than one source sets to be used
+then they should be defined in consecutive `source()` calls.
 
-____
+====
 
 The need for this is because there is no guaranteed current working
 directory (CWD) when the unit tests are started. Many times it is not a
@@ -289,13 +301,14 @@ the IDE then the CWD will be the root directory of the module project by
 default. If you start `mvn clean install` in the parent project then the
 CWD is the project root directory of the parent project.
 
-____
+====
 
 The directory or directories for the source set should be the directory
-where the Java code hierarchy starts (in case of Java source directory).
-In other words, it is the directory where the `com` directory is
-corresponding to your `com. ...` package structure. In still another
-words this is the `src/main/java` directory in Maven terms.
+where the Java code hierarchy starts (in case of maven the `java`
+directory under `src/test` or `src/main`). In other words, it is the
+directory where the `com` directory is corresponding to your `com. ...`
+package structure. In still another words this is the `src/main/java` or
+`src/test/java` directory in Maven terms.
 
 You should not specify a directory deeper in order to limit the source
 scanning of the framework, because this will prevent finding the class
@@ -525,7 +538,7 @@ The last call after the chain of configuration calls has to be
 asserted to be `false` in the tests and fail in case there was new code
 generated.
 
-== Writing a Generator
+== Programming a Generator
 
 A generator is a class that implements the interface
 `javax0.geci.api.Generator`. This interface defines a single method
@@ -625,10 +638,12 @@ nothing to write there. However, the framework will interpret this that
 the generator does not want to touch the segment and the old value
 remains.
 
-For example, there is a code that creates a `LC_` prefixed field for every
+Assume that, there is a generator that creates a `LC_` prefixed field for every
 `final` and `static` `String` field which will contain the lowercase
-version of the original string. These `LC_` prefixed variables go into
-a special segment, like
+version of the original string. There is no such generator written but for the
+sake of the example, let us imagine one hypothetically.
+The `LC_` prefixed variables created by our hypothetical generator go into a
+special segment, like
 
 [source,java]
 ----
@@ -641,12 +656,14 @@ final static String LC_myString = "hello, world!";
 ----
 
 when the generator does not find any `final` and `static` `String` field
-it does not have to write anything into the segment `lowerCase` and thus
-it does not open it. This works so long as long as there is no `final`
-and `static` `String` field in the class. However, when there is some
-and we happen to delete the last one then this will leave the
-`lowerCase` segment intact and there will be the remaining last
-`LC_myString` field.
+it does not have to write anything into the segment named `lowerCase` and thus
+it does not open it. This works so long as long there is no `final`
+`static` `String` field in the class. However, when there are some
+and we happen to delete them all then this will leave the
+`lowerCase` segment intact and there will be the remaining last few
+`LC_...` field. That is because the generator does not see any field to be
+generated and thus it does not try to write into the segment anything. When
+none of the generators write a segment then the segment will remain as it was.
 
 To tell the framework that the segment is to be modified even if no
 `open(id)` is invoked for the specific segment the generator has to call
@@ -660,34 +677,47 @@ happens to be there to emphasize the intent to initialize the segment.)
 
 Some generators may want to modify the part of the source code that is
 manually maintained. Like fixing something in the program. For example
-inserting the `final` keyword in front of a field declaration. Or, perhaps
-deleting some modifier. Such modifications are rare and should be programmed
-in the generators with great care. The generators really should know what they do
-as they play with a part of the code that is manually maintained and not
-separated. Such modifications usually focus on some specific part
-of the code. To find the specific part of the code, for example the declaration
-of a given field is very hard to so reading the source as text. The list of
-the lexical elements that is the result of the lexical analysis of the code
-is much better suited for the purpose.
+inserting the `final` keyword in front of a field declaration. Or,
+perhaps deleting some modifier. Such modifications are rare and should
+be programmed in the generators with great care. The generators really
+should know what they do as they play with a part of the code that is
+manually maintained and not separated. Such modifications usually focus
+on some specific part of the code. To work with a specific part of the
+code, the application has to find the part. To find the specific part of
+the code, for example the declaration of a given field is not simple
+reading the source as text. One can try to apply regular expression
+searched to the source lines, but that is not reliable. What is really
+needed to be done is to do a lexical analysis of the source text. This
+is what Java::Geci can do for the generators.
 
-Lexical Modifications work with the list of the lexical elements of the source
-files. A typical modification searches a certain part looking for some
-specific pattern and then insert or replace the found pattern with a given list
-of lexical elements.
+==== Overview
+
+Lexical Modifications work with the list of the lexical elements of the
+source files. A typical modification searches a certain part looking for
+some specific pattern and then insert or replace the found pattern with
+a given list of lexical elements.
 
 An example is the record generator. The record generator mimics the
 behaviour of a Java record, which is not available by the time of
-writing. To mimic a Java record a class should have only `final` fields,
-the class has to be `final`, should not extend any other class (except
-the implicit Object) and should have a constructor that initializes the
-`final` fields and has getters for these fields.
+writing. To mimic a Java record a class
 
-To do this the programmer can insert the fields into the class, but they
-can not be `final` when the programmer edits the file, because the
-constructor does not know about this field yet. The constructor will be
-modified only later to initialize the new field or fields. After the
-code generation the manual code can be altered so that the field becomes
-`final`.
+* should have only `final` fields,
+
+* the class itself has to be `final`,
+
+* it should not extend any other class (except the implicit Object) and
+
+* it should have a constructor that initializes the `final` fields and
+
+* it has getters for these fields.
+
+The generator reads the fields and creates the constructor as well as
+the getters. When the programmer starts to create the source code of the
+class it can insert the field declarations, but they cannot be denoted
+as `final` because at this point the constructor initializing them does
+not exist. The constructor will be created only later to initialize the
+new field or fields. After the code generation the manual code can be
+altered so that the field becomes `final`.
 
 To ease the life of the programmer the Record generator inserts the
 `final` keywords where they are needed during the code generation when
@@ -715,9 +745,9 @@ try (final var javaLexed = new JavaLexed(source)) {
         }
 ----
 
-This is the structure you can see in the Record generator. We will use that generator
-as a sample for the explanation how to use this class. The generator
-defines a selector expression
+This is the structure you can see in the Record generator. We will use
+that generator as a sample for the explanation how to use this class.
+The generator defines a selector expression
 
 [source,java]
 ----
@@ -737,7 +767,7 @@ private void makeClassFinal(Class<?> klass, JavaLexed javaLexed) {
 This `if` statement is executed when the class is not `final`. The generator, in
 this case, modifies the class to be final, because that is a requirement by the
 JEP defining the "Record" functionality for Java. In case the developer forgot to
-make the class final this can be detected and this also can be changed.
+make the class final this can be detected and this can also be changed.
 
 When the class is not final the `javaLexed` object is used to find the
 declaration of the class in the list of the lexical elements. This is
@@ -748,15 +778,52 @@ between the lexemes, because they usually are not important when trying
 to find some keywords.
 
 When the find is successful the `replaceWith()` method is executed and
-this replaces the "```class``` (spaces) class name" lexeme section in
-the list with the specified "```final class``` __class__ __name__"
-sequence. Note that the spaces are important in the replace part.
+this replaces the
+
+"```class``` (spaces) class name"
+
+lexeme section in the list with the specified "```final class```
+__class__ __name__" sequence.
 
 [source,java]
 ----
 javaLexed.find(list("class", klass.getSimpleName())).fromStart()
                .replaceWith(Lex.of("final class " + klass.getSimpleName()));
 ----
+
+As we mentioned earlier, spaces are not important in the search
+expression. That is because when trying to find a sequence of lexical
+elements the matching algorithm ignores the spaces and the comments that
+may be in the source code as not important.
+
+However, when we insert lexical elements as a replacement for some part
+of the found lexical elements sequence the lexical elements are inserted
+as they are present and the replacement process will not insert
+separating white spaces for us. The code can ignore spaces when they
+come on the input, but they do not know where to put them into the
+output. Therefore in the replacement lexical element list it is important
+to have spaces at the appropriate locations.
+
+For example the string
+
+  "final class " + klass.getSimpleName()
+
+is converted to a list of lexical elements by the method ```Lex.of()```.
+The lexical elements will be
+
+* keyword `final`
+* space
+* keyword `class`
+* space
+* identifier that is the simple name of the class, e.g. `MyClass`.
+
+It is important to have a trailing space after the keyword ```class```
+in the string otherwise the resulting list of lexical elements would not
+have that space lexical element between the keyword `class` and the name
+of the class. That would result ```final classMyClass``` instead of
+`final class MyClass` when the modified list of lexical expression is
+given back to the `Source` object and the list of source lines are
+recreated.
 
 When the try-with-resources block finishes the modified list of lexical
 elements is converted back to the list of source line strings that is
@@ -773,10 +840,291 @@ index `i` and there is a method to remove a range of lexical elements
 calling ```removeRange(i,j)```. (Note that the element with the index
 `i` is removed but the element with the index `j` is not.)
 
+==== Simple Modification Methods
+
 There are also simple and primitive methods to modify the list of the
 lexical elements. You can ```add(i, element)``` to add a single element
 at the position `i`. You can also replace a range of elements with a
 list of lexical elements calling ```replace(start, end, elements)```.
+
+These are low level and simple modifications that are available as a
+last resort in case the available higher level methods do not suffice.
+The usual way to modify the list of the lexical elements is to use the
+search and then to replace the found parts with something composed of
+new lexical elements and elements taken from the found part.
+
+The example above was a very simple one: it was searching for a simple
+keywords and identifiers as they come one after the other. The search
+method `find()` provides much more powerful possibilities. The
+possibilities are like searching a sub-string literal versus trying to
+match a regular expression in a string.
+
+==== Finding and Replacing LEXPRESSIONS
+
+The argument to the method `find()` is an `Lexpression` (lexical
+expression), which is similar to a regular expression when we process
+strings. In this case, however, instead of characters we build up the
+expression from lexical elements. Also there is no string representation
+of the `Lexpression` like regular expressions have. The way to create a
+search `Lexpression` is to use a fluent API provided for the purpose.
+
+The technical implementation of the expression is a `BiFunction` but it
+should not matter the programmer using the API. This is an internal
+detail.
+
+The way to create such an expression is to use the utility methods
+provided in the class LexpressionBuilder.
+
+TIP: The utility methods are generated automatically based on the
+methods of the class ```Lexpression```. For this reason the methods that
+the generator is calling directly do not have JavaDoc documentation.
+However, each and every of such method has a method with the same name
+in the class ```Lexpression```, which is fully documented.
+
+The simplest `Lexpression` matches a single keyword. To get such an
+`Lexpression` you can invoke the method
+`LexpressionBuilder.keyword(kw)` with the string argument `kw`. For
+example `keyword("int")` will return an `Lexpression` that matches a
+single keyword `int`.
+
+NOTE: `int` is not a keyword in Java. When matching a list of lexical
+elements against an `Lexpression` the analysis does not make difference
+between an identifier and an expression. Because of this the method
+`keyword()` and `identifier()` are interchangeable. It is recommended to
+use `keyword()` for keyword matching and `identifier()` to match an
+identifier.
+
+NOTE: In this section we will refer to the methods using their name
+without the class name. Since the `Lexpression` describing structures can
+sometimes be fairly complex the recommended approach is to statically
+import these methods from the class
+`javax0.geci.lexeger.LexpressionBuilder`.
+
+The method `keyword()` is not the only one method that results a single,
+one element `Lexpression` with a so called terminal symbol in it. There
+are different methods, like
+
+* `string()` matching a string literal
+* `character()` matching a character literal
+* `comment()` matching a comment
+* `floatNumber()` matching a floating point literal
+* `integerNumber()` matching an integer literal
+* `number()` matching any number literal (floating point or integer)
+* `match(string)` matching a lexical element that is specified a string
+* `type()` matching a type definition, like `List<String>`
+
+NOTE: the last method, `type()` matches something that is not a single
+lexical element, and thus it is not a terminal symbol. A type literal in
+Java is a complex thing and cannot be described with regular expression
+structure. To overcome this and to provide a matching possibility for
+the generators there is a small syntax analyzer implemented in the class
+`TypeMatcher` that matches a type literal. In the generator code this
+method can be used as if a type literal was really a terminal symbol.
+
+Each of these methods have different forms with different arguments. For
+example the method `integerNumber()` has a version that has a `long`
+predicate as argument. The resulting `Lexpression` will match an integer
+number literal only the number converted to `long` matches the
+predicate. Similarly the method `string()` has a version that has a
+`String` and one that has a `Pattern` argument. The first version
+matches a string lexical element if the value is the given string. The
+second version matches the regular expression pattern against the actual
+string value of the lexical element.
+
+All of these methods and many other methods have a version where the
+first argument is a `GroupNameWrapper`. When a method `xxx()` has this
+version then calling `xxx(group(name), ...)` is the same as calling
+`goup(name, xxx(...))` with the same `...` arguments.
+
+
+A `GroupNameWrapper` can be created calling the method `group(name)`
+that wraps the string `name` into a `GroupNameWrapper` object. The
+wrapping helps to distinguist the overloaded methods that have already
+first string arguments and the same other arguments.
+
+Groups are identified by the name and they contain the list of lexical
+elements that are matched by the certain sub `Lexpression` that may be
+part of the whole `Lexpression`. These groups can be retrieved using the
+name and used in the replacement part later.
+
+Matching single elements is not really useful. To have really useful
+things the builder provides building blocks to compose complex
+structures recursively using the simple methods. The builder class
+defines different versions of the following methods:
+
+* `anyTill()` matches zero or more lexical elements until it finds one
+  that matches one of the arguments
+* `list()` matches the `Lexpression`s listed as arguments
+* `not()` matches something that is not the `Lexpression` argument
+* `oneOf()` matches one of the arguments
+* `zeroOrMore()` matches zero or more times the argument
+* `oneOrMore()` matches one or more time the argument
+* `optional()` matches nothing or the argument if possible
+* `repeat()` matches the argument many times, min and max values can be
+  specified
+* `unordered()` matches the arguments, each once but in argitrary order
+
+These methods also have different versions overloading the method name.
+
+==== Examples
+
+In this section we will list some of the test methods that are
+implemented in the class `javax0.geci.lexeger.TestMatching` in the
+module `javageci-tools`. We list here only some of the methods that are
+of exemplary values. In the class you can find more examples without
+detailed explanation.
+
+In the tests the class `TestSource` is an implementation of the
+interface `Source` that gets the lines as the constructor argument. In
+these tests usually there are only one line in the source code and thus
+the argument is created calling the static method
+`Collections.singletonList()`.
+
+The `JavaLexed` object is created from the source object in a
+try-with-resources block, essentially implicitly closing it at the end
+of the test.
+
+// snip testSimpleListFinding trim="to=0" number="from=2 to=7"
+```java
+   @Test
+   void testSimpleListFinding() {
+1.     final var source = new TestSource("private final int z = 13;\npublic var h = \"kkk\"");
+2.     try (final var javaLexed = new JavaLexed(source)) {
+3.         final MatchResult result = javaLexed.find(match("public var h")).fromStart().result();
+4.         Assertions.assertTrue(result.matches);
+5.         Assertions.assertEquals(13, result.start);
+           Assertions.assertEquals(18, result.end);
+       }
+   }
+```
+
+This test uses the source code as seen on the line #1. The variable
+`result` gets the result of the matching operation. The call chain first
+specifies the `Lexpression` to find then it executes the operation
+starting at the beginning of the source and finally the result object is
+fetched from the result of the search operation.
+
+What we find here is a list of lexical tokens: `public`, `var`, and `h`.
+This is simply written as `match("public var h")` which performs a quick
+lexical analysis on the input string and creates an `Lexpression` that
+is the list of the terminal elements that are in the string.
+
+The `result.matches` is `true` when the `Lexpression` was found. The
+result can also be queried for the start position (inclusive) and the
+end position (exclusive) of the found match. In this case the lexical
+elements are
+
+[start=0]
+0. `private`
+0. space
+0. `final`
+0. space
+0. `int`
+0. space
+0. `z`
+0. space
+0. `=`
+0. space
+0. `13`
+0. `;`
+0. new-line
+0. `public`
+0. space
+0. `var`
+0. space
+0. `h`
+0. space
+0. `=`
+0. space
+0. `"kkk"`
+
+Note that spaces do not matter when matching, but it does not mean that
+they are not there. It is only the comparison that ignores the spaces.
+In this case the `Lexpression` given as `"public var h"` starts at the
+position 13 in the list of the lexical elements and ends before the
+elements at the position 18. These positions can be, but need not be
+used later in replacement operations.
+
+There are different methods that replace the part of the lexical list of
+the source code between two indices or between the `star` and `end`
+indices of a `MatchResult`. The simplest way is, however, calling the
+method `replaceWith()` that has only one argument, the list of the
+lexical elements that will be inserted into the place of the matched
+part only in case the match was successful.
+
+The next sample stores part of the match in a group.
+
+// snip testSimpleGroupCollection trim="to=0" number="start=1 format='%02d. '"
+```java
+01. @Test
+02. void testSimpleGroupCollection() {
+03.     final var source = new TestSource("private final int z = 13;\npublic var h = \"kkk\"");
+04.     try (final var javaLexed = new JavaLexed(source)) {
+05.         final var result = javaLexed.find(list(oneOf(group("protection"), "public", "private"), match("var h"))).fromStart().result();
+06.         Assertions.assertTrue(result.matches);
+07.         Assertions.assertEquals(13, result.start);
+08.         Assertions.assertEquals(18, result.end);
+09.         Assertions.assertEquals(1, javaLexed.group("protection").size());
+10.         Assertions.assertEquals("public", javaLexed.group("protection").get(0).getLexeme());
+11.     }
+12. }
+```
+
+What we are searching is a list of `Lexpression`s. The list consists two
+elements. The first one is a `oneOf()` `public` and `private` element,
+the second is `var h`. The list is created calling the `list()` utility
+method that has variable number of `Lexpression` arguments. The method
+`oneOf()` has many overloaded versions. This version has a first
+argument that specifies a group by name. The rest of the arguments are
+strings. This is a convenience method that converts the individual
+strings into simple `Lexpression`s each. Thus
+
+    oneOf(group("protection"), "public", "private")
+
+is the same as
+
+    oneOf(group("protection"), match("public"), match("private"))
+
+When this part of the expression matches then the list of lexical
+elements that are matched by this part of the expression is stored in a
+new list and is associated with the name and can later be retrieved from
+the `JavaLexed` object. The assertions on the line 9 and 10 are doing
+exactly this. They retrieve the list of the lexical elements that were
+associated with the group named `protection`. Line 9 asserts that the
+number of lexical elements in the list is one and the line 10 asserts
+that this is `public` as it is matched before the `var h` part of the
+source.
+
+The following example uses a matching group that is not matched during
+the search operation. Because the structure of the test is practically
+the same as that of the previous we skipped some lines that you can also
+see from the line numbering.
+
+// snip testSimpleUnmatchedGroup skip="do" trim="do" prenumber="do"
+```java
+1. javaLexed.find(list(group("protection", oneOf(match("public"), group("private", match("private")))), match("var h")));
+7. Assertions.assertEquals(0, javaLexed.group("private").size());
+8. Assertions.assertEquals(1, javaLexed.group("protection").size());
+```
+
+In this case the method `oneOf()` has ``Lexpression``s. You cannot mix
+strings with ``Lexpression``s and because the second argument
+`group("private", match("private"))` is already an `Lexpression` the
+first one also has to be. Thus we cannot write there simply `"public"`
+instead of `match("public")`.
+
+In this example we also use the version of the method `group()`, which
+is not inside but around the the matching elements that are to form the
+group. Using `group("protection", oneOf(...))` is the same as the
+version of `oneOf(group("protection",...))` that has a group identifier
+in the first argument (created calling the single string argument of the
+utility method `group()`).
+
+Because the access modifier in front of `var h` is public the group
+named `private` does not match anything thus the size of it is zero. On
+the other hand the group named `protection` contains one element. This
+is the same as in the previous example. If the access modifier was
+`private` then both groups would contain a single element list.
 
 === Creating, opening new source object
 
@@ -1053,13 +1401,15 @@ interface `javax0.geci.api.Generator`. The library contains abstract
 classes that implement the interface and do some specific task that may
 be the same for a variety of generators.
 
-These abstract classes are defined in the package `javax0.geci.tools`.
-This documentation lists some, but you have to consult the actual and
-up-to-date JavaDoc documentation. 
+These abstract classes are defined in the package `javax0.geci.tools`
+in the module `javageci-tools`. This documentation lists some of the
+classes giving some introduction, but it is still recommended that you
+have to consult the actual and up-to-date JavaDoc documentation.
 
 * `AbstractGeneratorEx` can be extended by generators that may throw
  exception. Note that the signature of the method `process()` in the
- interface `Generator` does not throw any exceptions.
+ interface `Generator` does not throw any exceptions. This abstract class
+ catches any exception and rethrows it as a `RuntimeException`.
 * `AbstractGenerator` is to be extended by generators that work only on
  Java source files and need the compiled class of the source.
 * `AbstractDeclaredFieldsGenerator` is for generators that want to
@@ -1145,7 +1495,7 @@ iteration starts and `postprocess()` is invoked after that.
 
 == Error messages
 
-* The generators did not touch any source
+* `The generators did not touch any source`
 
 When the execution finishes and none of the generators generated any
 source into any existing or new source file then this error happens. If
@@ -1156,7 +1506,7 @@ error, because if none of the generators generate anything then why to
 have them in the actual project. They are configured to run, most
 probably they are supposed to do something.
 
-* SourceSet "…" does not exist
+* `SourceSet "…" does not exist`
 
 When you configure the sources using the `source()` method in the test
 executing the generations you can define different source sets and you
@@ -1173,8 +1523,8 @@ wired into the generator or the generator may use the configuration
 (either annotation, comment string or the segment start in the source
 file).
 
-* Global segment was opened when the there were already opened segments
-* Segment was opened after the global segment was already created.
+* `Global segment was opened when the there were already opened segments`
+* `Segment was opened after the global segment was already created.`
 
 These errors are certainly an error in one of the generators executing in
 the test phase. Generators can write certain parts of a source file.
@@ -1201,7 +1551,7 @@ same time. Even different generators should not do that. That way one
 change would simply overwrite the other change. When this happens the
 Geci framework throws one of these exceptions.
 
-* Segment "…" disappeared from source "file name"
+* `Segment "…" disappeared from source "file name"`
 
 This error is certainly an error in one of the generators executing in
 the test phase. When this happens it means that the code generation
@@ -1211,7 +1561,7 @@ when the changes are to be written back. This may happen if one of the
 generators changes the source object directly. It may also be an
 internal error in the framework.
 
-* "Source directory [ list of directories ] is not found"
+* `Source directory [ list of directories ] is not found`
 
 This error happens when the framework cannot find a configured source
 set. The source sets are configured with alternative directories. This
@@ -1224,7 +1574,7 @@ If this error happens you should check the configuration in the method
 call `source()` in the test and you should also check which CWD the code
 generation execution was started in.
 
-* None of the configured directories { [ ... ] } are found
+* `None of the configured directories { [ ... ] } are found`
 
 This is a very similar error as the previous one. This error is thrown
 if none of the configured source sets can be found. When you configure
@@ -1237,7 +1587,7 @@ defaults are used then the source set discovery works in a lenient mode.
 It is not an error if some of the source sets are not defined. In that
 the previous error will not be displayed. However, it is a serious issue
 if none of the source sets can be found. In that case there is no source
-to work on. Also when you define a source set yourself and not using
+to work on. Also, when you define a source set yourself and not using
 defaults then it has to be there on the disk.
 
 If you see this error check the CWD if that is the project root or the

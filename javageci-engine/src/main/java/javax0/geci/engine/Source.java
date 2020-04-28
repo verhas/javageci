@@ -75,13 +75,19 @@ public class Source implements javax0.geci.api.Source {
     public static class MockBuilder {
         private final Generator sut;
         private String className;
-        private String relativeFile;
-        private String absoluteFile;
+        private String relativeFile = "DIRECTORY\\MOCKED_FILE.MOCKED";
+        private String absoluteFile = "C:\\MOCKED\\DIRECTORY\\MOCKED_FILE.MOCKED";
         private SegmentSplitHelper splitHelper = new JavaSegmentSplitHelper();
         final List<String> lines = new ArrayList<>();
+        private Source mockedSource;
 
         public MockBuilder(Generator sut) {
             this.sut = sut;
+        }
+
+        public MockBuilder absoluteFile(String absoluteFile) {
+            this.absoluteFile = absoluteFile;
+            return this;
         }
 
         public MockBuilder className(String className) {
@@ -111,8 +117,16 @@ public class Source implements javax0.geci.api.Source {
             return this;
         }
 
+        public boolean isTouched() {
+            return mockedSource.isTouched();
+        }
+
+        public boolean isModified(BiPredicate<List<String>, List<String>> sourceModified) {
+            return mockedSource.isModified(sourceModified);
+        }
+
         public Source getSource() {
-            return new Source(sut, className, relativeFile, absoluteFile, splitHelper, lines);
+            return mockedSource = new Source(sut, className, relativeFile, absoluteFile, splitHelper, lines);
         }
     }
 
@@ -143,6 +157,7 @@ public class Source implements javax0.geci.api.Source {
         this.absoluteFile = absoluteFile;
         this.splitHelper = splitHelper;
         this.lines.addAll(lines);
+        this.originals.addAll(lines);
         this.collector = null;
         this.inMemory = true;
         this.store = new MockSourceStore();
@@ -237,6 +252,7 @@ public class Source implements javax0.geci.api.Source {
             this.lines.addAll(lines);
         }
         isBorrowed = false;
+        touched = true;
     }
 
     @Override
@@ -318,11 +334,9 @@ public class Source implements javax0.geci.api.Source {
      * @return the modified string array
      */
     private String[] mnemonize(String id, String... s) {
-        final String[] res = new String[s.length];
-        for (int i = 0; i < s.length; i++) {
-            res[i] = s[i].replaceAll("\\{\\{mnemonic}}", id);
-        }
-        return res;
+        return Arrays.stream(s)
+            .map(item -> item.replaceAll("\\{\\{mnemonic}}", id))
+            .toArray(String[]::new);
     }
 
     @Override
@@ -410,20 +424,20 @@ public class Source implements javax0.geci.api.Source {
                 "This is an internal error: source was not read into memory but segments were generated");
         }
         if (globalSegment == null) {
-            for (var entry : segments.entrySet()) {
-                touched = true;
-                var id = entry.getKey();
-                Segment segment = entry.getValue();
-                touchBits |= segment.touch(0);
-                var segmentLocation = findSegment(id);
-                if (segmentLocation == null) {
-                    segmentLocation = findDefaultSegment();
+            segments.forEach(
+                (id, segment) -> {
+                    touched = true;
+                    touchBits |= segment.touch(0);
+                    var segmentLocation = findSegment(id);
                     if (segmentLocation == null) {
-                        throw new GeciException("Segment " + id + " disappeared from source" + absoluteFile);
+                        segmentLocation = findDefaultSegment();
+                        if (segmentLocation == null) {
+                            throw new GeciException("Segment " + id + " disappeared from source" + absoluteFile);
+                        }
                     }
+                    mergeSegment(segment, segmentLocation);
                 }
-                mergeSegment(segment, segmentLocation);
-            }
+            );
         } else {
             touched = true;
             lines.clear();

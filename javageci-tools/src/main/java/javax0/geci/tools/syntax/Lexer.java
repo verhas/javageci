@@ -106,15 +106,9 @@ public class Lexer {
      * @return the next lexeme.
      */
     public Lexeme get() {
-        if (lookAhead != null) {
-            var ret = lookAhead;
-            lookAhead = next();
-            return ret;
-        } else {
-            var ret = next();
-            lookAhead = next();
-            return ret;
-        }
+        final var ret = lookAhead != null ? lookAhead : next();
+        lookAhead = next();
+        return ret;
     }
 
     /**

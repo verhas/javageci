@@ -21,10 +21,10 @@ The `Source#getLogger()` returns an object that implements the
 for logging.
 
 The advantage of this logger is that the log messages are collected
-during the execution and the log messages belonging to one source code
+during the execution, and the log messages belonging to one source code
 are sent to the logging output together at the end of the processing.
 
-The framework can also be configured to send only those message to the
+The framework can also be configured to send only those messages to the
 output which belong to a source that were
 
 * `UNTOUCHED` and/or

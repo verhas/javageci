@@ -1,6 +1,7 @@
 package javax0.geci.api;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -157,6 +158,14 @@ public interface Segment extends AutoCloseable {
      * @return {@code this}
      */
     Segment param(String... keyValuePairs);
+
+    /**
+     * Get the value of a segment parameter that was set using the {@link #param(String...)} method.
+     *
+     * @param key for which the set value is to be returned
+     * @return the optional value of the parameter
+     */
+    Optional<String> getParam(String key);
 
     /**
      * @return the set of the keys that are defined in this segment for templating.

@@ -5,7 +5,7 @@ import javax0.geci.javacomparator.lex.LexicalElement;
 import javax0.geci.lexeger.JavaLexed;
 import javax0.geci.lexeger.LexpressionBuilder.GroupNameWrapper;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,24 +28,51 @@ public class Lexpression {
         this.lexer = lexer;
     }
 
+    /**
+     * @return {@code true} if the underlying lexical analyzer is space
+     * sensitive.
+     */
     public boolean isSpaceSensitive() {
         return lexer.isSpaceSensitive();
     }
 
+    /**
+     * @return {@code true} if the underlying lexical analyzer is
+     * comment sensitive.
+     */
     public boolean isCommentSensitive() {
         return lexer.isCommentSensitive();
     }
 
+    /**
+     * Cleans the state of the matching analysis. If there was any group
+     * collected or regular expression match they are deleted.
+     */
     void clean() {
         groups.clear();
         regexResults.clear();
     }
 
+    /**
+     * Delete the group and the regular expression match that was
+     * assigned to this name if there was any.
+     *
+     * @param name is the name of the group and/or the regular
+     *             expression match result
+     */
     void remove(String name) {
         groups.remove(name);
         regexResults.remove(name);
     }
 
+    /**
+     * Store the elements of the list of the lexical elements and assign
+     * it to the name given as first argument. The list is stored and
+     * not copied.
+     *
+     * @param name     to assign the list to
+     * @param elements the elements to store
+     */
     void store(String name, List<javax0.geci.javacomparator.LexicalElement> elements) {
         if (regexResults.containsKey(name)) {
             throw new IllegalArgumentException(name + " cannot be used to identify both a lex group and regex result");
@@ -53,6 +80,13 @@ public class Lexpression {
         groups.put(name, elements);
     }
 
+    /**
+     * Store the regular expression match result and assign it to the
+     * name given as first argument.
+     *
+     * @param name               to assign the result to
+     * @param patternMatchResult the pattern match result we store
+     */
     void store(String name, java.util.regex.MatchResult patternMatchResult) {
         if (groups.containsKey(name)) {
             throw new IllegalArgumentException(name + " cannot be used to identify both a lex group and regex result");
@@ -60,11 +94,20 @@ public class Lexpression {
         regexResults.put(name, patternMatchResult);
     }
 
+    /**
+     * Get the list of lexical expressions that were stored in the group
+     * named.
+     *
+     * @param name the name of the group
+     * @return the list of lexical expressions that was stored with the
+     * name or an empty list in case there is no list stored for the
+     * given name.
+     */
     public List<javax0.geci.javacomparator.LexicalElement> group(final String name) {
         if (groups.containsKey(name)) {
             return groups.get(name);
         }
-        return Arrays.asList();
+        return Collections.emptyList();
     }
 
     public Optional<MatchResult> regexGroups(final String name) {
@@ -108,10 +151,12 @@ public class Lexpression {
     }
 
     /**
-     * Creates a matcher that matches when any of the underlying matchers match.
+     * Creates a matcher that matches when any of the underlying
+     * matchers match.
      *
-     * @param matchers the underlying matchers at least one of which should match for the returned matcher to be
-     *                 sucsessfully matching
+     * @param matchers the underlying matchers at least one of which
+     *                 should match for the returned matcher to be
+     *                 successfully matching
      * @return the new matcher
      */
     public LexMatcher oneOf(LexMatcher... matchers) {
@@ -129,9 +174,11 @@ public class Lexpression {
     }
 
     /**
-     * Create a matcher that will match zero or more of the underlying matcher.
+     * Create a matcher that will match zero or more of the underlying
+     * matcher.
      *
-     * @param string representing one or more lexical element, each may match exactly the same lexical element
+     * @param string representing one or more lexical element, each may
+     *              match exactly the same lexical element
      * @return the new matcher
      */
     public LexMatcher zeroOrMore(String string) {
@@ -243,7 +290,7 @@ public class Lexpression {
     }
 
     public LexMatcher match(String string) {
-        return list(lexer.apply(Arrays.asList(string)));
+        return list(lexer.apply(Collections.singletonList(string)));
     }
 
     public LexMatcher unordered(LexMatcher... matchers) {
@@ -256,7 +303,7 @@ public class Lexpression {
     }
 
     public LexMatcher unordered(String string) {
-        return unordered(lexer.apply(Arrays.asList(string)));
+        return unordered(lexer.apply(Collections.singletonList(string)));
     }
 
     public LexMatcher group(String name, LexMatcher matcher) {
@@ -277,7 +324,7 @@ public class Lexpression {
     }
 
     public LexMatcher not(String string) {
-        return not(lexer.apply(Arrays.asList(string)));
+        return not(lexer.apply(Collections.singletonList(string)));
     }
 
     public LexMatcher anyTill(LexMatcher... matchers) {
@@ -290,7 +337,7 @@ public class Lexpression {
     }
 
     public LexMatcher anyTill(String string) {
-        return anyTill(lexer.apply(Arrays.asList(string)));
+        return anyTill(lexer.apply(Collections.singletonList(string)));
     }
 
     //<editor-fold id="methods">
@@ -530,7 +577,7 @@ public class Lexpression {
     //</editor-fold>
 
     private LexMatcher getMatcher(String string) {
-        final var lexicalElements = lexer.apply(Arrays.asList(string));
+        final var lexicalElements = lexer.apply(Collections.singletonList(string));
         if (lexicalElements.length == 1) {
             return terminal(lexicalElements[0]);
         } else {

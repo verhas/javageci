@@ -5,6 +5,7 @@ import javax0.geci.api.CompoundParams;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
+import javax0.geci.tools.Untabber;
 
 import java.util.ArrayList;
 
@@ -37,16 +38,12 @@ public class SnippetTrim extends AbstractSnippeter {
         try {
             to = Integer.parseInt(params.get("to", config.to));
         } catch (NumberFormatException nfe) {
-            throw new GeciException("Can not interpret 'to' parameter " + params.get("to", config.to) + " as a number in snippet " + snippet.name() + " in source " + source.getAbsoluteFile());
+            throw new GeciException("Can not interpret 'to' parameter " + params.get("to", config.to) + " as a number in snippet " + snippet.name());
         }
-        final var untab = calculateTabbing(snippet);
 
-        final var modifiedLines = new ArrayList<String>();
-        for (final var line : snippet.lines()) {
-            modifiedLines.add(space(to) + (line.length() >= untab ? line.substring(untab) : ""));
-        }
+        final var untabbed = Untabber.untab(snippet.lines(),to);
         snippet.lines().clear();
-        snippet.lines().addAll(modifiedLines);
+        snippet.lines().addAll(untabbed);
     }
 
     private int calculateTabbing(Snippet snippet) {

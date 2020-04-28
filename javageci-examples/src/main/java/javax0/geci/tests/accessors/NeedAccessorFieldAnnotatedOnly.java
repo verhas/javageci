@@ -11,7 +11,7 @@ public class NeedAccessorFieldAnnotatedOnly {
     protected boolean truth;
     protected int not_this;
     //<editor-fold id="SettersGetters">
-    public String getApple(){
+    public String getApple() {
         return apple;
     }
 

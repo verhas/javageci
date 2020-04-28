@@ -1,6 +1,6 @@
 package javax0.geci.jamal.reflection;
 
-import javax0.geci.jamal.Reflection;
+import javax0.geci.jamal.ReflectionMaps;
 import javax0.geci.jamal.util.EntityStringer;
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.jamal.api.BadSyntax;
@@ -23,7 +23,7 @@ public class Type implements Macro {
             var field = EntityStringer.fingerprint2Field(fingerPrint);
             type = field.getType();
         } else {
-            var method = Reflection.globalMethodMap.get(fingerPrint);
+            var method = ReflectionMaps.globalMethodMap.get(fingerPrint);
             type = method.getReturnType();
         }
         return GeciReflectionTools.getGenericTypeName(type);

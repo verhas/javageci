@@ -51,12 +51,28 @@ public class TypeMatcher extends AbstractPatternedMatcher {
                 if (lex.getLexeme().equals(">")) {
                     ltCounter--;
                 }
+                if (lex.getLexeme().equals(">>")) {
+                    ltCounter-=2;
+                }
+                if (lex.getLexeme().equals(">>>")) {
+                    ltCounter-=3;
+                }
                 j = skipSpacesAndComments(j + 1);
                 if (ltCounter == 0) {
-                    return matching( start, j);
+                    break;
                 }
             }
-            return MatchResult.NO_MATCH;
+            if (ltCounter > 0) {
+                return MatchResult.NO_MATCH;
+            }
+        }
+        while (j < javaLexed.size() && javaLexed.get(j).getLexeme().equals("[")) {
+            j = skipSpacesAndComments(j + 1);
+            if (j < javaLexed.size() && javaLexed.get(j).getLexeme().equals("]")) {
+                j = skipSpacesAndComments(j + 1);
+            } else {
+                return MatchResult.NO_MATCH;
+            }
         }
         return matching(start, j);
     }

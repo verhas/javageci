@@ -296,14 +296,11 @@ public class MethodCollection {
      * @return {@code true} if there is the need to generate this interface
      */
     private boolean needsWrapperInterface() {
-        for (var method : klass.getMethods()) {
-            if (isNeeded(method)) {
-                for (var parameterClass : method.getParameterTypes()) {
-                    if (parameterClass == klass) return true;
-                }
-            }
-        }
-        return false;
+        return Arrays.stream(klass.getMethods())
+            .filter(this::isNeeded)
+            .map(Method::getParameterTypes)
+            .flatMap(Arrays::stream)
+            .anyMatch(parameterClass -> parameterClass == klass);
     }
 
     private boolean isNeeded(Method method) {
