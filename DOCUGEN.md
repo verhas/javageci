@@ -1,14 +1,14 @@
-# Documentum Generation using SNIPPETS
+# Documentation Generation using SNIPPETS
 
 Software is as good as it is used. Good and up-to-date documentation
 is needed for the use of software and to be honest: good documentation is
-rare. There are many aspects to create good documentation like good
+rare. There are many aspects to creating good documentation like good
 grammar, easy to understand sentences, up-to-date facts, examples in the
 documentation and many others. Docugen code generator working inside the
 Java::Geci framework can help to keep the documentation up-to-date
 reducing redundancy.
 
-Documentation is redundant many times. This is not a problem.
+Documentation is often redundant. This is not a problem.
 Documentation is not code. When we read the documentation the
 information has to be consistent and has to be there where we actually
 are in the reading and understanding process. Many times it means that
@@ -23,7 +23,7 @@ Documentation has to follow the change of the code. If the code changes
 the relevant, but only the relevant parts of the documentation has to be
 updated.
 
-If the copy and paste or update operations are performed each time the
+If the copy-paste or update operations are performed each time the
 original text or the code changes then the documentation is up-to-date.
 Usually, these operations, when done by a human are not performed,
 performed late or with mistakes. The reason for this is that these are
@@ -55,7 +55,7 @@ end snippet
 after the last line of the text. These two lines define a snippet. The
 words `snippet` and `end snippet` are configurable in the code generator
 that collects the snippets. By default, these are the strings and the
-word `snippet` can also be written as `snipet` if you like to misspell
+word `snippet` can also be written as `snipet` if you happen to misspell
 the word `snippet`.
 
 Snippets are essentially text lines. Each snippet has a name and
@@ -71,7 +71,7 @@ snippet starting or ending characters.
 
 ## Snippet handling generators
 
-Snippet handling is implemented by many different generators. Thes are
+Snippet handling is implemented by many different generators. These are
 not conventional generators in the sense that many of them  do not
 generate code. They, however, implement the `Generator` interface and
 thus work inside the Java::Geci framework and they can be configured the
@@ -385,7 +385,7 @@ the snippet to extract characters out of it. In the configuration you
 can specify several 
 
 ```java
-.param("parameterName").regex("regular expreesion pattern with a single (capture group)")
+.param("parameterName").regex("regular expression pattern with a single (capture group)")
 ```
 
 parameters. The line after the snippet is matched against the regular
