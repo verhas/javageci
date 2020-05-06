@@ -9,7 +9,7 @@ sample class `NeedCloner` has the fields
 <!-- snip NeedCloner_fields trim="to=0"-->
 ```java
 private final int aInt = 10;
-protected int bINt = 55;
+protected int bInt = 55;
 ```
 
 and it also inherits two fields
@@ -34,14 +34,14 @@ public NeedCloner copy() {
 }
 protected void copy(NeedCloner it) {
 
-    it.bINt = bINt;
+    it.bInt = bInt;
     it.inheritedExcludedField = inheritedExcludedField;
     it.inheritedField = inheritedField;
 }
 
-NeedCloner withBINt(int bINt) {
+NeedCloner withBInt(int bInt) {
     final var it = copy();
-    it.bINt = bINt;
+    it.bInt = bInt;
     return it;
 }
 

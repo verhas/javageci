@@ -3,7 +3,7 @@ package javax0.geci.tests.cloner;
 public class NeedCloner extends AbstractNeedCloner {
     // snippet NeedCloner_fields
     private final int aInt = 10;
-    protected int bINt = 55;
+    protected int bInt = 55;
     // end snippet
 
     // snippet NeedCloner_generated_code
@@ -16,14 +16,14 @@ public class NeedCloner extends AbstractNeedCloner {
     }
     protected void copy(NeedCloner it) {
 
-        it.bINt = bINt;
+        it.bInt = bInt;
         it.inheritedExcludedField = inheritedExcludedField;
         it.inheritedField = inheritedField;
     }
 
-    NeedCloner withBINt(int bINt) {
+    NeedCloner withBInt(int bInt) {
         final var it = copy();
-        it.bINt = bINt;
+        it.bInt = bInt;
         return it;
     }
 

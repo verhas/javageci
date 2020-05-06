@@ -2,7 +2,7 @@
 {@import pom.jim}
 {project |pom|
     {GAV :{GROUPID}:javageci-parent:{VERSION}}
-    {name/javageci-parent}
+    {name/javageci parent}
     {description/Java GEnerate Code Inline source code generation framework}
     {modules|javageci-engine,javageci-api,javageci-tools,javageci-core,javageci-annotation,javageci-examples,javageci-jamal,javageci-docugen,javageci-core-annotations}
     {license|The Apache License, Version 2.0|http://www.apache.org/licenses/LICENSE-2.0.txt}
