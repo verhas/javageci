@@ -34,7 +34,7 @@ public class MarkdownCodeInserter extends AbstractSnippeter implements NonConfig
     }
 
     private boolean hasMarkdownCodeSegment(List<String> originalLines) {
-        return originalLines.size() > 0 && originalLines.get(0).matches("^(\\s*)```(\\s*)$");
+        return originalLines.size() > 0 && originalLines.get(0).matches("^(\\s*)```(.*)$");
     }
 
     private boolean hasAsciiDocCodeSegment(List<String> originalLines) {
