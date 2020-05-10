@@ -62,7 +62,9 @@ public class AdocSegmentSplitHelper extends AbstractXMLSegmentSplitHelper {
             Pattern.compile("^(\\s*)//\\s*snip\\s+(.*)\\s*$"),
             Pattern.compile("^(\\s*)```(\\s*)$" +
                 "|" +
-                "^(\\s*)//\\s*end\\s+snip(.*)$"),
+                "^(\\s*)//\\s*end\\s+snip(.*)$" +
+                "|" +
+                "^(\\s*)----(\\s*)$"),
             Pattern.compile("DEFAULT SEGMENT") // probably will not match ever, if yes, c'mon!
         );
         setSegmentPreface("");

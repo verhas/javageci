@@ -6,6 +6,8 @@ import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
 import javax0.geci.tools.Tracer;
 
+import java.util.List;
+
 /**
  * Snippet inserter that inserts snippets into asciidoc and into
  * markdown format files.
@@ -19,15 +21,33 @@ public class MarkdownCodeInserter extends AbstractSnippeter implements NonConfig
     @Override
     public void modify(Source source, Segment segment, Snippet snippet, CompoundParams params) {
         final var originalLines = segment.originalLines();
-        if (originalLines.size() > 0 && originalLines.get(0).startsWith("```")) {
-            Tracer.log("snippetLine",originalLines.get(0));
-            segment.write(originalLines.get(0));
+        if (hasMarkdownCodeSegment(originalLines)) {
+            writeBackLines(segment, originalLines, 1);
+        } else if (hasAsciiDocCodeSegment(originalLines)) {
+            writeBackLines(segment, originalLines, 2);
         }
         snippet.lines().forEach(l -> {
             Tracer.log("snippetLine",l);
             segment.write(l);
             }
         );
+    }
+
+    private boolean hasMarkdownCodeSegment(List<String> originalLines) {
+        return originalLines.size() > 0 && originalLines.get(0).matches("^(\\s*)```(\\s*)$");
+    }
+
+    private boolean hasAsciiDocCodeSegment(List<String> originalLines) {
+        return originalLines.size() > 1 &&
+                originalLines.get(0).matches("^(\\s*)\\[(\\s*)source(.*)$") &&
+                originalLines.get(1).matches("^(\\s*)----(\\s*)$");
+    }
+
+    private void writeBackLines(Segment segment, List<String> originalLines, int count) {
+        for (int i = 0; i < count; i++) {
+            Tracer.log("snippetLine", originalLines.get(i));
+            segment.write(originalLines.get(i));
+        }
     }
 
     /**
