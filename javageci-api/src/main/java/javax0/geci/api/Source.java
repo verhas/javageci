@@ -45,10 +45,10 @@ public interface Source {
      * @param root the directory to the root module where the top level
      *             {@code pom.xml} containing the
      *             <pre>
-     *                                                                                                   {@code <modules>
-     *                                                                                                       <module>...</module>
-     *                                                                                                     </modules>}
-     *                                                                                                   </pre>
+     *             {@code <modules>
+     *                 <module>...</module>
+     *               </modules>}
+     *             </pre>
      *             declaration is.
      * @return a new Maven source directory configuration object.
      */
@@ -277,21 +277,51 @@ public interface Source {
     Logger getLogger();
 
     /**
-     * Set serves as an identifier class for a source set. This is used
-     * when a source is asked to open a new source that does not exist
-     * yet in another source set. When a source set is not identified
-     * calling {@link Geci#source(String...)} it will have a {@code new
-     * Set("xxx")} object as identifier. The identifier in this case is
-     * a decimal number and it is randomly created. When a generator
-     * needs to name a set it has to be identified and a specific first
-     * argument has to be passed to the {@link Geci#source(Set,
-     * String...)} usually naming the source set typically as {@code
-     * set("java")} or {@code set("resources")}.
+     * <p>Set serves as an identifier class for a source set. Essentially {@code Set} is nothing else but a string
+     * encapsulated in the class. The constructor and the methods help the definition and the generation of this
+     * identifying string.</p>
+     *
+     *
+     * <p>This class is used, for example, when a source is asked to open a new source that does not exist yet and the new
+     * source should be created in the directory tree of a different source set. In this case the generator is calling
+     * {@link #newSource(Set, String)} specifying the set creating a new {@code Set()} object with the name of the
+     * source set.</p>
+     *
+     * <p>When a source set is not identified, for example it is specified calling the method {@link
+     * Geci#source(String...)} that only specifies the alternative directories where the source files can be, then the
+     * source set will have a {@code new Set("xxx")} object as identifier. The identifier {@code "xxx"} in this case is
+     * a decimal number string and it is randomly created.</p>
+     *
+     * <p>When a generator needs to name a set it has to be identified and a specific first argument has to be passed to
+     * the {@link Geci#source(Set, String...)} usually naming the source set typically as {@code set("java")} or {@code
+     * set("resources")}.</p>
      */
     class Set {
         private String name;
         private final boolean autoName;
 
+        /**
+         * <p>Create a new source set object.</p>
+         *
+         * <p> The name can be {@code null}. In that case the name will be created automatically creating a random
+         * number. The caller should also specify that the name that was passed in the first argument is something that
+         * comes from configuration from the user code or it was automatically generated. In the latter case the second
+         * argument has to be {@code true}.</p>
+         *
+         * <p>It is an error to state that the name was created automatically {@code autoName==true} and providing
+         * a {@code null} value as a {@code name}. Such a situation is evidently a programming error in the caller
+         * and as such should fail fast.</p>
+         *
+         * <p>Note that this constructor is {@code private} but there are {@code public} {@code static} methods in the
+         * class that expose this functionality to the outside word. Also note that the class itself is package access,
+         * which means that code out of the package should treat instances as opaque ID classes only to pass the
+         * reference as parameter to classes in this package.</p>
+         *
+         * @param name     the name of the set or {@code null} in case there was no name specified. In this case a
+         *                 random name (a decimal number) will be assigned to the set as a string identifier.
+         * @param autoName signals if the name was created automatically. It is NOT a request to name the set
+         *                 automatically. That is done in case {@code name == null}.
+         */
         private Set(String name, boolean autoName) {
             if (name == null && autoName) {
                 throw new GeciException("When the name for a set is not specified it cannot be 'autoName'");
@@ -303,6 +333,12 @@ public interface Source {
             this.autoName = autoName;
         }
 
+        /**
+         * Create a random identifier. For the shake of simplicity and to avoid identifier collision the ID string
+         * created is the {@link Object#hashCode()} value in decimal format of this object.
+         *
+         * @return the random identifier string
+         */
         private String randomUniqueName() {
             return "" + super.hashCode();
         }
@@ -321,11 +357,13 @@ public interface Source {
         }
 
         /**
-         * Import this method as a static import into the generators and into the test code that invokes the code
-         * generator.
+         * <p>Create a {@code Source} set identifying object with the given name.</p>
+         *
+         * <p>Import this method as a static import into the generators and into the test code that invokes the code
+         * generator.</p>
          *
          * @param name identifying string of the source set
-         * @return identifier object.
+         * @return a new identifier object.
          */
         public static Set set(String name) {
             return new Set(name, false);

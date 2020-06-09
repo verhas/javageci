@@ -5,11 +5,19 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * A {@code Segment} object represents an editor-fold part in the source
+ * <p>A {@code Segment} object represents an editor-fold part in the source
  * file that the code generator can write. A {@code Segment} is
  * retrieved by the code generator calling the {@link
  * Source#open(String)} method of the source and it can write into the
- * segment.
+ * segment.</p>
+ *
+ * <p>When the code generator generates code into something that is not
+ * Java code then the segment start and end is not 'editor-fold'. The
+ * recognition of the start and the end of the segment is handled by
+ * different {@link SegmentSplitHelper} implementations. The implementation
+ * of this interface does not need to care about how the source file is
+ * split up into a series of [manual] - segment - manual - segment - ... - [manual]
+ * parts.</p>
  */
 public interface Segment extends AutoCloseable {
     long COMMENT_TOUCH = 0x00000001L;

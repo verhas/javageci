@@ -3,19 +3,19 @@ package javax0.geci.api;
 import java.util.function.Supplier;
 
 /**
- * The context is a global object available during the run-time of the
+ * <p>The context is a global object available during the run-time of the
  * generators that are executed under the same Geci engine instance.
  * Context makes it possible to share information between different
- * generators.
+ * generators.</p>
  *
  * <p>A context is something like a {@code Map<Object,Object>} object.
  * Similar to, for example a servlet session object. It can be used to
- * share objects associated to other objects that are usually strings.
+ * share objects associated to other objects that are usually strings.</p>
  *
  * <p>The context is automatically created by the Geci object when none
  * was injected. On the other hand when the created context object is
  * retrieved from the Geci object it can be injected into a different
- * Geci object and that way different Geci instances can share context.
+ * Geci object and that way different Geci instances can share context.</p>
  */
 public interface Context {
 

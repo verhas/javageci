@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 /**
  * <p>Auxiliary class that helps registering the snippet generators.</p>
  *
- * <p>Snippet generators are many times are registered to be in consecutive phases. That way the registration
+ * <p>Snippet generators many times are registered to be invoked in consecutive phases. That way the registration
  * call invokes the builder and every time it invokes the {@code .phase(counter++)} call with some local {@code counter}
  * variable. Also when one snippet generator is configured to work on certain files then all the others are likely to
  * work on the same file types. To eliminate this repetition this class provides some auxiliary methods.</p>

@@ -7,7 +7,7 @@ repeated part that is cumbersome to maintain manually. The generator
 will scan the file looking for templates that contain code and will
 generate code iterating over the values defined in the template.
 
-The following example is a very simple repeated code fragment:
+The following example is a very simple, repeated code fragment:
 
 [source,java]
 ----
@@ -37,7 +37,7 @@ The following example is a very simple repeated code fragment:
     //</editor-fold>
 ----
 
-The template is inside the comment and the part between the
+The template is inside the comment, and the part between the
 ``editor-fold``s is generated.
 
 == Using the generator

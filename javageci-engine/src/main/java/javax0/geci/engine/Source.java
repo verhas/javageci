@@ -178,7 +178,7 @@ public class Source implements javax0.geci.api.Source {
         relativeFile = FileCollector.calculateRelativeName(dir, path);
         absoluteFile = FileCollector.toAbsolute(path);
         splitHelper = collector.getSegmentSplitHelper(this);
-        store = new FileSystemSourceStore(this.collector, relativeFile, absoluteFile, dir);
+        store = new FileSystemSourceStore(this.collector, relativeFile, dir);
     }
 
     /**

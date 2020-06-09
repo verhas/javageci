@@ -5,8 +5,8 @@ package javax0.geci.api;
  * application and not specific to some source. This interface defines a method {@code process()} (without arguments),
  * which is invoked after all the generators were executed for all the sources in all the phases.</p>
  *
- * <p>Global generators usually do nothing during the generator phases. Some of them may, however, thus
- * this interface defines the method {@link Generator#process(Source)} method as a do-nothing default method.</p>
+ * <p>Global generators usually do nothing during the generator phases. Some of them may. This interface defines the
+ * method {@link Generator#process(Source)} method as a do-nothing default method.</p>
  */
 public interface GlobalGenerator extends Generator {
     /**

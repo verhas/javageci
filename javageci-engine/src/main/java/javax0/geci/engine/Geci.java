@@ -49,7 +49,7 @@ public class Geci implements javax0.geci.api.Geci {
     public static final int NONE = 0xFF;
     private static final Logger LOG = LoggerFactory.getLogger();
     private final Map<Source.Set, javax0.geci.api.DirectoryLocator> directories = new HashMap<>();
-    private final List<Generator> generators = new ArrayList<>();
+    private final Set<Generator> generators = new HashSet<>();
     private final Set<Source> modifiedSources = new HashSet<>();
     private final Map<String, SegmentSplitHelper> splitHelpers = new HashMap<>();
     private final Set<Predicate<Path>> onlys = new HashSet<>();
@@ -200,6 +200,9 @@ public class Geci implements javax0.geci.api.Geci {
         return this;
     }
 
+    /**
+     * See {@link FileCollector#lenient() FileCollector.lenient}
+     */
     private boolean lenient = false;
 
     @Override
@@ -354,10 +357,7 @@ public class Geci implements javax0.geci.api.Geci {
         try {
             final var exceptions = new ArrayList<SourceIsBinary>();
             injectContextIntoGenerators();
-            final var phases = generators.stream()
-                .mapToInt(Generator::phases)
-                .max()
-                .orElse(1);
+            final var phases = getPhases();
             Tracer.log("There will be " + phases + " phases.");
             final FileCollector collector;
             if (directories.isEmpty()) {
@@ -391,6 +391,22 @@ public class Geci implements javax0.geci.api.Geci {
     }
 
     /**
+     * <p>Get the maximum number that the different generators report as the number of phases they need.</p>
+     *
+     * <p>The generators report the number of phases they need as the return value of their {@code n=}{@link
+     * Generator#phases() phases()} method. This means that they have to be invoked several times from phase zero till
+     * phase {@code n-1}.</p>
+     *
+     * @return the largest number of phases all the generators need
+     */
+    private int getPhases() {
+        return generators.stream()
+            .mapToInt(Generator::phases)
+            .max()
+            .orElse(1);
+    }
+
+    /**
      * <p>Create the hierarchical trace log information in XML format into the trace file.</p>
      */
     private void dumpCollectedTracesAsXML() {
@@ -418,7 +434,7 @@ public class Geci implements javax0.geci.api.Geci {
     }
 
     /**
-     * <p>Log the exceptios that the different generators were throwing and then create a compound exception
+     * <p>Log the exceptions that the different generators were throwing and then create a compound exception
      * containing the messages of all the exceptions and throw this aggregate.</p>
      *
      * <p>Return only if there was no any exceptions.</p>
@@ -453,7 +469,7 @@ public class Geci implements javax0.geci.api.Geci {
     }
 
     /**
-     * Invoke all the generators for all the sources that were collecte by the collector for all the phases from {@code
+     * Invoke all the generators for all the sources that were collected by the collector for all the phases from {@code
      * 0} to {@code phases-1}.
      *
      * @param exceptions <!--EXCEPTIONS-->the list of exceptions that are caught and suppressed<!--/-->
@@ -681,9 +697,18 @@ public class Geci implements javax0.geci.api.Geci {
         return this;
     }
 
+    /**
+     * <p>Every generator has access to a context object. (For context, what is a context see {@link
+     * Context}.</p>
+     *
+     * <p>This method checks if there is any context already injected into the Geci object and then injects the context
+     * object into each and every generator. If there was no context injected during the configuration of the Geci
+     * object then a {@link javax0.geci.engine.Context} context implementation is injected. If there was a context
+     * injected during the configuration of the Geci object then that object is injected into the generators.</p>
+     */
     private void injectContextIntoGenerators() {
         if (context == null) {
-            context = new javax0.geci.engine.Context();
+            context = javax0.geci.engine.Context.singletonInstance;
         }
         generators.forEach(g -> g.context(context));
     }

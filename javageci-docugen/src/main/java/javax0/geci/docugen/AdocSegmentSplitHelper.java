@@ -81,9 +81,9 @@ public class AdocSegmentSplitHelper extends AbstractXMLSegmentSplitHelper {
      * <li>does not start with {@code //} or</li>
      * <li>starts with {@code //} but it is {@code // end snip}.</li>
      * </ul>
-     * <p>
-     * In any other case the call is just falling over to the {@code
-     * super.match()}
+     *
+     * <p>In any other case the call is just falling over to the {@code
+     * super.match()}</p>
      *
      * @param lines the list of lines
      * @param i     the index of the current line

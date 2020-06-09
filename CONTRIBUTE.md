@@ -19,7 +19,7 @@ If you just have any idea you want to develop:
 
     FMPR: fork --> modify --> pull request
 
-When creating pull request we recommend to follow the guidelines related to pull requests
+When creating pull request, we recommend to follow the guidelines related to pull requests
 in the [OpenRegime](https://github.com/verhas/openregime) documents.
 
 You are more than welcome to write unit tests for code segments that are

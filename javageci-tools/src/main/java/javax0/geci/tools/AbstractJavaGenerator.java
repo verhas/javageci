@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * Generators that work on Java source files that already have their
  * compiled class files during testing time are encouraged to extend
  * this class instead of {@link AbstractGeneratorEx} or instead of
- * implementing the interface {@link javax0.geci.api.Generator}.
+ * implementing the interface {@link javax0.geci.api.Generator Generator}.
  *
  * <p> Concrete classes have to override te method {@link
  * #process(Source, Class, CompoundParams)}.

@@ -28,10 +28,10 @@ public interface DirectoryLocator {
     Stream<String> alternatives();
 
     /**
-     * Test that the predicate match the given file name.
+     * Test that the predicate matches the given file name.
      *
      * @param file the name of the directory. The name has to be
-     *             normalized (no Windows like \ nonsense) and it must
+     *             normalized (no Windows like \ nonsense) and it MUST
      *             have a trailing {@code /}.
      * @return {@code true} if the file name matches the predicate
      */

@@ -10,19 +10,19 @@ Module Structure Diagram with dependencies
 
 ## Introduction
 
-Java::Geci is a multi module project and it contains several
+Java::Geci is a multi module project, and it contains several
 libraries/jar files when it is compiled. The dependency vectors for
 these jar files are
 
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-MODULE</artifactId>
     <version>version</version>
-    
+
 expressed as Maven dependency.
-    
+
 The JPMS module names have the form `geci.MODULE`. Here `geci.` is a
 constant prefix, `MODULE` is the individual module name.
-    
+
 There are 8 modules (each can stand in place of `MODULE` above):
 
 * `api` defines the interfaces.

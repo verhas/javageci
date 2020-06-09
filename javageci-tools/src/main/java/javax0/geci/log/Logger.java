@@ -39,22 +39,27 @@ public class Logger implements javax0.geci.api.Logger {
         this.LOGGER = factory.apply(forClass);
     }
 
+    @Override
     public void trace(String format, Object... params) {
         LOGGER.log(LoggerJDK.TRACE, format, params);
     }
 
+    @Override
     public void debug(String format, Object... params) {
         LOGGER.log(LoggerJDK.DEBUG, format, params);
     }
 
+    @Override
     public void info(String format, Object... params) {
         LOGGER.log(LoggerJDK.INFO, format, params);
     }
 
+    @Override
     public void warning(String format, Object... params) {
         LOGGER.log(LoggerJDK.WARNING, format, params);
     }
 
+    @Override
     public void error(String format, Object... params) {
         LOGGER.log(LoggerJDK.ERROR, format, params);
     }
