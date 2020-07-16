@@ -15,7 +15,7 @@ public class JavaSource implements AutoCloseable {
     private int tabStop = 0;
 
     //<editor-fold id="fluent" desc="fluent API interfaces and classes">
-    public interface Builder extends Afube {}
+    public interface Builder extends Ukeg {}
     public static Builder builder(){
         return new Wrapper();
     }
@@ -215,6 +215,7 @@ public class JavaSource implements AutoCloseable {
     public interface Afube extends Udoh,Oded,Abok,Efeh,Ujaj,Ogoj,AutoCloseable,Ehebe,Edak,Acuh,Ohug,Agak{
     }
     public interface Ukeg extends Afube,AutoCloseable,Aduf {}
+
     //</editor-fold>
 
     /**
