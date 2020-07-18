@@ -17,7 +17,10 @@ JUL logger.
 The generators are encouraged to use the logger that the `Source` object
 provides. The `Source` object is accessible by the generators since this
 object is passed as an argument to the method `process()` implemented
-by every generator.
+by every generator. Note that the approach to provide a customer logger
+to plugins (which are generators in case of Java::Geci) is an industry
+standard practice and can be found in such well-established software
+like Maven.
 
 The `Source#getLogger()` returns an object that implements the
 `javax0.geci.api.Logger` interface. This object is supposed to be used
