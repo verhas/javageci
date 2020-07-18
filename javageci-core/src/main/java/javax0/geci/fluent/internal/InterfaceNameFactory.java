@@ -37,7 +37,7 @@ public class InterfaceNameFactory {
      * <ul>
      *     <li>a is used</li>
      *     <li>e is used</li>
-     *     <li>i is not used, because it may be confusing when pronounced in some languages insead of 'e'</li>
+     *     <li>i is not used, because it may be confusing when pronounced in some languages instead of 'e'</li>
      *     <li>o is used</li>
      *     <li>u is used</li>
      * </ul>

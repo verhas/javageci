@@ -124,7 +124,8 @@ public class ClassBuilder {
      * @param code to write the start method into
      */
     private void writeWrapperClass(JavaSource.Builder code) throws Exception {
-        try (var klBl = code.open("public static class Wrapper implements %s", setJoin(ifNameFactory.getAllNames(), fluent.getLastType(), fluent.getInterfaces()))) {
+        try (var klBl = code.open("public static class Wrapper implements %s",
+            setJoin(ifNameFactory.getAllNames(), fluent.getLastType(), fluent.getInterfaces()))) {
             klBl.statement("private final %s that", fluent.getKlass().getCanonicalName());
             if (fluent.getCloner() != null) {
                 try (var coBl = klBl.open("public Wrapper(%s that)", fluent.getKlass().getCanonicalName())) {
