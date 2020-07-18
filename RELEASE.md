@@ -12,16 +12,18 @@ the cumulated changes were so significant, the version became
 
 # 1.5.0-SNAPSHOT
 
-* Fluent generator was annotated with `@AnnotationBuilder` and hence, there
-  is a `@Fluent` annotation in `core-annorations`.
+* A fix in the fluent generator. In prior versions when a grammar started with an optional method or with an optional
+  expression (e.g.: zero or more times alternative methods, anything that is `(...)*` in the syntax description) then
+  the generated interface structure required ONE or more invocations instead of ZERO or more.
+
+* Fluent generator was annotated with `@AnnotationBuilder` and hence, there is a `@Fluent` annotation in
+  `core-annorations`.
 
 * Jdocify was developed.
 
-* GeciException thrown from the generators are caught, enriched with the
-  source file information the generator was working on and then thrown
-  again in the Geci process. This eliminates the need to fetch the file name
-  from the source code and to add it to the exception where it is originally
-  thrown. 
+* GeciException thrown from the generators are caught, enriched with the source file information the generator was
+  working on and then thrown again in the Geci process. This eliminates the need to fetch the file name from the source
+  code and to add it to the exception where it is originally thrown.
 
 * Lexical analyser keeps the original format of the characters and strings
   and it can also be queried in case the generator needs to know the exact

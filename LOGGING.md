@@ -9,6 +9,9 @@ effect during the test execution. The configuration of the logging
 system is out of the scope of this document, and generally a standard
 matter.
 
+The compilation that is targeting the Java 8 VM is used the Java standard
+JUL logger.
+
 ## Logging in generators
 
 The generators are encouraged to use the logger that the `Source` object
@@ -67,5 +70,5 @@ method:
 
 Do not log the name of the source, it will be there in the output
 automatically. Also do not log the name of the generator. The name of
-the generator class or the mnemonic of the generator (if it has
-mnemonic) will be printed.
+the generator class, or the mnemonic of the generator (if it has
+mnemonic) will automatically be printed.
