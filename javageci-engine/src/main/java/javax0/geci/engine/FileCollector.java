@@ -55,6 +55,11 @@ class FileCollector {
      * printed into the log it would be sometimes with {@code \}, other times {@code /}. Changing {@code \} to {@code /}
      * will result a smooth and coherent file name representation in the log files.</p>
      *
+     * <p>The change from {@code \} to {@code /} in the file name also helps the developers when they specify {@link
+     * Geci#only(String...) Geci.only()} and {@link Geci#ignore(String...) Geci.ignore()} file patterns. The patterns
+     * that may contain directory names may be much more complex if the regular expression is to be prepared to match
+     * {@code \} as well as {@code /} as path separator.</p>
+     *
      * @param s the not yet normalized file name
      * @return the file directory name
      */
