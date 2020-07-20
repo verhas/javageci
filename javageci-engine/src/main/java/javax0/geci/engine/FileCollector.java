@@ -42,34 +42,29 @@ class FileCollector {
     }
 
     /**
-     * Normalize a file name. Convert all {@code \} separator to {@code
-     * /} and remove all '{@code /./}' path parts.
+     * <p>Normalize a file name.</p>
+     *
+     * <p>Remove all {@code /./} part from the file name, and eliminate all {@code something/..} subsequence from the
+     * path. Also convert all {@code \} separator to {@code /}.</p>
+     *
+     * <p>The conversion of the {@code \} character to {@code /} makes file reporting more concise under Windows. Using
+     * {@code /} as file separator is absolutely legit under Windows. However, when the used {@link Path#normalize()}
+     * method changes the actual path string then it uses {@code \\} characters when reconstructing the path from the
+     * individual parts, because that is the default file separator. If the path is already normalized then it does not
+     * change anything. That way the separator will depend on the normalization process and when the file name is
+     * printed into the log it would be sometimes with {@code \}, other times {@code /}. Changing {@code \} to {@code /}
+     * will result a smooth and coherent file name representation in the log files.</p>
      *
      * @param s the not yet normalized file name
      * @return the file directory name
      */
     public static String normalize(String s) {
-        final var unixStyle = s.replace("\\", "/")
-            .replace("/./", "/");
-        final var pathElements = new ArrayList<>(Arrays.asList(unixStyle.split("/", -1)));
-        boolean changed;
-        do {
-            changed = false;
-            for (int i = 0; i < pathElements.size() - 1; i++) {
-                if (!pathElements.get(i).equals("..") && pathElements.get(i + 1).equals("..")) {
-                    pathElements.remove(i + 1);
-                    pathElements.remove(i);
-                    changed = true;
-                    break;
-                }
-            }
-        } while (changed);
-        return String.join("/", pathElements);
+        return Paths.get(s).normalize().toString().replace("\\","/");
     }
 
     /**
-     * Normalize a directory name. The same as normalizing a file, but
-     * also adding a trailing / if that is missing.
+     * <p>Normalize a directory name. The same as normalizing a file, but
+     * also adding a trailing / if that is missing.</p>
      *
      * @param s the not yet normalized directory name
      * @return the normalized directory name
@@ -151,13 +146,12 @@ class FileCollector {
     }
 
     /**
-     * When the sources are configured by default, simply not specifying
+     * <p>When the sources are configured by default, simply not specifying
      * any source then Geci will automatically configure all the four
      * default Maven directories for main and test / sources and
-     * resources.
+     * resources.</p>
      *
-     * <p>
-     * In this case these source sets are not configured explicitly and
+     * <p>In this case these source sets are not configured explicitly and
      * therefore the user should not be notified throwing an exception
      * and aborting the code generation if some of the source sets are
      * not available. When the source sets are configured explicit then
@@ -165,24 +159,23 @@ class FileCollector {
      * has to be notified. That is because it is likely a mistake that
      * the user is configuring a source set that does not exist. In case
      * of the default setting it happens all the time and this is not an
-     * error.
+     * error.</p>
      *
-     * <p>
-     * Calling this method the file collection will throw an exception
+     * <p>Calling this method the file collection will throw an exception
      * only in case there is no any defined source sets available. If
      * some of the source sets are not available this is not a problem.
      * Geci is calling this method when the source sets are defined as
      * default. Without this call the default source set configuration
      * could only be used if all {@code src/main/java}, {@code
      * src/test/java}, {@code src/main/resources}, {@code
-     * src/test/resources} exist.
+     * src/test/resources} exist.</p>
      */
     public void lenient() {
         lenient = true;
     }
 
     /**
-     * Get the segment split helper that is to be used for this source.
+     * <p>Get the segment split helper that is to be used for this source.</p>
      *
      * @param source for which we need the helper
      * @return the helper object
