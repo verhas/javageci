@@ -11,7 +11,7 @@ You can read the following articles to get to know what fluent api is:
 
 [FluentInterface from Martin Fowler](http://martinfowler.com/bliki/FluentInterface.html)
 
-[The Java Fluent API Designer Crash Course](http://java.dzone.com/articles/java-fluent-api-designer-crash)
+[The Java Fluent API Designer Crash Course](http://dzone.com/articles/java-fluent-api-designer-crash)
 
 ## Impatient? Do not want to read those articles?
 
@@ -37,7 +37,7 @@ write
 
 which is simply wrong. To prevent this you have to define extra
 interfaces as depicted in the articles
-[The Java Fluent API Designer Crash Course](http://java.dzone.com/articles/java-fluent-api-designer-crash)
+[The Java Fluent API Designer Crash Course](http://dzone.com/articles/java-fluent-api-designer-crash)
 
 This fluent API code generator will generate those extra interfaces
 automatically based on the definition of the grammar of the fluent API.
