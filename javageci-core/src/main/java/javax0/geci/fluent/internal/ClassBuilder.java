@@ -322,7 +322,7 @@ public class ClassBuilder {
         String actualNextInterface = nextInterface;
         for (var i = list.size() - 1; i >= 0; i--) {
             final var node = list.get(i);
-            ClassBuilder builder = new ClassBuilder(this);
+            var builder = new ClassBuilder(this);
             code.write(builder.build(node, actualNextInterface));
             if (i == 0) {
                 return builder;
