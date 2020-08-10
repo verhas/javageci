@@ -13,7 +13,7 @@ public class TestMethods {
     @Test
     @DisplayName("Macro methods return all methods for TestMethods")
     void testC() throws InvocationTargetException, NoSuchMethodException, InstantiationException, BadSyntax, IllegalAccessException {
-        TestThat.forMacro(Methods.class).fromInput("javax0.geci.jamal.TestMethods").results(
+        TestThat.theMacro(Methods.class).fromTheInput("javax0.geci.jamal.TestMethods").results(
                 "java.lang.Object|clone|," +
                 "java.lang.Object|finalize|," +
                 "java.lang.Object|toString|," +
@@ -29,7 +29,7 @@ public class TestMethods {
 
     @Test
     void testD() throws InvocationTargetException, NoSuchMethodException, InstantiationException, BadSyntax, IllegalAccessException {
-        TestThat.forMacro(Methods.class).fromInput("javax0.geci.jamal.TestMethods/package").results(
+        TestThat.theMacro(Methods.class).fromTheInput("javax0.geci.jamal.TestMethods/package").results(
             "javax0.geci.jamal.TestMethods|testC|" +
                 ",javax0.geci.jamal.TestMethods|testD|"
         );
