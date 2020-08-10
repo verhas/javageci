@@ -45,7 +45,7 @@ class FileCollector {
      * <p>Normalize a file name.</p>
      *
      * <p>Remove all {@code /./} part from the file name, and eliminate all {@code something/..} subsequence from the
-     * path. Also convert all {@code \} separator to {@code /}.</p>
+     * path. (Essentially what {@link Path#normalize()} does.) Also convert all {@code \} separator to {@code /}.</p>
      *
      * <p>The conversion of the {@code \} character to {@code /} makes file reporting more concise under Windows. Using
      * {@code /} as file separator is absolutely legit under Windows. However, when the used {@link Path#normalize()}
