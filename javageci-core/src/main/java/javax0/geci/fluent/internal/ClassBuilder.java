@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -94,7 +93,7 @@ public class ClassBuilder {
      * class and returns it as the interface type that can be used to start the fluent API structure.
      *
      * @param code to write the start method into
-     * @throws Exception never, signature inherited from {@code }AutoCloseable}
+     * @throws Exception never, signature inherited from {@code AutoCloseable}
      */
     private void writeStartMethod(JavaSource.Builder code) throws Exception {
         final var startMethod = fluent.getStartMethod() == null ? "start" : fluent.getStartMethod();
@@ -212,22 +211,20 @@ public class ClassBuilder {
 
     private String build(Tree tree, String nextInterface) {
         int modifier = tree.getModifier();
-        if (modifier == Node.ONCE) {
-            return buildOnce(tree, nextInterface);
+        switch (modifier) {
+            case Node.ONCE:
+                return buildOnce(tree, nextInterface);
+            case Node.OPTIONAL:
+                return buildOptional(tree, nextInterface);
+            case Node.ZERO_OR_MORE:
+                return buildZeroOrMore(tree, nextInterface);
+            case Node.ONE_OF:
+                return buildOneOf(tree, nextInterface);
+            case Node.ONE_TERMINAL_OF:
+                return buildOneTerminalOf(tree, nextInterface);
+            default:
+                throw new GeciException("Internal error tree " + tree.toString() + " modifier is " + modifier);
         }
-        if (modifier == Node.OPTIONAL) {
-            return buildOptional(tree, nextInterface);
-        }
-        if (modifier == Node.ZERO_OR_MORE) {
-            return buildZeroOrMore(tree, nextInterface);
-        }
-        if (modifier == Node.ONE_OF) {
-            return buildOneOf(tree, nextInterface);
-        }
-        if (modifier == Node.ONE_TERMINAL_OF) {
-            return buildOneTerminalOf(tree, nextInterface);
-        }
-        throw new GeciException("Internal error tree " + tree.toString() + " modifier is " + modifier);
     }
 
     private String buildOneTerminalOf(Tree tree, String nextInterface) {
@@ -266,7 +263,7 @@ public class ClassBuilder {
             .set(fluent.getInterfaces())
             .set(alternativeInterfaces)
             .buildList();
-        try (final var ifcB = code.open("public interface %s%s", this.interfaceName, ifs)) {
+        try (final var ignored = code.open("public interface %s%s", this.interfaceName, ifs)) {
         }
         return code.toString();
     }
@@ -309,18 +306,29 @@ public class ClassBuilder {
         return code.toString();
     }
 
+    /**
+     * Used to build the internal nodes of other nodes.
+     * <p>
+     * For example: If you have (a|b)*, which is a {@code Node.ZERO_OR_MORE} Node,
+     * containing a {@code NODE.ONE_OF} Node, we call {@code buildZeroOrMore()} to
+     * build the parent node ({@code Node.ZERO_OR_MORE}, (a|b)*), which calls this method
+     * to build the contained node ({@code Node.ONE_OF}, a|b).
+     *
+     * @param nextInterface the name of the next interface
+     * @param list          the nodes contained by the parent node
+     * @param code          the source code we write the generated interfaces into
+     * @return the last builder clone
+     */
     private ClassBuilder buildNodeList(String nextInterface, List<Node> list, JavaSource code) {
-        ClassBuilder lastBuilder = null;
+        String actualNextInterface = nextInterface;
         for (var i = list.size() - 1; i >= 0; i--) {
             final var node = list.get(i);
             var builder = new ClassBuilder(this);
-            final String actualNextInterface =
-                Optional.ofNullable(lastBuilder).map(z -> z.interfaceName).orElse(nextInterface);
             code.write(builder.build(node, actualNextInterface));
             if (i == 0) {
                 return builder;
             }
-            lastBuilder = builder;
+            actualNextInterface = builder.interfaceName;
         }
         throw new GeciException("Internal error");
     }
