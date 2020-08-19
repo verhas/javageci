@@ -10,7 +10,7 @@ example the `1.4.1-SNAPSHOT` version was in this file for some time and then
 the cumulated changes were so significant, the version became
 `1.5.0-SNAPSHOT` without releasing `1.4.1` ever.
 
-# 1.5.0-SNAPSHOT
+# 1.5.0
 
 * A fix in the fluent generator. In prior versions when a grammar started with an optional method or with an optional
   expression (e.g.: zero or more times alternative methods, anything that is `(...)*` in the syntax description) then
