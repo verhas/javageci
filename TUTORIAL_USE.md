@@ -17,13 +17,13 @@ to use Java::Geci, add the following dependency to your project:
      <!-- This is optional, you can use your own annotations or comment config -->
      <groupId>com.javax0.geci</groupId>
      <artifactId>javageci-annotation</artifactId>
-     <version>1.5.0-SNAPSHOT</version>
+     <version>1.5.1-SNAPSHOT</version>
  </dependency>
  <dependency>
      <groupId>com.javax0.geci</groupId>
      <artifactId>javageci-engine</artifactId>
      <scope>test</scope>
-     <version>1.5.0-SNAPSHOT</version>
+     <version>1.5.1-SNAPSHOT</version>
  </dependency>
  ```
 There are other modules, but you do not need to declare dependency on
