@@ -2,29 +2,19 @@
 
 # Builder
 
-The builder generator generates a builder as an inner class into a
-class. The builder class will have a method to specify the values of
-the fields. The fields taken into account are filtered the usual way
-using the `filter` configuration field. Usually (by default) only
-`private` fields will have a builder method, which are not `private`
-and not `static`.
+The builder generator generates a builder as an inner class into a class.
+The builder class will have a method to specify the values of the fields.
+The fields taken into account are filtered the usual way using the `filter` configuration field.
+Usually (by default) only `private` fields will have a builder method, which are not `private` or `static`.
 
-The generator is also capable generating aggregator methods when the
-field is a collection or some other type that can aggregate/collect
-several values. A field is considered to be an aggregator type if the
-class of the field has at least one method named `add(x)` that has
-one argument. The actual name is `add` by default but this is
-configurable. For example if a field is of type `List` then then it
-will be treated as aggregator type because the class `List` has a
-method `add`. The name of the corresponding aggregator method in the
-builder will be `add` plus the name of the field with capitalized
-first letter.
+The generator is also capable generating aggregator methods when the field is a collection or some other type that can aggregate/collect several values.
+A field is considered to be an aggregator type if the class of the field has at least one method named `add(x)` that has one argument.
+The actual name is `add` by default but this is configurable.
+For example if a field is of type `List` then then it will be treated as aggregator type because the class `List` has a method `add`.
+The name of the corresponding aggregator method in the builder will be `add` plus the name of the field with capitalized first letter.
 
-There are several values that can be configured for the generator in
-the generators builder pattern (in the test code, where the generator
-is registered into the `Geci` object or on the class level using
-annotation and also on the field level.
-
+There are several values that can be configured for the generator in the generators builder pattern.
+This can be done in the test code where the generator is registered into the `Geci` object, or on the class/field level using annotations.
 
 <!-- end snip -->
 
@@ -32,12 +22,8 @@ annotation and also on the field level.
 
 # Configuration
 
-The configuration values can be configured on the builder of the
-generator in the test code where the generator object is
-registered into the `Geci` object that is used to run the
-generation. The configuration items that are `String` can be
-configured on the [target class](TERMINOLOGY.md) and also on the
-fields individually.
+The configuration values can be configured on the builder of the generator in the test code where the generator object is registered into the `Geci` object that is used to run the generation.
+The configuration items that are `String` can be configured on the [target class](TERMINOLOGY.md) and also on the fields individually.
 
 * `generatedAnnotation` can define the class that will be
 used to mark the generated methods and classes as generated.

@@ -1,68 +1,46 @@
 # Configuring Generators
 
-Generators are classes that implement the `Generator` interface. Because
-this interface is simple and does not specify anything about the configuration
-the actual configuration of a generator depends on how it is implemented.
+Generators are classes that implement the `Generator` interface.
+This interface is simple and does not specify anything about the configuration.
+The actual configuration of a generator depends on how it is implemented.
 
 Their implementation is out of the control of the Java::Geci library.
-It is only a recommendation to use the tools and structures that are
-provided in the form of some generators and libraries.
+It is only a recommendation to use the tools and structures that are provided in the form of some generators and libraries.
 
-There are guidelines for the code generator
-development that also includes configuration management for code
-generators. This document describes how to develop a code generator that
-follows these guidelines, and how a generator following those
-guidelines can be configured.
+There are guidelines for the code generator development that also includes configuration management for code generators.
+This document describes how to develop a code generator that follows these guidelines, and how a generator following those guidelines can be configured.
 
 The advantage following these guidelines is:
 
-*   There are tools readily available for code generators to handle
-    configuration data. Using these tools the code generator code can
-    focus on what the core functionality of the code generator is and
-    does not need to have excessive configuration handling code.
-    (At the end of the day it will have, but they will be generated so
-    the maintenance of the code is marginal.)
+*   There are tools readily available for code generators to handle configuration data.
+    Using these tools the code generator code can focus on the core functionality without the need for excessive configuration.
+    (There is still a lot of configuration, but it is auto-generated, so the maintenance of the code is marginal.)
 
-*   Developers who use the code generator do not need to learn the
-    specific configuration handling of the actual code generator. They
-    understand the configuration keys and their meaning. The coding
-    to set those values are the same for all code generators.
+*   Developers who use the code generator do not need to learn the specific configuration handling of the actual code generator.
+    They understand the configuration keys and their meaning.
+    The coding to set those values are the same for all code generators.
 
-From now on in this document when talking about a code generator we
-assume that the actual implementation fully follows these guidelines.
+From now on in this document when talking about a code generator we assume that the actual implementation fully follows these guidelines.
     
 ## Configuration scopes
 
-Code generators can be configured with many scopes. The smaller scope
-usually overrides the larger scope. For
-example, a configuration value can be set
+Code generators can be configured with many scopes.
+The smaller scope usually overrides the larger scope.
+For example, a configuration value can be set
 
-* default values are coded in the generator code by the programmer and
-  they have a scope for the whole lifetime of the specific release of
-  the code generator running different times on many different machines
-  at different geo-locations. (Or in space.)
+* default values are coded in the generator code by the programmer and they have a scope for the whole lifetime of the specific release of the code generator running different times on many different machines at different geo-locations. (Or in space.)
 
-* for the generator object whole lifecycle, which means that the
-  generator will use the set value for all the source files it
-  processes, unless there is some value that the source code
-  annotations and other configurations override. This level is managed
-  by using the builder pattern when the generator is instantiated,
-  usually in an expression that is the argument to the Java::Geci
-  `register()` method.
+* for the generator object whole lifecycle, which means that the generator will use the set value for all the source files it processes, unless there is some value that the source code annotations and other configurations override.
+  This level is managed by using the builder pattern when the generator is instantiated, usually in an expression that is the argument to the Java::Geci `register()` method.
 
-* for the source level that will control how the execution of code
-  generation for one specific source file. Such a value is usually
-  configured using the annotation the class, and/or in the arguments of
-  the `editor-fold` segment or in a comment that looks like the `@Geci`
-  annotation.
+* for the source level that will control how the execution of code generation for one specific source file. Such a value is usually configured using the annotation the class, and/or in the arguments of the `editor-fold` segment or in a comment that looks like the `@Geci` annotation.
     
-* for the field, method or other managed member level. Such a value is
-  configured using the annotation on the specific member.
+* for the field, method or other managed member level.
+  Such a value is configured using the annotation on the specific member.
     
 ## Configuration support
 
-Java::Geci provides support for configuration management on the
-generator object lifestyle scope and on the class and member scope.
+Java::Geci provides support for configuration management on the generator object lifestyle scope and on the class and member scope.
 
 ### Generator Configuration Builder
 
@@ -76,26 +54,18 @@ private static class Config {
 }
 ```
  
-Note that the name has to be `Config` in order to use the code
-generation support. (See more about it later.) The class can also be
-non-static and in special cases there is a reason to do that, but unless
-you want it to be non-static make it static.
+Note that the name has to be `Config` in order to use the code generation support (See more about it later).
+The class can also be non-static and in special cases there is a reason to do that, but unless you _want_ it to be non-static make it static.
 
 > Usually the only thing that you code into this class are the fields.
-> In sone cases you also write setters, which are used instead of direct
-> field assignment when the code handling the configuration is generated
-> using the config builder. There is no strict rule that would forbid to
-> have other methods in this class, but essentially you want to code
-> only things that belong some way to the configuration handling. For
-> example the `cloner` generator has two configuration parameter
-> `copyMethod` and `superCopyMethod`. One is the name of the copy method
-> it generates the other one is the name of the method with the same
-> functinality in the parent class. They usually have the same name. The
-> default is `copy()`. However, when the developer wants to define a
-> different name then it is enough to specify `copyMethod` and they have
-> to define `superCopyMethod` only when that is different from the
-> configured `copyMethod`. To handle this configration logic the
-> `Config` class in the cloner has the following code: 
+> In some cases you also write setters, which are used instead of direct field assignment when the code handling the configuration is generated using the config builder.
+> There is no strict rule that would forbid to have other methods in this class, but essentially you want to code only things that belong some way to the configuration handling.
+> For example the `cloner` generator has two configuration parameters `copyMethod` and `superCopyMethod`.
+> One is the name of the copy method it generates the other one is the name of the method with the same functionality in the parent class.
+> They usually have the same name.
+> The default is `copy()`.
+> However, when the developer wants to define a different name then it is enough to specify `copyMethod` and they have to define `superCopyMethod` only when that is different from the configured `copyMethod`.
+> To handle this configuration logic the `Config` class in the cloner has the following code: 
 
 ```java
 private String getSuperCopyMethod() {
@@ -104,8 +74,7 @@ private String getSuperCopyMethod() {
 }
 ```
 
-> This code does not affect the functionality of the configuration code
-> generated by the config builder code generator.
+> This code does not affect the functionality of the configuration code generated by the config builder code generator.
 
 Generators also have a `private`, preferably `final` field
 
@@ -113,13 +82,10 @@ Generators also have a `private`, preferably `final` field
 private final Config config = new Config();
 ```
 
-Generators also define a method named `builder()` that returns a builder
-object, which is a (non-static) inner class of the generator class. This
-builder class has a method for each of the fields declared in the class
-`Config`.
+Generators also define a method named `builder()` that returns a builder object, which is a (non-static) inner class of the generator class.
+This builder class has a method for each of the fields declared in the class `Config`.
 
-For example, there is a code generator in the `core` package named
-`ConfigBuilder` and it has the following code
+For example, there is a code generator in the `core` package named `ConfigBuilder` and it has the following code
 
 ```java
     private static class Config {
@@ -166,9 +132,8 @@ public class Builder {
     }
 ```
 
-Each filed named `xyz` has a corresponding method with the same name
-that sets the value of the field. The method `build()` returns the
-configured generator object.
+Each filed named `xyz` has a corresponding method with the same name that sets the value of the field.
+The method `build()` returns the configured generator object.
 
 Following this structure, the generator can be instantiated using the
 
@@ -176,67 +141,50 @@ Following this structure, the generator can be instantiated using the
 ConfigBuilder.builder().filter("(private|protected) & !static & !final"). ... .build()
 ```
 
-setting all the configuration parameters that can be used by the
-generator. When the generator is attending to a source file reading it
-and then generating code it also reads the configuration from the
-`editor-fold` and from the annotations. A well-designed generator will
-read and interpret the configuration key `xyz` if that appears in the
-`Config` class and is `String` type.
+setting all the configuration parameters that can be used by the generator.
+When the generator is attending to a source file reading it and then generating code it also reads the configuration from the `editor-fold` and from the annotations.
+A well-designed generator will read and interpret the configuration key `xyz` if that appears in the `Config` class and is `String` type.
 
 ### Source configuration
 
-The `String` configuration values that are defined in the `Config` class
-can be overridden in the source code. The scope of these values will be
-the code generation of the actual source file and they have no effect on
-the code generation on the next source code processing.
+The `String` configuration values that are defined in the `Config` class can be overridden in the source code.
+The scope of these values will be the code generation of the actual source file and they have no effect on the code generation on the next source code processing.
 
-> Note that generally a `Generator` can work on any source file, like on
-XML, JSON or even on binary files and generate usually Java code. If
-the generator works on anything else but Java source code then it is
-totally up to the generator implementation if it reads the configuration
-values if any from the source file it uses to work on. From now on we
-assume that the generator works on Java source code and the generator
-class is directly or through other abstract classes extends the
-`AbstractJavaGenerator` defined in the `tools` module.
+> Note that generally a `Generator` can work on any source file, like on XML, JSON or even on binary files and usually generate Java code.
+> If the generator works on anything else but Java source code then it is totally up to the generator implementation if it reads the configuration values if any from the source file it uses to work on.
+> From now on we assume that the generator class directly or through other abstract classes extends the `AbstractJavaGenerator` defined in the `tools` module.
 
-When the generator starts processing a Java source file it tries to read
-the Geci annotation of the class. An annotation is a Geci annotation if
+When the generator starts processing a Java source file it tries to read the Geci annotation of the class.
+An annotation is a Geci annotation if:
 
 * the name of the annotation is `Geci`
-* the annotation interface is annotated using a Geci annotation. Note
-  that this definition is recursive and should be interpreted
-  non-circular in the meaning that somewhere in the chain there has to
-  be an annotation that is named `Geci`.
+* the annotation interface is meta-annotated with a Geci annotation.
+  Meta-annotated means if we get all annotations, recursively, we eventually get a `Geci` annotation.
 
-Every Geci annotation has a mnemonic that defines which generator it is
-configuring. This mnemonic should present in the string of the `value()`
-parameter of the annotation. In this case, this is the first word in the
-string value separated by one or more spaces from the parameters. For
-example the annotation
+Every Geci annotation has a mnemonic defining which generator it is configuring.
+This mnemonic should present in the string of the `value()` parameter of the annotation.
+In this case, this is the first word in the string value separated by one or more spaces from the parameters.
+For example, the annotation:
 
 ```java
 @Geci("accessor filter='private | protected'")
 ```
 
-has the mnemonic `accessor` and the parameter, it has only one, is
-`filter`.
+has the mnemonic `accessor` and the parameter, it has only one, is `filter`.
 
-When a Geci annotation is not named `Geci` then the name of the
-annotation can also be used to identify the generator it is configuring.
-In that case, the name of the annotation can be the mnemonic of the
-generator. The first character of the annotation is lowercased in this
-case before it is used as the mnemonic of the generator.
+When a Geci annotation is not named `Geci` then the name of the annotation can also be used to identify the generator it is configuring.
+In that case, the name of the annotation can be the mnemonic of the generator.
+The first character of the annotation is changed to lowercase in this case before it is used as the mnemonic of the generator.
 
-The example above can be converted to use an annotation named `Accessor`
-if one exists and is annotated using a Geci annotation:
+The example above can be converted to use an annotation named `Accessor` if one exists and is annotated using a Geci annotation:
 
 ```java
 @Accessor("filter='private | protected'")
 ```
 
-There can be several `@Geci` annotations on a class and the generator
-takes only the one into account, the one that specifies the mnemonic of
-the generator. The other annotations are ignored.
+There can be several `@Geci` annotations on a class.
+The generator takes only the one into account, the one specifying the mnemonic of the generator.
+The other annotations are ignored.
 
 If there is no Geci annotation on a class then the generator reads the
 source code and tries to find a line that is a comment line (starting
