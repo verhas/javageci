@@ -21,20 +21,18 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
          * <p>
          * * `set='name-of-the-source-set'`
          * <p>
-         * By default the annotations are generated into the same source set where the target generator is. In case of a
-         * multi-module project you may want to separate the annotations from the generators into a different module.
-         * The reason for that can be that the generators are test scope dependencies. On the other hand the
-         * annotations, albeit not used during run-time are compile scope dependencies. That is because these
-         * annotations have run-time retention and are put into the JVM byte code by the compiler. Even though they are
-         * not used during non-test run-time, they are there and thus the JAR defining them must be on the class/module
-         * path.
+         * By default the annotations are generated into the same source set where the target generator is.
+         * In case of a multi-module project you may want to separate the annotations from the generators into a different module.
+         * The reason for that can be that the generators are test scope dependencies.
+         * On the other hand the annotations, albeit not used during run-time are compile scope dependencies.
+         * That is because these annotations have run-time retention and are put into the JVM byte code by the compiler.
+         * Even though they are not used during non-test run-time, they are there and thus the JAR defining them must be on the class/module path.
          * <p>
          * Use this configuration either calling `set(""name-of-source-set")` in the test code when building the
          * annotation builder generator or `@AnnotationBuilder(module="name-of-source-set")` on the generator class to
          * define the name of the source set where the annotation will be generated.
          * <p>
-         * Since the source set is defined in the test code it is reasonable to configure this paramater via the builder
-         * interface of the generator.
+         * Since the source set is defined in the test code it is reasonable to configure this parameter via the builder interface of the generator.
          */
         private String set = "";
         /**
@@ -44,16 +42,13 @@ public class AnnotationBuilder extends AbstractJavaGenerator {
          * <p>
          * This parameter can define the name of the package where the annotations will be created.
          * <p>
-         * Use `@AnnotationBuilder(in="name.of.package")` to generate the annotation in a different package. You can
-         * specify an absolute package simply specifying the full name of the package or you can specify a package that
-         * is relative to the package of the target generator starting the configuration value with a dot. For example
-         * the default value for this parameter is `.annotation` that will direct the annotation builder to generate the
-         * annotation in the subpackage `annotation` right below the target generator.
+         * Use `@AnnotationBuilder(in="name.of.package")` to generate the annotation in a different package.
+         * You can specify an absolute package with the full name of the package (e.g.: `com.example.package`).
+         * Alternatively, you can specify a package that is relative to the package of the target generator starting the configuration value with a dot.
+         * For example, the default value for this parameter is `.annotation` that will direct the annotation builder to generate the annotation in the subpackage `annotation` right below the target generator.
          * <p>
-         * Using empty string, or only a `.` (single dot) is implicitly relative and will generate the annotation to the
-         * same package where the generator is. Note, however, when you separate the annotations from the generators to
-         * different modules the different modules are not allowed to define classes in the same package. The Java
-         * module system will not load such modules.
+         * Using empty string, or only a `.` will generate the annotation to the same package where the generator is.
+         * Note, however, when you separate the annotations from the generators to different modules the different modules are not allowed to define classes in the same package. The Java module system will not load such modules.
          */
         private String in = ".annotation";
     }

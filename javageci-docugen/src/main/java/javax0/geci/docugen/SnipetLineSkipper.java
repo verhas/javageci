@@ -61,8 +61,7 @@ public class SnipetLineSkipper extends AbstractSnippeter {
         private Pattern skip = Pattern.compile("skip");
         /*
 
-        This pattern defines the line that starts the skipping and which skipping is finished by the pattern configured
-        using the next configuration option `skipEnd`.
+        This pattern defines the line that starts the skipping and which skipping is finished by the pattern configured using the next configuration option `skipEnd`.
 
         end snippet */
 
@@ -70,8 +69,7 @@ public class SnipetLineSkipper extends AbstractSnippeter {
         private Pattern skipEnd = Pattern.compile("skip\\s+end");
         /*
 
-        This pattern defines the line that stops line skipping in case it was started using a line matched by the
-        previous pattern `skip`.
+        This pattern defines the line that stops line skipping in case it was started using a line matched by the previous pattern `skip`.
 
         end snippet */
 
@@ -79,9 +77,8 @@ public class SnipetLineSkipper extends AbstractSnippeter {
         private Pattern skipNrLines = Pattern.compile("skip\\s+(\\+?\\d+)\\s+lines?");
         /*
 
-        This pattern finds the line that signals that a certain number of lines should be skipped. If configured other
-        than the default then the regular expression MUST have a single matching group (the part between the parentheses)
-        that will match a substring that is a positive decimal number.
+        This pattern finds the line that signals that a certain number of lines should be skipped.
+        If configured other than the default then the regular expression MUST have a single matching group (the part between the parentheses) that will match a substring that is a positive decimal number.
 
         end snippet */
 
@@ -89,13 +86,11 @@ public class SnipetLineSkipper extends AbstractSnippeter {
         private Pattern skipTill = Pattern.compile("skip\\s+till\\s+/(.*?)/");
         /*
 
-        This pattern finds athe line that is the start of skipping specifying a regular expression that should match
-        a later line, which will be the stopping signal for skipping. The line that matches the regular expression
-        at the end will NOT be included in the snippet. It will be skipped.
+        This pattern finds the line that is the start of skipping specifying a regular expression that should match a later line, which will be the stopping signal for skipping.
+        The line that matches the regular expression at the end will NOT be included in the snippet.
+        It will be skipped.
 
-        If configured other than the default then the regular expression MUST have a single matching group (the part
-        between the parentheses) that will match a substring that will be used as a regular expression to find the
-        skipping end.
+        If configured other than the default then the regular expression MUST have a single matching group (the part between the parentheses) that will match a substring that will be used as a regular expression to find the skipping end.
 
         end snippet */
     }
