@@ -7,8 +7,7 @@
 * [Iterate](ITERATE.adoc)
 * [toMap() and fromMap()](MAPPER.md)
 * [Template based generator](TEMPLATED.md)
-* [Repeated code generator](REPEATED.md) DEPRECATED, use [iterate](ITERATE.adoc)
-  instead
+* [Repeated code generator](REPEATED.md) DEPRECATED, use [iterate](ITERATE.adoc) instead
 * [Object cloner](CLONER.md)
 * [Static dependency injection](INJECT.md) (planned)
 * [Proxy class](PROXY.md) (planned)
