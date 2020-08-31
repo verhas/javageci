@@ -54,16 +54,14 @@ public class Selector<T> {
         /**
          * - head
          *
-         * `annotation ~ /regex/` is `true` if the examined member has
-         * an annotation that matches the regular expression.
+         * `annotation ~ /regex/` is `true` if the examined member has an annotation that matches the regular expression.
          */
         regexSelector("annotation", (m, regex) -> only(m, AnnotatedElement.class) &&
             matchAnnotations((AnnotatedElement) m, regex));
         /**
          * -
          *
-         * `annotated` is `true` if the examined member has an
-         * annotation. (Any annotation.)
+         * `annotated` is `true` if the examined member has an annotation. (Any annotation.)
          */
         selector("annotated", (m) -> only(m, AnnotatedElement.class) &&
             hasAnnotations((AnnotatedElement) m));
@@ -74,20 +72,16 @@ public class Selector<T> {
      * <p>
      * ### Conversion
      * <p>
-     * Conversions are used to direct the next part of the expression to
-     * check something else instead of the member. The conversion is on
-     * the same level as the `!` negation operator and the name of the
-     * conversion is separated from the following part of the expression
-     * by `->`.
+     * Conversions are used to direct the next part of the expression to check something else instead of the member.
+     * The conversion is on the same level as the `!` negation operator and the name of the conversion is separated from the following part of the expression by `->`.
      */
     private void defineConversions() {
         /**
          * -
          *
-         * * `declaringClass` check the declaring class instead of the
-         * member. This can be applied to methods, fields and classes.
-         * Note that there is an `enclosingClass` that can be applied to
-         * classes.
+         * * `declaringClass` check the declaring class instead of the member.
+         * This can be applied to methods, fields and classes.
+         * Note that there is an `enclosingClass` that can be applied to classes.
          */
         converter("declaringClass", this::getDeclaringClass);
         converter("returnType", m -> only(m, Method.class) ? ((Method) m).getReturnType() : null);
@@ -145,8 +139,8 @@ public class Selector<T> {
      * <p>
      * ### Class and method checking selectors
      *
-     * <p> These conditions work on classes and on methods. Applying
-     * them on a field will throw exception.
+     * <p> These conditions work on classes and on methods.
+     * Applying them on a field will throw exception.
      */
     private void methodAndClassOnlySelectors() {
         /**
@@ -159,13 +153,9 @@ public class Selector<T> {
         /**
          * -
          *
-         * * `implements` is `true` if the class implements at least one
-         * interface. When applied to a method it is `true` if the
-         * method implements a method of the same name and argument
-         * types in one of the interfaces the class directly or
-         * indirectly implements. In other words it means that there is
-         * an interface that declares this method and this method is an
-         * implementation (not abstract).
+         * * `implements` is `true` if the class implements at least one interface.
+         * When applied to a method it is `true` if the method implements a method of the same name and argument types in one of the interfaces the class directly or indirectly implements.
+         * In other words it means that there is an interface that declares this method and this method is an implementation (not abstract).
          *
          */
         selector("implements", m -> only(m, Class.class, Method.class) && methodOrClassImplements(m));
@@ -180,13 +170,10 @@ public class Selector<T> {
      * <p>
      * ### Class checking selectors
      * <p>
-     * These conditions work on classes. When used on a field then
-     * the type of the field is checked. When used on a method then the
-     * return type of the method is checked. When the documentation here
-     * says "... when the type is ..." it means that the class or
-     * interface itself or the type of the field or the return type of
-     * the method in case the condition is checked against a field or
-     * method.
+     * These conditions work on classes.
+     * When used on a field then the type of the field is checked.
+     * When used on a method then the return type of the method is checked.
+     * When the documentation here says "... when the type is ..." it means that the class or interface itself or the type of the field or the return type of the method in case the condition is checked against a field or method.
      */
     private void classOnlySelectors() {
         /**
@@ -198,16 +185,14 @@ public class Selector<T> {
         /**
          * -
          *
-         * * `primitive` is `true` when the type is a primitive type,
-         * a.k.a. `int`, `double`, `char` and so on. Note that `String`
-         * is not a primitive type.
+         * * `primitive` is `true` when the type is a primitive type, a.k.a. `int`, `double`, `char` and so on.
+         * Note that `String` is not a primitive type.
          */
         selector("primitive", m -> notNull(m) && toClass(m).isPrimitive());
         /**
          * -
          *
-         * * `annotation` is `true` if the type is an annotation
-         * interface.
+         * * `annotation` is `true` if the type is an annotation interface.
          */
         selector("annotation", m -> notNull(m) && toClass(m).isAnnotation());
         /**
@@ -231,23 +216,20 @@ public class Selector<T> {
         /**
          * -
          *
-         * * `member` is `true` if the type is a member class, a.k.a.
-         * inner or nested class or interface
+         * * `member` is `true` if the type is a member class, a.k.a. inner or nested class or interface
          */
         selector("member", m -> notNull(m) && toClass(m).isMemberClass());
         /**
          * -
          *
-         * * `local` is `true` if the type is a local class. Local
-         * classes are defined inside a method.
+         * * `local` is `true` if the type is a local class. Local classes are defined inside a method.
          */
         selector("local", m -> notNull(m) && toClass(m).isLocalClass());
         /**
          * -
          *
-         * * `extends` without any regular expression checks that the
-         * class explicitly extends some other class. (Implicitly
-         * extending `Object` does not count.)
+         * * `extends` without any regular expression checks that the class explicitly extends some other class.
+         * (Implicitly extending `Object` does not count.)
          *
          */
         selector("extends", m -> {
@@ -260,34 +242,28 @@ public class Selector<T> {
         /**
          * -
          *
-         * * `extends ~ /regex/` is `true` if the canonical name of the
-         * superclass matches the regular expression. In other words if
-         * the class extends directly the class given in the regular
-         * expression.
+         * * `extends ~ /regex/` is `true` if the canonical name of the superclass matches the regular expression.
+         * In other words if the class extends directly the class given in the regular expression.
          */
         regexSelector("extends", (m, regex) -> notNull(m) && regex.matcher(toClass(m).getSuperclass().getCanonicalName()).find());
         /**
          * -
          *
-         * * `simpleName ~ /regex/` is `true` if the simple name of the
-         * class (the name without the package) matches the regular
-         * expression.
+         * * `simpleName ~ /regex/` is `true` if the simple name of the class (the name without the package) matches the regular expression.
          */
         regexSelector("simpleName", (m, regex) -> notNull(m) && regex.matcher(toClass(m).getSimpleName()).find());
         /**
          * -
          *
-         * * `canonicalName ~ /regex/` is `true` if the canonical name of
-         * the class matches the regular expression.
+         * * `canonicalName ~ /regex/` is `true` if the canonical name of the class matches the regular expression.
          */
         regexSelector("canonicalName", (m, regex) -> notNull(m) && regex.matcher(toClass(m).getCanonicalName()).find());
         /**
          * -
          *
-         * * `implements ~ /regex/` is `true` if the type directly
-         * implements an interface whose name matches the regular
-         * expression. (Note: `implements` can also be used without a
-         * regular expression. In that case the checking is different.)
+         * * `implements ~ /regex/` is `true` if the type directly implements an interface whose name matches the regular expression.
+         * (Note: `implements` can also be used without a regular expression.
+         * In that case the checking is different.)
          */
         regexSelector("implements", (m, regex) -> notNull(m) && classImplements(toClass(m), regex));
     }
@@ -297,16 +273,16 @@ public class Selector<T> {
      * <p>
      * ### Method checking selectors
      * <p>
-     * These conditions work on methods. If applied to anything else
-     * than a method the checking will throw an exception.
+     * These conditions work on methods.
+     * If applied to anything else than a method the checking will throw an exception.
      */
     private void methodOnlySelectors() {
         /**
          * -
          *
-         * * `synthetic` is `true` if the method is synthetic. Synthetic
-         * methods are generated by the Javac compiler in some special
-         * situation. These methods do not appear in the source code.
+         * * `synthetic` is `true` if the method is synthetic.
+         * Synthetic methods are generated by the Javac compiler in some special situation.
+         * These methods do not appear in the source code.
          */
         selector("synthetic", m -> only(m, Method.class) && (getModifiers(m) & SYNTHETIC) != 0);
         /**
@@ -325,43 +301,36 @@ public class Selector<T> {
          * -
          *
          * * `strict` is `true` if the method has the `strict` modifier.
-         * This is a rarely used modifier and affects the floating point
-         * calculation.
+         * This is a rarely used modifier and affects the floating point calculation.
          */
         selector("strict", m -> only(m, Method.class) && Modifier.isStrict(getModifiers(m)));
         /**
          * -
          *
-         * * `default` is `true` if the method is defined as a default
-         * method in an interface.
+         * * `default` is `true` if the method is defined as a default method in an interface.
          */
         selector("default", m -> only(m, Method.class) &&
             ((Member) m).getDeclaringClass().isInterface() && !Modifier.isAbstract(getModifiers(m)));
         /**
          * -
          *
-         * * `bridge` is `true` if the method is a bridge method. Bridge
-         * methods are generated by the Javac compiler in some special
-         * situation. These methods do not appear in the source code.
+         * * `bridge` is `true` if the method is a bridge method.
+         * Bridge methods are generated by the Javac compiler in some special situation.
+         * These methods do not appear in the source code.
          */
         selector("bridge", m -> only(m, Method.class) && ((Method) m).isBridge());
         /**
          * -
          *
-         * * `vararg` is `true` if the method is a variable argument
-         * method.
+         * * `vararg` is `true` if the method is a variable argument method.
          */
         selector("vararg", m -> only(m, Method.class) && ((Method) m).isVarArgs());
         /**
          * -
          *
-         * * `overrides` is `true` if the method is overriding another
-         * method in the superclass of the method's declaring method or
-         * a method in the superclass of the superclass and so on.
-         * Implementing a method declared in an interface alone will not
-         * result `true`, even though methods implementing an interface
-         * method are annotated using the compile time `@Override`
-         * annotation. This check is not the same.
+         * * `overrides` is `true` if the method is overriding another method in the superclass of the method's declaring method or a method in the superclass of the superclass and so on.
+         * Implementing a method declared in an interface alone will not result `true`, even though methods implementing an interface method are annotated using the compile time `@Override` annotation.
+         * This check is not the same.
          */
         selector("overrides", m -> only(m, Method.class) && methodOverrides((Method) m));
         /**
@@ -373,16 +342,14 @@ public class Selector<T> {
         /**
          * -
          *
-         * * `returns ~ /regex/` is `true` if the method return type's
-         * canonical name matches the regular expression.
+         * * `returns ~ /regex/` is `true` if the method return type's canonical name matches the regular expression.
          */
         regexSelector("returns", (m, regex) -> only(m, Method.class) && regex.matcher(
             ((Method) m).getReturnType().getCanonicalName()).find());
         /**
          * -
          *
-         * * `throws ~ /regex/` is `true` if the method throws a declared
-         * exception that matches the regular expression.
+         * * `throws ~ /regex/` is `true` if the method throws a declared exception that matches the regular expression.
          */
         regexSelector("throws", (m, regex) -> only(m, Method.class) &&
             Arrays.stream(((Method) m).getGenericExceptionTypes())
@@ -390,9 +357,8 @@ public class Selector<T> {
         /**
          * -
          *
-         * * `signature ~ /regex/` checks that the signature of the method
-         * matches the regular expression. The signature of the method
-         * uses the formal argument names `arg0` ,`arg1`,...,`argN`.
+         * * `signature ~ /regex/` checks that the signature of the method matches the regular expression.
+         * The signature of the method uses the formal argument names `arg0` ,`arg1`,...,`argN`.
          */
         regexSelector("signature", (m, regex) ->
             only(m, Method.class) && regex.matcher(MethodTool.methodSignature((Method) m)).find());
@@ -403,8 +369,8 @@ public class Selector<T> {
      * <p>
      * ### Field checking selectors
      * <p>
-     * These conditions work on fields. If applied to anything else
-     * than a field the checking will throw an exception.
+     * These conditions work on fields.
+     * If applied to anything else than a field the checking will throw an exception.
      */
     private void fieldOnlySelectors() {
         /**
@@ -426,7 +392,7 @@ public class Selector<T> {
      * <p>
      * ### Universal selectors
      * <p>
-     * These conditions work on filds, classes and methods.
+     * These conditions work on fields, classes and methods.
      */
     private void universalSelectors() {
         /**
@@ -445,29 +411,26 @@ public class Selector<T> {
         /**
          * -
          *
-         * * `null` is `true` when the tested something is null. This can be used to test when a field, class or method
-         * has a parent, enclosing class or something else that we can examine with a `->` operator.
+         * * `null` is `true` when the tested something is null.
+         * This can be used to test when a field, class or method has a parent, enclosing class or something else that we can examine with a `->` operator.
          */
         selector("null", Objects::isNull);
         /**
          * -
          *
-         * * `private` is `true` if the examined member has private
-         * protection.
+         * * `private` is `true` if the examined member has private protection.
          */
         selector("private", m -> notNull(m) && Modifier.isPrivate(getModifiers(m)));
         /**
          * -
          *
-         * * `protected` is `true` if the examined member has protected
-         * protection.
+         * * `protected` is `true` if the examined member has protected protection.
          */
         selector("protected", m -> notNull(m) && Modifier.isProtected(getModifiers(m)));
         /**
          * -
          *
-         * * `package` is `true` if the examined member has package
-         * private protection.
+         * * `package` is `true` if the examined member has package private protection.
          */
         selector("package", m ->
             notNull(m) &&
@@ -496,8 +459,7 @@ public class Selector<T> {
         /**
          * -
          *
-         * * `name ~ /regex/` is `true` if the examined member's name
-         * matches the regular expression.
+         * * `name ~ /regex/` is `true` if the examined member's name matches the regular expression.
          */
         regexSelector("name", (m, regex) -> m != null  && regex.matcher(getName(m)).find());
     }
