@@ -186,101 +186,66 @@ There can be several `@Geci` annotations on a class.
 The generator takes only the one into account, the one specifying the mnemonic of the generator.
 The other annotations are ignored.
 
-If there is no Geci annotation on a class then the generator reads the
-source code and tries to find a line that is a comment line (starting
-with `//` characters) and contains something that is syntactically is a
-Geci annotation. In this case, you can ONLY use the name `Geci` as an
-annotation look like the name because the code is scanned as a series of
-lines and not via reflection. The code will treat any line that is a
-commented `@Geci` annotation if it is followed by a line that looks like
-the start of the class. If there are more than one such comments in
-front of a class then only the one will be taken into account that has
-the mnemonic at the start of the string.
+If there is no Geci annotation on a class then the generator reads the source code and tries to find a line that is a comment line (starting with `//` characters) and contains something that is syntactically is a Geci annotation.
+In this case, you can ONLY use the name `Geci` as an annotation look like the name because the code is scanned as a series of lines and not via reflection.
+The code will treat any line that is a commented `@Geci` annotation if it is followed by a line that looks like the start of the class.
+If there are more than one such comments in front of a class then only the one will be taken into account that has the mnemonic at the start of the string.
 
-Also, note that you cannot use `@Geci(value="...")` format. The line
-scanning expects only `@Geci("...")` format in the comment. In general,
-the use of the annotation in a comment is a last resort feature and it
-is recommended to use normal annotations instead.
+Also, note that you cannot use `@Geci(value="...")` format.
+The line scanning expects only `@Geci("...")` format in the comment.
+In general, the use of the annotation in a comment is a last resort feature and it is recommended to use normal annotations instead.
 
-When the generator has collected the parameters from the annotation on
-the class or from the comment that looks like an annotation (and
-never from both) then it finds a line that looks like
+When the generator has collected the parameters from the annotation on the class or from the comment that looks like an annotation (and never from both) then it finds a line that looks like
 
 ```java
 //<editor-fold id="mnemonic" ...>
 ```
 
-and merges the parameters from this line into the already collected
-parameters. It is possible not to annotate a class at all and have the
-generator triggered to generate code for the class if the source code
-contains the line as above.
+and merges the parameters from this line into the already collected parameters.
+It is possible not to annotate a class at all and have the generator triggered to generate code for the class if the source code contains the line as above.
 
-> Note that the parameters in the annotation (commented or real
-annotation) use a single apostrophe (`'`) to enclose the values of the
-parameters when they are specified inside the `value` string. Normal
-annotation arguments and `editor-fold` parameters use double quotes
-(`"`). Escaping single apostrophe in annotation value and escaping
-double quotes in `editor-fold` parameters is not possible. This way a
-parameter defined in the annotation `value` cannot contain the
-apostrophe character and a parameter defined in the `editor-fold` cannot
-contain the double quote character. Regular annotation parameters are
-interpreted by the Java compiler and thus they can contain any
-character.
+> Note that the parameters in the annotation (commented or real annotation) use a single apostrophe (`'`) to enclose the values of the parameters when they are specified inside the `value` string.
+> Normal annotation arguments and `editor-fold` parameters use double quotes (`"`).
+> Escaping single apostrophe in annotation value and escaping double quotes in `editor-fold` parameters is not possible.
+> This way a parameter defined in the annotation `value` cannot contain the apostrophe character and a parameter defined in the `editor-fold` cannot contain the double quote character.
+> Regular annotation parameters are interpreted by the Java compiler and thus they can contain any character.
 
 ### Parameter checking
 
-Configuration parameter names can be mistyped. When using the builder
-for the generator object lifetime scope the compiler will not allow the
-programmer to enter any wrong configuration name. When using annotation
-parameters (and not encoding the parameter into the `value` string) then
-again, the compiler will warn the programmer when there is a typo in the
-name of a parameter.
+Configuration parameter names can be mistyped.
+When using the builder for the generator object lifetime scope the compiler will not allow the programmer to enter any wrong configuration name.
+When using annotation parameters (and not encoding the parameter into the `value` string) then again, the compiler will warn the programmer when there is a typo in the name of a parameter.
 
-When the parameter is defined in a comment or in the `value` string or
-in the `editor-fold` segment the compiler has no means to detect the
-spelling error. To warn the programmer, in this case, the generators check
-that all the parameters defined in the source code are expected by the
-generator and in case there is a configuration value that the generator
-does not understand then they will throw a `GeciException`.
+When the parameter is defined in a comment or in the `value` string or in the `editor-fold` segment the compiler has no means to detect the spelling error.
+To warn the programmer, in this case, the generators check that all the parameters defined in the source code are expected by the generator and in case there is a configuration value that the generator does not understand then they will throw a `GeciException`.
 
-The actual check is done by the abstract class `CompoundParams`. It is
-performed only when some caller invokes the `setConstraints()` method or
-when a `CompoundParams` object is created uniting other such objects and
-at least one has constraints.
+The actual check is done by the abstract class `CompoundParams`.
+It is performed only when some caller invokes the `setConstraints()` method or when a `CompoundParams` object is created uniting other such objects and at least one has constraints.
  
-The constraints currently are set by the class `AbstractJavaGenerator`
-getting the set of allowed configuration keys invoking the method
-`implementedKeys()`. The concrete implementation has to provide a method
-`implementedKeys()` overriding the one implemented in the abstract
-class. This method should return a set of strings containing all the
-configuration parameters the generator can handle. (Note that the set
-should also include the parameter name `id`). The default implementation
-returns `null` and in this case there is no check. This is not a good
-practice.
+The constraints currently are set by the class `AbstractJavaGenerator` getting the set of allowed configuration keys invoking the method `implementedKeys()`.
+The concrete implementation has to provide a method `implementedKeys()` overriding the one implemented in the abstract class.
+This method should return a set of strings containing all the configuration parameters the generator can handle.
+(Note that the set should also include the parameter name `id`).
+The default implementation returns `null` and in this case there is no check.
+This is not a good practice.
 
-The method `implementedKeys()` is automatically created by the config
-builder code generator that generators are encouraged to use.
+The method `implementedKeys()` is automatically created by the config builder code generator that generators are encouraged to use.
 
-The checking ignores the parameter `desc` because this parameter can be
-used in the `editor-fold` line to specify a string that the IDE displays
-when the fold is closed. You can use `desc` freely, the generators will
-ignore it. (Unless one generator explicitly uses that as a parameter. It
-is also not recommended.)
+The checking ignores the parameter `desc` because this parameter can be used in the `editor-fold` line to specify a string that the IDE displays when the fold is closed.
+You can use `desc` freely, the generators will ignore it.
+(Unless one generator explicitly uses that as a parameter.
+It is also not recommended.)
 
 ## Using config builder
 
-Writing the generator code to properly handle the configuration
-parameters will result in a lot of boilerplate code even when using the
-library support. You need the builder class, the method
-`implementedKeys()` and some other utility methods. All these can be
-generated automatically knowing the names of the configuration
-parameters.
+Writing the generator code to properly handle the configuration parameters will result in a lot of boilerplate code even when using the library support.
+You need the builder class, the method `implementedKeys()` and some other utility methods.
+All these can be generated automatically knowing the names of the configuration parameters.
 
 ### Basic elements of usage
 
-The generator `ConfigBuilder` does this code generation. When developing
-a code generator the developer has to create the `private static class
-Config` class with all the fields that can be configured and insert an
+The generator `ConfigBuilder` does this code generation.
+When developing a code generator the developer has to create the `private static class Config` class with all the fields that can be configured and insert an
 
 ```java
 //<editor-fold id="configBuilder">
@@ -302,99 +267,54 @@ void buildGenerators() throws Exception {
 The generator will create
 
 * the `config` field, 
-* the `builder()` method, which is the factory method for the builder
-  class
+* the `builder()` method, which is the factory method for the builder class
 * the builder class itself with all the building methods
-* the method `implementedKeys()` returning all coonfigurable keys
-* and a `private Config localConfig(CompoundParams params)` method.
+* the method `implementedKeys()` returning all configurable keys
+* a `private Config localConfig(CompoundParams params)` method.
 
-Note that the building methods will assign the argument string to the
-field that has the same name as in the example above. The generator
-however will check if there is a setter method (named `set` +
-capitalized field name) and in case it is there it invokes the setter
-instead of directly accessing the field. This behaviour makes it
-possible to directly alter some values in the generator. For example
-declaring the `Config` class non-static the setter have access to the
-boolean field `declaredOnly` defined in the `AbstractFieldGenerator` and
-`AbstractMethodGenerator` classes (whichever the actual generator
-extends). The code is generated in a similar way in the method
-`localConfig()` thus it is safe to declare the configuration field,
-which is not used more than to trigger the code generation for the
-invocation of the setter, to be `final`.
+Note that the building methods will assign the argument string to the field that has the same name as in the example above.
+The generator however will check if there is a setter method (named `set` + capitalized field name) and in case it is there it invokes the setter instead of directly accessing the field.
+This behaviour makes it possible to directly alter some values in the generator.
+For example declaring the `Config` class non-static the setter have access to the boolean field `declaredOnly` defined in the `AbstractFieldGenerator` and `AbstractMethodGenerator` classes (whichever the actual generator extends).
+The code is generated in a similar way in the method `localConfig()` thus it is safe to declare the configuration field, which is not used more than to trigger the code generation for the invocation of the setter, to be `final`.
 
-Now that we have already discussed the first four items in the above
-list, but we have not discussed the method `localConfig()`. This method
-is to help the development of the generator in a way that is coherent
-with the guidelines laid out here.
+Now that we have already discussed the first four items in the above list, but we have not discussed the method `localConfig()`.
+This method is to help the development of the generator in a way that is coherent with the guidelines laid out here.
 
 ### `localConfig`
 
-The method `localConfig(CompoundParams params)` creates a new instance
-of the `Config` class and fills it with the parameters from the instance
-referenced by the field `config` and the parameters specified in the
-argument variable `params`. If a configuration parameter is defined in
-the `params` parameter set then that is used, otherwise the builder
-configured or default value from `config` is used.
+The method `localConfig(CompoundParams params)` creates a new instance of the `Config` class and fills it with the parameters from the instance referenced by the field `config` and the parameters specified in the argument variable `params`.
+If a configuration parameter is defined in the `params` parameter set then that is used, otherwise the builder configured or default value from `config` is used.
 
-When a generator needs some parameter it is a good practice to pass the
-parameters read by the framework to this method and use the returned
-value to get the actual value of the parameter.
+When a generator needs some parameter it is a good practice to pass the parameters read by the framework to this method and use the returned value to get the actual value of the parameter.
 
-When the generator uses the configuration from the class level as well as
-field or method (or other members) level then the combined parameters has
-to be passed as `params`. The hierarchy and configuration inheritance is
-handled automatically by this structure and there is no need to manually
-program the decision what parameter to use at a certain point in the
-code generator.
+When the generator uses the configuration from the class level as well as field or method (or other members) level then the combined parameters has to be passed as `params`.
+The hierarchy and configuration inheritance is handled automatically by this structure and there is no need to manually program the decision what parameter to use at a certain point in the code generator.
 
-Note that this method will copy the non-string values from the `config`
-object but will not touch the `final` fields (because that is not
-possible, and they are there in case the generator class developer wants
-to store some constant values there).
+Note that this method will copy the non-string values from the `config` object but will not touch the `final` fields (because that is not possible, and they are there in case the generator class developer wants to store some constant values there).
 
 ### Configuring the config builder
 
-The title may be confusing, but the cnfig builder is just a code
-generator that uses the configuration structure described in this
-document and can be configured. The following parameters can be
-configured
+The title may be confusing, but the config builder is just a code generator that uses the configuration structure described in this document and can be configured. The following parameters can be configured
 
 * `filter` filters the fields that are used from the `Config` class.
-* `builderName` is the name of the builder class. The default is  
-    `Builder`
-* `builderFactory` the name of the static method that returns a new  
-    builder object. The default is `builder`.
-* `buildMethod` the name of the method that returns the generator 
-    instance after it was configured calling the chained builder
-    methods.
-* `configAccess` the access modifier of the `config` field. The default
-    value is `private`, but this may need to be `protected` in case the
-    generator is created in part of some inheritance. An example is the
-    accessor generator that uses this feature.
-
-* `generateImplementedKeys` can be set to `false` to avoid the
-  generation of the `implementedKeys()` method. You should set this
-  configuration parameter to `false` is you want to allow any
-  configuration key to be used by the code generation. The usual
-  behaviour is that this method returns the set of the configuration
-  keys that can be used for the given generator and in case there is a
-  typo in the configuration in the source code then it results an error
-  message.
+* `builderName` is the name of the builder class.
+    The default is `Builder`.
+* `builderFactory` the name of the static method that returns a new builder object.
+    The default is `builder`.
+* `buildMethod` the name of the method that returns the generator instance after it was configured calling the chained builder methods.
+* `configAccess` the access modifier of the `config` field.
+    The default value is `private`, but this may need to be `protected` in case the generator is created in part of some inheritance.
+    An example is the accessor generator that uses this feature.
+* `generateImplementedKeys` can be set to `false` to avoid the generation of the `implementedKeys()` method.
+    You should set this configuration parameter to `false` is you want to allow any configuration key to be used by the code generation.
+    The usual behaviour is that this method returns the set of the configuration keys that can be used for the given generator and in case there is a typo in the configuration in the source code then it results an error message.
+* `configurableMnemonic` can specify the string for the mnemonic of the generator.
+    When this is specified and not empty string then the method `mnemonic()` will be created and a builder function of the same name will also be created so the actual mnemonic of the instance created using the builder can be configured to be different from the default.
+    The default behaviour is not to create the configuration for this extra value and not to create the `mnemonic()` method overriding the one in the super class.
+    Note that the value for the builder configured value is stored in a field in the generator class and not inside the `Configuration` inner class and thus it cannot be configured in an annotation.
+    It can be configured only in the builder.
     
-* `configurableMnemonic` an specify the string for the mnemonic of the
-  generator. When this is specified and not empty string then the method
-  `mnemonic()` will be created and a builder function of the same name
-  will also be created so the actual mnemonic of the instance created
-  using the builder can be configured to be different from the default.
-  The default behaviour is not to create the configuration for this
-  extra value and not to create the `mnemonic()` method overriding the
-  one in the super class. Note that the value for the builder configured
-  value is stored in a field in the generator class and not inside the
-  `Configuration` inner class and thus it cannot be configured in an
-  annotation. It can be configured only in the builder.
-  
-  Making the mnemonic configurable lets the user of the generator to use
-  the generator if there are multiple generators with the same mnemonic
-  and to avoid collision of the mnemonics. It is also possible to use
-  multiple instances of the same generator on one specific source. An
-  example can be the `repeated` generator.
+    Making the mnemonic configurable lets the user of the generator to use the generator if there are multiple generators with the same mnemonic and to avoid collision of the mnemonics.
+    It is also possible to use multiple instances of the same generator on one specific source.
+    An example can be the `repeated` generator.

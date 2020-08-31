@@ -28,9 +28,9 @@ import static javax0.geci.api.CompoundParams.toBoolean;
  * Usually (by default) only `private` fields will have a builder method, which are not `private` or `static`.
  *
  * The generator is also capable generating aggregator methods when the field is a collection or some other type that can aggregate/collect several values.
- * A field is considered to be an aggregator type if the class of the field has at least one method named `add(x)` that has one argument.
+ * A field is an aggregator type if the class of the field has at least one method named `add(x)` that has one argument.
  * The actual name is `add` by default but this is configurable.
- * For example if a field is of type `List` then then it will be treated as aggregator type because the class `List` has a method `add`.
+ * For example if a field is of type `List` then it will be treated as aggregator type because the class `List` has a method `add`.
  * The name of the corresponding aggregator method in the builder will be `add` plus the name of the field with capitalized first letter.
  *
  * There are several values that can be configured for the generator in the generators builder pattern.

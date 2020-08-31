@@ -14,46 +14,35 @@ import java.util.regex.PatternSyntaxException;
 /**
  * - doc
  *
- * The `regex` snippet generator goes through each line of the snippet
- * and does regular expression based search and replace and it also
- * deletes certain lines that match a regular expression kill pattern.
+ * The `regex` snippet generator goes through each line of the snippet and does regular expression based search and replace and it also deletes certain lines that match a regular expression kill pattern.
  *
  * It can be used for example as
  *
  *      regex="replace='/a/b/' kill='abraka'"
  *
- * to replace each occurrence of `a` to `b` and the same time delete all
- * lines from the snippet that contains `abraka`.
+ * to replace each occurrence of `a` to `b` and the same time delete all lines from the snippet that contains `abraka`.
  *
  * A real life example is:
  *
  *      regex="replace='/^\\\\s*\\\\*\\\\s?//'
  *
- * It was used in the documentation of DOCUGEN.md to include the snippet
- * defined in the JavaDoc of the class `SnippetRegex` and to remove the
- * `*` characters from the start of the line. The result is what you are
- * reading now (or you may be reading the original JavaDoc in the Java
- * file.)
+ * It was used in the documentation of DOCUGEN.md to include the snippet defined in the JavaDoc of the class `SnippetRegex` and to remove the `*` characters from the start of the line.
+ * The result is what you are reading now (or you may be reading the original JavaDoc in the Java file.)
  *
  * The replace configuration string should have the syntax
  *
  *     W + search string + W + replace string + W
  *
- * where `W` is just any character. It is usually `/` so that the search
- * and replace string looks like the usual vi editor search and replace.
+ * where `W` is just any character.
+ * It is usually `/` so that the search and replace string looks like the usual vi editor search and replace.
  *
- * When we write regular expressions inside the `replace` string it is
- * interpreted as a Java string already twice. This means that the
- * escape characters used in regular expressions as well as in strings,
- * the backslash characters had to be repeated four times. This would
- * greatly decrease readability. Instead of `\s` we could write
- * `\\\\s`. (As a matter of fact it is a possibility.)
+ * When we write regular expressions inside the `replace` string it is interpreted as a Java string already twice.
+ * This means that the escape characters used in regular expressions as well as in strings, the backslash characters had to be repeated four times.
+ * This would greatly decrease readability.
+ * Instead of `\s` we could write `\\\\s`. (As a matter of fact it is a possibility.)
  *
- * To lessen the number of backslash characters and to avoid building
- * `\\\\\\` fences instead of coding it is possible to define a
- * character that is used instead of `\` in the regular expressions. The
- * configuration parameter is `escape` and you can write on a segment
- * line
+ * To lessen the number of backslash characters and to avoid building `\\\\\\` fences instead of coding it is possible to define a character that is used instead of `\` in the regular expressions.
+ * The configuration parameter is `escape` and you can write on a segment line
  *
  *     regex="replace='/^~s*~*~s?//' escape='~'
  *
@@ -61,28 +50,20 @@ import java.util.regex.PatternSyntaxException;
  *
  *     regex="replace='/^\\\\s*\\\\*\\\\s?//'
  *
- * The recommendation is to use the tilde characters. There can only be
- * one `escape` definition in a single segment, but there can be many
- * `replace` strings and they will be executed in the order they are
- * defined.
+ * The recommendation is to use the tilde characters.
+ * There can only be one `escape` definition in a single segment, but there can be many `replace` strings and they will be executed in the order they are defined.
  *
- * Note that the default escape string is a string and not only a single
- * character, but it does not really make sense to use many characters
- * when the major aim of this configuration is to shorten the regular
- * expression escape sequences.
+ * Note that the default escape string is a string and not only a single character, but it does not really make sense to use many characters when the major aim of this configuration is to shorten the regular expression escape sequences.
  *
- * If you want to use the same escape string in all the snippet regex
- * modifications then you can configure it in the builder when the
- * regex snippet modifier generator object is created.
+ * If you want to use the same escape string in all the snippet regex modifications then you can configure it in the builder when the regex snippet modifier generator object is created.
  *
- * It is to note that by default the replacements are performed on each
- * line and then the code decides if the line has to be killed or not.
+ * It is to note that by default the replacements are performed on each line and then the code decides if the line has to be killed or not.
  * You can reverse this order using the configuration
  *
  *     killFirst=true
  *
- * on the segment header. If there is a need for this parameter it is a
- * smell that something is overcomplicated in the use of the snippets.
+ * on the segment header.
+ * If there is a need for this parameter it is a smell that something is overcomplicated in the use of the snippets.
  *
  */
 @Geci("configBuilder localConfigMethod='' configurableMnemonic='regex'")

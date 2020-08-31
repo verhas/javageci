@@ -20,14 +20,10 @@ public class SnippetTrim extends AbstractSnippeter {
         private String to = "0";
         /*
 
-        This parameter can define the number of spaces on the left of
-        the lines. Although the parameter is a string the value should
-        obviously, be an integer number as it is recommended to specify
-        it without `"` or `'` characters surrounding, just simply, for
-        example
+        This parameter can define the number of spaces on the left of the lines.
+        Although the parameter is a string the value should be an integer number as it is recommended to specify it without `"` or `'` characters surrounding, just simply, for example
 
-                       trim="to=2"
-
+            trim="to=2"
 
         end snippet */
     }

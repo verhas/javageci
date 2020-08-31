@@ -26,14 +26,9 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
          * #### `{{configVariableName}} = {{configDefaultValue}}`
          *
          *
-         * The phase parameter defines the phase that the snippet
-         * modifying generator is to be run. As this is not a `String`
-         * parameter it can only be configured in the builder when the
-         * generator instance is created. The generator will return the
-         * value `phase + 1` when the framework queries the number of
-         * phases the generator needs and when asked if it has to be
-         * active in a phase it will return `true` if the actual phase is
-         * the same as the one configured.
+         * The phase parameter defines the phase that the snippet modifying generator is to be run.
+         * As this is not a `String` parameter it can only be configured in the builder when the generator instance is created.
+         * The generator will return the value `phase + 1` when the framework queries the number of phases the generator needs and when asked if it has to be active in a phase it will return `true` if the actual phase is the same as the one configured.
          */
         protected int phase = 1;
 
@@ -43,11 +38,9 @@ public abstract class AbstractSnippeter extends AbstractGeneratorEx {
          * #### `{{configVariableName}} = "{{configDefaultValue}}"`
          *
          *
-         * This configuration parameter can limit the file name pattern
-         * for which the snippet generator will run. The default value is
-         * to run for every file that has the extension `.md`. If you have
-         * other file extensions in your documentation you can configure it
-         * in the builder interface.
+         * This configuration parameter can limit the file name pattern for which the snippet generator will run.
+         * The default value is to run for every file that has the extension `.md` or `.adoc`.
+         * If you have other file extensions in your documentation you can configure it in the builder interface.
          *
          */
         protected CharSequence files = "\\.md$|\\.adoc$";

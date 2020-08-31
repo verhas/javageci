@@ -177,7 +177,7 @@ Assertions.assertFalse(
             .phase(3).build())
         .register(SnippetRegex.builder().files("\\.md$|\\.java$|\\.adoc$")
             .phase(4).build())
-        .register(SnipetLineSkipper.builder().files("\\.md$|\\.java$|\\.adoc$")
+        .register(SnippetLineSkipper.builder().files("\\.md$|\\.java$|\\.adoc$")
             .phase(5).build())
         .register(SnippetNumberer.builder().files("\\.md$|\\.java$|\\.adoc$")
             .phase(6).build())
@@ -220,7 +220,7 @@ This call will register the
 1. SnippetTrim
 1. SnippetNumberer
 1. SnippetRegex
-1. SnipetLineSkipper
+1. SnippetLineSkipper
 1. SnippetNumberer
 1. MarkdownCodeInserter
 1. JavaDocSnippetInserter
@@ -386,7 +386,7 @@ If we look again at the code that is used to create this documentation:
 29.             .phase(3).build())
 30.         .register(SnippetRegex.builder().files("\\.md$|\\.java$|\\.adoc$")
 31.             .phase(4).build())
-32.         .register(SnipetLineSkipper.builder().files("\\.md$|\\.java$|\\.adoc$")
+32.         .register(SnippetLineSkipper.builder().files("\\.md$|\\.java$|\\.adoc$")
 33.             .phase(5).build())
 34.         .register(SnippetNumberer.builder().files("\\.md$|\\.java$|\\.adoc$")
 35.             .phase(6).build())
@@ -520,23 +520,16 @@ The other configuration options that are specific to an individual snippet modif
 #### `phase = 1`
 
 
-The phase parameter defines the phase that the snippet
-modifying generator is to be run. As this is not a `String`
-parameter it can only be configured in the builder when the
-generator instance is created. The generator will return the
-value `phase + 1` when the framework queries the number of
-phases the generator needs and when asked if it has to be
-active in a phase it will return `true` if the actual phase is
-the same as the one configured.
+The phase parameter defines the phase that the snippet modifying generator is to be run.
+As this is not a `String` parameter it can only be configured in the builder when the generator instance is created.
+The generator will return the value `phase + 1` when the framework queries the number of phases the generator needs and when asked if it has to be active in a phase it will return `true` if the actual phase is the same as the one configured.
 
 #### `files = "\\.md$|\\.adoc$"`
 
 
-This configuration parameter can limit the file name pattern
-for which the snippet generator will run. The default value is
-to run for every file that has the extension `.md`. If you have
-other file extensions in your documentation you can configure it
-in the builder interface.
+This configuration parameter can limit the file name pattern for which the snippet generator will run.
+The default value is to run for every file that has the extension `.md` or `.adoc`.
+If you have other file extensions in your documentation you can configure it in the builder interface.
 
 <!-- end snip -->
 
@@ -546,12 +539,11 @@ In this section, we document the individual snippet modifiers one by one.
 
 #### Trim
 
-Trim is implemented in the generator class `SnippetTrim`. It can remove
-the spaces from the left of the lines keeping the original tabbing.
-When a snippet is collected from some deeply nested code structure then
-it usually happens that each line starts with many spaces. This would
-push the code in the documentation to the right leaving a huge gutter on
-the left. This modifier removes the extra spaces.
+Trim is implemented in the generator class `SnippetTrim`.
+It can remove the spaces from the left of the lines keeping the original tabbing.
+When a snippet is collected from some deeply nested code structure then it usually happens that each line starts with many spaces.
+This would push the code in the documentation to the right leaving a huge gutter on the left.
+This modifier removes the extra spaces.
 
 The configuration parameters are the followings:
 
@@ -567,14 +559,10 @@ The configuration parameters are the followings:
 ##### `to = "0"`
 
 
-This parameter can define the number of spaces on the left of
-the lines. Although the parameter is a string the value should
-obviously, be an integer number as it is recommended to specify
-it without `"` or `'` characters surrounding, just simply, for
-example
+This parameter can define the number of spaces on the left of the lines.
+Although the parameter is a string the value should be an integer number as it is recommended to specify it without `"` or `'` characters surrounding, just simply, for example
 
-               trim="to=2"
-
+    trim="to=2"
 
 <!-- end snip -->
 
@@ -582,46 +570,35 @@ example
 
 <!-- snip SnippetRegex_doc_000001 -->
 
-The `regex` snippet generator goes through each line of the snippet
-and does regular expression based search and replace and it also
-deletes certain lines that match a regular expression kill pattern.
+The `regex` snippet generator goes through each line of the snippet and does regular expression based search and replace and it also deletes certain lines that match a regular expression kill pattern.
 
 It can be used for example as
 
      regex="replace='/a/b/' kill='abraka'"
 
-to replace each occurrence of `a` to `b` and the same time delete all
-lines from the snippet that contains `abraka`.
+to replace each occurrence of `a` to `b` and the same time delete all lines from the snippet that contains `abraka`.
 
 A real life example is:
 
      regex="replace='/^\\\\s*\\\\*\\\\s?//'
 
-It was used in the documentation of DOCUGEN.md to include the snippet
-defined in the JavaDoc of the class `SnippetRegex` and to remove the
-`*` characters from the start of the line. The result is what you are
-reading now (or you may be reading the original JavaDoc in the Java
-file.)
+It was used in the documentation of DOCUGEN.md to include the snippet defined in the JavaDoc of the class `SnippetRegex` and to remove the `*` characters from the start of the line.
+The result is what you are reading now (or you may be reading the original JavaDoc in the Java file.)
 
 The replace configuration string should have the syntax
 
     W + search string + W + replace string + W
 
-where `W` is just any character. It is usually `/` so that the search
-and replace string looks like the usual vi editor search and replace.
+where `W` is just any character.
+It is usually `/` so that the search and replace string looks like the usual vi editor search and replace.
 
-When we write regular expressions inside the `replace` string it is
-interpreted as a Java string already twice. This means that the
-escape characters used in regular expressions as well as in strings,
-the backslash characters had to be repeated four times. This would
-greatly decrease readability. Instead of `\s` we could write
-`\\\\s`. (As a matter of fact it is a possibility.)
+When we write regular expressions inside the `replace` string it is interpreted as a Java string already twice.
+This means that the escape characters used in regular expressions as well as in strings, the backslash characters had to be repeated four times.
+This would greatly decrease readability.
+Instead of `\s` we could write `\\\\s`. (As a matter of fact it is a possibility.)
 
-To lessen the number of backslash characters and to avoid building
-`\\\\\\` fences instead of coding it is possible to define a
-character that is used instead of `\` in the regular expressions. The
-configuration parameter is `escape` and you can write on a segment
-line
+To lessen the number of backslash characters and to avoid building `\\\\\\` fences instead of coding it is possible to define a character that is used instead of `\` in the regular expressions.
+The configuration parameter is `escape` and you can write on a segment line
 
     regex="replace='/^~s*~*~s?//' escape='~'
 
@@ -629,28 +606,20 @@ to use the tilde character instead of
 
     regex="replace='/^\\\\s*\\\\*\\\\s?//'
 
-The recommendation is to use the tilde characters. There can only be
-one `escape` definition in a single segment, but there can be many
-`replace` strings and they will be executed in the order they are
-defined.
+The recommendation is to use the tilde characters.
+There can only be one `escape` definition in a single segment, but there can be many `replace` strings and they will be executed in the order they are defined.
 
-Note that the default escape string is a string and not only a single
-character, but it does not really make sense to use many characters
-when the major aim of this configuration is to shorten the regular
-expression escape sequences.
+Note that the default escape string is a string and not only a single character, but it does not really make sense to use many characters when the major aim of this configuration is to shorten the regular expression escape sequences.
 
-If you want to use the same escape string in all the snippet regex
-modifications then you can configure it in the builder when the
-regex snippet modifier generator object is created.
+If you want to use the same escape string in all the snippet regex modifications then you can configure it in the builder when the regex snippet modifier generator object is created.
 
-It is to note that by default the replacements are performed on each
-line and then the code decides if the line has to be killed or not.
+It is to note that by default the replacements are performed on each line and then the code decides if the line has to be killed or not.
 You can reverse this order using the configuration
 
     killFirst=true
 
-on the segment header. If there is a need for this parameter it is a
-smell that something is overcomplicated in the use of the snippets.
+on the segment header.
+If there is a need for this parameter it is a smell that something is overcomplicated in the use of the snippets.
 
 <!-- end snip -->
 
@@ -659,8 +628,8 @@ smell that something is overcomplicated in the use of the snippets.
 <!-- snip SnippetNumberer_doc regex="replace='/^~s*~*~s?//' escape='~'"-->
 
 The `number` snippet handling generator is implemented in the class `SnippetNumberer`.
-It can number the individual lines in a snippet with increasing numbers. The result can be used
-to have some code with line numbers so that the surrounding text can reference the actual lines.
+It can number the individual lines in a snippet with increasing numbers.
+The result can be used to have some code with line numbers so that the surrounding text can reference the actual lines.
 
 <!-- end snip -->
 
@@ -670,76 +639,66 @@ The configuration parameters for the numberer:
 <!-- snip SnippetNumberer_config snippet="epsilon" trim="to=0" append="snippets='SnippetNumberer_Config_.*'" regex="replace='/private~s~w+~s/##### `/' replace='/;.*$/`/' replace='|^~s*/~*||' escape='~'" skip="do"-->
 ##### `start = "1"`
 
-
-This is the number that will be used to denote the first line. The default is to start from one and to use
-increasing numbers.
+This is the number that will be used to denote the first line.
+The default is to start from one and to use increasing numbers.
 
 ##### `step = "1"`
 
-
-This configuration parameter controls the increment between the consecutive numbers. If you want to number
-the lines in step of ten, like we did old times in BASIC then you can set `number="step='10'"`.
+This configuration parameter controls the increment between the consecutive numbers.
+If you want to number the lines in step of ten, like we did old times in BASIC then you can set `number="step='10'"`.
 
 ##### `format = "%d. "`
 
-
-This configuration option controls how the numbers are formatted. This is the string that is passed to the
-`String.format()` method as first argument when converting the line number to string.
+This configuration option controls how the numbers are formatted.
+This is the string that is passed to the `String.format()` method as first argument when converting the line number to string.
 
 ##### `from = "0"`
 
-
-When not all the lines are needed to be numbered in a snippet you can limit the numbering to start at
-certain line and finish at another line. This parameter can specify the index of the first line that
-is to be numbered. The default value is zero, which means that the very first line already will be numbered.
+When not all the lines are needed to be numbered in a snippet you can limit the numbering to start at certain line and finish at another line.
+This parameter can specify the index of the first line that is to be numbered.
+The default value is zero, which means that the very first line already will be numbered.
 If you want to number starting with the second line then you can use `number="from=1"` as a configuration.
-If you want to number only the last three lines then you can configure the generator on the segment
-prividing the parameters `number="from=-3"`.
+If you want to number only the last three lines then you can configure the generator on the segment providing the parameters `number="from=-3"`.
 
 ##### `to = ""`
 
+You can limit the end of the numbering.
+This parameter defines the index of the last line that is numbered exclusive.
+If you want to number only the first three lines you can configure the generator as `number="to=3"`.
+That way only the lines with the indexes `0`, `1` and `2` will be numbered.
 
-You can limit the end of the numbering. This parameter defines the index of the last line that is numbered
-exclusive. If you want to number only the first three lines you can configure the generator as
-`number="to=3"`. That way only the lines with the indexes `0`, `1` and `2` will be numbered.
-
-Negative numbers, just as in case of `from` count backward from the end of the snippet. Empty value, which is
-the default means no limit.
+Negative numbers, just as in case of `from` count backward from the end of the snippet.
+Empty value, which is the default means no limit.
 
 <!-- end snip -->
 
 #### Append
 <!-- snip SnippetAppender_doc regex="replace='/^~s*~*~s?//' escape='~'"-->
 
-Snippet appender can be used to append multiple snippets together. This is useful when the content of the
-documentation is in different places and it would be inconvenient to include the individual snippets one by one
-into the documentation. The snippets can be referenced using their name and the reference can also contain regular
-expression. In that case all the snippets that match the regular expression will be joined together and added to the
-actual snippet in alphabetical order.
+Snippet appender can be used to append multiple snippets together.
+This is useful when the content of the documentation is in different places and it would be inconvenient to include the individual snippets one by one into the documentation.
+The snippets can be referenced using their name and the reference can also contain regular expression.
+In that case all the snippets that match the regular expression will be joined together and added to the actual snippet in alphabetical order.
 
-The generator has one configuration parameter `snippets` (note the plural) that should list the snippets that are to
-be appended to the original snippet. Remember that the base snippet is referenced in the segment using the parameter
-`snippet` or using the name of the segment id as a snippet name by default and the appended snippets are appended to
-this snippet.
+The generator has one configuration parameter `snippets` (note the plural) that should list the snippets that are to be appended to the original snippet.
+Remember that the base snippet is referenced in the segment using the parameter `snippet` or using the name of the segment id as a snippet name by default and the appended snippets are appended to this snippet.
 
-There can be multiple `snippets` values on the configuration of the snippet appender. They are worked up from left to
-right and when a value matches many snippet names as a regular expression then these snippets will be appended in
-alphabetical order. The usual practice is to name these snippets something like `snippetName_001`, `snippetName_002`
-and so on and use the configuration `append="snippets='snippetName_.*'"`.
+There can be multiple `snippets` values on the configuration of the snippet appender.
+They are worked up from left to right and when a value matches many snippet names as a regular expression then these snippets will be appended in alphabetical order.
+The usual practice is to name these snippets something like `snippetName_001`, `snippetName_002` and so on and use the configuration `append="snippets='snippetName_.*'"`.
 
-The regular expressions sometimes may need escaping and the same way as in case of the snippet modifying generator
-`regex` there is a parameter `escape7 that can be used to specify the character that is used instead of `\\\\`.
+The regular expressions sometimes may need escaping and the same way as in case of the snippet modifying generator `regex` there is a parameter `escape` that can be used to specify the character that is used instead of `\\\\`.
 
-Sometimes there is no base snippet to append to. The documentation, for example, needs to join together the snippets
-`manySniipets_.*` that are `manySniipets_001`, `manySniipets_002`, and `manySniipets_003`. In that case if the
-segment references the first snippet, `snippet="manySniipets_001" append="snippets='manySniipets_.*'"` then the first
-snippet will be copied twice. For this reason there is a predefined snippet in the snippet store called `epsilon`
-that contains no lines. Using that we can write
+Sometimes there is no base snippet to append to.
+The documentation, for example, needs to join together the snippets `manySniipets_.*` that are `manySniipets_001`, `manySniipets_002`, and `manySniipets_003`.
+In that case if the segment references the first snippet, `snippet="manySniipets_001" append="snippets='manySniipets_.*'"` then the first snippet will be copied twice.
+For this reason there is a predefined snippet in the snippet store called `epsilon` that contains no lines.
+Using that we can write
 
 snippet="epsilon" append="snippets='manySniipets_.*'"
 
-The snippets are copied from the original, unmodified version of the snippet. It is not possible to execute
-modifications on the different snippets and perform the appending afterwards.
+The snippets are copied from the original, unmodified version of the snippet.
+It is not possible to execute modifications on the different snippets and perform the appending afterwards.
 
 <!-- end snip -->
 
@@ -752,29 +711,26 @@ modifications on the different snippets and perform the appending afterwards.
                                         -->
 ##### `snippets = Collections.emptyList()`
 
-
 This configuration parameter defines the snippets that are appended to the base snippet.
 
 ##### `escape = ""`
 
-
-This parameter can be used to define an escape character / string that can be used instead of the backslash
-character that would be needed four times to be used in the regular expression. It is recommended to use the
-tilde `~` character.
+This parameter can be used to define an escape character / string that can be used instead of the backslash character that would be needed four times to be used in the regular expression.
+It is recommended to use the tilde `~` character.
 
 <!-- end snip -->
 
 
 #### Skip
 
-<!-- snip SnipetLineSkipper_doc regex="replace='/^~s*~*~s?//' escape='~'"-->
+<!-- snip SnippetLineSkipper_doc regex="replace='/^~s*~*~s?//' escape='~'"-->
 
- The `skip` functionality is implemented in the class `SnippetLineSkipper`. This generator can remove certain lines
- from a snippet that are denoted to be removed. Many times some code segment contains lines that are not necessarily
- in the documentation and may distract the reader from the important points of the code. For example you want to
- include a whole Java class into the documentation and you believe that the `import` statements are not that
- important. In such cases the snippet may contain some lines that the `SnippetLineSkipper` will recognize and remove
- the lines indicated. There are three different possibilities.
+ The `skip` functionality is implemented in the class `SnippetLineSkipper`.
+ This generator can remove certain lines from a snippet that are denoted to be removed.
+ Many times some code segment contains lines that are not necessarily in the documentation and may distract the reader from the important points of the code.
+ For example you want to include a whole Java class into the documentation and you believe that the `import` statements are not that important.
+ In such cases the snippet may contain some lines that the `SnippetLineSkipper` will recognize and remove the lines indicated.
+ There are three different possibilities.
 
  The first one is to signal the start and the end of the lines to be removed like
 
@@ -794,8 +750,7 @@ The second possibility is to write
 
         // skip N lines
 
-The number `N` has to be a positive decimal number and the following `N` lines plus the `// skip N lines` will also
-be deleted.
+The number `N` has to be a positive decimal number and the following `N` lines plus the `// skip N lines` will also be deleted.
 
 The third possibility is to write
 
@@ -803,18 +758,18 @@ The third possibility is to write
 
 that will delete this line and all following lines until there is a line that matches the regular expression.
 
-The generator will work only for segments that has the configuration parameter `skip="do"` with non zero length string
-value. There is only one configuration possibility. If the value of the `skip` parameter on the segment is `remove`
-(a.k.a. the segment contains the `skip="remove"` parameter) then only the lines that are instructions for the line
-skippings are removed. In any other cases the line removing is performed as described above.
+The generator will work only for segments that has the configuration parameter `skip="do"` with non zero length string value.
+There is only one configuration possibility.
+If the value of the `skip` parameter on the segment is `remove` (a.k.a. the segment contains the `skip="remove"` parameter) then only the lines that are instructions for the line skippings are removed.
+In any other cases the line removing is performed as described above.
 
 In the generator builder the regular expression patterns that match `skip`, `skip end` and so on are configurable.
 
 <!-- end snip -->
 
-<!-- snip SnipetLineSkipper_config snippet="epsilon" 
+<!-- snip SnippetLineSkipper_config snippet="epsilon" 
                                    trim="to=0" 
-                                   append="snippets='SnipetLineSkipper_Config_.*'" 
+                                   append="snippets='SnippetLineSkipper_Config_.*'" 
                                    regex="replace='/Pattern~.compile~(//' 
                                           replace='/private~sPattern~s/##### `/' 
                                           replace='/~);.*$/`/' 
@@ -823,22 +778,18 @@ In the generator builder the regular expression patterns that match `skip`, `ski
                                           -->
 ##### `skip = "skip"`
 
-
 This pattern defines the line that starts the skipping and which skipping is finished by the pattern configured using the next configuration option `skipEnd`.
 
 ##### `skipEnd = "skip\\s+end"`
-
 
 This pattern defines the line that stops line skipping in case it was started using a line matched by the previous pattern `skip`.
 
 ##### `skipNrLines = "skip\\s+(\\+?\\d+)\\s+lines?"`
 
-
 This pattern finds the line that signals that a certain number of lines should be skipped.
 If configured other than the default then the regular expression MUST have a single matching group (the part between the parentheses) that will match a substring that is a positive decimal number.
 
 ##### `skipTill = "skip\\s+till\\s+/(.*?)/"`
-
 
 This pattern finds the line that is the start of skipping specifying a regular expression that should match a later line, which will be the stopping signal for skipping.
 The line that matches the regular expression at the end will NOT be included in the snippet.

@@ -14,12 +14,12 @@ For example the documentation of License3j contains the following JavaDoc fragme
 * class).</li>
 ----
 
-It may happen that during the lifetime of the code the value defined in the variable `DIGEST_KEY` gets
-changed from `signatureDigest` to `digestKey`. (Just because why not.) Unless the developer performing
-the maintenance does a through serach the JavaDoc becomes outdated.
+It may happen that during the lifetime of the code the value defined in the variable `DIGEST_KEY` gets changed from `signatureDigest` to `digestKey`.
+(Just because why not.)
+Unless the developer performing the maintenance does a thorough search the JavaDoc becomes outdated.
 
-Jdocify automatize the update of the JavaDoc. The JavaDoc has to be extended with a HTML comment of
-the form
+Jdocify automatize the update of the JavaDoc.
+The JavaDoc has to be extended with a HTML comment of the form
 
     <!--CODE FINAL_STATIC_FIELD_NAME-->
 
@@ -36,18 +36,20 @@ When Jdocify processes the file it checks that the `{@code ...}` after the
 
     <!--CODE DIGEST_KEY-->
 
-is the same as the value of the `static` `final` field `DIGEST_KEY` and in case it is different it
-updates the `{@code ...}` in the JavaDoc.
+is the same as the value of the `static` `final` field `DIGEST_KEY` and in case it is different it updates the `{@code ...}` in the JavaDoc.
 
-Another feature is, when you have some text repeated in the JavaDoc. In that case you can write
+Another feature is, when you have some text repeated in the JavaDoc.
+In that case you can write
 
     //DEFINE THIS=The method returns {@code this} to help method chaining.
 
-which kind of defines the symbol `THIS` to be that sentence. After that you can use in JavaDoc
+which kind of defines the symbol `THIS` to be that sentence.
+After that you can use in JavaDoc
 
     @returns <!--THIS-->The method returns {@code this} to help method chaining.<!--/-->
 
-instead of just writing the sentence. It is a bit longer but the actual text is maintained by JDocify.
+instead of just writing the sentence.
+It is a bit longer but the actual text is maintained by JDocify.
 If you just happen to write
 
     @returns <!--THIS--><!--/-->
@@ -64,8 +66,9 @@ and
 
     <!--/-->
 
-maintaining the text and keeping it consistent. You do not need to change the sentence in the
-JavaDoc of each and every chained method. Jdocify does it.
+maintaining the text and keeping it consistent.
+You do not need to change the sentence in the JavaDoc of each and every chained method.
+Jdocify does it.
 
 == Details
 
@@ -75,9 +78,9 @@ The full form of the HTML comment used for the `CODE` purpose is:
 
   <!--CODE fieldName template string -->
 
-if the template string is missing, as in the example in the introduction, then the value will be used by
-itself. If there is a template then the name of the field in the template will be replaced with the
-value of the field. For example:
+if the template string is missing, as in the example in the introduction, then the value will be used by itself.
+If there is a template then the name of the field in the template will be replaced with the value of the field.
+For example:
 
   final static String FIELD = "fieldValue";
   <!--CODE FIELD ${FIELD}-->{@code ${fieldValue}}
@@ -86,16 +89,16 @@ You can also use `{` and `}` characters in the template, but they have to be bal
 
 === DEFINE
 
-The `DEFINE` definition of a text has to precede the use. The definition is always in a comment
-that starts with `//` characters and there should be no space between the `//` and the word
-`DEFINE`. The name of the variable has to be all capital letters `A`-`Z`, `0`-`9` and the `_`
-underscore character, and it should not start with a number (as usual constant names in Java).
+The `DEFINE` definition of a text has to precede the use.
+The definition is always in a comment that starts with `//` characters and there should be no space between the `//` and the word `DEFINE`.
+The name of the variable has to be all capital letters `A`-`Z`, `0`-`9` and the `_` underscore character, and it should not start with a number (as usual constant names in Java).
 
 When the text is used the defined variable name has to be in an HTML comment, like
 
     <!--VARIABLE_NAME-->
 
-without any spaces. The end of the text is marked by the HTML comment
+without any spaces.
+The end of the text is marked by the HTML comment
 
     <!--/-->
 
@@ -109,6 +112,5 @@ You can configure the boolean parameter
 
 `processAllClasses`
 
-to control if the generator should do its work on all classes or onlyon those that are annotated with
-the `@Jdocify` annotation. The default is `false`, which means that you have to annotate the classes
-that need the service of the generator.
+to control if the generator should do its work on all classes or onlyon those that are annotated with the `@Jdocify` annotation.
+The default is `false`, which means that you have to annotate the classes that need the service of the generator.

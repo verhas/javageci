@@ -18,10 +18,8 @@ import static javax0.geci.tools.CaseTools.ucase;
 
 /**
  * //snippet Cloner_head
- * This code generator will generate a `copy()` method that returns the
- * clone of the object referenced by `this` in the class body and also
- * methods named `withXyzAbc()` for every `xyzAbc` field. For example the
- * sample class `NeedCloner` has the fields
+ * This code generator will generate a `copy()` method that returns the clone of the object referenced by `this` in the class body and also methods named `withXyzAbc()` for every `xyzAbc` field.
+ * For example the sample class `NeedCloner` has the fields
  * //end snippet
  */
 @AnnotationBuilder
@@ -38,11 +36,9 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         /* snippet Cloner_Config_001
         ### `generatedAnnotation = javax0.geci.annotations.Generated.class`
 
-        This builder-only parameter defines the class that is used to
-        annotate the generated classes. By default the Geci generated
-        annotation class is used as shown above. If this parameter is
-        set to `null` in the builder then there will be no `Generated`
-        annotation placed on the class.
+        This builder-only parameter defines the class that is used to annotate the generated classes.
+        By default the Geci generated annotation class is used as shown above.
+        If this parameter is set to `null` in the builder then there will be no `Generated` annotation placed on the class.
 
         end snippet */
         private Class<? extends Annotation> generatedAnnotation = Generated.class;
@@ -50,28 +46,22 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         // snippet Cloner_Config_002
         private String filter = "!static & !final";
         /*
-        The filter expression that selects the fields that are to be
-        used during the cloning process. By default all the fields that
-        are not static and are not final are copied to the new object.
-        Static fields are shared by the different instances and thus any
-        copy operation would just copy the value from a field back to
-        the same field. Final fields can not be written after the
-        constructor has finished it's work, therefore they cannot be
-        altered and copied.
+        The filter expression that selects the fields that are to be used during the cloning process.
+        By default all the fields that are not static and are not final are copied to the new object.
+        Static fields are shared by the different instances and thus any copy operation would just copy the value from a field back to the same field.
+        Final fields can not be written after the constructor has finished it's work, therefore they cannot be altered and copied.
 
-        The set of the fields is also controlled by the other option
-        `declaredOnly` (see later).
+        The set of the fields is also controlled by the other option `declaredOnly` (see later).
 
         end snippet */
 
         // snippet Cloner_Config_003
         private String cloneMethod = "copy";
         /*
-        The name of the method that creates a clone of the object. The
-        default name is `copy()`. Although it seems to be reasonable to
-        name this method `clone()` it is recommended not to. There is a
-        `clone()` method defined in the class `Object` and this name
-        collisions will cause obnoxious inconveniences.
+        The name of the method that creates a clone of the object.
+        The default name is `copy()`.
+        Although it seems to be reasonable to name this method `clone()` it is recommended not to.
+        There is a `clone()` method defined in the class `Object` and this name collisions will cause obnoxious inconveniences.
 
         end snippet */
 
@@ -84,30 +74,24 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         // snippet Cloner_Config_005
         private String copyMethod = "copy";
         /*
-
-        The name of the generated method that copies the values of the
-        fields.
+        The name of the generated method that copies the values of the fields.
 
         end snippet */
 
         // snippet Cloner_Config_006
         private String superCopyMethod = null;
         /*
+        The name of the copy method of the parent class that the copy method calls.
+        This has only significance if `copyCallsCuper` is `true`.
+        There is no check that the parent has this method or not.
+        It may happen that the parent does not have this method at the time of code generation because the code generation creates this method.
 
-        The name of the copy method of the parent class that the copy method
-        calls. This has only significance if `copyCallsCuper` is `true`. There
-        is no check that the parent has this method or not. It may happen that
-        the parent does not have this method at the time of code generation
-        because the code generation creates this method.
-
-        If the value is `null` or empty string then the configured value for
-        `copyMethod` is used.
+        If the value is `null` or empty string then the configured value for `copyMethod` is used.
         end snippet */
 
         // snippet Cloner_Config_007
         private String copyMethodProtection = "protected";
         /*
-
         The protection of the generated copy method.
 
         end snippet */
@@ -115,26 +99,17 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         // snippet Cloner_Config_008
         private String cloneWith = "true";
         /*
-
-        The `withXXX()` methods call `copy()` to make a frest copy of
-        the object before setting the field. In case you want to use the
-        generated code where usually many fields are altered for the new
-        object then it is better to set this configuration value to
-        `false`. In this case the `withXXX()` methods alter the actual
-        object referenced by `this`. When the cloning code was generated
-        that way then call `copy()` explicitly on the original object
-        before calling `withXXX()` methods presumably chained for many
-        different fields.
+        The `withXXX()` methods calls `copy()` to make a fresh copy of the object before setting the field.
+        In case you want to use the generated code where usually many fields are altered for the new object then it is better to set this configuration value to `false`.
+        In this case the `withXXX()` methods alter the actual object referenced by `this`.
+        When the cloning code was generated that way then call `copy()` explicitly on the original object before calling `withXXX()` methods presumably chained for many different fields.
 
         end snippet */
 
         // snippet Cloner_Config_009
         private String copyCallsSuper = "false";
         /*
-
-        Set this configuration value to `true` to make the copiing
-        method call the same method in the parent class through the
-        reference `super`.
+        Set this configuration value to `true` to make the copying method call the same method in the parent class through the reference `super`.
 
         end snippet */
 
@@ -145,10 +120,7 @@ public class Cloner extends AbstractFilteredFieldsGenerator {
         /* snippet Cloner_Config_010
         ### `declaredOnly = null`
 
-        When you work with class hierarchy where each class in the
-        inheritance chain then specifying this configuration parameter
-        to true will limit the working to use only the fields that are
-        declared in the actual class.
+        When you work with class hierarchy where each class in the inheritance chain then specifying this configuration parameter to true will limit the working to use only the fields that are declared in the actual class.
 
         end snippet */
         private void setDeclaredOnly(boolean b) {
