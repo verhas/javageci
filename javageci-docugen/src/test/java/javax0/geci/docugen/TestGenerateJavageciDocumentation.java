@@ -83,7 +83,7 @@ class TestGenerateJavageciDocumentation {
                     .phase(3).build())
                 .register(SnippetRegex.builder().files("\\.md$|\\.java$|\\.adoc$")
                     .phase(4).build())
-                .register(SnipetLineSkipper.builder().files("\\.md$|\\.java$|\\.adoc$")
+                .register(SnippetLineSkipper.builder().files("\\.md$|\\.java$|\\.adoc$")
                     .phase(5).build())
                 .register(SnippetNumberer.builder().files("\\.md$|\\.java$|\\.adoc$")
                     .phase(6).build())

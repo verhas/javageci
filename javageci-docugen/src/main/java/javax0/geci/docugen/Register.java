@@ -105,7 +105,7 @@ public class Register {
      * <li>SnippetTrim</li>
      * <li>SnippetNumberer</li>
      * <li>SnippetRegex</li>
-     * <li>SnipetLineSkipper</li>
+     * <li>SnippetLineSkipper</li>
      * <li>SnippetNumberer</li>
      * <li>MarkdownCodeInserter</li>
      * <li>JavaDocSnippetInserter</li>
@@ -126,7 +126,7 @@ public class Register {
             SnippetTrim.builder(),
             SnippetNumberer.builder().mnemonic("prenumber"),
             SnippetRegex.builder(),
-            SnipetLineSkipper.builder(),
+            SnippetLineSkipper.builder(),
             SnippetNumberer.builder(),
             MarkdownCodeInserter.builder(),
             JavaDocSnippetInserter.builder()
