@@ -12,9 +12,9 @@ public class Test1HelloWorld {
     }
 
     //<editor-fold id="HelloWorldTest">
-    private static String greeting(){
+    private static String greeting() {
         return "greetings";
-        }
+    }
     //</editor-fold>
 }
 // end snippet

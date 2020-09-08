@@ -2,13 +2,13 @@
 
 ## Deprecated
 
-This generator is deprecated and replaced by the generator Iterate. The
+ ⚠️ **This generator is deprecated and replaced by the generator Iterate. The
 generator Iterate has essentially the same features but it approaches
-the task from a different angle that makes it much easier to use.
+the task from a different angle that makes it much easier to use.**
 
-Use this generator ONLY if you already started to use it in your project
+⚠️ **Use this generator ONLY if you already started to use it in your project
 and it would be too much effort to migrate your code to use the new
-Iterate generator.
+Iterate generator.**
 
 The repeated generator can be used when the code contains some kind of
 repeated code that is cumbersome to maintain manually. The generator can

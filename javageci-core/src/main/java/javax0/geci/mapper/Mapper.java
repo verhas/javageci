@@ -35,43 +35,31 @@ public class Mapper extends AbstractJavaGenerator {
         /**
          * -
          *
-         * * `filter` can be used to to select the define the selector
-         * expression to select the fields that will be taken into
-         * account for the map conversion. If a `final` field is
-         * selected by the expression it will be taken in to account
-         * when generatong the `tMap()` method, but it will be excluded
-         * from the `fromMap()` method because being `final` there is no
-         * way the `fromMethod()` could modify the value of the field.
-         *
+         * * `filter` can be used to to select the define the selector expression to select the fields that will be taken into account for the map conversion.
+         * If a `final` field is selected by the expression it will be taken in to account when generating the `tMap()` method, but it will be excluded from the `fromMap()` method because being `final` there is no way the `fromMethod()` could modify the value of the field.
          */
         private String filter = "!transient & !static";
         /**
          * -
          *
-         * * `generatedAnnotation` can ge used to specify the annotation
-         * that is used to annotate the generated methods. By default it
-         * is the `javax0.geci.annotations.Generated` class.
+         * * `generatedAnnotation` can ge used to specify the annotation that is used to annotate the generated methods.
+         * By default it is the `javax0.geci.annotations.Generated` class.
          */
         private Class<? extends Annotation> generatedAnnotation = javax0.geci.annotations.Generated.class;
         /**
          * -
          *
-         * * `field2MapKeyMapper` is a function that converts the name of
-         * the field, which is already a string into another string. It
-         * is useful in case you want to use different key names in the
-         * map. You can, for example convert the field names to all
-         * capital or insert a prefix before the names. The default is
-         * not to change the name and use the key, which is the field
-         * name.
+         * * `field2MapKeyMapper` is a function that converts the name of the field, which is already a string into another string.
+         * It is useful in case you want to use different key names in the map.
+         * You can, for example convert the field names to all capital or insert a prefix before the names.
+         * The default is not to change the name and use the key, which is the field name.
          */
         private Function<String, String> field2MapKeyMapper = s -> s;
         /**
          * -
          *
-         * * `factory` is a string that is the code to create a new
-         * instance of the class. The default is a "new {{ClassName}}()"
-         * like expression where the actual class name is used after the
-         * keyword `new`.
+         * * `factory` is a string that is the code to create a new instance of the class.
+         * The default is a "new {{ClassName}}()" like expression where the actual class name is used after the keyword `new`.
          */
         private String factory = null;
     }
@@ -116,7 +104,7 @@ public class Mapper extends AbstractJavaGenerator {
     }
 
     /**
-     * Get the resource from the resouce file and remove all \r
+     * Get the resource from the resource file and remove all \r
      * characters in case it is Windows style.
      *
      * @param resource the name of the resource in the same JAR directory
