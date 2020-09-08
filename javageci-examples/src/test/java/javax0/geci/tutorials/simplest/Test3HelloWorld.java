@@ -23,8 +23,8 @@ public class Test3HelloWorld {
 // end snippet
 
     //<editor-fold id="HelloWorldTest">
-    private static String greeting(){
+    private static String greeting() {
         return "greetings";
-        }
+    }
     //</editor-fold>
 }
