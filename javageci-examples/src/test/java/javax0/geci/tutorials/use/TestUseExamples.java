@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 public class TestUseExamples {
     @Test
-    void testUsageExamples() throws Exception {
+    public void testUsageExamples() throws Exception {
         Geci geci;
         Assertions.assertFalse(
                 (geci = new Geci())
