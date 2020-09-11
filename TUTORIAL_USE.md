@@ -24,7 +24,8 @@ to use Java::Geci, add the following dependency to your project:
      <version>1.5.1-SNAPSHOT</version>
  </dependency>
  ```
-There are other modules, but you do not need to declare dependency on them as the engine module has transitive dependency and thus maven automatically will use them.
+These are the base modules that are necessary to get started.
+This tutorial also uses the additional `javageci-core` module, which contains the core generators.
 
 ### Using Java::Geci core generators
 
@@ -57,53 +58,154 @@ This means:
 * Call `source("foo").source("bar")` when you have sources in **both** foo **and** bar. 
 * Call `source("foo", "bar")` if you have sources in **either** foo **or** bar.
 
-If you have a simple Maven project and your source code is in the `src/main/java` directory then you do not need to specify any source location.
+If all your source code is in the `src/main/java` directory then you do not need to specify any source location.
 `src/main/java` is the default setting for Java::Geci.
 
 The method `register()` can register one or more source code generators.
 You can also chain `register()` calls and register your generator objects one-by-one.
 Each registered generator will be invoked on the sources.
 
-Finally, the method invocation `generate()` will do the work, read the source files, invoke the generators and write to the files the code the generators created.
+The method invocation `generate()` will <!-- do the following -->
+read the source files,
+invoke the generators and
+write the generated code into the files.
+
+### Marking your classes for code generation
 
 Every core generator has a *mnemonic* which identifies the generator.
+It is a plain `String` that is unique to each generator.
 For example the Accessor generator (that generates getters and setters) has the mnemonic "accessor".
 
-After you assigned the source to the generator this mnemonic is used to identify which classes need code generation.
-This can be mainly done in two ways:
+After you assigned the source to the generator this mnemonic marks classes that need code generation.
+This can be mainly done in two ways.
 
-* Adding the mnemonic of the generator in a `@Geci` annotation.
+#### Marking your classes with annotations
 
-Example (using the Accessor generator):
+You can add the mnemonic of the generator in a `@Geci` annotation.
+
+For example:
 
 ```java
 @Geci("accessor")
-public class Example {
+@Geci("builder")
+public class ExampleWithAnnotations {
     private int example;
 }
 ```
 
-* Adding an editor-fold segment to the class with the mnemonic as an id.
+The `@Geci` annotation is repeatable, so you can mark your classes for multiple generators.
+When you first generate code Java::Geci will automatically put dedicated editor-fold segments at the end of your class.
+These segments are where the generated code will go.
 
-Example (using the Accessor generator):
+Example output:
 
+<!-- snip ExampleWithAnnotations -->
 ```java
-public class Example {
+@Geci("accessor")
+@Geci("builder")
+public class ExampleWithAnnotations {
     private int example;
+    //<editor-fold id="builder">
+    @javax0.geci.annotations.Generated("builder")
+    public static ExampleWithAnnotations.Builder builder() {
+        return new ExampleWithAnnotations().new Builder();
+    }
+
+    @javax0.geci.annotations.Generated("builder")
+    public class Builder {
+        @javax0.geci.annotations.Generated("builder")
+        public Builder example(final int x) {
+            ExampleWithAnnotations.this.example = x;
+            return this;
+        }
+
+        @javax0.geci.annotations.Generated("builder")
+        public ExampleWithAnnotations build() {
+            return ExampleWithAnnotations.this;
+        }
+    }
+    //</editor-fold>
     //<editor-fold id="accessor">
+    public void setExample(int example) {
+        this.example = example;
+    }
+
+    public int getExample() {
+        return example;
+    }
+
     //</editor-fold>
 }
 ```
 
-Generally speaking, annotating your classes is preferred because it is more up-front about using code generation.
+#### Marking your classes with dedicated editor-fold segments
 
-You can do both!
-This way you specify **which classes** utilize code generation and also **where the generated code should go** as Java::Geci will always put the generated code in the editor-fold segment.
-If you only use annotation, Java::Geci will automatically add the editor-fold segment at the end of your class when it first generates code.
+The other approach is to add a dedicated editor-fold segment to the class with the mnemonic as an id.
 
-There are other ways for marking your files for code generation, covered in a later tutorial, titled [How to write your own annotations for Java::Geci](ANNOTATIONS.md)
+For example:
 
-That's it! To summarize:
+```java
+public class ExampleWithEditorFolds {
+    private int example;
+    //<editor-fold id="accessor">
+    //</editor-fold>
+    //<editor-fold id="builder">
+    //</editor-fold>
+}
+```
+
+The editor-fold segment is like an XML tag (but in a comment).
+You have to add a new editor-fold segment for each generator you want to use.
+
+Example output:
+
+<!-- snip ExampleWithEditorFolds -->
+```java
+public class ExampleWithEditorFolds {
+    private int example;
+    //<editor-fold id="accessor">
+    public void setExample(int example) {
+        this.example = example;
+    }
+
+    public int getExample() {
+        return example;
+    }
+
+    //</editor-fold>
+    //<editor-fold id="builder">
+    @javax0.geci.annotations.Generated("builder")
+    public static ExampleWithEditorFolds.Builder builder() {
+        return new ExampleWithEditorFolds().new Builder();
+    }
+
+    @javax0.geci.annotations.Generated("builder")
+    public class Builder {
+        @javax0.geci.annotations.Generated("builder")
+        public Builder example(final int x) {
+            ExampleWithEditorFolds.this.example = x;
+            return this;
+        }
+
+        @javax0.geci.annotations.Generated("builder")
+        public ExampleWithEditorFolds build() {
+            return ExampleWithEditorFolds.this;
+        }
+    }
+    //</editor-fold>
+}
+```
+
+Annotating your classes is the preferred approach, because it is more up-front about using code generation.
+In both cases Java::Geci will put the generated code in the dedicated editor-fold segment.
+
+You _can_ do both!
+This way you specify **which classes** utilize code generation and **where the generated code should go**.
+
+There are other ways for marking your files for code generation.
+This is covered in a later tutorial, titled [How to write your own annotations for Java::Geci](ANNOTATIONS.md).
+
+### Summary
 
 * In your tests, use the `Geci` class to:
     - Add your source directories with `source()`
@@ -119,24 +221,6 @@ If we run our unit test now, it will say:
 
 This is exactly what we expected.
 It means that the generator and classes are properly configured/annotated/marked and Java::Geci generated some code.
-It looks like this:
 
-<!-- snip TestAccessor_result -->
-```java
-@Geci("accessor")
-public class Example {
-    private int example;
-    //<editor-fold id="accessor">
-    public void setExample(int example) {
-        this.example = example;
-    }
-
-    public int getExample() {
-        return example;
-    }
-
-    //</editor-fold>
-}
-```
 If you would like to know more about the generators provided by Java::Geci, [read their dedicated tutorials](GENERATORS.md).
 
