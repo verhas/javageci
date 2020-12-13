@@ -47,18 +47,20 @@ essentially executing the "define" macros and at this point the tags are defined
 
 {#eval {@for _tag in (name,groupId,artifactId,version,scope,packaging,
                       description,url,properties,build,pluginManagement,
+                      distributionManagement,
                       plugins,plugin,dependencyManagement,dependencies,
                       scm,connection,developerConnection,executions,
-                      execution,id,goals,goal,release,configuration,
+                      execution,extensions,id,goals,goal,release,configuration,
                       source,target,encoding,excludes,exclude,
                       annotationProcessorPaths,annotationProcessorPath,
                       annotationProcessors,annotationProcessor,
-                      profiles,profile,
+                      profiles,profile,phase,
                       resources,resource,
                       directory,filtering,
                       repositories,argLine)=
 {tag/_tag}}}
 
+{@define snapshotRepository($id,$url)=<snapshotRepository><id>$id</id><url>$url</url></snapshotRepository>}
 {@define repository($id,$url)=<repository><id>$id</id><url>$url</url></repository>}
 {@define profile($id,$profileContent)=<profile><id>$id</id>$profileContent</profile>}
 ----------------------------------------------------------------------------------------

@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TestClassLine {
 
-    private static Pattern CLASS_LINE;
+    private final Pattern CLASS_LINE;
 
     TestClassLine() throws NoSuchFieldException, IllegalAccessException {
         Field classLineField = AbstractJavaGenerator.class.getDeclaredField("CLASS_LINE");

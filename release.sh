@@ -1,5 +1,22 @@
 #!/usr/bin/env bash
 
+echo [INFO] -------------------------------------------------------
+echo [INFO]  M A N U A L   R E L E A S E
+echo [INFO] -------------------------------------------------------
+echo [INFO] Execute this file to create the artifacts
+echo [INFO] to manually upload to https://oss.sonatype.org/
+echo [INFO]
+echo [INFO] Normal release should use
+echo [INFO]
+echo [INFO]   mvn -f genpom.xml clean
+echo [INFO]   mvn verify
+echo [INFO]
+echo [INFO] if all compilation went well, then and only then:
+echo [INFO]
+echo [INFO]   mvn deploy -Possrh
+echo [INFO] -------------------------------------------------------
+echo [INFO]
+
 rm -rf release
 echo Creating 01api
 mkdir -p release/01api

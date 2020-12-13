@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
     <artifactId>javageci-api</artifactId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.6.0</version>
     <parent>
         <groupId>com.javax0.geci</groupId>
         <artifactId>javageci-parent</artifactId>
-        <version>1.5.1-SNAPSHOT</version>
+        <version>1.6.0</version>
     </parent>
     <name>javageci api</name>
     <description>Javageci library API interfaces</description>

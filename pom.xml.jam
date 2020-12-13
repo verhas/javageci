@@ -12,6 +12,10 @@
         {property :project.build.sourceEncoding:UTF-8}
         {property :profile:default}
     }
+    {distributionManagement|
+        {snapshotRepository |ossrh|https://oss.sonatype.org/content/repositories/snapshots}
+        {repository |ossrh|https://oss.sonatype.org/service/local/staging/deploy/maven2/}
+    }
     {build|{pluginManagement|{plugins|
                 {plugin|
                     {GAV :org.apache.maven.plugins:maven-surefire-plugin:{SUREFIRE_VERSION}}
@@ -91,6 +95,15 @@
                         {release :{JAVA_RELEASE}}
                     }
                 }
+                {plugin|
+                      {GAV :org.sonatype.plugins:nexus-staging-maven-plugin:1.6.7}
+                      {extensions :true}
+                      {configuration|
+                        <serverId>ossrh</serverId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                      }
+                }
             }
         }
         {resources|
@@ -141,6 +154,20 @@
             {repositories|
                 {repository |jitpack.io|https://jitpack.io}
             }
+        }
+        {profile|ossrh|
+            {build|
+                {plugins|
+                    {plugin|
+                        {GAV :org.apache.maven.plugins:maven-gpg-plugin:1.6}
+                        {executions|{execution
+                            {id :sign-artifacts}
+                            {phase :verify}
+                            {goals|{goal :sign}}
+                        }}
+                    }
+                }
+           }
         }
     }
 }

@@ -4,7 +4,7 @@
     <packaging>pom</packaging>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-parent</artifactId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.6.0</version>
     <name>javageci parent</name>
     <description>Java GEnerate Code Inline source code generation framework</description>
     <modules>
@@ -40,6 +40,16 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <profile>default</profile>
     </properties>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
     <build>
         <pluginManagement>
             <plugins>
@@ -137,6 +147,17 @@
                         <release>11</release>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.7</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <serverId>ossrh</serverId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
         <resources>
@@ -151,37 +172,37 @@
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-api</artifactId>
-                <version>1.5.1-SNAPSHOT</version>
+                <version>1.6.0</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-core</artifactId>
-                <version>1.5.1-SNAPSHOT</version>
+                <version>1.6.0</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-tools</artifactId>
-                <version>1.5.1-SNAPSHOT</version>
+                <version>1.6.0</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-engine</artifactId>
-                <version>1.5.1-SNAPSHOT</version>
+                <version>1.6.0</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-annotation</artifactId>
-                <version>1.5.1-SNAPSHOT</version>
+                <version>1.6.0</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-docugen</artifactId>
-                <version>1.5.1-SNAPSHOT</version>
+                <version>1.6.0</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-core-annotations</artifactId>
-                <version>1.5.1-SNAPSHOT</version>
+                <version>1.6.0</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -255,6 +276,27 @@
                     <url>https://jitpack.io</url>
                 </repository>
             </repositories>
+        </profile>
+        <profile>
+            <id>ossrh</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>
