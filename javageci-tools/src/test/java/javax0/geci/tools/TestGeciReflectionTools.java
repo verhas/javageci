@@ -11,6 +11,7 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,77 @@ public class TestGeciReflectionTools {
 
     private static java.util.Map.Entry<? extends String, ? super Integer>[] m2() {
         return null;
+    }
+
+    private static class MethodHolder {
+        private void privateMethod() {
+        }
+
+        public void publicMethod() {
+        }
+
+        public final void publicFinalMethod() {
+        }
+
+        void packageMethod() {
+        }
+
+        final void finalPackageMethod() {
+        }
+
+        protected void protectedMethod() {
+        }
+
+        static private void staticPrivateMethod() {
+        }
+
+        static public void staticPublicMethod() {
+        }
+
+        static void staticPackageMethod() {
+        }
+
+        static protected void staticProtectedMethod() {
+        }
+    }
+
+    @Test
+    void testMethodModifiersString() {
+        final Method[] methods = GeciReflectionTools.getDeclaredMethodsSorted(MethodHolder.class);
+        final StringBuilder sb = new StringBuilder();
+        sb.append("ALL MODIFIERS:\n");
+        for (final var method : methods) {
+            sb.append(GeciReflectionTools.modifiersString(method))
+                .append(method.getName()).append("\n");
+        }
+        sb.append("NON-ACCESS MODIFIERS:\n");
+        for (final var method : methods) {
+            sb.append(GeciReflectionTools.modifiersStringNoAccess(method))
+                .append(method.getName()).append("\n");
+        }
+        Assertions.assertEquals("ALL MODIFIERS:\n" +
+                "final finalPackageMethod\n" +
+                "private static staticPrivateMethod\n" +
+                "private privateMethod\n" +
+                "protected static staticProtectedMethod\n" +
+                "protected protectedMethod\n" +
+                "public final publicFinalMethod\n" +
+                "public static staticPublicMethod\n" +
+                "public publicMethod\n" +
+                "static staticPackageMethod\n" +
+                "packageMethod\n" +
+                "NON-ACCESS MODIFIERS:\n" +
+                "final finalPackageMethod\n" +
+                "static staticPrivateMethod\n" +
+                "privateMethod\n" +
+                "static staticProtectedMethod\n" +
+                "protectedMethod\n" +
+                "final publicFinalMethod\n" +
+                "static staticPublicMethod\n" +
+                "publicMethod\n" +
+                "static staticPackageMethod\n" +
+                "packageMethod\n"
+            , sb.toString());
     }
 
     @Test
@@ -63,53 +135,54 @@ public class TestGeciReflectionTools {
     @Test
     void testTypeGetting() throws NoSuchMethodException, NoSuchFieldException {
         assertEquals(
-                "void",
-                GeciReflectionTools.typeAsString(this.getClass().getDeclaredMethod("testTypeGetting")));
+            "void",
+            GeciReflectionTools.typeAsString(this.getClass().getDeclaredMethod("testTypeGetting")));
         assertEquals(
-                "java.util.HashMap<java.util.Map<String,Integer>,Object>",
-                GeciReflectionTools.typeAsString(this.getClass().getDeclaredField("b")));
+            "java.util.HashMap<java.util.Map<String,Integer>,Object>",
+            GeciReflectionTools.typeAsString(this.getClass().getDeclaredField("b")));
     }
 
     @Test
     void normalizesGenericNames() {
         Assertions.assertAll(
-                () -> assertEquals("String", GeciReflectionTools.normalizeTypeName("java.lang.String")),
-                () -> assertEquals("java.util.Map", GeciReflectionTools.normalizeTypeName("java.util.Map")),
-                () -> assertEquals("java.util.Map<Integer,String>",
-                        GeciReflectionTools.normalizeTypeName("java.util.Map<java.lang.Integer,java.lang.String>")),
-                () -> assertEquals("java.util.Map<java.util.Set<Integer>,String>",
-                        GeciReflectionTools.normalizeTypeName("java.util.Map<java.util.Set<java.lang.Integer>,java.lang.String>")),
-                () -> assertEquals("java.util.Map<java.util.Set<Integer>,String>",
-                        GeciReflectionTools.normalizeTypeName("java.util.Map<java.util.Set< java.lang.Integer>,java.lang.String>")),
-                () -> assertEquals("java.util.Map<java.util.Set<com.java.lang.Integer>,String>",
-                        GeciReflectionTools.normalizeTypeName("java.util.Map<java.util.Set< com. java.lang.Integer>,java.lang.String>")),
-                () -> assertEquals("java.util.Map<java.util.Set<? extends com.java.lang.Integer>,String>",
-                        GeciReflectionTools.normalizeTypeName("java.util.Map<java.util.Set<? extends    com. java.lang.Integer> , java.lang.String>"))
+            () -> assertEquals("String", GeciReflectionTools.normalizeTypeName("java.lang.String")),
+            () -> assertEquals("java.util.Map", GeciReflectionTools.normalizeTypeName("java.util.Map")),
+            () -> assertEquals("java.util.Map<Integer,String>",
+                GeciReflectionTools.normalizeTypeName("java.util.Map<java.lang.Integer,java.lang.String>")),
+            () -> assertEquals("java.util.Map<java.util.Set<Integer>,String>",
+                GeciReflectionTools.normalizeTypeName("java.util.Map<java.util.Set<java.lang.Integer>,java.lang.String>")),
+            () -> assertEquals("java.util.Map<java.util.Set<Integer>,String>",
+                GeciReflectionTools.normalizeTypeName("java.util.Map<java.util.Set< java.lang.Integer>,java.lang.String>")),
+            () -> assertEquals("java.util.Map<java.util.Set<com.java.lang.Integer>,String>",
+                GeciReflectionTools.normalizeTypeName("java.util.Map<java.util.Set< com. java.lang.Integer>,java.lang.String>")),
+            () -> assertEquals("java.util.Map<java.util.Set<? extends com.java.lang.Integer>,String>",
+                GeciReflectionTools.normalizeTypeName("java.util.Map<java.util.Set<? extends    com. java.lang.Integer> , java.lang.String>"))
         );
     }
 
     @Test
     void normalizeType() {
         Assertions.assertAll(
-                () -> assertEquals("java.util.Set<java.util.Map.Entry<K,V>>", GeciReflectionTools.getGenericTypeName(Map.class.getDeclaredMethod("entrySet").getGenericReturnType())),
-                () -> assertEquals("java.util.Map.Entry", GeciReflectionTools.getGenericTypeName(java.util.Map.Entry.class)),
-                () -> assertEquals("java.util.Map.Entry<String,Integer>[]", GeciReflectionTools.getGenericTypeName(this.getClass().getDeclaredMethod("m1").getGenericReturnType())),
-                () -> assertEquals("java.util.Map.Entry<? extends String,? super Integer>[]", GeciReflectionTools.getGenericTypeName(this.getClass().getDeclaredMethod("m2").getGenericReturnType()))
+            () -> assertEquals("java.util.Set<java.util.Map.Entry<K,V>>", GeciReflectionTools.getGenericTypeName(Map.class.getDeclaredMethod("entrySet").getGenericReturnType())),
+            () -> assertEquals("java.util.Map.Entry", GeciReflectionTools.getGenericTypeName(java.util.Map.Entry.class)),
+            () -> assertEquals("java.util.Map.Entry<String,Integer>[]", GeciReflectionTools.getGenericTypeName(this.getClass().getDeclaredMethod("m1").getGenericReturnType())),
+            () -> assertEquals("java.util.Map.Entry<? extends String,? super Integer>[]", GeciReflectionTools.getGenericTypeName(this.getClass().getDeclaredMethod("m2").getGenericReturnType()))
         );
     }
 
 
     private static class Z<H> {
-        private static class U<T extends String>{}
+        private static class U<T extends String> {
+        }
     }
 
     @Test
     void getSimpleGenericName() {
         Assertions.assertAll(
-                () -> assertEquals("Entry<K,V>", GeciReflectionTools.getSimpleGenericClassName(java.util.Map.Entry.class)),
-                () -> assertEquals("Map.Entry<K,V>", GeciReflectionTools.getLocalGenericClassName(java.util.Map.Entry.class)),
-                () -> assertEquals("U<T>", GeciReflectionTools.getSimpleGenericClassName(Z.U.class)),
-                () -> assertEquals("TestGeciReflectionTools.Z.U<T>", GeciReflectionTools.getLocalGenericClassName(Z.U.class))
+            () -> assertEquals("Entry<K,V>", GeciReflectionTools.getSimpleGenericClassName(java.util.Map.Entry.class)),
+            () -> assertEquals("Map.Entry<K,V>", GeciReflectionTools.getLocalGenericClassName(java.util.Map.Entry.class)),
+            () -> assertEquals("U<T>", GeciReflectionTools.getSimpleGenericClassName(Z.U.class)),
+            () -> assertEquals("TestGeciReflectionTools.Z.U<T>", GeciReflectionTools.getLocalGenericClassName(Z.U.class))
         );
     }
 
@@ -125,13 +198,15 @@ public class TestGeciReflectionTools {
             public void returns(List<String> lines) {
 
             }
+
             @Override
             public List<String> getLines() {
                 return Arrays.asList("    // @Geci(\"aaa a='b' b='c' c='d' a$='dollared' b3='bthree' _='-'\")",
-                        "    // @Geci(\"xxx x='x' y='y' z='z'\")",
-                        "    private static Object something;",
-                        "    private HashMap<Map<String, Integer>, Object> b;");
+                    "    // @Geci(\"xxx x='x' y='y' z='z'\")",
+                    "    private static Object something;",
+                    "    private HashMap<Map<String, Integer>, Object> b;");
             }
+
             @Override
             public Logger getLogger() {
                 return null;

@@ -219,12 +219,12 @@
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-engine</artifactId>
-                <version>1.1.0</version>
+                <version>1.5.1</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-testsupport</artifactId>
-                <version>1.1.0</version>
+                <version>1.5.1</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

@@ -14,6 +14,7 @@ public class PreprocessedFile {
 
     /*!jamal
     {{@define z=13}}int i = {{z}};
+    {{@define $forsubsep=:::::}}
 
 //        {{#for listedMethod in ({{#methods javax0.geci.jamal.PreprocessedFile/public}})=
 //         listedMethod {{@comment

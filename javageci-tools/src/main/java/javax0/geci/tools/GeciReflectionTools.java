@@ -140,7 +140,7 @@ public class GeciReflectionTools {
      */
     public static String modifiersStringNoAccess(Method method) {
         return new ModifiersBuilder(method.getModifiers()
-            & ~Modifier.PROTECTED & Modifier.PRIVATE & Modifier.PUBLIC).toString();
+            & ~Modifier.PROTECTED & ~Modifier.PRIVATE & ~Modifier.PUBLIC).toString();
     }
 
     /**
