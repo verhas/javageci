@@ -18,6 +18,12 @@ public class ModifiersBuilder {
         }
     }
 
+    /**
+     * Use this method to signal that the builder is used to build the string version of the modifiers for a field.
+     * The default is for a method. Method can not be transient or volatile, but the bit field for both of these can be
+     * set in case the method is a vargarg or synthetic respectively.
+     * @return this
+     */
     public ModifiersBuilder field() {
         isMethod = false;
         return this;
@@ -36,12 +42,11 @@ public class ModifiersBuilder {
         check(Modifier::isFinal, "final ");
         check(Modifier::isStatic, "static ");
         check(Modifier::isSynchronized, "synchronized ");
-        check(Modifier::isVolatile, "volatile ");
         check(Modifier::isStrict, "strictfp ");
         if (!isMethod) {
+            check(Modifier::isVolatile, "volatile ");
             check(Modifier::isTransient, "transient ");
         }
-
         return s.toString();
     }
 }
