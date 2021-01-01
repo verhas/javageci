@@ -51,6 +51,10 @@ public class MethodTool {
     }
 
     public String signature() {
+        return signature(false);
+    }
+
+    public String signature(boolean concrete) {
         final var types = method.getGenericParameterTypes();
         final var sb = new StringBuilder();
         for (int i = 0; i < types.length; i++) {
@@ -65,26 +69,34 @@ public class MethodTool {
         }
         var arglist = sb.toString();
         var exceptionlist = Arrays.stream(method.getGenericExceptionTypes())
-                .map(GeciReflectionTools::getGenericTypeName)
-                .collect(Collectors.joining(","));
+            .map(GeciReflectionTools::getGenericTypeName)
+            .collect(Collectors.joining(","));
         final String modifiers;
         if (isPublic) {
-            modifiers = (isInterface ? "" : "public " + GeciReflectionTools.modifiersStringNoAccess(method));
+            if (concrete) {
+                modifiers = (isInterface ? "" : "public " + GeciReflectionTools.modifiersStringNoAccessConcrete(method));
+            } else {
+                modifiers = (isInterface ? "" : "public " + GeciReflectionTools.modifiersStringNoAccess(method));
+            }
         } else {
-            modifiers = (isInterface ? "" : (GeciReflectionTools.modifiersString(method)));
+            if (concrete) {
+                modifiers = (isInterface ? "" : (GeciReflectionTools.modifiersStringConcrete(method)));
+            } else {
+                modifiers = (isInterface ? "" : (GeciReflectionTools.modifiersString(method)));
+            }
         }
         return modifiers +
-                (type == null ? GeciReflectionTools.typeAsString(method) : type) +
-                " " +
-                decoratedName(method) +
-                "(" + arglist + ")" +
-                (exceptionlist.length() == 0 ? "" : " throws " + exceptionlist);
+            (type == null ? GeciReflectionTools.typeAsString(method) : type) +
+            " " +
+            decoratedName(method) +
+            "(" + arglist + ")" +
+            (exceptionlist.length() == 0 ? "" : " throws " + exceptionlist);
     }
 
     public String call() {
         var arglist = Arrays.stream(method.getGenericParameterTypes())
-                .map(this::getArgCall)
-                .collect(Collectors.joining(","));
+            .map(this::getArgCall)
+            .collect(Collectors.joining(","));
 
         return decoratedName(method) + "(" + arglist + ")";
     }

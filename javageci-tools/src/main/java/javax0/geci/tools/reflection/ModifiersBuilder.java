@@ -43,6 +43,7 @@ public class ModifiersBuilder {
         check(Modifier::isStatic, "static ");
         check(Modifier::isSynchronized, "synchronized ");
         check(Modifier::isStrict, "strictfp ");
+        check(Modifier::isAbstract, "abstract ");
         if (!isMethod) {
             check(Modifier::isVolatile, "volatile ");
             check(Modifier::isTransient, "transient ");

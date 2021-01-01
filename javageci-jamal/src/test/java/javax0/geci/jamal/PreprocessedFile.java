@@ -13,49 +13,51 @@ public class PreprocessedFile {
 
 
     /*!jamal
-    {{@define z=13}}int i = {{z}};
-    {{@define $forsubsep=:::::}}
+    {%@define z=13%}int i = {%z%};
 
-//        {{#for listedMethod in ({{#methods javax0.geci.jamal.PreprocessedFile/public}})=
-//         listedMethod {{@comment
-//}}        }}
-    {{#eval {{#for listedFields in ({{#fields javax0.geci.jamal.PreprocessedFile/true}})=
-       {{@ident {{#modifiers listedFields}} void set{{#name listedFields}}({{#type listedFields}} {{#name listedFields}}){
-            this.{{#name listedFields}} = {{#name listedFields}};
-       } }}
-
-    }}}}
+// {%@import res:geci.jim%}
+//        {%#for ($modifiers,$type,$name,$arg) in ({%#methods
+//                  {%class javax0.geci.jamal.PreprocessedFile%}
+//                  {%selector=true%}
+//                  {%argsep=:%}
+//                  {%exsep=:%}
+//                  {%format=$modifiers|$type|$name|$args%}%})=
+//         $modifiers $type $name $arg {%@comment
+//
+//%}        %}
+    {%#for ($modifiers,$name,$type) in ({%#fields
+                            {%class javax0.geci.jamal.PreprocessedFile%}
+                            {%format=$modifiers|$name|$type%}%})=
+    $modifiers void set$name($type $name){ this.$name = $name; }
+    %}
 
      */
     int i = 13;
 
+// 
 //        
-//         javax0.geci.jamal.PreprocessedFile|mimosa|java.lang.Integer|java.util.Map         
-//         java.lang.Object|toString|         
-//         java.lang.Object|equals|java.lang.Object         
-//         java.lang.Object|getClass|         
-//         java.lang.Object|notify|         
-//         java.lang.Object|notifyAll|         
-//         java.lang.Object|wait|         
-//         java.lang.Object|wait|long         
-//         java.lang.Object|wait|long|int         
-//         java.lang.Object|hashCode|         
-//         javax0.geci.jamal.PreprocessedFile|dummy|         
-//         javax0.geci.jamal.PreprocessedFile|seta|int         
-    public void seta(int a){
-            this.a = a;
-       } 
+//         private void setmyMap java.util.Map         
+//         protected Object clone          
+//         protected void finalize          
+//         public String mimosa java.lang.Integer:java.util.Map         
+//         public String toString          
+//         public boolean equals java.lang.Object         
+//         public final Class getClass          
+//         public final void notify          
+//         public final void notifyAll          
+//         public final void wait          
+//         public final void wait long         
+//         public final void wait long:int         
+//         public int hashCode          
+//         public void dummy          
+//         public void seta int         
+//          void seti int         
 
+    public void seta(int a){ this.a = a; }
 
-        void seti(int i){
-            this.i = i;
-       } 
+     void seti(int i){ this.i = i; }
 
-
-       private void setmyMap(java.util.Map myMap){
-            this.myMap = myMap;
-       } 
-
+    private void setmyMap(java.util.Map myMap){ this.myMap = myMap; }
 
 
 
@@ -65,7 +67,7 @@ public class PreprocessedFile {
 
         /*!jamal
         //<editor-fold desc="the generated code">
-        var j = {{z}};
+        var j = {%z%};
         //</editor-fold>
          */
         //<editor-fold desc="the generated code">
@@ -76,7 +78,7 @@ public class PreprocessedFile {
 
         /*!jamal
         //<editor-fold desc="the generated code">
-        {{@import variables.jam}}var k = {{s}};
+        {%@import variables.jam%}var k = {%s%};
         //</editor-fold>
          */
         //<editor-fold desc="the generated code">

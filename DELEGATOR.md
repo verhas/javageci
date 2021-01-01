@@ -51,18 +51,38 @@ When this is done you can run the test code from the IDE or via the build proces
 ```java
     //<editor-fold id="map">
     @javax0.geci.annotations.Generated("delegator")
-    public V compute(K arg1, java.util.function.BiFunction<? super K, ? super V, ? extends V> arg2) {
-        return contained.compute(arg1, arg2);
+    public V compute(K arg1, java.util.function.BiFunction<? super K,? super V,? extends V> arg2) {
+        return contained.compute(arg1,arg2);
     }
 
     @javax0.geci.annotations.Generated("delegator")
-    public V computeIfAbsent(K arg1, java.util.function.Function<? super K, ? extends V> arg2) {
-        return contained.computeIfAbsent(arg1, arg2);
+    public V computeIfAbsent(K arg1, java.util.function.Function<? super K,? extends V> arg2) {
+        return contained.computeIfAbsent(arg1,arg2);
     }
 
     @javax0.geci.annotations.Generated("delegator")
-    public V computeIfPresent(K arg1, java.util.function.BiFunction<? super K, ? super V, ? extends V> arg2) {
-        return contained.computeIfPresent(arg1, arg2);
+    public V computeIfPresent(K arg1, java.util.function.BiFunction<? super K,? super V,? extends V> arg2) {
+        return contained.computeIfPresent(arg1,arg2);
+    }
+
+    @javax0.geci.annotations.Generated("delegator")
+    public V getOrDefault(Object arg1, V arg2) {
+        return contained.getOrDefault(arg1,arg2);
+    }
+
+    @javax0.geci.annotations.Generated("delegator")
+    public V merge(K arg1, V arg2, java.util.function.BiFunction<? super V,? super V,? extends V> arg3) {
+        return contained.merge(arg1,arg2,arg3);
+    }
+
+    @javax0.geci.annotations.Generated("delegator")
+    public V putIfAbsent(K arg1, V arg2) {
+        return contained.putIfAbsent(arg1,arg2);
+    }
+
+    @javax0.geci.annotations.Generated("delegator")
+    public V replace(K arg1, V arg2) {
+        return contained.replace(arg1,arg2);
     }
 
     @javax0.geci.annotations.Generated("delegator")
@@ -71,33 +91,13 @@ When this is done you can run the test code from the IDE or via the build proces
     }
 
     @javax0.geci.annotations.Generated("delegator")
-    public V getOrDefault(Object arg1, V arg2) {
-        return contained.getOrDefault(arg1, arg2);
-    }
-
-    @javax0.geci.annotations.Generated("delegator")
-    public V merge(K arg1, V arg2, java.util.function.BiFunction<? super V, ? super V, ? extends V> arg3) {
-        return contained.merge(arg1, arg2, arg3);
-    }
-
-    @javax0.geci.annotations.Generated("delegator")
     public V put(K arg1, V arg2) {
-        return contained.put(arg1, arg2);
-    }
-
-    @javax0.geci.annotations.Generated("delegator")
-    public V putIfAbsent(K arg1, V arg2) {
-        return contained.putIfAbsent(arg1, arg2);
+        return contained.put(arg1,arg2);
     }
 
     @javax0.geci.annotations.Generated("delegator")
     public V remove(Object arg1) {
         return contained.remove(arg1);
-    }
-
-    @javax0.geci.annotations.Generated("delegator")
-    public V replace(K arg1, V arg2) {
-        return contained.replace(arg1, arg2);
     }
 
     @javax0.geci.annotations.Generated("delegator")
@@ -116,16 +116,6 @@ When this is done you can run the test code from the IDE or via the build proces
     }
 
     @javax0.geci.annotations.Generated("delegator")
-    public boolean remove(Object arg1, Object arg2) {
-        return contained.remove(arg1, arg2);
-    }
-
-    @javax0.geci.annotations.Generated("delegator")
-    public boolean replace(K arg1, V arg2, V arg3) {
-        return contained.replace(arg1, arg2, arg3);
-    }
-
-    @javax0.geci.annotations.Generated("delegator")
     public int size() {
         return contained.size();
     }
@@ -141,7 +131,7 @@ When this is done you can run the test code from the IDE or via the build proces
     }
 
     @javax0.geci.annotations.Generated("delegator")
-    public java.util.Set<java.util.Map.Entry<K, V>> entrySet() {
+    public java.util.Set<java.util.Map.Entry<K,V>> entrySet() {
         return contained.entrySet();
     }
 
@@ -151,17 +141,27 @@ When this is done you can run the test code from the IDE or via the build proces
     }
 
     @javax0.geci.annotations.Generated("delegator")
-    public void forEach(java.util.function.BiConsumer<? super K, ? super V> arg1) {
-        contained.forEach(arg1);
-    }
-
-    @javax0.geci.annotations.Generated("delegator")
-    public void putAll(java.util.Map<? extends K, ? extends V> arg1) {
+    public void putAll(java.util.Map<? extends K,? extends V> arg1) {
         contained.putAll(arg1);
     }
 
     @javax0.geci.annotations.Generated("delegator")
-    public void replaceAll(java.util.function.BiFunction<? super K, ? super V, ? extends V> arg1) {
+    public boolean remove(Object arg1, Object arg2) {
+        return contained.remove(arg1,arg2);
+    }
+
+    @javax0.geci.annotations.Generated("delegator")
+    public boolean replace(K arg1, V arg2, V arg3) {
+        return contained.replace(arg1,arg2,arg3);
+    }
+
+    @javax0.geci.annotations.Generated("delegator")
+    public void forEach(java.util.function.BiConsumer<? super K,? super V> arg1) {
+        contained.forEach(arg1);
+    }
+
+    @javax0.geci.annotations.Generated("delegator")
+    public void replaceAll(java.util.function.BiFunction<? super K,? super V,? extends V> arg1) {
         contained.replaceAll(arg1);
     }
 

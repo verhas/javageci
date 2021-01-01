@@ -23,8 +23,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,8 +47,8 @@ public class GeciReflectionTools {
 
 
     /**
-     * Get the parameters from the {@code element} from the {@link Geci} annotation that stands for the
-     * generator that has the mnemonic {@code generatorMnemonic}.
+     * Get the parameters from the {@code element} from the {@link Geci} annotation that stands for the generator that
+     * has the mnemonic {@code generatorMnemonic}.
      *
      * @param element           the method, class etc. that has the }{@link Geci} annotation.
      * @param generatorMnemonic the name of the generator that needs the parameters. Only the parameters that are
@@ -133,6 +131,16 @@ public class GeciReflectionTools {
     }
 
     /**
+     * Get the modifiers as string except abstract.
+     *
+     * @param method for which the modifiers are needed
+     * @return the string containing the modifiers space separated
+     */
+    public static String modifiersStringConcrete(Method method) {
+        return new ModifiersBuilder(method.getModifiers() & ~Modifier.ABSTRACT).toString();
+    }
+
+    /**
      * Get the modifiers as string except access modifier.
      *
      * @param method for which the modifiers are needed
@@ -141,6 +149,17 @@ public class GeciReflectionTools {
     public static String modifiersStringNoAccess(Method method) {
         return new ModifiersBuilder(method.getModifiers()
             & ~Modifier.PROTECTED & ~Modifier.PRIVATE & ~Modifier.PUBLIC).toString();
+    }
+
+    /**
+     * Get the modifiers as string except access modifier and without the possible abstract modifier.
+     *
+     * @param method for which the modifiers are needed
+     * @return the string containing the modifiers space separated, except the access modifier
+     */
+    public static String modifiersStringNoAccessConcrete(Method method) {
+        return new ModifiersBuilder(method.getModifiers()
+            & ~Modifier.PROTECTED & ~Modifier.PRIVATE & ~Modifier.PUBLIC & ~Modifier.ABSTRACT).toString();
     }
 
     /**
@@ -159,9 +178,9 @@ public class GeciReflectionTools {
     /**
      * Normalize a generic type name removing all {@code java.lang.} from the type names.
      * <p>
-     * Even the generated code should be human readable, especially when you debug the working of the code. In that
-     * case the generic names with all the {@code java.lang.String}, {@code java.lang.Integer} and so on are disturbing.
-     * This method removes those prefixes.
+     * Even the generated code should be human readable, especially when you debug the working of the code. In that case
+     * the generic names with all the {@code java.lang.String}, {@code java.lang.Integer} and so on are disturbing. This
+     * method removes those prefixes.
      * <p>
      * Note that the prefixes {@code java.util.} and similar others that are usually imported by the class are NOT
      * removed, because we cannot know that the class imports those or not.
@@ -189,10 +208,9 @@ public class GeciReflectionTools {
     }
 
     /**
-     * Normalize a type assuming that the type will be used inside the
-     * class {@code klass}. First this method does all normalizations
-     * that are performed by {@link #normalizeTypeName(String)} and then
-     * it checks if the type is in the same package as the given class
+     * Normalize a type assuming that the type will be used inside the class {@code klass}. First this method does all
+     * normalizations that are performed by {@link #normalizeTypeName(String)} and then it checks if the type is in the
+     * same package as the given class
      *
      * @param s     generic type name to be normalized
      * @param klass the class where the type name will be used
@@ -215,12 +233,10 @@ public class GeciReflectionTools {
     }
 
     /**
-     * Get the generic type name of the type passed as argument. The JDK
-     * {@code Type#getTypeName()} returns a string that contains the
-     * classes with their names and not with the canonical names (inner
-     * classes have {@code $} in the names instead of dot). This method
-     * goes through the type structure and converts the names (generic
-     * types also) to
+     * Get the generic type name of the type passed as argument. The JDK {@code Type#getTypeName()} returns a string
+     * that contains the classes with their names and not with the canonical names (inner classes have {@code $} in the
+     * names instead of dot). This method goes through the type structure and converts the names (generic types also)
+     * to
      *
      * @param t the type
      * @return the type as string
@@ -247,37 +263,30 @@ public class GeciReflectionTools {
     }
 
     /**
-     * Get the simple class name with the generic parameters as they are
-     * defined in the declaration of the class. Since this can only be
-     * used inside the class there is no need for the canonical name
-     * when a code generator needs this string (see {@code
-     * ChainedAccessor}).
+     * Get the simple class name with the generic parameters as they are defined in the declaration of the class. Since
+     * this can only be used inside the class there is no need for the canonical name when a code generator needs this
+     * string (see {@code ChainedAccessor}).
      * <p>
-     * Only the simple name is returned even if the class is an
-     * inner class. For example:
+     * Only the simple name is returned even if the class is an inner class. For example:
      *
      * <pre>{@code
      *         java.util.Map.Entry.class -> Entry<K,V>
      * }</pre>
      * <p>
-     * If you need the surrounding classes in the name then call
-     * {@link #getLocalGenericClassName(Class)}.
+     * If you need the surrounding classes in the name then call {@link #getLocalGenericClassName(Class)}.
      *
      * @param t the class we need the name for
-     * @return the name of the class with the generic declarations
-     * in case there are generic parameters of the class.
+     * @return the name of the class with the generic declarations in case there are generic parameters of the class.
      */
     public static String getSimpleGenericClassName(Class<?> t) {
         return t.getSimpleName() + getGenericParametersString(t);
     }
 
     /**
-     * Get the local class name with the generic parameters as they are
-     * defined in the declaration of the class. This method is almost
-     * the same as {@link #getSimpleGenericClassName(Class)}. The only
-     * difference is when {@code t} is an inner class. In this case this
-     * method will return the class name that contains the names of the
-     * encapsulating classes. For example this method will
+     * Get the local class name with the generic parameters as they are defined in the declaration of the class. This
+     * method is almost the same as {@link #getSimpleGenericClassName(Class)}. The only difference is when {@code t} is
+     * an inner class. In this case this method will return the class name that contains the names of the encapsulating
+     * classes. For example this method will
      *
      * <pre>{@code
      *         java.util.Map.Entry.class -> Map.Entry<K,V>
@@ -286,8 +295,7 @@ public class GeciReflectionTools {
      * return the class name {@code Map} as part of the name.
      *
      * @param t the class we need the name for
-     * @return the name of the class with the generic declarations
-     * in case there are generic parameters of the class.
+     * @return the name of the class with the generic declarations in case there are generic parameters of the class.
      */
     public static String getLocalGenericClassName(Class<?> t) {
         return normalizeTypeName(t.getCanonicalName()
@@ -347,16 +355,16 @@ public class GeciReflectionTools {
     }
 
     /**
-     * Get the declared fields of the class sorted alphabetically. The actual order is usually not interesting
-     * for the code generators, but a deterministic order is. When a code generator generates code for all or
-     * for some of the declared fields it is important that the order is always the same. If the order changes
-     * from time to time then it may happen that the code generation creates the code every time differently and
-     * breaking the build. It happens in practice, for example, when you have a different version of Java on the
-     * development machine and on the build server. In development you run the build, generate the code, run the build
-     * again, commit the code. You expect that on the build server the code generation will not fail because all the
-     * generated code is there in the repository in the files. However, you may use a different version of Java
-     * (even if only different build) on the build server and because of that the order of the fields is different and
-     * the generated code is different, although functionally it is the same.
+     * Get the declared fields of the class sorted alphabetically. The actual order is usually not interesting for the
+     * code generators, but a deterministic order is. When a code generator generates code for all or for some of the
+     * declared fields it is important that the order is always the same. If the order changes from time to time then it
+     * may happen that the code generation creates the code every time differently and breaking the build. It happens in
+     * practice, for example, when you have a different version of Java on the development machine and on the build
+     * server. In development you run the build, generate the code, run the build again, commit the code. You expect
+     * that on the build server the code generation will not fail because all the generated code is there in the
+     * repository in the files. However, you may use a different version of Java (even if only different build) on the
+     * build server and because of that the order of the fields is different and the generated code is different,
+     * although functionally it is the same.
      * <p>
      * This method and also the {@link #getDeclaredMethodsSorted(Class)} can and should be used by code generators to
      * have a deterministic output.
@@ -371,8 +379,8 @@ public class GeciReflectionTools {
     }
 
     /**
-     * Get all the fields, declared and inherited fields sorted. About the sorting see the JavaDoc
-     * of {@link #getDeclaredFieldsSorted(Class)}.
+     * Get all the fields, declared and inherited fields sorted. About the sorting see the JavaDoc of {@link
+     * #getDeclaredFieldsSorted(Class)}.
      *
      * @param klass of which the fields are collected
      * @return the sorted array of fields
@@ -390,8 +398,8 @@ public class GeciReflectionTools {
     }
 
     /**
-     * Collect all the fields from the actual class that are inherited by the base class assuming that the
-     * base class extends directly or through other classes transitively the actual class.
+     * Collect all the fields from the actual class that are inherited by the base class assuming that the base class
+     * extends directly or through other classes transitively the actual class.
      *
      * @param isSamePackage a boolean flag for deciding whether add package-private fields.
      * @param actualClass   the class in which we look for the fields
@@ -410,8 +418,8 @@ public class GeciReflectionTools {
      * <p>
      * See the notes at the javadoc of the method {@link #getDeclaredFieldsSorted(Class)}
      * <p>
-     * The methods are sorted according to the string representation of the signature. How the
-     * method signature is created is document in the javadoc of the method {@link MethodTool#methodSignature(Method)}
+     * The methods are sorted according to the string representation of the signature. How the method signature is
+     * created is document in the javadoc of the method {@link MethodTool#methodSignature(Method)}
      *
      * @param klass class of which the methods are returned
      * @return the sorted array of the methods
@@ -423,10 +431,8 @@ public class GeciReflectionTools {
     }
 
     /**
-     * The same as {@link #getDeclaredMethodsSorted(Class)} except it
-     * returns the methods and not the declared methods. It means that
-     * only the methods that are available from outside but including
-     * the inherited methods are returned.
+     * The same as {@link #getDeclaredMethodsSorted(Class)} except it returns the methods and not the declared methods.
+     * It means that only the methods that are available from outside but including the inherited methods are returned.
      *
      * @param klass the class of which we need the methods
      * @return the array of the methods of the class
@@ -438,10 +444,10 @@ public class GeciReflectionTools {
     }
 
     /**
-     * Get all the methods of the class sorted. This includes all the methods that are declared in the class and
-     * also all the inherited methods even the protected or package private methods. Note that package private methods
-     * are only inherited if the parent class is in the same package as the inheriting class and it is not possible
-     * to inherit via an intermediate package that is in a different package.
+     * Get all the methods of the class sorted. This includes all the methods that are declared in the class and also
+     * all the inherited methods even the protected or package private methods. Note that package private methods are
+     * only inherited if the parent class is in the same package as the inheriting class and it is not possible to
+     * inherit via an intermediate package that is in a different package.
      *
      * @param klass the class of which we need the methods
      * @return the array of the methods of the class
@@ -450,7 +456,7 @@ public class GeciReflectionTools {
         final var allMethods = new ArrayList<>(Arrays.asList(klass.getDeclaredMethods()));
         var samePackage = true;
         for (var currentClass = klass.getSuperclass(); currentClass != null; currentClass = currentClass.getSuperclass()) {
-            samePackage =  samePackage && klass.getPackage() == currentClass.getPackage();
+            samePackage = samePackage && klass.getPackage() == currentClass.getPackage();
             collectMethods(samePackage, currentClass, allMethods);
         }
         final Method[] methodArray = allMethods.toArray(new Method[0]);
@@ -475,19 +481,16 @@ public class GeciReflectionTools {
         final var modifier = method.getModifiers();
         return isProtected(modifier)
             || isPublic(modifier)
-            || (samePackage && !isPublic(modifier) && ! isProtected(modifier) && !isPrivate(modifier));
+            || (samePackage && !isPublic(modifier) && !isProtected(modifier) && !isPrivate(modifier));
     }
 
     /**
-     * Get all the member classes sorted either declared in the
-     * class or inherited.
+     * Get all the member classes sorted either declared in the class or inherited.
      *
      * @param klass that we want the inner and nested classes
-     * @return the array of {@code Class} objects representing the public
-     * members of this class in a sorted order. The soring order is not
-     * guaranteed. Sorting only guarantees that the returned array
-     * contains the classes in the same order even if the code runs on
-     * different JVMs.
+     * @return the array of {@code Class} objects representing the public members of this class in a sorted order. The
+     * soring order is not guaranteed. Sorting only guarantees that the returned array contains the classes in the same
+     * order even if the code runs on different JVMs.
      */
     public static Class[] getAllClassesSorted(Class<?> klass) {
         final var classes = Arrays.stream(klass.getClasses()).collect(Collectors.toSet());
@@ -516,10 +519,8 @@ public class GeciReflectionTools {
     }
 
     /**
-     * The same as {@link #getDeclaredClassesSorted(Class)}} except it
-     * returns the classes and not the declared classes. It means that
-     * only the classes that are available from outside but including
-     * the inherited classes are returned.
+     * The same as {@link #getDeclaredClassesSorted(Class)}} except it returns the classes and not the declared classes.
+     * It means that only the classes that are available from outside but including the inherited classes are returned.
      *
      * @param klass the class of which we need the classes
      * @return the array of the classes of the class
@@ -555,9 +556,9 @@ public class GeciReflectionTools {
 
     /**
      * Get the class that is represented by the name {@code className}. This functionality extends the basic
-     * functionality provided by the static method {@link Class#forName(String)} so that it also works for
-     * for input strings {@code int}, {@code byte} and so on for all the eight primitive types and also
-     * it works for types that end with {@code []}, so when they are essentially arrays. This also works for primitives.
+     * functionality provided by the static method {@link Class#forName(String)} so that it also works for for input
+     * strings {@code int}, {@code byte} and so on for all the eight primitive types and also it works for types that
+     * end with {@code []}, so when they are essentially arrays. This also works for primitives.
      * <p>
      * If the class cannot be found in the first round then this method tries it again prepending the {@code java.lang.}
      * in front of the name given as argument, so Java language types can be referenced as, for example {@code Integer}
@@ -585,37 +586,11 @@ public class GeciReflectionTools {
     }
 
     /**
-     * Convert an int containing modifiers bits to string containing the Java names of the modifiers space separated.
-     *
-     * @param modifiers to be converted to string
-     * @return the space separated modifiers or empty string in case there is no modifier bit set in {@code modifiers}
-     */
-    public static String unmask(int modifiers) {
-        final StringBuilder s = new StringBuilder();
-        final BiConsumer<Predicate<Integer>, String> check = (Predicate<Integer> predicate, String text) -> {
-            if (predicate.test(modifiers)) {
-                s.append(text);
-            }
-        };
-        check.accept(Modifier::isPrivate, "private ");
-        check.accept(Modifier::isProtected, "protected ");
-        check.accept(Modifier::isPublic, "public ");
-        check.accept(Modifier::isFinal, "final ");
-        check.accept(Modifier::isStatic, "static ");
-        check.accept(Modifier::isSynchronized, "synchronized ");
-        check.accept(Modifier::isVolatile, "volatile ");
-        check.accept(Modifier::isStrict, "strictfp ");
-        check.accept(Modifier::isAbstract, "abstract ");
-        check.accept(Modifier::isTransient, "transient ");
-        return s.toString().trim();
-    }
-
-    /**
      * Convert a string that contains lower case letter Java modifiers comma separated into an access mask.
      *
-     * @param masks  is the comma separated list of modifiers. The list can also contain the word {@code package}
-     *               that will be translated to {@link GeciReflectionTools#PACKAGE} since there is no modifier {@code package}
-     *               in Java.
+     * @param masks  is the comma separated list of modifiers. The list can also contain the word {@code package} that
+     *               will be translated to {@link GeciReflectionTools#PACKAGE} since there is no modifier {@code
+     *               package} in Java.
      * @param dfault the mask to return in case the {@code includes} string is empty.
      * @return the mask converted from String
      */

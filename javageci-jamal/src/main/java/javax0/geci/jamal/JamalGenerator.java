@@ -37,7 +37,7 @@ public class JamalGenerator extends AbstractGeneratorEx {
     public void processEx(Source source) {
         final Processor processor;
         try {
-            processor = new Processor("{{", "}}");
+            processor = new Processor("{%", "%}");
         } catch (IllegalArgumentException ex) {
             throw new GeciException("Jamal processor opening threw exception", ex);
         }

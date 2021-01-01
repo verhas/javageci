@@ -28,31 +28,6 @@ public class SymbolLiteral implements LexEater {
             "|=",
             "^=",
             "%=",
-            "+",
-            "-",
-            "*",
-            "=",
-            ">",
-            "<",
-            "!",
-            "~",
-            "?",
-            ":",
-            "/",
-            "&",
-            "|",
-            "^",
-            "%",
-            "(",
-            ")",
-            "[",
-            "]",
-            "{",
-            "}",
-            "@",
-            ";",
-            ",",
-            ".",
     };
 
     @Override
@@ -63,6 +38,12 @@ public class SymbolLiteral implements LexEater {
                 return new LexicalElement.Symbol(s);
             }
         }
-        return null;
+        if( sb.length() > 0 ) {
+            var s = sb.substring(0, 1);
+            sb.delete(0, 1);
+            return new LexicalElement.Symbol(s);
+        }else{
+            return null;
+        }
     }
 }

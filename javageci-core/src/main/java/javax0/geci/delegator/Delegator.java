@@ -58,7 +58,7 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
          */
         private String methods = "public & !static";
     }
-
+private static final boolean NO_ABSTRACT = true;
     @Override
     public void process(Source source, Class<?> klass, CompoundParams params, Field field, Segment segment) {
         final var name = field.getName();
@@ -69,7 +69,7 @@ public class Delegator extends AbstractFilteredFieldsGenerator {
         for (final var method : methods) {
             if (!manuallyCoded(klass, method)) {
                 writeGenerated(segment, config.generatedAnnotation);
-                segment.write_r(MethodTool.with(method).signature() + " {")
+                segment.write_r(MethodTool.with(method).signature(NO_ABSTRACT) + " {")
                         .write((isVoid(method) ? "" : "return ") + name + "." + MethodTool.with(method).call() + ";")
                         .write_l("}")
                         .newline();

@@ -1,0 +1,7 @@
+{%@define class(:class)={%@define $class=:class%}%}
+{%@define selector(:selector)={%@define $selector=:selector%}%}
+{%@define argsep(:argsep)={%@define $argsep=:argsep%}%}
+{%@define exsep(:exsep)={%@define $exsep=:exsep%}%}
+{%@define mformat(:mformat)={%@define $mformat=:mformat%}%}
+{%@define fformat(:fformat)={%@define $fformat=:fformat%}%}
+{%@define format(:format)={%@define $fformat=:format%}{%@define $mformat=:format%}%}

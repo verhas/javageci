@@ -7,9 +7,6 @@ module geci.examples {
     requires jamal.tools;
     provides javax0.jamal.api.Macro with
         javax0.geci.jamal.reflection.Methods,
-        javax0.geci.jamal.reflection.Fields,
-        javax0.geci.jamal.reflection.Modifiers,
-        javax0.geci.jamal.reflection.Name,
-        javax0.geci.jamal.reflection.Type
+        javax0.geci.jamal.reflection.Fields
         ;
 }

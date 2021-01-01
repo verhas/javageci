@@ -86,6 +86,7 @@ public class Lexer implements Function<List<String>, LexicalElement[]> {
                         return nlextElement;
                     }
                     repeat = true;
+                    break;
                 }
             }
         }
