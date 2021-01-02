@@ -14,8 +14,7 @@ public class PreprocessedFile {
 
     /*!jamal
     {%@define z=13%}int i = {%z%};
-
-// {%@import res:geci.jim%}
+    {%@import res:javax0/geci/jamal/setters.jim%}\
 //        {%#for ($modifiers,$type,$name,$arg) in ({%#methods
 //                  {%class javax0.geci.jamal.PreprocessedFile%}
 //                  {%selector=true%}
@@ -25,18 +24,12 @@ public class PreprocessedFile {
 //         $modifiers $type $name $arg {%@comment
 //
 //%}        %}
-    {%#for ($modifiers,$name,$type) in ({%#fields
-                            {%class javax0.geci.jamal.PreprocessedFile%}
-                            {%format=$modifiers|$name|$type%}%})=
-    $modifiers void set$name($type $name){ this.$name = $name; }
-    %}
-
+    {%class javax0.geci.jamal.PreprocessedFile%}
+    {%setters%}
      */
     int i = 13;
-
-// 
-//        
-//         private void setmyMap java.util.Map         
+    //        
+//         private void setMyMap java.util.Map         
 //         protected Object clone          
 //         protected void finalize          
 //         public String mimosa java.lang.Integer:java.util.Map         
@@ -50,14 +43,19 @@ public class PreprocessedFile {
 //         public final void wait long:int         
 //         public int hashCode          
 //         public void dummy          
-//         public void seta int         
-//          void seti int         
+//         public void setA int         
+//          void setI int         
 
-    public void seta(int a){ this.a = a; }
 
-     void seti(int i){ this.i = i; }
 
-    private void setmyMap(java.util.Map myMap){ this.myMap = myMap; }
+    // PUBLIC
+    public void setA(int a){ this.a = a; }
+
+    // NOT PUBLIC
+     void setI(int i){ this.i = i; }
+
+    // NOT PUBLIC
+    private void setMyMap(java.util.Map myMap){ this.myMap = myMap; }
 
 
 
@@ -66,22 +64,22 @@ public class PreprocessedFile {
 
 
         /*!jamal
-        //<editor-fold desc="the generated code">
+        {%beginCode the generatedCode%}
         var j = {%z%};
-        //</editor-fold>
+        {%endCode%}
          */
-        //<editor-fold desc="the generated code">
+        //<editor-fold desc="the generatedCode">
         var j = 13;
         //</editor-fold>
 
         //__END__
 
         /*!jamal
-        //<editor-fold desc="the generated code">
+        {%beginCode the generatedCode%}
         {%@import variables.jam%}var k = {%s%};
-        //</editor-fold>
+        {%endCode%}
          */
-        //<editor-fold desc="the generated code">
+        //<editor-fold desc="the generatedCode">
         var k = 666;
         //</editor-fold>
 

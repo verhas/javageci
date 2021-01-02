@@ -35,7 +35,7 @@ to test methods `equals()` and `hashCode()`.
 It will check that the simple name of the return value is `boolean` or `int` and that the declaring class is not `Object`.
 The part `declaringClass ->` signals that the next part of the expression should be evaluated not for the object but rather for the declaring class of the object.
 These conversions are on the same precedence level as the `!` negation operator and can be used up to any level.
-For example you can write
+For example, you can write
 
     declaringClass -> superClass -> superClass -> !simpleName ~ /Object/
 

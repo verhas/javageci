@@ -22,7 +22,7 @@ public class Methods implements Macro, InnerScopeDependent {
         final var reader = new MacroReader(processor);
         final var selector = Selector.compile(reader.readValue("$selector").orElse("true"));
         final var klassName = reader.readValue("$class").orElseThrow(
-            () -> new BadSyntax("There is no class defined for the macro `methods`")
+            () -> new BadSyntax("There is no $class defined for the macro `methods`")
         );
         final Class<?> klass;
         try {

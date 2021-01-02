@@ -1,2 +1,4 @@
 javax0.geci.jamal.reflection.Methods
 javax0.geci.jamal.reflection.Fields
+javax0.geci.jamal.reflection.Cap
+javax0.geci.jamal.reflection.Contains

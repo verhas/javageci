@@ -5,3 +5,18 @@
 {%@define mformat(:mformat)={%@define $mformat=:mformat%}%}
 {%@define fformat(:fformat)={%@define $fformat=:fformat%}%}
 {%@define format(:format)={%@define $fformat=:format%}{%@define $mformat=:format%}%}
+{%@define setter(name)=set{%`@cap name%}%}
+
+{%@define isPrivate(:x)={%@contains private :x%}%}
+{%@define isProtected(:x)={%@contains protected :x%}%}
+{%@define isPublic(:x)={%@contains public :x%}%}
+{%@define isFinal(:x)={%@contains final :x%}%}
+{%@define isStatic(:x)={%@contains static :x%}%}
+{%@define isSynchronized(:x)={%@contains synchronized :x%}%}
+{%@define isStrict(:x)={%@contains strictfp :x%}%}
+{%@define isAbstract(:x)={%@contains abstract :x%}%}
+{%@define isVolatile(:x)={%@contains volatile :x%}%}
+{%@define isTransient(:x)={%@contains transient :x%}%}
+
+{%@define beginCode(:x)=//<editor-fold desc=":x">%}
+{%@define endCode()=//</editor-fold>%}
