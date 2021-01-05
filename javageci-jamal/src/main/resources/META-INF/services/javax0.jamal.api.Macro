@@ -2,3 +2,8 @@ javax0.geci.jamal.reflection.Methods
 javax0.geci.jamal.reflection.Fields
 javax0.geci.jamal.reflection.Cap
 javax0.geci.jamal.reflection.Contains
+javax0.geci.jamal.reflection.ArgumentFormatters$ArgList
+javax0.geci.jamal.reflection.ArgumentFormatters$CallArgs
+javax0.geci.jamal.reflection.ArgumentFormatters$ClassList
+javax0.geci.jamal.reflection.IfNotVoid
+javax0.geci.jamal.reflection.IfVoid
