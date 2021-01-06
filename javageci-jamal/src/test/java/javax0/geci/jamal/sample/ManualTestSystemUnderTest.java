@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
  * This is the manual implementation of the test that tests the sample SystemUnderTest with the
  * SystemUnderTest inner class manually crafted.
  */
-public class TestSystemUnderTest {
+public class ManualTestSystemUnderTest {
 
     @Test
     void testCounter() throws Exception {
@@ -38,7 +38,7 @@ public class TestSystemUnderTest {
         }
 
         private void increment() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-            Method m = sut.getClass().getDeclaredMethod("increment",String.class);
+            Method m = sut.getClass().getDeclaredMethod("increment");
             m.setAccessible(true);
             m.invoke(sut);
         }

@@ -58,8 +58,9 @@
                             {exports/examples/tests.fluent/tools}
                             {exports/examples/tests.fluent/core}
                             {exports/examples/buildfluent/core}
-                            {opens/examples/jamal}
-                            {opens/examples/jamal.util}
+                            {opens/jamal/jamal}
+                            {opens/jamal/jamal.util}
+                            {opens/jamal/jamal.sample}
                             {exports/examples/jamal.reflection}
                         }
                     }

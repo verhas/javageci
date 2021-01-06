@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
  *
  * The tested class is {@link javax0.geci.jamal.sample.SystemUnderTest}.
  *
- * The test file {@link TestSystemUnderTest} is the manual implementation of the same test containing a manually
+ * The test file {@link ManualTestSystemUnderTest} is the manual implementation of the same test containing a manually
  * crafted proxy inner class.
  *
  * This class contains the same test but the inner proxy class is generated using Java::Geci Jamal module.

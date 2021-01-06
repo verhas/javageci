@@ -11,7 +11,7 @@ import static javax0.geci.jamal.reflection.ArgumentFormatters.ArgList;
 import static javax0.geci.jamal.reflection.ArgumentFormatters.CallArgs;
 import static javax0.geci.jamal.reflection.ArgumentFormatters.ClassList;
 
-module geci.examples {
+module geci.jamal {
     requires geci.engine;
     requires geci.tools;
     requires geci.api;
@@ -30,6 +30,5 @@ module geci.examples {
         IfVoid,
         Replace,
         Equals
-
         ;
 }

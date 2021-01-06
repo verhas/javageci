@@ -16,8 +16,7 @@ class TestDocumentation {
     final private StringBuilder messages = new StringBuilder();
 
     /**
-     * Check the version in the parent POM is the same as the
-     * parent pom versions in the module poms. Since the poms are
+     * Check the version in the parent POM is the same as the parent pom versions in the module poms. Since the poms are
      * generated using Jamal this is less of an issue though.
      * <p>
      * If there is any mismatch then the test fails.
@@ -27,9 +26,8 @@ class TestDocumentation {
      * <version>...</version>
      * }</pre>
      * <p>
-     * line it updates it with the current version read from the pom
-     * unless the correct version is already there. If there was update
-     * then the test fails.
+     * line it updates it with the current version read from the pom unless the correct version is already there. If
+     * there was update then the test fails.
      */
     @Test
     @DisplayName("Test documentation and project file consistency")
@@ -44,20 +42,20 @@ class TestDocumentation {
             for (final var module : modules) {
                 checkModuleParentVersion(rootDir, module, version);
             }
-            final var documentationVersion = version.replaceAll("-JVM8$","");
-
-            for( final String fn : new String[]{"/README.md","/TUTORIAL_USE.md"}) {
-                final var readme = new File(rootDir + fn);
-                Assertions.assertTrue(readme.exists(), fn+"does not exist?");
+            final var documentationVersion = version.replaceAll("-JVM8$", "");
+            final var sb = new StringBuilder();
+            for (final String fn : new String[]{"/README.md", "/TUTORIAL_USE.md"}) {
+                final var docuFile = new File(rootDir + fn);
+                Assertions.assertTrue(docuFile.exists(), fn + "does not exist?");
                 new ConsistencyTestUtils(messages).modifyLines(
-                        s -> s.replaceAll("<version>(.*?)</version>", "<version>" + documentationVersion + "</version>"),
-                        readme
+                    s -> s.replaceAll("<version>(.*?)</version>", "<version>" + documentationVersion + "</version>"),
+                    docuFile
                 );
-                if (messages.length() > 0) {
-                    Assertions.fail("Version number was updated in " + fn + ". Commit changes for the release and run build again.");
-                }
-                Assertions.assertEquals(0, messages.length(), messages.toString());
             }
+            if (messages.length() > 0) {
+                Assertions.fail(messages.toString());
+            }
+            Assertions.assertEquals(0, messages.length(), messages.toString());
         } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
             Assertions.fail("Cannot parse pom.xml", e);
         }
