@@ -61,7 +61,7 @@ public class Escape {
     static void handleNormalCharacter(StringBuilder sb, StringBuilder output, StringBuilder original) {
         final char ch = sb.charAt(0);
         if (ch == '\n' || ch == '\r') {
-            throw new GeciException("String not terminated before eol:\n" + sb.substring(1, sb.length() > 60 ? 60 : sb.length()) + "...");
+            throw new GeciException("String not terminated before eol:\n" + sb.substring(1, Math.min(sb.length(), 60)) + "...");
         }
         output.append(ch);
         original.append(ch);

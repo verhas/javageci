@@ -52,7 +52,7 @@ This filter can be defined on each field separately overriding the definition on
 Since this overriding controls only the selection of the single fields the filter defined right there should not be too complex.
 Simply `filter=true` will include the field into the code generation even if the global filter selection would rule it out and `filter=false` will exclude the field even if the global filter selection would include the field into the code generation.
 
-Filter expressions can be fairly complex and are documented on the page '[filter expressions](FILTER_EXPRESSIONS.md)'.
+Filter expressions can be fairly complex and are documented on the page '[filter expressions](FILTER_EXPRESSIONS.adoc)'.
 
 ## Mapper invocation
 

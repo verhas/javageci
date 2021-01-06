@@ -18,7 +18,7 @@ Use `@Geci("equals filter='expression')` annotation to specify a selector expres
 The default expression is `!static`.
 
 For more information on filter expression see [filter
-expressions](FILTER_EXPRESSIONS.md).
+expressions](FILTER_EXPRESSIONS.adoc).
 
 When this configuration key is used in an annotation on a specific field then it makes sense if it is either `true` or `false` since this specific expression overriding the global configuration controls only the inclusion or exclusion of the specific field.
 To include a field no matter what the global configuration is, annotate it with `@Geci("equals filter='true'")`.
@@ -46,5 +46,5 @@ If subclassing is enabled then the `equals()` method will be declared `final`.
 
 ## `hashFilter='true'`
 
-You can specify a [filter expressions](FILTER_EXPRESSIONS.md) to exclude certain fields from the generated `hashCode()` method.
+You can specify a [filter expressions](FILTER_EXPRESSIONS.adoc) to exclude certain fields from the generated `hashCode()` method.
 Note that the fields for the `hashCode()` method are filtered by the filter expression `filter` first and then using the optional `hashFilter`, thus it is not possible to include a field into the calculation of the hash code, which field is not used in the generated `equals()` method.

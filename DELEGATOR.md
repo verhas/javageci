@@ -199,7 +199,7 @@ All it requires is to use the
 builder chain and then it will use that annotation to mark the generated methods and eventually will look for this annotation in the method when it decides if an already existing method was manually created or generated.
 
 You can also filter the methods that have to be generated to delegate functionality.
-The class or field annotation can contain the configuration field `methods` that can specify a [filter expressions](FILTER_EXPRESSIONS.md) for the methods that should be considered for delegation.
+The class or field annotation can contain the configuration field `methods` that can specify a [filter expressions](FILTER_EXPRESSIONS.adoc) for the methods that should be considered for delegation.
 Note that you can also use the configuration parameter `filter` that may limit the fields that are processed.
 
 ## Configuration

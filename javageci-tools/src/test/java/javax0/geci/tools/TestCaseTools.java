@@ -69,7 +69,7 @@ public class TestCaseTools {
     @Test
     @DisplayName("camel converts a null string")
     void camelConvertsNull() {
-        assertEquals(null, camel(null));
+        assertNull(camel(null));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class TestCaseTools {
     @Test
     @DisplayName("snake converts a null string")
     void snakeConvertsNull() {
-        assertEquals(null, snake(null));
+        assertNull(snake(null));
     }
 
 }
