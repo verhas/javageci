@@ -6,13 +6,31 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+/**
+ * This is a demonstration sample file that shows how you can generate unit test proxy inner class in a unit test.
+ *
+ * The tested class is {@link javax0.geci.jamal.sample.SystemUnderTest}.
+ *
+ * The test file {@link TestSystemUnderTest} is the manual implementation of the same test containing a manually
+ * crafted proxy inner class.
+ *
+ * This class contains the same test but the inner proxy class is generated using Java::Geci Jamal module.
+ * The Jamal template for the generated code is contained in the comment for demonstration purposes.
+ * Usually such a complex template should be separated and stored in a Jamal include file ({@cod .jim}) and
+ * imported into the source code.
+ *
+ * The macro template here is simplified and should not be used for professional application. The production version
+ * of the unit test inner proxy class template is in the {@code unittestproxy.jim} file.
+ * The version here does not care about the exceptions that the methods, may throw and would stupidly generate setters
+ * for {@code final} variables. The production version does care about those situations.
+ */
 public class GeneratedTestSystemUnderTest {
 
     @Test
     void testCounter() throws Exception {
         final var sut = new SystemUnderTest();
         sut.setCounter(0);
-        sut.increment("");
+        sut.increment();
         Assertions.assertEquals(1, sut.getCounter());
     }
 
@@ -21,96 +39,104 @@ public class GeneratedTestSystemUnderTest {
     {%beginCode SystemUnderTest proxy generated%}
     private static class SystemUnderTest {
         private javax0.geci.jamal.sample.SystemUnderTest sut = new javax0.geci.jamal.sample.SystemUnderTest();
-     {%!#for ($name,$type,$args,$exceptions) in
+    {%!#for ($name,$type,$args) in
             ({%#methods
             {%class javax0.geci.jamal.sample.SystemUnderTest%}
             {%selector private %}
-            {%format/$name|$type|$args|$exceptions%}
-            %}) ={%@options skipForEmpty%}
-            private $type $name({%`@argList $args%}) throws Exception {
-                Method m = sut.getClass().getDeclaredMethod("$name"{%`#classList ,$args%});
-                m.setAccessible(true);
-                m.invoke(sut{%`#callArgs ,$args%});
-                }
-     %}
-             {%!#for ($name,$type,$args,$exceptions) in
+            {%format/$name|$type|$args%}
+            %}) =
+            {%@options skipForEmpty%}
+        private $type $name({%`@argList $args%}) throws Exception {
+            Method m = sut.getClass().getDeclaredMethod("$name"{%`#classList ,$args%});
+            m.setAccessible(true);
+            m.invoke(sut{%`#callArgs ,$args%});
+            }
+    %}
+    {%!#for ($name,$type,$args) in
             ({%#methods
             {%class javax0.geci.jamal.sample.SystemUnderTest%}
-            {%selector/ !private & declaringClass -> ( canonicalName ~ /javax0.geci.jamal.sample.SystemUnderTest/ )%}
-            {%format/$name|$type|$args|$exceptions%}
-            %}) ={%@options skipForEmpty%}
-            private $type $name({%`@argList $args%}) {%`@if/$exceptions/throws %}$exceptions {
-                {%`#ifNotVoid $type return %}sut.$name({%`#callArgs $args%});
-                }
-     %}
-             {%!#for ($name,$type) in
+            {%selector/ !private & declaringClass -> ( ! canonicalName ~ /java.lang.Object/ )%}
+            {%format/$name|$type|$args%}
+            %}) =
+        {%@options skipForEmpty%}
+        private $type $name({%`@argList $args%}) {
+            {%`#ifNotVoid $type return %}sut.$name({%`#callArgs $args%});
+            }
+    %}
+    {%!#for ($name,$type) in
             ({%#fields
             {%class javax0.geci.jamal.sample.SystemUnderTest%}
             {%selector/ private %}
             {%format/$name|$type%}
-            %}) ={%@options skipForEmpty%}
-            private void {%setter=$name%}($type $name) throws Exception {
-                Field f = sut.getClass().getDeclaredField("$name");
-                f.setAccessible(true);
-                f.set(sut,$name);
-                }
+            %}) =
+        {%@options skipForEmpty%}
+        private void {%setter=$name%}($type $name) throws Exception {
+            Field f = sut.getClass().getDeclaredField("$name");
+            f.setAccessible(true);
+            f.set(sut,$name);
+            }
 
-            private $type {%getter/$name/$type%}() throws Exception {
-                Field f = sut.getClass().getDeclaredField("$name");
-                f.setAccessible(true);
-                return ($type)f.get(sut);
-                }
-     %}
-             {%!#for ($name,$type) in
+        private $type {%getter/$name/$type%}() throws Exception {
+            Field f = sut.getClass().getDeclaredField("$name");
+            f.setAccessible(true);
+            return ($type)f.get(sut);
+            }
+    %}
+    {%!#for ($name,$type) in
             ({%#fields
             {%class javax0.geci.jamal.sample.SystemUnderTest%}
-            {%selector/ !private & declaringClass -> ( canonicalName ~ /javax0.geci.jamal.sample.SystemUnderTest/)%}
+            {%selector/ !private %}
             {%format/$name|$type%}
-            %}) ={%@options skipForEmpty%}
-            private void {%setter/$name%}($type $name) {
-                set.$name = $name;
-                }
+            %}) =
+        {%@options skipForEmpty%}
+        private void {%setter/$name%}($type $name) {
+            sut.$name = $name;
+            }
 
-            private $type {%getter/$name/$type%}() {
-                return sut.$name;
-                }
-     %}
-
-        }
-        {%endCode%}
+        private $type {%getter/$name/$type%}() {
+            return sut.$name;
+            }
+        %}
+    }
+    {%endCode%}
      */
         //<editor-fold desc="SystemUnderTest proxy generated">
-    private static class SystemUnderTest {
+        private static class SystemUnderTest {
         private javax0.geci.jamal.sample.SystemUnderTest sut = new javax0.geci.jamal.sample.SystemUnderTest();
 
-            private void increment(String arg0) throws Exception {
-                Method m = sut.getClass().getDeclaredMethod("increment",String.class);
-                m.setAccessible(true);
-                m.invoke(sut,arg0);
-                }
 
-
-            private int count(int arg0)  {
-                return sut.count(arg0);
-                }
-
-
-            private void setCounter(int counter) throws Exception {
-                Field f = sut.getClass().getDeclaredField("counter");
-                f.setAccessible(true);
-                f.set(sut,counter);
-                }
-
-            private int getCounter() throws Exception {
-                Field f = sut.getClass().getDeclaredField("counter");
-                f.setAccessible(true);
-                return (int)f.get(sut);
-                }
+        private void increment() throws Exception {
+            Method m = sut.getClass().getDeclaredMethod("increment");
+            m.setAccessible(true);
+            m.invoke(sut);
+            }
 
 
 
-        }
-        //</editor-fold>
+        private int count(int arg0) {
+            return sut.count(arg0);
+            }
+
+
+
+        private void setCounter(int counter) throws Exception {
+            Field f = sut.getClass().getDeclaredField("counter");
+            f.setAccessible(true);
+            f.set(sut,counter);
+            }
+
+
+
+        private int getCounter() throws Exception {
+            Field f = sut.getClass().getDeclaredField("counter");
+            f.setAccessible(true);
+            return (int)f.get(sut);
+            }
+
+
+
+    }
+    //</editor-fold>
 
     //__END__
 }

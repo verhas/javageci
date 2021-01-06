@@ -1,0 +1,35 @@
+package javax0.geci.jamal.unittestproxy;
+
+import javax0.geci.jamal.sample.SystemUnderTest;
+
+public class TestSystemUnderTest extends ParentSystemUnderTest{
+
+    private static Object staticField;
+    private int privateChildIntField;
+    private SystemUnderTest privateChildTestField;
+    private Object privateChildObjectField;
+    private final Object privateFinalChildObjectField = null;
+    int packageChildIntField;
+    SystemUnderTest packageChildTestField;
+    Object packageChildObjectField;
+    public int publicChildIntField;
+    public SystemUnderTest publicChildTestField;
+    public Object publicChildObjectField;
+    public final Object publicFinalChildObjectField = null;
+
+    private void privateChildVoidMethodArgless(){}
+    private void privateChildVoidMethodOneArg(int k){}
+    private void privateChildVoidMethodOneArgTestClass(SystemUnderTest k){}
+    private void privateChildVoidMethodOneArgObject(Object k){}
+
+    void packageChildVoidMethodArgless(){}
+    void packageChildVoidMethodOneArg(int k){}
+    void packageChildVoidMethodOneArgTestClass(SystemUnderTest k){}
+    void packageChildVoidMethodOneArgObject(Object k){}
+
+    public void publicChildVoidMethodArgless(){}
+    public void publicChildVoidMethodOneArg(int k){}
+    public void publicChildVoidMethodOneArgTestClass(SystemUnderTest k){}
+    public void publicChildVoidMethodOneArgObject(Object k){}
+
+}

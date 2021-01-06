@@ -17,7 +17,7 @@ public class TestSystemUnderTest {
     void testCounter() throws Exception {
         final var sut = new SystemUnderTest();
         sut.setCounter(0);
-        sut.increment("");
+        sut.increment();
         Assertions.assertEquals(1, sut.getCounter());
     }
 
@@ -37,10 +37,10 @@ public class TestSystemUnderTest {
             return (int) f.get(sut);
         }
 
-        private void increment(String z) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        private void increment() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
             Method m = sut.getClass().getDeclaredMethod("increment",String.class);
             m.setAccessible(true);
-            m.invoke(sut,z);
+            m.invoke(sut);
         }
 
         private int count(int z) {

@@ -36,6 +36,9 @@ public class ArgumentFormatters {
                 InputHandler.skip(in, 1);
             }
             final var typeNames = in.toString().split(":", -1);
+            if( typeNames.length == 1 && typeNames[0].length() == 0 ){
+                return "";
+            }
             normalize(typeNames);
             for (int i = 0; i < typeNames.length; i++) {
                 typeNames[i] = argConverter(typeNames[i], i);

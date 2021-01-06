@@ -20,7 +20,7 @@ public class SystemUnderTest {
     public int count(int z) {
         while (z > 0) {
             z--;
-            increment("");
+            increment();
         }
         return counter;
     }
@@ -28,7 +28,7 @@ public class SystemUnderTest {
     /**
      * Increment the counter by one.
      */
-    private void increment(String k){
+    private void increment(){
             counter++;
     }
 

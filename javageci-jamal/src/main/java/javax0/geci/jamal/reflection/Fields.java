@@ -32,7 +32,7 @@ public class Fields implements Macro, InnerScopeDependent {
             throw new BadSyntax("Class " + klassName + "cannot be found for the macro `methods`");
         }
         final var format = reader.readValue("$fformat").orElse("$class|$name");
-        var declaredFields = GeciReflectionTools.getDeclaredFieldsSorted(klass);
+        var declaredFields = GeciReflectionTools.getAllFieldsSorted(klass);
         return Arrays.stream(declaredFields).filter(selector::match)
             .map(f -> EntityStringer.field2Fingerprint(f, format))
             .collect(Collectors.joining(","));
