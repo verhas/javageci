@@ -7,3 +7,5 @@ javax0.geci.jamal.reflection.ArgumentFormatters$CallArgs
 javax0.geci.jamal.reflection.ArgumentFormatters$ClassList
 javax0.geci.jamal.reflection.IfNotVoid
 javax0.geci.jamal.reflection.IfVoid
+javax0.geci.jamal.reflection.Replace
+javax0.geci.jamal.reflection.Equals

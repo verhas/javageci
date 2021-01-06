@@ -5,7 +5,8 @@
 {%@define mformat(:mformat)={%@define $mformat=:mformat%}%}
 {%@define fformat(:fformat)={%@define $fformat=:fformat%}%}
 {%@define format(:format)={%@define $fformat=:format%}{%@define $mformat=:format%}%}
-{%@define setter(name)=set{%`@cap name%}%}
+{%@define setter(name)=set{%`#cap name%}%}
+{%@define getter(name,type)={%`#if/{%#equals/{%#replace type B b%}/boolean%}/is/get%}{%`@cap name%}%}
 
 {%@define isPrivate(:x)={%@contains private :x%}%}
 {%@define isProtected(:x)={%@contains protected :x%}%}

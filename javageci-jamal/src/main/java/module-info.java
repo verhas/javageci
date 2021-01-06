@@ -1,9 +1,11 @@
 import javax0.geci.jamal.reflection.Cap;
 import javax0.geci.jamal.reflection.Contains;
+import javax0.geci.jamal.reflection.Equals;
 import javax0.geci.jamal.reflection.Fields;
 import javax0.geci.jamal.reflection.IfNotVoid;
 import javax0.geci.jamal.reflection.IfVoid;
 import javax0.geci.jamal.reflection.Methods;
+import javax0.geci.jamal.reflection.Replace;
 
 import static javax0.geci.jamal.reflection.ArgumentFormatters.ArgList;
 import static javax0.geci.jamal.reflection.ArgumentFormatters.CallArgs;
@@ -25,7 +27,9 @@ module geci.examples {
         CallArgs,
         ClassList,
         IfNotVoid,
-        IfVoid
+        IfVoid,
+        Replace,
+        Equals
 
         ;
 }

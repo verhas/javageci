@@ -23,6 +23,6 @@ public class IfVoid implements Macro {
 
     @Override
     public String getId() {
-        return "ifNotVoid";
+        return "ifVoid";
     }
 }

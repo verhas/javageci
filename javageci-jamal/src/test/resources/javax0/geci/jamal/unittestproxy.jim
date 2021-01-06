@@ -1,0 +1,60 @@
+{%@define proxy(KLASS)=
+    private static class {%replace KLASS   .*\.(.*)   $1%} {
+        private KLASS sut = new KLASS();
+     {%!#for ($name,$type,$args,$exceptions) in
+            ({%#methods
+            {%class KLASS%}
+            {%selector private %}
+            {%format/$name|$type|$args|$exceptions%}
+            {%@options skipForEmpty%}
+            %}) =
+            private $type $name({%`@argList $args%}) throws Exception {
+                Method m = sut.getClass().getDeclaredMethod("$name"{%`#classList ,$args%});
+                m.setAccessible(true);
+                m.invoke(sut{%`#callArgs ,$args%});
+                }
+     %}
+             {%!#for ($name,$type,$args,$exceptions) in
+            ({%#methods
+            {%class KLASS%}
+            {%selector/ !private & declaringClass -> ( canonicalName ~ /KLASS/ )%}
+            {%format/$name|$type|$args|$exceptions%}
+            %}) ={%@options skipForEmpty%}
+            private $type $name({%`@argList $args%}) {%`@if/$exceptions/throws %}$exceptions {
+                {%`#ifNotVoid $type return %}sut.$name({%`#callArgs $args%});
+                }
+     %}
+             {%!#for ($name,$type) in
+            ({%#fields
+            {%class KLASS%}
+            {%selector/ private %}
+            {%format/$name|$type%}
+            %}) ={%@options skipForEmpty%}
+            private void {%setter=$name%}($type $name) throws Exception {
+                Field f = sut.getClass().getDeclaredField("$name");
+                f.setAccessible(true);
+                f.set(sut,$name);
+                }
+
+            private $type {%getter/$name/$type%}() throws Exception {
+                Field f = sut.getClass().getDeclaredField("$name");
+                f.setAccessible(true);
+                return ($type)f.get(sut);
+                }
+     %}
+             {%!#for ($name,$type) in
+            ({%#fields
+            {%class KLASS%}
+            {%selector/ !private & declaringClass -> ( canonicalName ~ /KLASS/)%}
+            {%format/$name|$type%}
+            %}) ={%@options skipForEmpty%}
+            private void {%setter/$name%}($type $name) {
+                set.$name = $name;
+                }
+
+            private $type {%getter/$name/$type%}() {
+                return sut.$name;
+                }
+     %}
+    }
+%}
