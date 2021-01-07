@@ -1,6 +1,7 @@
 package javax0.geci.jamal.macros;
 
 import javax0.geci.jamal.util.EntityStringer;
+import javax0.geci.jamal.util.MacroReader;
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.reflection.Selector;
 import javax0.jamal.api.BadSyntax;
@@ -13,13 +14,13 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
- * Macro to get all the fields of a class. The output can best be used in a multi-variable for loop.
+ * Macro to get all the fields of a class. Templates utilizing this macro can best use the output in a multi-variable
+ * for a loop.
  * <p>
  * The macro looks up the fields (inherited and declared) of a class and returns a list of the fields. The format of the
- * information, the selection criteria, which fields to include into the output and the separator characters are all
- * defined in user defined macros.
+ * information, the selection criteria, which fields to include in the output.
  * <p>
- * The format of the data about the individual fields is driven by the user defined macro {@code fformat}. This can be
+ * The format of the data about the individual fields is driven by the user defined macro {@code $fformat}. It can be
  * set in the code template file using the macro {@code fformat} or {@code format} defined in {@code res:geci.jim}. (The
  * macro {@code format} sets also the user defined macro {@code mformat}, which is used by the macro {@link Methods}.
  * <p>
@@ -28,16 +29,25 @@ import java.util.stream.Collectors;
  *     <li>{@code $class} is replaced by the declaring class of the field.</li>
  *     <li>{@code $name} is replaced by the name of the field.</li>
  *     <li>{@code $type} is replaced by the type of the field.</li>
- *     <li>{@code $modifiers} is replaced by the space separated list of the modifiers of the field. This string will
- *     also contain a trailing space of the string is not empty.</li>
+ *     <li>{@code $modifiers} is replaced by the space-separated list of the field's modifiers. This string will
+ *     also contain a trailing space of the string if it is not empty.</li>
  * </ul>
  * <p>
- * The selector is defined by the user defined macro {@code $selector}. This can be set using the macro {@code
+ * The selector is defined by the user defined macro {@code $selector}. You can set it using the macro {@code
  * selector}. All these user defined macros are defined in the {@code res:geci.jim} file.
  * <p>
  * The class is defined by {@code $class}, again use {@code class} macro.
  * <p>
- * The information about the fields are joined using comma.
+ * The macro is inner scope dependent, which means that these macros can be used inside the opening and closing {@code
+ * {% %}} strings. This is the recommended use unless you want to reuse the same values in the same file. Using the
+ * macros inside the {@code fields} macro will limit the effect of the macros to the actual {@code fields} macro. This
+ * use also assumes that the {@code fields} macro is used with the {@code #} character as
+ * <pre>{@code
+ * {%#fields ...%}
+ * }</pre>
+ * to ensure that these macros inside are evaluated before the {@code fields} macro starts to be evaluated.
+ * <p>
+ * The information about the fields are joined using coma.
  * <p>
  */
 public class Fields implements Macro, InnerScopeDependent {

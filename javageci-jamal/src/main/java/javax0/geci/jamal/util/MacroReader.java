@@ -1,4 +1,4 @@
-package javax0.geci.jamal.macros;
+package javax0.geci.jamal.util;
 
 import javax0.jamal.api.BadSyntax;
 import javax0.jamal.api.Evaluable;
@@ -6,14 +6,14 @@ import javax0.jamal.api.Processor;
 
 import java.util.Optional;
 
-class MacroReader {
+public class MacroReader {
     final Processor processor;
 
-    MacroReader(Processor processor) {
+    public MacroReader(Processor processor) {
         this.processor = processor;
     }
 
-    Optional<String> readValue(String macro) {
+    public Optional<String> readValue(String macro) {
         return processor.getRegister().getUserDefined(macro)
             .filter(ud -> ud instanceof Evaluable)
             .map(ud -> (Evaluable) ud)
