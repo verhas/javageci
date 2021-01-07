@@ -1,0 +1,129 @@
+= Java::Geci Jamal Module
+
+== Introduction
+
+The Jamal module of Java::Geci contains one code generator and a few Jamal macros.
+This code generator reads the source files, and it interprets some comments as Jamal macros.
+Jamal macros evaluate into strings.
+In the case of a code generator these strings contain presumably Java program code.
+The created program code is inserted after the comment that contains the Jamal macro.
+
+Jamal is an extremely powerful macro language.
+The home page of Jamal is http://github.com/verhas/jamal.
+Using Jamal you can define and use macros defined earlier, and you can also use macros defined in Java code.
+There is a built-in set of Java programmed macros in the Jamal library, and another set is defined in tje Java::Geci Jamal module.
+The set of the macros can also be extended in the application in the main or in the test sources or in libraries.
+
+The generator is not Java specific, although most of the support macros included in this module are based on reflection.
+The generator will run for all the files that are configured in the unit test that starts the code generation.
+
+The Java source code using the Jamal module of Java::Geci is supposed to have the following structure:
+
+    /*!jamal
+       jamal macro text, which is evaluated using the processor
+       the end of the comment signals the end of the Jamal macros
+    */
+    code will be generated here until a line that
+      contains the // and the __END__ as on the next line
+    //__END__
+
+== Note
+
+Every source file processing starts a new Jamal processor.
+It means that the different macros in the different files will not interfere with each other.
+You can, of course, `include` or `import` any file from the directory structure, as a resource from the classpath or from the network.
+`include` and `import` are basic Jamal features.
+
+The macro start string by default is set to `{%`.
+The macro closing string by default is set to `%}`.
+
+== Examples
+
+The simplest example is that generates setters.
+To generate setters there are many solutions.
+The aim of this example is not to depict the best way to generate setters.
+There are better ways to generate setters.
+There are even sophisticated and fine-tuned setter generators even in Java::Geci.
+
+However, generating setters is a relatively simple task and therefore seems to be a good example to learn from.
+
+The sample code in the Java class `PreprocessedFile` contains
+
+    /*!jamal
+    {%@import res:javax0/geci/jamal/setters.jim%}\
+    {%class javax0.geci.jamal.PreprocessedFile%}
+    {%setters%}
+    */
+    //__END__
+
+This code imports the `setter.jim` macro file.
+It defines the macros for creating the setters.
+It also shows that it is a good practice to move the code generation macros into an imported file.
+Following that it defines the `class` and then invokes, uses the `setters` macro.
+The `{%class...%}` is a user defined macro defined in some imported file.
+In this case it sets the class name for which the setters are generated.
+
+Let us have a look at the `setters.jim` file:
+
+    {%@import res:geci.jim%}
+    {%@define setters=
+        {%!#for ($name,$type) in
+            ({%#fields {%format=$name|$type%} %})=
+        public void {%setter=$name%}($type $name){
+            this.$name = $name;
+            }
+        %}
+    %}
+
+This file imports the `geci.jim` file.
+This file is part of the library as a resource file.
+You can see that because the file name starts with the prefix `res:`.
+The resource file `geci.jim` defines a lot of macros that can be used in code generation.
+One of them is `{%class %}`, and it is defined as:
+
+    {%@define class(:class)={%@define $class=:class%}%}
+
+Later when we write in the code
+
+    {%class javax0.geci.jamal.PreprocessedFile%}
+
+it will mean
+
+    {%@define $class=javax0.geci.jamal.PreprocessedFile%}
+
+which will define the macro `$class`, which is used later in the `setter.jim` file.
+
+The macro `setters` has a complex for loop in it.
+The loop has two variables `$name` and `$type`.
+These variables will get the name and the type of the fields.
+Generally multi-variable for loops iterate through the elements of a string that is defined in the "`in (...)`" part of the macro invocation.
+The string between the parenthesis should contain a comma separated list of strings.
+Each string should contain the `|` separated values for the for loop variables.
+
+This is exactly the format that the Java implemented macro `fields` returns.
+It uses the value of the `$fformat` (field format) macro, which is set using the macro `{%format %}`.
+The template for the individual setters is:
+
+    public void {%setter/$name%}($type $name){
+        this.$name = $name;
+        }
+
+This code uses the loop variables and the macro `setter`, also defined in `geci.jim`.
+It calculates the name of the setter from the name of the field.
+This is fairly straightforward, since it is only then constant `set`, and the name of the field capitalized
+
+    {%@define setter(name)=set{%`#cap name%}%}
+
+There are few things in this example, which are not detailed here.
+Without the details, these are
+
+* The Java defined macros are used with `@` or `#` in front of the name.
+The difference between the two characters controls the macro evaluation order.
+
+* There is a `!` in front of the `for` loop and also there is a ````` character in front of `#cap`.
+These are used to further fine tune the evaluation order of the macros.
+
+For detailed information about these, and other built-in macros see the documentation of Jamal at https://github.com/verhas/jamal/blob/master/README.md
+
+== Macros
+

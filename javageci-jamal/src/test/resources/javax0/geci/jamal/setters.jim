@@ -1,10 +1,9 @@
 {%@import res:geci.jim%}
-{%@options lenient%}
 {%@define setters=
-{%!#for ($modifiers,$name,$type)
-        in
-       ({%#fields {%format=$modifiers|$name|$type%} %})=
-    // {%`#if/{%isPublic $modifiers%}/PUBLIC/NOT PUBLIC%}
-    $modifiers void {%setter=$name%}($type $name){ this.$name = $name; }
-%}
+    {%!#for ($name,$type) in
+        ({%#fields {%format=$name|$type%} %})=
+    public void {%setter/$name%}($type $name){
+        this.$name = $name;
+        }
+    %}
 %}

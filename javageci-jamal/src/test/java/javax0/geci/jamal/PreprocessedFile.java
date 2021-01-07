@@ -29,7 +29,6 @@ public class PreprocessedFile {
      */
     int i = 13;
     //        
-//         private void setMyMap java.util.Map         
 //         protected Object clone          
 //         protected void finalize          
 //         public String mimosa java.lang.Integer:java.util.Map         
@@ -43,19 +42,20 @@ public class PreprocessedFile {
 //         public final void wait long:int         
 //         public int hashCode          
 //         public void dummy          
-//         public void setA int         
-//          void setI int         
 
 
 
-    // PUBLIC
-    public void setA(int a){ this.a = a; }
+    public void setA(int a){
+        this.a = a;
+        }
 
-    // NOT PUBLIC
-     void setI(int i){ this.i = i; }
+    public void setI(int i){
+        this.i = i;
+        }
 
-    // NOT PUBLIC
-    private void setMyMap(java.util.Map myMap){ this.myMap = myMap; }
+    public void setMyMap(java.util.Map myMap){
+        this.myMap = myMap;
+        }
 
 
 

@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 public class UnitTestWithGeneratedUnitTestProxy {
 
     /*!jamal
-    {%@import res:javax0/geci/jamal/unittestproxy.jim%}\
+    {%@import res:unittestproxy.jim%}\
 
     {%beginCode SystemUnderTest proxy generated%}
     {%proxy javax0.geci.jamal.unittestproxy.TestSystemUnderTest%}
