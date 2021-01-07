@@ -1,4 +1,4 @@
-package javax0.geci.jamal.reflection;
+package javax0.geci.jamal.macros;
 
 import javax0.jamal.api.BadSyntax;
 import javax0.jamal.api.Evaluable;

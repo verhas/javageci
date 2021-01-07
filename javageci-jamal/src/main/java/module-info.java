@@ -1,15 +1,15 @@
-import javax0.geci.jamal.reflection.Cap;
-import javax0.geci.jamal.reflection.Contains;
-import javax0.geci.jamal.reflection.Equals;
-import javax0.geci.jamal.reflection.Fields;
-import javax0.geci.jamal.reflection.IfNotVoid;
-import javax0.geci.jamal.reflection.IfVoid;
-import javax0.geci.jamal.reflection.Methods;
-import javax0.geci.jamal.reflection.Replace;
+import javax0.geci.jamal.macros.Cap;
+import javax0.geci.jamal.macros.Contains;
+import javax0.geci.jamal.macros.Equals;
+import javax0.geci.jamal.macros.Fields;
+import javax0.geci.jamal.macros.IfNotVoid;
+import javax0.geci.jamal.macros.IfVoid;
+import javax0.geci.jamal.macros.Methods;
+import javax0.geci.jamal.macros.Replace;
 
-import static javax0.geci.jamal.reflection.ArgumentFormatters.ArgList;
-import static javax0.geci.jamal.reflection.ArgumentFormatters.CallArgs;
-import static javax0.geci.jamal.reflection.ArgumentFormatters.ClassList;
+import static javax0.geci.jamal.macros.ArgumentFormatters.ArgList;
+import static javax0.geci.jamal.macros.ArgumentFormatters.CallArgs;
+import static javax0.geci.jamal.macros.ArgumentFormatters.ClassList;
 
 module geci.jamal {
     requires geci.engine;

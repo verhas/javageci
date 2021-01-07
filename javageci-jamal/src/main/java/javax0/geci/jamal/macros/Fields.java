@@ -1,4 +1,4 @@
-package javax0.geci.jamal.reflection;
+package javax0.geci.jamal.macros;
 
 import javax0.geci.jamal.util.EntityStringer;
 import javax0.geci.tools.GeciReflectionTools;
