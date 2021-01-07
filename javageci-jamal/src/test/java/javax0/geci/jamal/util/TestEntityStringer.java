@@ -20,6 +20,8 @@ public class TestEntityStringer {
 
     private void arg1objarr(Map a, Set... s) {
     }
+    private void arg1objarra(Map a, Set[] s) {
+    }
 
     @Test
     @DisplayName("creates the expected fingerprint for the methods")
@@ -31,7 +33,9 @@ public class TestEntityStringer {
             EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arg1pri", int[][].class), format, ":", ":"));
         Assertions.assertEquals("javax0.geci.jamal.util.TestEntityStringer|arg1obj|java.lang.Integer",
             EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arg1obj", Integer.class), format, ":", ":"));
-        Assertions.assertEquals("javax0.geci.jamal.util.TestEntityStringer|arg1objarr|java.util.Map:java.util.Set[]",
+        Assertions.assertEquals("javax0.geci.jamal.util.TestEntityStringer|arg1objarr|java.util.Map:java.util.Set...",
             EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arg1objarr", Map.class, Set[].class), format, ":", ":"));
+        Assertions.assertEquals("javax0.geci.jamal.util.TestEntityStringer|arg1objarra|java.util.Map:java.util.Set[]",
+            EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arg1objarra", Map.class, Set[].class), format, ":", ":"));
     }
 }
