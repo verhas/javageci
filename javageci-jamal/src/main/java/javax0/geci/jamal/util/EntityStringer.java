@@ -2,7 +2,6 @@ package javax0.geci.jamal.util;
 
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.reflection.ModifiersBuilder;
-import javax0.jamal.api.BadSyntax;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -44,9 +43,7 @@ public class EntityStringer {
      */
     public static String method2Fingerprint(Method method, String format, String argSep, String exceptionSep) {
         final var className = method.getDeclaringClass().getCanonicalName();
-        final var argList = Arrays.stream(method.getGenericParameterTypes())
-            .map(Type::getTypeName)
-            .collect(Collectors.joining(argSep));
+        final var argList = getTypeList(method, argSep);
         final var modifiers = new ModifiersBuilder(method.getModifiers()).toString().trim();
         final var type = GeciReflectionTools.getGenericTypeName(method.getReturnType());
         final var exceptions = Arrays.stream(method.getExceptionTypes())
@@ -54,12 +51,23 @@ public class EntityStringer {
             .collect(Collectors.joining(exceptionSep));
 
         return format.replaceAll("\\$class", className)
-            .replaceAll("\\$modifiers", modifiers)
+            .replaceAll("\\$modifiers", modifiers + (modifiers.length() > 0 ? " " : ""))
             .replaceAll("\\$name", method.getName())
             .replaceAll("\\$exceptions", exceptions)
             .replaceAll("\\$args", argList)
             .replaceAll("\\$type", type)
             ;
+    }
+
+    private static String getTypeList(final Method method, final String argSep) {
+        final var argList = Arrays.stream(method.getGenericParameterTypes())
+            .map(Type::getTypeName)
+            .collect(Collectors.joining(argSep));
+        if (argList.endsWith("[]") && method.isVarArgs()) {
+            return argList.substring(0, argList.length() - 2) + "...";
+        } else {
+            return argList;
+        }
     }
 
     /**
@@ -82,10 +90,10 @@ public class EntityStringer {
         final var className = field.getDeclaringClass().getCanonicalName();
         final var type = GeciReflectionTools.getGenericTypeName(field.getType());
         final var modifiers = new ModifiersBuilder(field.getModifiers()).field().toString().trim();
-        return format.replaceAll("$$class", className)
+        return format.replaceAll("\\$class", className)
             .replaceAll("\\$name", field.getName())
             .replaceAll("\\$type", type)
-            .replaceAll("\\$modifiers", modifiers)
+            .replaceAll("\\$modifiers", modifiers + (modifiers.length() > 0 ? " " : ""))
             ;
     }
 }

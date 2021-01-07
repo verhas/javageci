@@ -21,6 +21,7 @@ public class TestSystemUnderTest extends ParentSystemUnderTest{
     private void privateChildVoidMethodOneArg(int k){}
     private void privateChildVoidMethodOneArgTestClass(SystemUnderTest k){}
     private void privateChildVoidMethodOneArgObject(Object k){}
+    private void privateChildVoidMethodVararg(Object k, String ...messages){}
 
     void packageChildVoidMethodArgless(){}
     void packageChildVoidMethodOneArg(int k){}

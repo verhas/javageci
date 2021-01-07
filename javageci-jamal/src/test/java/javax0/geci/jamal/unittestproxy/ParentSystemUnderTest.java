@@ -2,7 +2,7 @@ package javax0.geci.jamal.unittestproxy;
 
 import javax0.geci.jamal.sample.SystemUnderTest;
 
-public class ParentSystemUnderTest {
+public abstract class ParentSystemUnderTest {
 
     private int privateParentIntField;
     private SystemUnderTest privateParentTestField;

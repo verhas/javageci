@@ -127,3 +127,16 @@ For detailed information about these, and other built-in macros see the document
 
 == Macros
 
+In addition to the generator code the modul contains Java implemented macros and so-called user defined macros.
+
+* The user defined macros should be imported using the `{%@import res:...%}` macro.
+They can be seen on GitHub in the directory https://github.com/verhas/javageci/tree/master/javageci-jamal/src/main/resources.
+Their documentation is included in their source code.
+[]
+Note that these files are `imported` and not `include` d, therefore any string, which does not define a macro is ignored by Jamal as comment.
+
+* The Java defined macros can be found in the package `javax0.geci.jamal.macros`.
+The source code can be seen in https://github.com/verhas/javageci/tree/master/javageci-jamal/src/main/java/javax0/geci/jamal/macros.
+The documentation of the individual macros is contained in their class level JavaDoc.
+[]
+Some of the macro class files are inner classes. In that case the inner class JavaDoc documentation is to be read.
