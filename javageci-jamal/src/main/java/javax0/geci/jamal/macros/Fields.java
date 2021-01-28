@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  * to ensure that these macros inside are evaluated before the {@code fields} macro starts to be evaluated.
  * <p>
  * The information about the fields are joined using coma.
- * <p>
+ *
  */
 public class Fields implements Macro, InnerScopeDependent {
 

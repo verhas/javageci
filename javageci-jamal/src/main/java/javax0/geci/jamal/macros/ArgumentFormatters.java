@@ -20,7 +20,6 @@ import javax0.jamal.tools.InputHandler;
  * object on which the method is invoked and the rest of the arguments are the expresions for the values.
  * <p>
  * For an example we can have a look at a line in the file {@code unittestproxy.jim}
- * <p>
  * <pre>{@code
  * m.invoke(sut{%`#callArgs ,$args%});
  * }</pre>

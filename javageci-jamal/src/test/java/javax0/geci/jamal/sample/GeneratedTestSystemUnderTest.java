@@ -8,21 +8,20 @@ import java.lang.reflect.Method;
 
 /**
  * This is a demonstration sample file that shows how you can generate unit test proxy inner class in a unit test.
- *
+ * <p>
  * The tested class is {@link javax0.geci.jamal.sample.SystemUnderTest}.
- *
+ * <p>
  * The test file {@link ManualTestSystemUnderTest} is the manual implementation of the same test containing a manually
  * crafted proxy inner class.
- *
- * This class contains the same test but the inner proxy class is generated using Java::Geci Jamal module.
- * The Jamal template for the generated code is contained in the comment for demonstration purposes.
- * Usually such a complex template should be separated and stored in a Jamal include file ({@cod .jim}) and
- * imported into the source code.
- *
- * The macro template here is simplified and should not be used for professional application. The production version
- * of the unit test inner proxy class template is in the {@code unittestproxy.jim} file.
- * The version here does not care about the exceptions that the methods, may throw and would stupidly generate setters
- * for {@code final} variables. The production version does care about those situations.
+ * <p>
+ * This class contains the same test but the inner proxy class is generated using Java::Geci Jamal module. The Jamal
+ * template for the generated code is contained in the comment for demonstration purposes. Usually such a complex
+ * template should be separated and stored in a Jamal include file ({@cod .jim}) and imported into the source code.
+ * <p>
+ * The macro template here is simplified and should not be used for professional application. The production version of
+ * the unit test inner proxy class template is in the {@code unittestproxy.jim} file. The version here does not care
+ * about the exceptions that the methods, may throw and would stupidly generate setters for {@code final} variables. The
+ * production version does care about those situations.
  */
 public class GeneratedTestSystemUnderTest {
 
@@ -100,8 +99,8 @@ public class GeneratedTestSystemUnderTest {
     }
     {%endCode%}
      */
-        //<editor-fold desc="SystemUnderTest proxy generated">
-        private static class SystemUnderTest {
+    //<editor-fold desc="SystemUnderTest proxy generated">
+    private static class SystemUnderTest {
         private javax0.geci.jamal.sample.SystemUnderTest sut = new javax0.geci.jamal.sample.SystemUnderTest();
 
 
@@ -109,30 +108,25 @@ public class GeneratedTestSystemUnderTest {
             Method m = sut.getClass().getDeclaredMethod("increment");
             m.setAccessible(true);
             m.invoke(sut);
-            }
-
+        }
 
 
         private int count(int arg0) {
             return sut.count(arg0);
-            }
-
+        }
 
 
         private void setCounter(int counter) throws Exception {
             Field f = sut.getClass().getDeclaredField("counter");
             f.setAccessible(true);
-            f.set(sut,counter);
-            }
-
-
+            f.set(sut, counter);
+        }
 
         private int getCounter() throws Exception {
             Field f = sut.getClass().getDeclaredField("counter");
             f.setAccessible(true);
-            return (int)f.get(sut);
-            }
-
+            return (int) f.get(sut);
+        }
 
 
     }

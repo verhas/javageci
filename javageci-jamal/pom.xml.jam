@@ -14,5 +14,6 @@
             {dependency :org.junit.jupiter:junit-jupiter-MODULE::}}
         {dependency :{JAMAL}:jamal-engine::}
         {dependency :{JAMAL}:jamal-testsupport::}
+        {dependency :{JAMAL}:jamal-snippet::}
     }
 }

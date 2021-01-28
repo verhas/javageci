@@ -1,6 +1,8 @@
 {%@define class(:class)={%@define $class=:class%}%}
 {%@define selector(:selector)={%@define $selector=:selector%}%}
 
+{%@define simpleName(:class)={%#replace {%@options regex%}|:class|.*\.(.*)|$1%}%}
+
 define the argument separator that comes from the macro methods
 {%@define argsep(:argsep)={%@define $argsep=:argsep%}%}
 define the exceptions separator that comes from the macro methods

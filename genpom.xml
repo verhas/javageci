@@ -6,6 +6,7 @@
     <artifactId>pom.xml_files</artifactId>
     <version>out_of_pom.xml.jam_files</version>
     <build>
+        <defaultGoal>clean</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>com.javax0.jamal</groupId>

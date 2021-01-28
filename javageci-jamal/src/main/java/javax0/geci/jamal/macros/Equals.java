@@ -16,7 +16,6 @@ import static javax0.jamal.tools.InputHandler.getParts;
  * <p>
  * The return value of the macro is either the string literal {@code true} or the string literal {@code false}.
  * <p>
- * <p>
  * The arguments can be separated by space in case the {@code something} does not contain any space, using any non alpha
  * numeric character or using `regex` as defined in {@link javax0.jamal.tools.InputHandler#getParts(Input) getParts()}
  */

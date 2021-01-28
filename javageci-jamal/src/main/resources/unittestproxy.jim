@@ -1,6 +1,6 @@
 {%@import res:geci.jim%}
 {%@define proxy(KLASS)=
-    private static class {%@replace KLASS   .*\.(.*)   $1%} {
+    private static class {%simpleName KLASS%} {
         private KLASS sut = new KLASS();
     {%!#for ($name,$type,$args,$exceptions) in
             ({%#methods

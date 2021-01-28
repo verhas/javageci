@@ -4,6 +4,7 @@ package javax0.geci.jamal.sample;
  * A simple demonstration class that can be used as a system under test to demonstrate how to invoke private methods and
  * access private fields from a unit test.
  */
+// snippet SystemUnderTest
 public class SystemUnderTest {
 
     /**
@@ -33,3 +34,4 @@ public class SystemUnderTest {
     }
 
 }
+// end snippet

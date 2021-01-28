@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
  * to ensure that these macros inside are evaluated before the {@code methods} macro starts to be evaluated.
  * <p>
  * The information about the methods are joined using coma.
- * <p>
+ *
  */
 public class Methods implements Macro, InnerScopeDependent {
 

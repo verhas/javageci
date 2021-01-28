@@ -37,8 +37,10 @@ public class EntityStringer {
      * <p>
      * with the actual name, class and argument types, modifiers of the method.
      *
-     * @param method the method to format
-     * @param format the format string
+     * @param method       the method to format
+     * @param format       the format string
+     * @param argSep       the separator character in the list of arguments
+     * @param exceptionSep the separator character in the list of exceptions
      * @return the formatted method representation
      */
     public static String method2Fingerprint(Method method, String format, String argSep, String exceptionSep) {
@@ -84,6 +86,7 @@ public class EntityStringer {
      * <p>
      *
      * @param field to convert to a fingerprint
+     * @param format the format string
      * @return the fingerprint
      */
     public static String field2Fingerprint(Field field, String format) {

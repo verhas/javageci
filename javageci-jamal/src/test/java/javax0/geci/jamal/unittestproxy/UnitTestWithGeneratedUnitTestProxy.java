@@ -2,6 +2,7 @@ package javax0.geci.jamal.unittestproxy;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 

@@ -1,0 +1,148 @@
+{%@comment
+
+This is an article published on javax0.wordpress.com
+
+
+%}
+{%@import https://raw.githubusercontent.com/central7/wordpress/wp.jim%}
+{%@snip:collect src/test/java/%}\
+{%#reflow
+Unit testing is usually not black-box testing.
+It is debatable if it ought to be or not.
+Practice shows that it rarely is.
+When we equip the tested unit with different mocks, we play around with the implementation and not the defined functionality that a black-box test should only deal with.
+
+After setting up and injecting the mock objects, we invoke the tested methods, and these methods are usually public.
+In other words, the invocation of the tested system is more like a black-box test.
+You can say that the test setup is not a black-box test but the actual test is.
+
+The advantage of black-box testing is that it does not need to change if the internal working of the tested module changes.
+If the functionality changes, it is another story.
+It is easier to refactor, optimize, simplify, beautify your code if there are clean unit tests that do not depend on the implementation.
+If the unit tests depend to the implementation, then you cannot reliably refactor your code.
+As soon as you change the implementation, the test has to follow the change.
+
+I do not like when the unit test cannot be black-box, but there are cases, when it is unavoidable.
+A special and frequent case is when we want to test a private method.
+If you want to, or even God forgive, have to test a private method it is a code smell.
+It is possible the method is simple and the coverage of its functionality can be achieved invoking only the public API of the tested unit.
+In that case you do not have to test the private method and if you do not have to then you must not want.
+
+Another possibility is that that the private method so complex that it deserves its own test.
+In that case the functionality deserves a separate utility class.
+
+Still there is a third possibility.
+It is that after all the contemplating we decide that the private method remains inside the unit and we want to test it.
+
+It is a small, insignificant problem that it cannot be invoked from outside and the test is inevitably outside of the unit.
+This is when some developer remove the private modifier changing the access level from private to test private.
+
+No kidding!
+After more than 500 technical interviews of the past ten years I have heard a lot of things.
+I regret that I did not start these.
+One of these nice things was that I heard a few times: "test private" as a terminology instead of package private.
+Two or three candidates out of the 500 said that the accessibility is test private when there is no access modifier in front of the class member.
+It meas, they said that the member can also be accessible from the unit tests.
+From other classes in the same package?
+Not so sure.
+
+What this story suggests is that many developers struggle to test private methods.
+I have also seen this in many other projects.
+
+What I do not like in this approach is that we weaken the access protection of a class member in order to ease testing.
+
+A different approach is when the tests use reflection to access the class members.
+There are two issues with this approach.
+One is the suboptimal performance, the other is the bloated code.
+The fact that the access to the class members via reflection is slower than the direct access is usually not significant.
+We are talking about test.
+If the test execution needs significant time then the tests are wrong or the project is large or has some special testing need.
+Even in thee cases the reason for the slow speed is usually not the reflective access.
+
+The bloated code on the other hand hinders the readability.
+It is also cumbersome to write every time things like
+%}
+
+{%javaCode
+Field f = sut.getClass().getDeclaredField("counter");
+f.setAccessible(true);
+f.set(sut, z);
+%}
+{%#reflow
+when we want to set a private field, or
+%}
+{%javaCode
+Method m = sut.getClass().getDeclaredMethod("increment");
+m.setAccessible(true);
+m.invoke(sut);
+%}
+{%#reflow
+when we want to invoke a private method.
+The maintenance of sucvh tests is also questionable.
+If the name of the method or field changes the test has to follow.
+There is no big risk forgetting because the test will fail, but still, it is a manual editing functionality.
+Renaming is supported by most of the IDEs and whenever I rename a method or field then all the references to it are also renamed.
+Not, when the reference is part of a string.
+
+There is no real solution to this issue, except when you write code that does not need the testing of private methods and fields.
+Still there are approaches that have advantages.
+
+One approach is to declare a `private` `static` delegating inner class that has the same name as the tested class.
+This class has to implement the same methods as the original tested class and these implementations should delegate to the original methods.
+The class also has to implement setters and getters to all the fields.
+
+If we instantiate this class instead of the original one then we can invoke any method or set any field without reflective access in the test code.
+The reflective access is hidden in the inner class.
+
+The reason to name the class with the same simple name as the tested class is that this way the tests do not need to change.
+If a test has a code that instantiated the tested class calling `new Sut()` and now we start to have an innner class named `Sut` then the constructor all of a sudden will refer to the inner class.
+
+Let's see an example.
+The following class is a simple example that has one public method and a private one.
+The complexity of the methods barely reaches the level that would rectify extensive testing, but this makes it good for demonstration purposes.
+
+{%#snip:define SUT={%javaCode {%#killLines {%@define pattern=^\s*/?\*/?%}{%@snip SystemUnderTest%}%}%}%}%}
+{%@snip SUT
+[sourcecode language="java"]
+public class SystemUnderTest {
+
+    private int counter = 0;
+
+    public int count(int z) {
+        while (z > 0) {
+            z--;
+            increment();
+        }
+        return counter;
+    }
+
+    private void increment(){
+            counter++;
+    }
+
+}
+[/sourcecode]
+%}
+
+This file along with the other samples can be found in full at
+https://github.com/verhas/javageci/tree/1.6.1/javageci-jamal/src/test/java/javax0/geci/jamal/sample
+
+The test itself is also very simple:
+
+{%#snip:define TESTMANUAL={%javaCode {%#trimLines
+{%@snip testCounter%}%}%}%}
+{%@snip TESTMANUAL
+[sourcecode language="java"]
+@Test
+void testCounter() throws Exception {
+    final var sut = new SystemUnderTest();
+    sut.setCounter(0);
+    sut.increment();
+    Assertions.assertEquals(1, sut.getCounter());
+}
+[/sourcecode]
+%}
+
+
+
+{%@snip:update%}

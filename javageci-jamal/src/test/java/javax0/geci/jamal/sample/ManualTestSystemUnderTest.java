@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
  */
 public class ManualTestSystemUnderTest {
 
+    //snippet testCounter
     @Test
     void testCounter() throws Exception {
         final var sut = new SystemUnderTest();
@@ -20,7 +21,7 @@ public class ManualTestSystemUnderTest {
         sut.increment();
         Assertions.assertEquals(1, sut.getCounter());
     }
-
+    //end snippet
 
     private static class SystemUnderTest {
         private javax0.geci.jamal.sample.SystemUnderTest sut = new javax0.geci.jamal.sample.SystemUnderTest();
