@@ -143,6 +143,126 @@ void testCounter() throws Exception {
 [/sourcecode]
 %}
 
+{%#reflow
+
+The only problem with this solution that the system under test does not contain the setter and the method `increment()` is private.
+The code, as it is now does not compile.
+We have to provide an implementation of the delegating `static` inner class named `SystemUnderTest`.
+
+The following code shows an implementation of this class, which was created manually.
+%}
+
+{%#snip:define SUTPROXYMANUAL={%javaCode {%#trimLines
+{%@snip SystemUnderTestManual%}%}%}%}
+{%@snip SUTPROXYMANUAL
+[sourcecode language="java"]
+private static class SystemUnderTest {
+    private javax0.geci.jamal.sample.SystemUnderTest sut = new javax0.geci.jamal.sample.SystemUnderTest();
+
+    private void setCounter(int z) throws NoSuchFieldException, IllegalAccessException {
+        Field f = sut.getClass().getDeclaredField("counter");
+        f.setAccessible(true);
+        f.set(sut, z);
+    }
+
+    private int getCounter() throws NoSuchFieldException, IllegalAccessException {
+        Field f = sut.getClass().getDeclaredField("counter");
+        f.setAccessible(true);
+        return (int) f.get(sut);
+    }
+
+    private void increment() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = sut.getClass().getDeclaredMethod("increment");
+        m.setAccessible(true);
+        m.invoke(sut);
+    }
+
+    private int count(int z) {
+        return sut.count(z);
+    }
+}
+[/sourcecode]
+%}
+
+{%#reflow
+
+This is already an achievement, because we could separate the messy reflective access from the test code.
+The test, this way, is more readable.
+Since we cannot avoid the reflective code, it will not get better than this as per the readability.
+The other issue, maintainability, however can still be imrpoved.
+
+Creating the delegating inner class is fairly straightforward.
+It does not really need a lot of innovation.
+If you specify the task precisely any cheeply hired junior could create the inner class.
+As a matter of fact it is so simple that it can even be created by a program.
+It doe not need human brain.
+
+If you tried to write a Java progrram from scratch that generates this code it would be, ... well, not simple.
+Fortunately (ha ha ha) we have Java::Geci and even more we have the Jamal module.
+Jav::Geci is a code generation framework, that you can use to generate Java code.
+The framework contains readily available code generators, but it is also open and pluggable providing an clean API for new code generators.
+It does all the task, which are needed for most of the code generators and lets the code generator program to focus on its core business.
+
+Code generation.
+
+For simpler application, when the code generation is straightforward and does not need a lot of algorithm implementation the module Jamal can be used.
+Jamal is a text based templating language, which can be extended with Java classes implementing macros.
+The Java::Geci Jamal module includes a code generator that parses the source files and looks for code that has the following structure:
+
+{%javaCode
+/*!jamal
+
+<<TEMPLATE>>
+
+*/
+
+<<CODE HERE>>
+//__END__
+%}
+
+When it sees one then it evaluates the code that is written on the lines `<<TEMPLATE>>` using Jamal and then it replaces the lines of `<<CODE HERE>>` with the result.
+It generates code and if there was a generated code, but is stale then it updates the code.
+
+The code generation runs during the test execution time, which has advantages and disadvantages.
+
+One disadvantage is, that the empty code, or stale code should also compile.
+The compilation should not depend on the up-to-date-ness of the generated code.
+In practice we usually (well, not usually, rather always) can cope with it.
+
+The advantage is that the code generation can access to the Java code structures via reflection.
+That way, for example, the code generators can get a list of all declared fields, or methods and can generate some delegating methods for them.
+
+The Jamal module contains Java classes implementing macros that can just do that.
+The fact that you can express the generation of the unit test delegating inner class as Jamal macros show the power of the tool.
+On the other hand, I have to make a note, that this task is somewhere the edge of the complexity that the tool can handle.
+Nevertheless, I decided to use this task as a sample, because generating setter and getters is boring.
+I also want to avoid lazy readers asking me why to have another setter/getter generator as it happened at some conferences where I talked about Java::Geci.
+Setter and getter generator is not a good example, as it does not show you the advantage.
+You can do that with the IDE, or using Lombok or some other tool.
+Perhaps after reading this article you can give a try and implement the setter/getter generation using Jamal just for fun and to practice.
+
+{%@define classFormat=`$simpleName`%}
+The previous code snippets were from the class {%@java:class javax0.geci.jamal.sample.ManualTestSystemUnderTest%}.
+This class contains the manually created delegating inner class for demonstration purposes.
+The other testing class, {%@java:class javax0.geci.jamal.sample.GeneratedTestSystemUnderTest%} contains the generated sample code.
+We will look at the code in this file and how it gets automatically generated.
+
+Before looking at the code, however, I have to make two notes:
+
+* The example code uses a simplified version of the macros. These macros do not cover all the possible cases.
+
+* On the other hand the code includes all the macros in the source file.
+Professional code does not need to have these macros in the source.
+All they need is an import from a resource file and then the invocation of a single macro.
+Two lines.
+The macros generating the delegating inner class are defined in a resource file.
+It is written once, you do not need to write them all the time.
+I will show you at the and of this article how it is invoked.
+
+
+%}
+
+
 
 
 {%@snip:update%}

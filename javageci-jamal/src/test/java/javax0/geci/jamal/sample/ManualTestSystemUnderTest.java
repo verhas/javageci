@@ -23,6 +23,7 @@ public class ManualTestSystemUnderTest {
     }
     //end snippet
 
+    // snippet SystemUnderTestManual
     private static class SystemUnderTest {
         private javax0.geci.jamal.sample.SystemUnderTest sut = new javax0.geci.jamal.sample.SystemUnderTest();
 
@@ -48,4 +49,5 @@ public class ManualTestSystemUnderTest {
             return sut.count(z);
         }
     }
+    //end snippet
 }

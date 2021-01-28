@@ -9,7 +9,7 @@ public class TestGenerateArticle {
 
     @Test
     void testGenerateArticle() throws BadSyntax {
-        final var in = FileTools.getInput("ARTICLE.wp.jam");
+        final var in = FileTools.getInput("ARTICLE1.wp.jam");
         final var processor = new Processor("{%", "%}");
         final var result = processor.process(in);
         FileTools.writeFileContent("ARTICLE.wp", result);
