@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 public class JamalGenerator extends AbstractGeneratorEx {
     private static final Pattern START = Pattern.compile("^\\s*/\\*!jamal\\s*$");
     private static final Pattern COMMENT_END = Pattern.compile("^\\s*\\*/\\s*$");
-    private static final Pattern SEGMENT_END = Pattern.compile("^\\s*//__END__\\s*$");
+    private static final Pattern SEGMENT_END = Pattern.compile("^\\s*//\\s*__END__\\s*$");
 
     @Override
     public void processEx(Source source) {

@@ -12,6 +12,6 @@ public class TestGenerateArticle {
         final var in = FileTools.getInput("ARTICLE1.wp.jam");
         final var processor = new Processor("{%", "%}");
         final var result = processor.process(in);
-        FileTools.writeFileContent("ARTICLE.wp", result);
+        FileTools.writeFileContent("ARTICLE1.wp", result);
     }
 }
