@@ -16,7 +16,11 @@
         {snapshotRepository |ossrh|https://oss.sonatype.org/content/repositories/snapshots}
         {repository |ossrh|https://oss.sonatype.org/service/local/staging/deploy/maven2/}
     }
-    {build|{pluginManagement|{plugins|
+    {build|
+            {plugins|
+                {plugin|{GAV :org.sonatype.plugins:nexus-staging-maven-plugin: }}
+            }
+            {pluginManagement|{plugins|
                 {plugin|
                     {GAV :org.apache.maven.plugins:maven-surefire-plugin:{SUREFIRE_VERSION}}
                     {configuration|
@@ -157,7 +161,7 @@
                 {repository |jitpack.io|https://jitpack.io}
             }
         }
-        {profile|ossrh|
+        {profile|release|
             {build|
                 {plugins|
                     {plugin|

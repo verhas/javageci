@@ -4,7 +4,7 @@
     <packaging>pom</packaging>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-parent</artifactId>
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.6.2.1</version>
     <name>javageci parent</name>
     <description>Java GEnerate Code Inline source code generation framework</description>
     <modules>
@@ -51,6 +51,12 @@
         </repository>
     </distributionManagement>
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -173,37 +179,37 @@
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-api</artifactId>
-                <version>1.6.2-SNAPSHOT</version>
+                <version>1.6.2.1</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-core</artifactId>
-                <version>1.6.2-SNAPSHOT</version>
+                <version>1.6.2.1</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-tools</artifactId>
-                <version>1.6.2-SNAPSHOT</version>
+                <version>1.6.2.1</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-engine</artifactId>
-                <version>1.6.2-SNAPSHOT</version>
+                <version>1.6.2.1</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-annotation</artifactId>
-                <version>1.6.2-SNAPSHOT</version>
+                <version>1.6.2.1</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-docugen</artifactId>
-                <version>1.6.2-SNAPSHOT</version>
+                <version>1.6.2.1</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-core-annotations</artifactId>
-                <version>1.6.2-SNAPSHOT</version>
+                <version>1.6.2.1</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -285,7 +291,7 @@
             </repositories>
         </profile>
         <profile>
-            <id>ossrh</id>
+            <id>release</id>
             <build>
                 <plugins>
                     <plugin>
