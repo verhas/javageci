@@ -4,7 +4,7 @@ It is an article published on javax0.wordpress.com
 
 
 %}
-{%@import https://raw.githubusercontent.com/central7/wordpress/wp.jim%}
+{%@import https://raw.githubusercontent.com/central7/wordpress/main/wp.jim%}
 {%@snip:collect src/test/java/%}\
 
 {%#reflow
