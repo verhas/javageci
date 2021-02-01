@@ -1,8 +1,9 @@
-{@import ../pom.jim}
-{project |jar|
+{@import https://raw.githubusercontent.com/central7/pom/main/pom.jim}
+{@import ../version.jim}
+{project javageci jamal}
+    {packaging jar}
     {GAV ::javageci-jamal:{VERSION}}
-    {parent :javageci-parent}
-    {name|javageci jamal}
+    {parent :{GROUPID}:javageci-parent}
     {description|Javageci jamal macro library}
 
     {@include ../plugins.jim}
@@ -16,4 +17,4 @@
         {dependency :{JAMAL}:jamal-testsupport::}
         {dependency :{JAMAL}:jamal-snippet::}
     }
-}
+{end project}

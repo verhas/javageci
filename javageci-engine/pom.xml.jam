@@ -1,8 +1,9 @@
-{@import ../pom.jim}
-{project |jar|
+{@import https://raw.githubusercontent.com/central7/pom/main/pom.jim}
+{@import ../version.jim}
+{project javageci engine}
+    {packaging jar}
     {GAV ::javageci-engine:{VERSION}}
-    {parent :javageci-parent}
-    {name|javageci engine}
+    {parent :{GROUPID}:javageci-parent}
     {description|Javageci macro library execution engine}
 
     {@include ../plugins.jim}
@@ -13,4 +14,4 @@
         {@for MODULE in (api,engine)=
             {dependency :org.junit.jupiter:junit-jupiter-MODULE::}}
     }
-}
+{end project}

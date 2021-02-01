@@ -1,8 +1,9 @@
-{@import ../pom.jim}
-{project |jar|
+{@import https://raw.githubusercontent.com/central7/pom/main/pom.jim}
+{@import ../version.jim}
+{project javageci docugen}
+    {packaging jar}
     {GAV ::javageci-docugen:{VERSION}}
-    {parent :javageci-parent}
-    {name|javageci docugen}
+    {parent :{GROUPID}:javageci-parent}
     {description|Javageci generator library documentation generators}
 
     {@include ../plugins.jim}
@@ -15,4 +16,4 @@
         {dependency :{JAMAL}:jamal-engine::}
 
     }
-}
+{end project}

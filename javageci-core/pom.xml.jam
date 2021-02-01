@@ -1,8 +1,9 @@
-{@import ../pom.jim}
-{project |jar|
+{@import https://raw.githubusercontent.com/central7/pom/main/pom.jim}
+{@import ../version.jim}
+{project javageci core}
+    {packaging jar}
     {GAV ::javageci-core:{VERSION}}
-    {parent :javageci-parent}
-    {name|javageci core}
+    {parent :{GROUPID}:javageci-parent}
     {description|Javageci generator library core code generators}
 
     {@include ../plugins.jim}
@@ -14,4 +15,4 @@
             {dependency :org.junit.jupiter:junit-jupiter-MODULE::}}
 
     }
-}
+{end project}

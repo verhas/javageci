@@ -16,6 +16,9 @@ version in a maven property because that cannot be used to reference the parent.
 -- the project groupId. It has to start with com. and a registered domain name or else it cannot get into maven central
 {@define GROUPID=com.javax0.geci}
 
+-- groupId for the Jamal library
+{@define JAMAL=com.javax0.jamal}
+
 -- package names are less restrictive and it is not likely that anyone else would use javax0 as top level package
 {@define PACKAGE_PREFIX=javax0.geci.}
 

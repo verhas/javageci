@@ -1,8 +1,9 @@
-{@import ../pom.jim}
-{project |jar|
+{@import https://raw.githubusercontent.com/central7/pom/main/pom.jim}
+{@import ../version.jim}
+{project javageci core annotations}
+    {packaging jar}
     {GAV ::javageci-core-annotations:{VERSION}}
-    {parent :javageci-parent}
-    {name|javageci core annotations}
+    {parent :{GROUPID}:javageci-parent}
     {description|Javageci macro library annotation generator for core generators}
 
     {@include ../plugins.jim}
@@ -13,4 +14,4 @@
         {dependency :{JAMAL}:jamal-engine::}
         {dependency :com.javax0.geci:javageci-annotation::}
     }
-}
+{end project}

@@ -1,8 +1,9 @@
-{@import ../pom.jim}
-{project |jar|
+{@import https://raw.githubusercontent.com/central7/pom/main/pom.jim}
+{@import ../version.jim}
+{project javageci tools}
+    {packaging jar}
     {GAV ::javageci-tools:{VERSION}}
-    {parent :javageci-parent}
-    {name|javageci tools}
+    {parent :{GROUPID}:javageci-parent}
     {description|Javageci tools}
 
     {@include ../plugins.jim}
@@ -14,4 +15,4 @@
             {dependency :org.junit.jupiter:junit-jupiter-MODULE::}}
         {dependency :org.assertj:assertj-core::}
     }
-}
+{end project}

@@ -3,4 +3,4 @@ This is the only directory in the whole project that has a file with this exact 
 This placeholder helps some code to find the root directory of the project.
 
 The content of this file is not interesting.
-It is used in ConsistenyTestUtils, for example.
+It is used in ConsistencyTestUtils, for example.

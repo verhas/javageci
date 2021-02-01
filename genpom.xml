@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <name>genpom</name>
     <groupId>com.javax0.jamal</groupId>
     <artifactId>pom.xml_files</artifactId>
-    <version>out_of_pom.xml.jam_files</version>
+    <version>1.0.0</version>
     <build>
         <defaultGoal>clean</defaultGoal>
         <plugins>
@@ -21,7 +21,7 @@
                         </goals>
                         <configuration>
                             <transformFrom>\.jam$</transformFrom>
-                            <transformTo></transformTo>
+                            <transformTo/>
                             <filePattern>.*pom\.xml\.jam$</filePattern>
                             <exclude>target|\.iml$|\.java$|\.xml$</exclude>
                             <sourceDirectory>.</sourceDirectory>

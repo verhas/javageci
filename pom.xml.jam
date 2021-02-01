@@ -1,8 +1,10 @@
-{@options lenient}
-{@import pom.jim}
-{project |pom|
+{@import https://raw.githubusercontent.com/central7/pom/main/pom.jim}
+{@import version.jim}
+{@define opens($module,$package,$to)=--add-opens {MODULE_PREFIX}$module/{PACKAGE_PREFIX}$package={#if/$to/geci.$to/ALL-UNNAMED}}
+{@define exports($module,$package,$to)=--add-exports {MODULE_PREFIX}$module/{PACKAGE_PREFIX}$package={#if/$to/geci.$to/ALL-UNNAMED}}
+{project javageci-parent}
+    {packaging pom}
     {GAV :{GROUPID}:javageci-parent:{VERSION}}
-    {name/javageci parent}
     {description/Java GEnerate Code Inline source code generation framework}
     {modules|javageci-engine,javageci-api,javageci-tools,javageci-core,javageci-annotation,javageci-examples,javageci-jamal,javageci-docugen,javageci-core-annotations}
     {license|The Apache License, Version 2.0|http://www.apache.org/licenses/LICENSE-2.0.txt}
@@ -83,16 +85,8 @@
                 }
                 {plugin|
                     {GAV :org.apache.maven.plugins:maven-javadoc-plugin:{MAVEN_JAVADOC_PLUGIN_VERSION}}
-                    {configuration|
-                        <detectLinks>false</detectLinks>
-                        <failOnError>false</failOnError>
-                    }
-                    {executions|
-                        {execution|
-                            {id|attach-javadocs}
-                            {goals|{goal|jar}}
-                        }
-                    }
+                    {configuration|{detectOfflineLinks|false}}
+                    {executions|{execution|{id|attach-javadocs}{goals|{goal|jar}}}}
                 }
                 {plugin|
                     {GAV :org.apache.maven.plugins:maven-compiler-plugin:{MAVEN_COMPILER_PLUGIN_VERSION}}
@@ -130,7 +124,7 @@
     }
 
     {profiles|
-        {profile|JVM8|
+        {profile JVM8}
             {properties|{property :profile:JVM8}}
             {build|
                 {plugins|
@@ -160,8 +154,8 @@
             {repositories|
                 {repository |jitpack.io|https://jitpack.io}
             }
-        }
-        {profile|release|
+        {end profile}
+        {profile release}
             {build|
                 {plugins|
                     {plugin|
@@ -174,6 +168,6 @@
                     }
                 }
            }
-        }
+        {end profile}
     }
-}
+{end project}
