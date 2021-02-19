@@ -1,0 +1,34 @@
+= Generators provided with Java::Geci out of the box
+
+* link:javageci-jamal/README.adoc[Jamal based generator] is the most powerful and flexible generator.
+It is written not for a specific purpose.
+It generates Java code from templates that can contain Jamal macros.
+Jamal macros can also be written in Java.
+Using this feature the generator also defines macros.
+These let the template access and list Java classes, methods, fields and other artifacts using reflection.
+
+* link:FLUENT.md[Fluent API] is a fluent API generator.
+It reads the fluent API syntax specified as a special regular expression and generates the interfaces and classes that implement the fluent API.
+This is a typical generator that performs a task that cannot simply be described using Jamal macros.
+
+The following generators mainly serve as samples.
+Some of them are deprecated and can be replaces by the use of the Jamal based generator.
+
+* link:ACCESSOR.md[Setter and getter]
+
+* link:DELEGATOR.md[Delegation]
+* link:EQUALS.md[equals() and hashCode()]
+* link:ITERATE.adoc[Iterate]
+* link:MAPPER.md[toMap() and fromMap()]
+* link:TEMPLATED.md[Template based generator]
+* link:REPEATED.md[Repeated code generator] DEPRECATED, use link:ITERATE.adoc[iterate] instead
+* link:CLONER.md[Object cloner]
+* link:INJECT.md[Static dependency injection] (planned)
+* link:PROXY.md[Proxy class] (planned)
+* link:IMMUTATOR.md[Immutable proxy] (planned)
+
+Documentum management generators
+
+* link:DOCUGEN.md[Documentum generation] before deciding to use these generators have a look at Jamal and the Snippet macro packages.
+Many of the features docugen provides can be solved easier using Jamal.
+There are some areas where docugen may have its place.

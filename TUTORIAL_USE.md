@@ -222,5 +222,5 @@ If we run our unit test now, it will say:
 This is exactly what we expected.
 It means that the generator and classes are properly configured/annotated/marked and Java::Geci generated some code.
 
-If you would like to know more about the generators provided by Java::Geci, [read their dedicated tutorials](GENERATORS.md).
+If you would like to know more about the generators provided by Java::Geci, [read their dedicated tutorials](GENERATORS.adoc).
 

@@ -121,4 +121,4 @@ For further information see the following content:
 * [Module Structure of Java::Geci](MODULES.md)
 * [Configuring Generators](CONFIGURATION.md)
 * [Logging support for generators](LOGGING.md)
-* [Generators provided with Java::Geci out of the box](GENERATORS.md)
+* [Generators provided with Java::Geci out of the box](GENERATORS.adoc)

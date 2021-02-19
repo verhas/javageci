@@ -1,4 +1,7 @@
-= Iterate Generator
+= Iterate Generator (DEPRECATED)
+
+The `iterate` generator is deprecated.
+The tasks that can be addressed using the `iterate` generator can now be solved in a more elegant way using the `jamal` based generator.
 
 == Introduction
 

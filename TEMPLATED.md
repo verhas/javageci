@@ -1,5 +1,6 @@
-# Template Based Generator
+# Template Based Generator (DEPRECATED)
 
+Instead of this generator use the [Jamal based generator](javageci-jamal/README.adoc).
 
 ## Introduction
 
