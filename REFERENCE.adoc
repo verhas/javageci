@@ -744,28 +744,28 @@ The result can also be queried for the start position (inclusive) and the end po
 In this case the lexical elements are
 
 [start=0]
-0. `private`
-0. space
-0. `final`
-0. space
-0. `int`
-0. space
-0. `z`
-0. space
-0. `=`
-0. space
-0. `13`
-0. `;`
-0. new-line
-0. `public`
-0. space
-0. `var`
-0. space
-0. `h`
-0. space
-0. `=`
-0. space
-0. `"kkk"`
+. `private`
+. space
+. `final`
+. space
+. `int`
+. space
+. `z`
+. space
+. `=`
+. space
+. `13`
+. `;`
+. new-line
+. `public`
+. space
+. `var`
+. space
+. `h`
+. space
+. `=`
+. space
+. `"kkk"`
 
 Note that spaces do not matter when matching, but it does not mean that they are not there.
 It is only the comparison that ignores the spaces.

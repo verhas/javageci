@@ -12,4 +12,4 @@ Responsible for many tests, code cleanup and the annotation builder generator.
 ## Contributors
 
 ### Attila Bujaki
-Language cleanup in the [`README.md`](README.md)
+Language cleanup in the [`README.adoc`](README.adoc)

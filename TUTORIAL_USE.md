@@ -8,7 +8,7 @@ things explained in this tutorial apply to every other generator.
 
 ### Reminder - Dependencies
 
-As a quick reminder from the [README](README.md):
+As a quick reminder from the [README](README.adoc):
 to use Java::Geci, add the following dependency to your project:
  ```xml
  <dependency>

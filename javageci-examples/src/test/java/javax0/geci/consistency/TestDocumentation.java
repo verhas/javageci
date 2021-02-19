@@ -44,7 +44,7 @@ class TestDocumentation {
             }
             final var documentationVersion = version.replaceAll("-JVM8$", "");
             final var sb = new StringBuilder();
-            for (final String fn : new String[]{"/README.md", "/TUTORIAL_USE.md"}) {
+            for (final String fn : new String[]{"/README.adoc", "/TUTORIAL_USE.md"}) {
                 final var docuFile = new File(rootDir + fn);
                 Assertions.assertTrue(docuFile.exists(), fn + "does not exist?");
                 new ConsistencyTestUtils(messages).modifyLines(

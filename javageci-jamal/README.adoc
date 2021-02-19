@@ -123,7 +123,7 @@ The difference between the two characters controls the macro evaluation order.
 * There is a `!` in front of the `for` loop and also there is a ````` character in front of `#cap`.
 These are used to further fine tune the evaluation order of the macros.
 
-For detailed information about these, and other built-in macros see the documentation of Jamal at https://github.com/verhas/jamal/blob/master/README.md
+For detailed information about these, and other built-in macros see the documentation of Jamal at https://github.com/verhas/jamal/blob/master/README.adoc
 
 == Macros
 
