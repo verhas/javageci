@@ -2,10 +2,10 @@ This file defines the version of the project. This is more effective than defini
 version in a maven property because that cannot be used to reference the parent.
 
 -- the current version of the project as in the development. When releasing it has to be modified here and then
--- you have to execute `mvn -f genpom.xml clean` to generate all the pom.xml files
+-- you have to execute `mvn -f genpom.xml` to generate all the pom.xml files
 
 
-{@define VERSION=1.6.2.1}
+{@define VERSION=1.6.3-SNAPSHOT}
 
 
 
@@ -31,6 +31,6 @@ version in a maven property because that cannot be used to reference the parent.
 {@define MAVEN_SOURCE_PLUGIN_VERSION=3.2.1}
 {@define MAVEN_COMPILER_PLUGIN_VERSION=3.8.1}
 {@define MAVEN_JAVADOC_PLUGIN_VERSION=3.2.0}
-{@define JAMAL_VERSION=1.6.3}
+{@define JAMAL_VERSION=1.7.2}
 {@define JABEL_VERSION=0.2.0}
 {@define ASSERTJ_VERSION=3.9.1}

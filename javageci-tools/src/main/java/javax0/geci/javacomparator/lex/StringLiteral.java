@@ -17,7 +17,7 @@ import static javax0.geci.javacomparator.lex.Escape.handleNormalMultiLineStringC
 public class StringLiteral implements LexEater {
     public static final String MULTI_LINE_STRING_DELIMITER = "\"\"\"";
     private static final String ENCLOSING = "\"";
-    private final char ENCLOSING_CH = '"';
+    private static final char ENCLOSING_CH = '"';
     private static final String STRING = "String";
 
     @Override

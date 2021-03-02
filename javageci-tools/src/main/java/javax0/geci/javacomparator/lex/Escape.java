@@ -85,7 +85,7 @@ public class Escape {
      * The only exception is, when there are no {@code \n} characters. In this case there will be one {@code \n} in the
      * output.</p>
      *
-     * <p>The method deletes the characters from the start of the input StringBuilder {@code sb} and appent the output
+     * <p>The method deletes the characters from the start of the input StringBuilder {@code sb} and append the output
      * to the {@code output}. The original characters will be appended to the end of {@code original} without any
      * conversion.</p>
      *

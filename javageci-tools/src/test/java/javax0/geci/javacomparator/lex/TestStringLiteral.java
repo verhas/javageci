@@ -24,7 +24,7 @@ public class TestStringLiteral {
         Assertions.assertEquals("\b", sut.apply(string("\\b")).lexeme);
         Assertions.assertEquals("\t", sut.apply(string("\\t")).lexeme);
         Assertions.assertEquals("\f", sut.apply(string("\\f")).lexeme);
-        Assertions.assertEquals("\'", sut.apply(string("\\'")).lexeme);
+        Assertions.assertEquals("'", sut.apply(string("\\'")).lexeme);
         Assertions.assertEquals("\"", sut.apply(string("\\\"")).lexeme);
         Assertions.assertEquals("\773", sut.apply(string("\\773")).lexeme);
         Assertions.assertEquals("\073", sut.apply(string("\\073")).lexeme);
@@ -42,7 +42,7 @@ public class TestStringLiteral {
         Assertions.assertEquals("\n\b", sut.apply(mlstring("\\b")).lexeme);
         Assertions.assertEquals("\n\t", sut.apply(mlstring("\\t")).lexeme);
         Assertions.assertEquals("\n\f", sut.apply(mlstring("\\f")).lexeme);
-        Assertions.assertEquals("\n\'", sut.apply(mlstring("\\'")).lexeme);
+        Assertions.assertEquals("\n'", sut.apply(mlstring("\\'")).lexeme);
         Assertions.assertEquals("\n\"", sut.apply(mlstring("\\\"")).lexeme);
         Assertions.assertEquals("\n\773", sut.apply(mlstring("\\773")).lexeme);
         Assertions.assertEquals("\n\073", sut.apply(mlstring("\\073")).lexeme);
