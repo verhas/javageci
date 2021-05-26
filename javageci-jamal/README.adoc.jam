@@ -11,7 +11,7 @@ The created program code is inserted after the comment that contains the Jamal m
 Jamal is an extremely powerful macro language.
 The home page of Jamal is http://github.com/verhas/jamal.
 Using Jamal you can define and use macros defined earlier, and you can also use macros defined in Java code.
-There is a built-in set of Java programmed macros in the Jamal library, and another set is defined in tje Java::Geci Jamal module.
+There is a built-in set of Java programmed macros in the Jamal library, and another set is defined in the Java::Geci Jamal module.
 The set of the macros can also be extended in the application in the main or in the test sources or in libraries.
 
 The generator is not Java specific, although most of the support macros included in this module are based on reflection.
@@ -48,23 +48,23 @@ There are even sophisticated and fine-tuned setter generators even in Java::Geci
 However, generating setters is a relatively simple task and therefore seems to be a good example to learn from.
 
 The sample code in the Java class `PreprocessedFile` contains
-
+    {%@sep[ ]%}
     /*!jamal
     {%@import res:javax0/geci/jamal/setters.jim%}\
     {%class javax0.geci.jamal.PreprocessedFile%}
     {%setters%}
     */
     //__END__
-
+    [@sep]
 This code imports the `setter.jim` macro file.
 It defines the macros for creating the setters.
 It also shows that it is a good practice to move the code generation macros into an imported file.
 Following that it defines the `class` and then invokes, uses the `setters` macro.
-The `{%class...%}` is a user defined macro defined in some imported file.
+The {%@escape`|`{%class...%}`|`%}` is a user defined macro defined in some imported file.
 In this case it sets the class name for which the setters are generated.
 
 Let us have a look at the `setters.jim` file:
-
+    {%@sep[ ]%}
     {%@import res:geci.jim%}
     {%@define setters=
         {%!#for ($name,$type) in
@@ -74,23 +74,23 @@ Let us have a look at the `setters.jim` file:
             }
         %}
     %}
-
+    [@sep]
 This file imports the `geci.jim` file.
 This file is part of the library as a resource file.
 You can see that because the file name starts with the prefix `res:`.
 The resource file `geci.jim` defines a lot of macros that can be used in code generation.
-One of them is `{%class %}`, and it is defined as:
-
+One of them is {%@escape`|``{%class %}``|`%}, and it is defined as:
+{%@sep[ ]%}
     {%@define class(:class)={%@define $class=:class%}%}
-
+[@sep]
 Later when we write in the code
-
+{%@sep[ ]%}
     {%class javax0.geci.jamal.PreprocessedFile%}
-
+[@sep]
 it will mean
-
+{%@sep[ ]%}
     {%@define $class=javax0.geci.jamal.PreprocessedFile%}
-
+[@sep]
 which will define the macro `$class`, which is used later in the `setter.jim` file.
 
 The macro `setters` has a complex for loop in it.
@@ -101,19 +101,19 @@ The string between the parenthesis should contain a comma separated list of stri
 Each string should contain the `|` separated values for the for loop variables.
 
 This is exactly the format that the Java implemented macro `fields` returns.
-It uses the value of the `$fformat` (field format) macro, which is set using the macro `{%format %}`.
+It uses the value of the `$fformat` (field format) macro, which is set using the macro {%@escape`|``{%format %}``|`%}
 The template for the individual setters is:
-
+{%@sep[ ]%}
     public void {%setter/$name%}($type $name){
         this.$name = $name;
         }
-
+[@sep]
 This code uses the loop variables and the macro `setter`, also defined in `geci.jim`.
 It calculates the name of the setter from the name of the field.
 This is fairly straightforward, since it is only then constant `set`, and the name of the field capitalized
-
+{%@sep[ ]%}
     {%@define setter(name)=set{%`#cap name%}%}
-
+[@sep]
 There are few things in this example, which are not detailed here.
 Without the details, these are
 
@@ -129,7 +129,7 @@ For detailed information about these, and other built-in macros see the document
 
 In addition to the generator code the modul contains Java implemented macros and so-called user defined macros.
 
-* The user defined macros should be imported using the `{%@import res:...%}` macro.
+* The user defined macros should be imported using the `{%@escape`|`{%@import res:...%}`|`%}` macro.
 They can be seen on GitHub in the directory https://github.com/verhas/javageci/tree/master/javageci-jamal/src/main/resources.
 Their documentation is included in their source code.
 []

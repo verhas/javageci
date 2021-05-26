@@ -1,5 +1,9 @@
 = Jdocify Generator
 
+This generator is discontinued.
+The recommended practice is to use Jamal doclet along with snippet handling and other Jamal tools instead.
+For more information see https://github.com/verhas/jamal
+
 == Introduction
 
 Jdocify is a simple generator that helps you to keep Javadoc up-to-date.

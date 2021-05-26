@@ -1,18 +1,21 @@
 = Java::Geci
-
+{%@snip:xml pom=pom.xml%}\
+{%#define VERSION={%pom /project/version/text()%}%}\
 == Java Generate Code Inline
 
 Read "link:CONTRIBUTE.md[how to contribute]".
 
 Java::Geci is a library for generating Java code.
 You can execute code generation programs using Java::Geci to generate new source code or modify existing Java source files.
-This way, the programmer can use metaprogramming to express code more shortly and expressively than it would be possible in pure Java.
+This way, the programmer can use metaprogramming to express code shorter and more expressively than it would be possible in pure Java.
 
 The framework:
 
-- discovers the files that need generated code
-- provides easy to use API to generate code
-- writes the generated code into the source code
+* discovers the files that need generated code,
+
+* provides easy to use API to generate code,
+
+* writes the generated code into the source code.
 
 The code generating program should focus on the actual code structure it wants to create.
 
@@ -23,35 +26,38 @@ IDEs (Eclipse, NetBeans, IntelliJ) support the simplest of such scenarios.
 They can create setters, getters, constructors, `equals()` and `hashCode()` methods in different ways.
 There are two significant problems with that solution.
 
-* One is that the code generation happens manually.
-If the developer forgets to re-generate the code after an influencing, relevant change, the generated code becomes outdated.
+* One is that you trigger the code generation manually.
+If the developer forgets to re-generate the code after a change, the generated code may become stale.
 
 * The other problem is that the code generation possibilities are not extendable.
 There is only a minimal code set that the tools can generate, and the developer cannot easily extend these.
 
 Java::Geci eliminates these two problems.
-It has an execution mode to check if all code generation is up-to-date, which can be used as a unit test.
-If the developer forgot to update the generated code after the program affecting the generated code changed, the test would fail.
-The test also updates the generated code. You only need to start the build phase again.
+The mode of the execution ensures that all the generated code is up-to-date.
+The code generation runs from a unit test, that you can start from your favourite IDE or from the build tool
+If you forgot to update the generated code after the program affecting the generated code changed, the test would fail.
+This is not a problem in this case, because the test also updates the generated code.
+The next time you run the test it will see the up-to-date generated code, and it will not fail.
 
 Java::Geci also has a straightforward API supporting code generators, so it is simple to create new code generators that are project-specific.
 You do not even need to package your code generator classes.
 Just put them into a test package and execute Java::Geci during the test phase of the build process.
 
 Java::Geci already includes several readily available code generators.
-These are packaged with the core package and can generate:
+Some of them are simple and may be found in other tools, some of them are unique.
+The generators packaged with the core package are:
 
 * fluent API classes and interfaces
 * internal builders into the class
 * repetitive code iteratively
-* record classes (that are Java 8 compatible and can easily be replaced with Java 14 records later)
+* record classes (that are Java 8 compatible and can easily be replaced with Java 14+ records)
 * code that converts an object to a `Map` and back
 * delegation methods (under development)
 * setter and getter (just as an example, there are so many setter/getter generators…)
 
 == How to use Java::Geci
 
-Include the Java::Geci modules that you want to use in your project.
+Add the Java::Geci modules that you want to use in your project as a dependency.
 To do that with Maven, use the following dependencies:
 
 [source,xml]
@@ -60,13 +66,13 @@ To do that with Maven, use the following dependencies:
     <!-- This is optional, you can use your own annotations or comment config -->
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-annotation</artifactId>
-    <version>1.6.2.1</version>
+    <version>{%VERSION%}</version>
 </dependency>
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-engine</artifactId>
     <scope>test</scope>
-    <version>1.6.2.1</version>
+    <version>{%VERSION%}</version>
 </dependency>
 
 ----
@@ -76,12 +82,8 @@ You can see the latest non-SNAPSHOT version in the link for release versions lin
 
 There are other modules, but you do not need to declare a dependency on them as the engine module has a transitive dependency, and thus Maven automatically will use them.
 
-____
-
-❗ Note that this does not include out-of-the-box generators.
+NOTE: Note that this does not include out-of-the-box generators.
 Check the individual documentations to see what additional dependencies you might need for those.
-
-____
 
 Since Java::Geci works during test execution, the dependencies have a test scope.
 The exception is the annotation module.
@@ -90,7 +92,8 @@ Because of that, the retention of this module is run-time.
 Although the annotation is not used in production, it remains in the byte code, and thus it has to be the default maven scope.
 
 If for any reason production dependency must not include Java::Geci, you can configure the generators using comments, or you can use the annotation interfaces that you can define inside your project.
-Copy `Geci.java` and `Gecis.java` to your project into any package, and Java::Geci will recognize that they are to configure a generator.
+Copy `Geci.java` and `Gecis.java` to your project into any package, and Java::Geci will recognize that they are to there configure a generator.
+Java::Geci is very flexible and recognizes any annotation so long as long the simple name of the annotation is `Geci` (and even a bit more).
 
 If you have a look at the test code `TestAccessor.java` in the test module you can see the following sample code:
 
@@ -109,7 +112,7 @@ If you have a look at the test code `TestAccessor.java` in the test module you c
 
 The test runs during the build process, and it generates code whenever that is needed.
 The return value answers the question: _"Was code generated?"_.
-`true` if new code was generated or `false` if everything was up-to-date.
+It is `true` when new code was generated or `false` if everything was up-to-date.
 The `Assertions.assertFalse` checks this return value, and if Java::Geci generated new code, your test (and your build) fails.
 In this case, you have to restart your build. Java::Geci will recognize that the code it could generate is already there, and the test passes.
 
@@ -124,4 +127,4 @@ For further information see the following content:
 * link:MODULES.md[Module Structure of Java::Geci]
 * link:CONFIGURATION.md[Configuring Generators]
 * link:LOGGING.md[Logging support for generators]
-* link:GENERATORS.adoc[Generators provided with Java::Geci out of the box]
+* link:GENERATORS.adoc.jam[Generators provided with Java::Geci out of the box]

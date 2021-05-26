@@ -4,11 +4,11 @@
     <name>javageci jamal</name>
     <packaging>jar</packaging>
     <artifactId>javageci-jamal</artifactId>
-    <version>1.6.2.1</version>
+    <version>1.6.3-SNAPSHOT</version>
     <parent>
         <groupId>com.javax0.geci</groupId>
         <artifactId>javageci-parent</artifactId>
-        <version>1.6.2.1</version>
+        <version>1.6.3-SNAPSHOT</version>
     </parent>
     <description>Javageci jamal macro library</description>
     <build>
@@ -59,14 +59,55 @@
         <dependency>
             <groupId>com.javax0.jamal</groupId>
             <artifactId>jamal-engine</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.javax0.jamal</groupId>
-            <artifactId>jamal-testsupport</artifactId>
+            <version>1.7.6</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.javax0.jamal</groupId>
             <artifactId>jamal-snippet</artifactId>
+            <version>1.7.6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.javax0.jamal</groupId>
+            <artifactId>jamal-io</artifactId>
+            <version>1.7.6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.javax0.jamal</groupId>
+            <artifactId>jamal-plantuml</artifactId>
+            <version>1.7.6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.javax0.jamal</groupId>
+            <artifactId>jamal-ruby</artifactId>
+            <version>1.7.6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.javax0.jamal</groupId>
+            <artifactId>jamal-groovy</artifactId>
+            <version>1.7.6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.javax0.jamal</groupId>
+            <artifactId>jamal-scriptbasic</artifactId>
+            <version>1.7.6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.javax0.jamal</groupId>
+            <artifactId>jamal-yaml</artifactId>
+            <version>1.7.6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.javax0.jamal</groupId>
+            <artifactId>jamal-testsupport</artifactId>
+            <version>1.7.6</version>
         </dependency>
     </dependencies>
 </project>

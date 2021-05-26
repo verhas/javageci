@@ -5,7 +5,7 @@ It is an article published on javax0.wordpress.com
 
 %}
 {%@import https://raw.githubusercontent.com/central7/wordpress/main/wp.jim%}
-{%@snip:collect src/test/java/%}\
+{%@snip:collect from=src/test/java/%}\
 
 {%#reflow
 # Introduction
@@ -116,7 +116,8 @@ Let's see an example.
 The following class is a simple example that has one public method and a private one.
 The complexity of the methods barely reaches the level that would rectify extensive testing, but this makes it suitable for demonstration purposes.
 
-{%#snip:define SUT={%javaCode {%#killLines {%@define pattern=^\s*/?\*/?%}{%@snip SystemUnderTest%}%}%}%}%}
+{%#snip:define SUT={%javaCode {%#killLines pattern=^\s*/?\*/?
+{%@snip SystemUnderTest%}%}%}%}%}
 {%@snip SUT
 [sourcecode language="java"]
 public class SystemUnderTest {

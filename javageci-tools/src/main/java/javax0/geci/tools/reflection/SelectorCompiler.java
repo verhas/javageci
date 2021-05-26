@@ -1,8 +1,5 @@
 package javax0.geci.tools.reflection;
 
-import javax0.geci.tools.syntax.Lexeme;
-import javax0.geci.tools.syntax.Lexer;
-
 import java.util.Arrays;
 
 /**
@@ -21,7 +18,7 @@ class SelectorCompiler {
 
     static SelectorNode compile(String expression) {
         final var it = new SelectorCompiler();
-        it.lexer = new Lexer(expression, true);
+        it.lexer = new Lexer(expression);
         final var topNode = it.expression();
         if (it.lexer.rest().length() > 0) {
             throw new IllegalArgumentException("There are extra characters " +
@@ -40,10 +37,6 @@ class SelectorCompiler {
 
     private boolean isSymbol(String s) {
         return lexer.peek().type == Lexeme.Type.SYMBOL && lexer.peek().string.equals(s);
-    }
-
-    private boolean isWord(String... s) {
-        return lexer.peek().type == Lexeme.Type.WORD && Arrays.stream(s).anyMatch(k -> lexer.peek().string.equals(k));
     }
 
     private SelectorNode expression() {

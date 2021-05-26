@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns="http://www.w3.org/2000/svg" version="1.1"
-     viewBox="74 80 676 402" width="676" height="402">
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xl="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="74 80 660 402" width="660" height="402">
   <defs>
     <font-face font-family="Helvetica Neue" font-size="16" panose-1="2 0 5 3 0 0 0 2 0 4" units-per-em="1000" underline-position="-100" underline-thickness="50" slope="0" x-height="517" cap-height="714" ascent="951.9958" descent="-212.99744" font-weight="400">
       <font-face-src>
@@ -24,12 +23,10 @@
       </font-face-src>
     </font-face>
   </defs>
-  <metadata> Produced by OmniGraffle 7.11.3 
-    <dc:date>2019-09-14 19:00:18 +0000</dc:date>
-  </metadata>
-  <g id="modules" stroke="none" stroke-dasharray="none" stroke-opacity="1" fill="none" fill-opacity="1">
+  <metadata> Produced by OmniGraffle 7.18.5\n2021-05-14 14:25:16 +0000</metadata>
+  <g id="modules" stroke="none" stroke-opacity="1" fill="none" fill-opacity="1" stroke-dasharray="none">
     <title>modules</title>
-    <g id="modules: Layer 1">
+    <g id="modules_Layer_1">
       <title>Layer 1</title>
       <g id="Graphic_2">
         <path d="M 351.57916 193.18317 L 489.57916 193.18317 C 493.44515 193.18317 496.57916 196.31718 496.57916 200.18317 L 496.57916 225.18317 C 496.57916 229.04917 493.44515 232.18317 489.57916 232.18317 L 351.57916 232.18317 C 347.71317 232.18317 344.57916 229.04917 344.57916 225.18317 L 344.57916 200.18317 C 344.57916 196.31718 347.71317 193.18317 351.57916 193.18317 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
@@ -110,12 +107,6 @@
         <rect x="146.57916" y="80.18317" width="58.444" height="25" fill="white"/>
         <text transform="translate(151.57916 85.18317)" fill="black">
           <tspan font-family="Helvetica Neue" font-size="12" font-weight="400" fill="black" x="0" y="11">transitive</tspan>
-        </text>
-      </g>
-      <g id="Graphic_29">
-        <path d="M 604 99 L 742 99 C 745.866 99 749 102.13401 749 106 L 749 131 C 749 134.866 745.866 138 742 138 L 604 138 C 600.134 138 597 134.866 597 131 L 597 106 C 597 102.13401 600.134 99 604 99 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
-        <text transform="translate(602 109.276)" fill="black">
-          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="39.584" y="15">docugen</tspan>
         </text>
       </g>
       <g id="Graphic_6">

@@ -1,12 +1,12 @@
 {@import https://raw.githubusercontent.com/central7/pom/main/pom.jim}
 {@import version.jim}
-{@define opens($module,$package,$to)=--add-opens {MODULE_PREFIX}$module/{PACKAGE_PREFIX}$package={#if/$to/geci.$to/ALL-UNNAMED}}
-{@define exports($module,$package,$to)=--add-exports {MODULE_PREFIX}$module/{PACKAGE_PREFIX}$package={#if/$to/geci.$to/ALL-UNNAMED}}
+{@define opens($module,$package,...$to)=--add-opens {MODULE_PREFIX}$module/{PACKAGE_PREFIX}$package={#if/$to/geci.$to/ALL-UNNAMED}}
+{@define exports($module,$package,...$to)=--add-exports {MODULE_PREFIX}$module/{PACKAGE_PREFIX}$package={#if/$to/geci.$to/ALL-UNNAMED}}
 {project javageci-parent}
     {packaging pom}
     {GAV :{GROUPID}:javageci-parent:{VERSION}}
     {description/Java GEnerate Code Inline source code generation framework}
-    {modules|javageci-engine,javageci-api,javageci-tools,javageci-core,javageci-annotation,javageci-examples,javageci-jamal,javageci-docugen,javageci-core-annotations}
+    {modules|javageci-engine,javageci-api,javageci-tools,javageci-core,javageci-annotation,javageci-examples,javageci-jamal,javageci-core-annotations}
     {license|The Apache License, Version 2.0|http://www.apache.org/licenses/LICENSE-2.0.txt}
     {developer|Peter Verhas|peter@verhas.com}
     {github|verhas|javageci}
@@ -43,6 +43,7 @@
                             {opens/core/iterate}
                             {opens/core/jdocify}
                             {opens/core/mapper}
+                            --add-opens geci.core/javax0.geci=ALL-UNNAMED
                             {opens/examples/tutorials.simple}
                             {opens/examples/tutorials.hello}
                             {opens/examples/tutorials.hello/tools}
@@ -59,7 +60,6 @@
                             {opens/examples/tests.accessor}
                             {opens/examples/tests.equals}
                             {opens/examples/test.tools.lexeger}
-                            {opens/docugen/docugen}
                             {exports/examples/tutorials.simple/core}
                             {exports/examples/tests.fluent/tools}
                             {exports/examples/tests.fluent/core}
@@ -114,11 +114,9 @@
     }
     {dependencyManagement|
         {dependencies|
-            {@for MODULE in (api,core,tools,engine,annotation,docugen,core-annotations)={dependency :{GROUPID}:javageci-MODULE:{VERSION}:}}
+            {@for MODULE in (api,core,tools,engine,annotation,core-annotations)={dependency :{GROUPID}:javageci-MODULE:{VERSION}:}}
             {@for MODULE in (api,engine)={dependency :org.junit.jupiter:junit-jupiter-MODULE:{JUPITER_VERSION}:test}}
-            {dependency :com.javax0.jamal:jamal-engine:{JAMAL_VERSION}:}
-            {dependency :com.javax0.jamal:jamal-testsupport:{JAMAL_VERSION}:test}
-            {dependency :com.javax0.jamal:jamal-snippet:{JAMAL_VERSION}:test}
+            {@for MODULE in (engine,testsupport,snippet,io,plantuml,ruby,groovy,scriptbasic,yaml)={dependency :com.javax0.jamal:jamal-MODULE:{JAMAL_VERSION}:test}}
             {dependency :org.assertj:assertj-core:{ASSERTJ_VERSION}:test}
         }
     }

@@ -7,7 +7,7 @@ These live templates that are help the use of some generators are in the project
 To use them you can download the files from this directory and then install them into IntelliJ.
 When they are installed you can get to them using the `Command + Alt + j` key combination on MacOS or `Control + Alt + j` key combination on Windows.
 
-<img src="images/cmd-alt-j.svg" width="100px"/>
+![Cmd alt j](images/cmd-alt-j.svg)
 
 ## Importing the live templates
 

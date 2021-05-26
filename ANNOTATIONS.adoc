@@ -1,32 +1,68 @@
-# Create annotation for Java generators
+= Create annotation for Java generators
 
-## Introduction
+== Introduction
 
 The Java generators works on source files that are marked in some way.
 There are multiple ways to tell a generator that a Java source file needs its attention.
 One is adding a Geci annotation.
 It is usually `javax0.geci.annotations.Geci` but not necessarily.
-From the documentation of the [configuration](CONFIGURATION.md):
+From the documentation of the link:CONFIGURATION.md[configuration]:
 
-> An annotation is a Geci annotation if
->
-> * the name of the annotation is `Geci`
-> * the annotation interface is meta-annotated with a Geci annotation.
->   Meta-annotated means if we get all annotations recursively, we eventually get a `Geci` annotation.
+____
+
+An annotation is a Geci annotation if
+
+. the name of the annotation is `Geci`
+
+. the annotation interface itself is annotated with a Geci annotation.
+____
+
+This definition is recursive.
+
+For example, you can have an annotation `@EqualsGenerator`, which is defined as
+
+[source,java]
+----
+@MyMetaAnnotation
+public @interface EqualsGenerator {
+    ...
+
+----
+
+and the annotation `MyMetaAnnotation` is defined as
+
+[source,java]
+----
+@your.own.special.package.Geci
+public @interface MyMetaAnnotation {
+    ...
+----
+
+then `@EqualsGenerator` is a Geci annotation because the definition of the annotation is annotated with `@MyMetaAnnotation`, which is also a Geci annotation.
+`@MyMetaAnnotation` is a Geci annotation because it is annotated with an annotation that has the simle name `Geci`.
+
 
 If a Geci annotation is not named `Geci`, then, by default, the mnemonic of the generator is the name of the annotation in lowercase.
-This mnemonic is usually the first word in the string defined in the `@Geci("mnemonic ...")` annotation form.
+This mnemonic is usually the first word in the string defined in the `@Geci(&quot;mnemonic ...&quot;)` annotation form.
 
 The original `javax0.geci.annotations.Geci` defines only one parameter, `value`, which contains the configuration string in the form of
 
-    @Geci("mnemonic key1=value1 key2=value2 ... keyN=valueN")
+[source,java]
+----
+@Geci("mnemonic key1=value1 key2=value2 ... keyN=valueN")
+----
 
 Custom Geci annotations can have other values.
 Java::Geci automatically reads all parameters of a Geci annotation, not just `value`.
-Looking at the same above if we create a Geci annotation named `mnemonic` (literally) then we can write
+Looking at the same above if we create a Geci annotation named `Mnemonic` (literally) then we can write
 
-    @Mnemonic(key1="value1",key2="value2", ... , keyN="valueN")
-    
+[source,java]
+----
+@Mnemonic(key1="value1",key2="value2", ... , keyN="valueN")
+----
+
+assuming that the annotation `Mnemonic` defines the parameters `key1`, `key2` and so on.
+
 This helps the users of the generator to know the available parameters.
 The IDE helps with autocompletion and any typo in the key names will be discovered during compile time.
 
@@ -34,13 +70,13 @@ Creating an annotation for a generator is a simple 5 minutes work.
 (Less than 5 minutes.)
 It requires no brain.
 It is a simple mechanical coding that can be done using an automated generator.
-Setting up the generator may be more than 5 minutes, so if you just play around with the generators, there is no need for this. 
+Setting up the generator may be more than 5 minutes, so if you just play around with the generators, there is no need for this.
 In case you create something that you intend to maintain and use professionally then the time invested setting up the annotation generator is worth it.
 
-## What is `annotationBuilder`
+== What is `annotationBuilder`
 
-The generator `annotationBuilder` generates annotations.
-The major requirement of the generator is that the generator is configured the standard way as it is supported and required by the generator configuration builder and as it is documented in the [configuration](CONFIGURATION.md) page.
+The generator `annotationBuilder` generates these special Geci annotations.
+The major requirement of the generator is that the generator is configured the standard way as it is supported and required by the generator configuration builder and as it is documented in the link:CONFIGURATION.md[configuration] page.
 
 The generator `annotationBuilder` looks at the generator it generates annotation for (target generator) and creates the annotation in the subpackage `annotation` under the package of the generator.
 The name of the annotation will be the string returned by the method `menmonic()` of the target generator with the first letter in uppercase.
@@ -49,9 +85,10 @@ For example, if the mnemonic returns `accessor` the annotation will be `@Accesso
 
 It generates methods for every 'key' returned by the `implementedKeys()` method, plus the `value()` method, which is the default.
 
-## Example
+== Example
 
-```java
+[source,java]
+----
 package ...example;
 
 @AnnotationBuilder
@@ -59,11 +96,13 @@ public class ExampleGenerator extends AbstractJavaGenerator {
     @Override String mnemonic() { return "exampleGenerator"; }
     @Override public Set<String> implementedKeys() { Set.of("example" /*...etc.*/); }
 }
-```
+
+----
 
 For this the AnnotationBuilder will generate:
 
-```java
+[source,java]
+----
 package ...example.annotation;
 
 import java.lang.annotation.Retention;
@@ -78,16 +117,15 @@ public @interface ExampleGenerator {
     String example() default "";
     /* ...etc. */
 }
-```
-## Configuration
+
+----
+
+== Configuration
 
 Configuration parameters can be used in the builder interface of the generator in the test code that instantiates the generator instance or in the target generator Geci annotation.
 Since there is a Geci annotation named `AnnotationBuilder` (also created by itself, so this is recursive code generation) using that the configuration parameters are available as annotation parameters. 
 
-<!-- snip AnnotationBuilder_config snippet="epsilon" 
-                 append="snippets='AnnotationBuilder_config_.*'"-->
-
-* `set='name-of-the-source-set'`
+* `set=&#39;name-of-the-source-set&#39;`
 
 By default the annotations are generated into the same source set where the target generator is.
 In case of a multi-module project you may want to separate the annotations from the generators into a different module.
@@ -96,17 +134,17 @@ On the other hand the annotations, albeit not used during run-time are compile s
 That is because these annotations have run-time retention and are put into the JVM byte code by the compiler.
 Even though they are not used during non-test run-time, they are there and thus the JAR defining them must be on the class/module path.
 
-Use this configuration either calling `set(""name-of-source-set")` in the test code when building the
-annotation builder generator or `@AnnotationBuilder(module="name-of-source-set")` on the generator class to
+Use this configuration either calling `set(&quot;&quot;name-of-source-set&quot;)` in the test code when building the
+annotation builder generator or `@AnnotationBuilder(module=&quot;name-of-source-set&quot;)` on the generator class to
 define the name of the source set where the annotation will be generated.
 
 Since the source set is defined in the test code it is reasonable to configure this parameter via the builder interface of the generator.
 
-* `in='name.of.package'`
+* `in=&#39;name.of.package&#39;`
 
 This parameter can define the name of the package where the annotations will be created.
 
-Use `@AnnotationBuilder(in="name.of.package")` to generate the annotation in a different package.
+Use `@AnnotationBuilder(in=&quot;name.of.package&quot;)` to generate the annotation in a different package.
 You can specify an absolute package with the full name of the package (e.g.: `com.example.package`).
 Alternatively, you can specify a package that is relative to the package of the target generator starting the configuration value with a dot.
 For example, the default value for this parameter is `.annotation` that will direct the annotation builder to generate the annotation in the subpackage `annotation` right below the target generator.
@@ -115,7 +153,7 @@ Using empty string, or only a `.` will generate the annotation to the same packa
 Note, however, when you separate the annotations from the generators to different modules the different modules are not allowed to define classes in the same package. The Java module system will not load such modules.
 <!-- end snip -->
 
-### Annotation Builder Test Code
+=== Annotation Builder Test Code
 
 The following code snippet shows the test code that creates the annotation builder object and executes it for the code builders of Java::Geci.
 
@@ -125,8 +163,8 @@ The name of this prepared source set is passed to the annotation builder generat
 
 The annotations in this case are generated in one single package, `javax0.geci.core.annotations`. 
 
-<!-- snip TestAnnotationBuilder -->
-```java
+[source,java]
+----
 public class TestAnnotationBuilder {
 
     public static final String ANNOTATION_OUTPUT = "annotation-output";
@@ -145,7 +183,4 @@ public class TestAnnotationBuilder {
             geci.failed());
     }
 }
-```
-
-
-
+----

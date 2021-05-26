@@ -8,20 +8,20 @@ things explained in this tutorial apply to every other generator.
 
 ### Reminder - Dependencies
 
-As a quick reminder from the [README](README.adoc):
+As a quick reminder from the [README](README.adoc.jam):
 to use Java::Geci, add the following dependency to your project:
  ```xml
  <dependency>
      <!-- This is optional, you can use your own annotations or comment config -->
      <groupId>com.javax0.geci</groupId>
      <artifactId>javageci-annotation</artifactId>
-     <version>1.6.2.1</version>
+     <version>1.6.3-SNAPSHOT</version>
  </dependency>
  <dependency>
      <groupId>com.javax0.geci</groupId>
      <artifactId>javageci-engine</artifactId>
      <scope>test</scope>
-     <version>1.6.2.1</version>
+     <version>1.6.3-SNAPSHOT</version>
  </dependency>
  ```
 These are the base modules that are necessary to get started.
@@ -222,5 +222,5 @@ If we run our unit test now, it will say:
 This is exactly what we expected.
 It means that the generator and classes are properly configured/annotated/marked and Java::Geci generated some code.
 
-If you would like to know more about the generators provided by Java::Geci, [read their dedicated tutorials](GENERATORS.adoc).
+If you would like to know more about the generators provided by Java::Geci, [read their dedicated tutorials](GENERATORS.adoc.jam).
 

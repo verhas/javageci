@@ -13,8 +13,7 @@
             {dependency :{GROUPID}:javageci-MODULE::}}
         {@for MODULE in (api,engine)=
             {dependency :org.junit.jupiter:junit-jupiter-MODULE::}}
-        {dependency :{JAMAL}:jamal-engine::}
-        {dependency :{JAMAL}:jamal-testsupport::}
-        {dependency :{JAMAL}:jamal-snippet::}
+            {@for MODULE in (engine,snippet,io,plantuml,ruby,groovy,scriptbasic,yaml)={dependency :com.javax0.jamal:jamal-MODULE:{JAMAL_VERSION}:compile}}
+            {@for MODULE in (testsupport)={dependency :com.javax0.jamal:jamal-MODULE:{JAMAL_VERSION}:}}
     }
 {end project}

@@ -9,3 +9,4 @@ javax0.geci.jamal.macros.IfNotVoid
 javax0.geci.jamal.macros.IfVoid
 javax0.geci.jamal.macros.Replace
 javax0.geci.jamal.macros.Equals
+javax0.geci.jamal.macros.Set
