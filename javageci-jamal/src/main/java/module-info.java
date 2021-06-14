@@ -1,3 +1,4 @@
+import javax0.geci.jamal.junit5.Engine;
 import javax0.geci.jamal.macros.Cap;
 import javax0.geci.jamal.macros.Contains;
 import javax0.geci.jamal.macros.Equals;
@@ -19,6 +20,11 @@ module geci.jamal {
     requires jamal.engine;
     requires jamal.api;
     requires jamal.tools;
+    requires org.junit.jupiter.engine;
+    requires org.junit.jupiter.api;
+    requires org.junit.platform.engine;
+    exports javax0.geci.jamal;
+   // provides org.junit.platform.engine.TestEngine with Engine;
     provides javax0.jamal.api.Macro with
         Methods,
         Fields,

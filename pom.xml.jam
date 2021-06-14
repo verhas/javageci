@@ -65,9 +65,12 @@
                             {exports/examples/tests.fluent/core}
                             {exports/examples/buildfluent/core}
                             {opens/jamal/jamal}
+                            {exports/jamal/jamal}
                             {opens/jamal/jamal.util}
                             {opens/jamal/jamal.sample}
                             {exports/examples/jamal.reflection}
+                            --add-exports org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
+                            --add-exports org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
                         }
                     }
                     {dependencies|
