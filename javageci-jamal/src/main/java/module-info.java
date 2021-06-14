@@ -24,7 +24,7 @@ module geci.jamal {
     requires org.junit.jupiter.api;
     requires org.junit.platform.engine;
     exports javax0.geci.jamal;
-   // provides org.junit.platform.engine.TestEngine with Engine;
+    provides org.junit.platform.engine.TestEngine with Engine;
     provides javax0.jamal.api.Macro with
         Methods,
         Fields,
