@@ -1,12 +1,14 @@
 {@import https://raw.githubusercontent.com/central7/pom/main/pom.jim}
 {@import version.jim}
-{@define opens($module,$package,...$to)=--add-opens {MODULE_PREFIX}$module/{PACKAGE_PREFIX}$package={#if/$to/geci.$to/ALL-UNNAMED}}
-{@define exports($module,$package,...$to)=--add-exports {MODULE_PREFIX}$module/{PACKAGE_PREFIX}$package={#if/$to/geci.$to/ALL-UNNAMED}}
+{@define opens($module,$package,...$to)=--add-opens {MODULE_PREFIX}$module/{PACKAGE_PREFIX}$package={#if/$to/$to/ALL-UNNAMED}}
+{@define exports($module,$package,...$to)=--add-exports {MODULE_PREFIX}$module/{PACKAGE_PREFIX}$package={#if/$to/$to/ALL-UNNAMED}}
+{@define opexs($module,$package,...$to)={opens/$module/$package/$to} {exports/$module/$package/$to}}
+
 {project javageci-parent}
     {packaging pom}
     {GAV :{GROUPID}:javageci-parent:{VERSION}}
     {description/Java GEnerate Code Inline source code generation framework}
-    {modules|javageci-engine,javageci-api,javageci-tools,javageci-core,javageci-annotation,javageci-examples,javageci-jamal,javageci-core-annotations}
+    {modules|javageci-engine,javageci-api,javageci-tools,javageci-core,javageci-annotation,javageci-examples,javageci-jamal,javageci-jamal-test,javageci-core-annotations}
     {license|The Apache License, Version 2.0|http://www.apache.org/licenses/LICENSE-2.0.txt}
     {developer|Peter Verhas|peter@verhas.com}
     {github|verhas|javageci}
@@ -46,7 +48,7 @@
                             --add-opens geci.core/javax0.geci=ALL-UNNAMED
                             {opens/examples/tutorials.simple}
                             {opens/examples/tutorials.hello}
-                            {opens/examples/tutorials.hello/tools}
+                            {opens/examples/tutorials.hello/geci.tools}
                             {opens/examples/tests.templated}
                             {opens/examples/tests.repeated}
                             {opens/examples/tests.mapper}
@@ -60,15 +62,19 @@
                             {opens/examples/tests.accessor}
                             {opens/examples/tests.equals}
                             {opens/examples/test.tools.lexeger}
-                            {exports/examples/tutorials.simple/core}
-                            {exports/examples/tests.fluent/tools}
-                            {exports/examples/tests.fluent/core}
-                            {exports/examples/buildfluent/core}
-                            {opens/jamal/jamal}
-                            {exports/jamal/jamal}
-                            {opens/jamal/jamal.util}
-                            {opens/jamal/jamal.sample}
-                            {exports/examples/jamal.reflection}
+                            {exports/examples/tutorials.simple/geci.core}
+                            {exports/examples/tests.fluent/geci.tools}
+                            {exports/examples/tests.fluent/geci.core}
+                            {exports/examples/buildfluent/geci.core}
+                            {exports/examples/geci.jamal.reflection}
+                            {opexs/jamal/jamal}
+                            {opexs/jamal/jamal.util}
+                            {opexs/jamal/jamal.sample}
+                            {opexs/jamal/jamal/org.junit.platform.commons}
+                            {opexs/jamal/jamal.util/org.junit.platform.commons}
+                            {opexs/jamal/jamal.sample/org.junit.platform.commons}
+                            --add-exports org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
+                            --add-exports org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
                             --add-exports org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
                             --add-exports org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
                         }

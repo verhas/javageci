@@ -15,6 +15,7 @@
         <module>javageci-annotation</module>
         <module>javageci-examples</module>
         <module>javageci-jamal</module>
+        <module>javageci-jamal-test</module>
         <module>javageci-core-annotations</module>
     </modules>
     <licenses>
@@ -101,11 +102,15 @@
                             --add-exports geci.examples/javax0.geci.tests.fluent=geci.tools
                             --add-exports geci.examples/javax0.geci.tests.fluent=geci.core
                             --add-exports geci.examples/javax0.geci.buildfluent=geci.core
-                            --add-opens geci.jamal/javax0.geci.jamal=ALL-UNNAMED
-                            --add-exports geci.jamal/javax0.geci.jamal=ALL-UNNAMED
-                            --add-opens geci.jamal/javax0.geci.jamal.util=ALL-UNNAMED
-                            --add-opens geci.jamal/javax0.geci.jamal.sample=ALL-UNNAMED
-                            --add-exports geci.examples/javax0.geci.jamal.reflection=ALL-UNNAMED
+                            --add-exports geci.examples/javax0.geci.geci.jamal.reflection=ALL-UNNAMED
+                            --add-opens geci.jamal/javax0.geci.jamal=ALL-UNNAMED --add-exports geci.jamal/javax0.geci.jamal=ALL-UNNAMED
+                            --add-opens geci.jamal/javax0.geci.jamal.util=ALL-UNNAMED --add-exports geci.jamal/javax0.geci.jamal.util=ALL-UNNAMED
+                            --add-opens geci.jamal/javax0.geci.jamal.sample=ALL-UNNAMED --add-exports geci.jamal/javax0.geci.jamal.sample=ALL-UNNAMED
+                            --add-opens geci.jamal/javax0.geci.jamal=org.junit.platform.commons --add-exports geci.jamal/javax0.geci.jamal=org.junit.platform.commons
+                            --add-opens geci.jamal/javax0.geci.jamal.util=org.junit.platform.commons --add-exports geci.jamal/javax0.geci.jamal.util=org.junit.platform.commons
+                            --add-opens geci.jamal/javax0.geci.jamal.sample=org.junit.platform.commons --add-exports geci.jamal/javax0.geci.jamal.sample=org.junit.platform.commons
+                            --add-exports org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
+                            --add-exports org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
                             --add-exports org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
                             --add-exports org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
                         </argLine>

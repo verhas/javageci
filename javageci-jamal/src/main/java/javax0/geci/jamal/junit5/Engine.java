@@ -6,7 +6,6 @@ import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestEngine;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
-
 import java.util.Optional;
 
 public class Engine implements TestEngine {
