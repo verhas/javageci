@@ -1,4 +1,4 @@
-package javax0.geci.jamal.test.tools.reflection;
+package javax0.geci.test.tools.reflection;
 
 import javax0.geci.engine.Geci;
 import javax0.geci.tools.reflection.ModifiersBuilder;

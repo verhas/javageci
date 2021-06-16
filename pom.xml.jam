@@ -30,53 +30,25 @@
                     {configuration|
                         {argLine|
                             {opens/api/api}
-                            {opens/tools/tools}
-                            {opens/tools/tools.syntax}
-                            {opens/tools/tools.reflection}
-                            {opens/tools/javacomparator}
-                            {opens/tools/lexeger}
-                            {opens/tools/javacomparator.lex}
-                            {opens/engine/util}
-                            {opens/engine/toolsgen}
-                            {opens/engine/engine}
-                            {opens/core/fluent.syntax}
-                            {opens/core/record}
-                            {opens/core/repeated}
-                            {opens/core/iterate}
-                            {opens/core/jdocify}
-                            {opens/core/mapper}
+                          {@for $P in (tools,tools.syntax,tools.reflection,javacomparator,lexeger,javacomparator.lex)=
+                            {opens/tools/$P}}
+                          {@for $P in (util,toolsgen,engine)=
+                            {opens/engine/$P}}
+                          {@for $P in (fluent.syntax,record,repeated,iterate,jdocify,mapper)=
+                            {opens/core/$P}}
                             --add-opens geci.core/javax0.geci=ALL-UNNAMED
-                            {opens/examples/tutorials.simple}
-                            {opens/examples/tutorials.hello}
-                            {opens/examples/tutorials.hello/geci.tools}
-                            {opens/examples/tests.templated}
-                            {opens/examples/tests.repeated}
-                            {opens/examples/tests.mapper}
-                            {opens/examples/tests.builder}
-                            {opens/examples/buildfluent}
-                            {opens/examples/consistency}
-                            {opens/examples/tests.builder}
-                            {opens/examples/tests.cloner}
-                            {opens/examples/tests.configBuilder}
-                            {opens/examples/tests.record}
-                            {opens/examples/tests.accessor}
-                            {opens/examples/tests.equals}
-                            {opens/examples/test.tools.lexeger}
-                            {exports/examples/tutorials.simple/geci.core}
-                            {exports/examples/tests.fluent/geci.tools}
-                            {exports/examples/tests.fluent/geci.core}
-                            {exports/examples/buildfluent/geci.core}
-                            {exports/examples/geci.jamal.reflection}
-                            {opexs/jamal/jamal}
-                            {opexs/jamal/jamal.util}
-                            {opexs/jamal/jamal.sample}
-                            {opexs/jamal/jamal/org.junit.platform.commons}
-                            {opexs/jamal/jamal.util/org.junit.platform.commons}
-                            {opexs/jamal/jamal.sample/org.junit.platform.commons}
-                            --add-exports org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
-                            --add-exports org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
-                            --add-exports org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
-                            --add-exports org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
+                          {@for $P in (tutorials.simple,tutorials.hello,tutorials.hello/geci.tools)=
+                            {opens/examples/$P}}
+                          {@for $P in (buildfluent,consistency)=
+                            {opens/examples/$P}}
+                          {@for $P in (tests.templated,tests.repeated,tests.mapper,tests.builder,test.tools.lexeger,tests.builder,tests.cloner,tests.configBuilder,tests.record,tests.accessor,tests.equals,jamal.test.tools.lexeger)=
+                            {opens/examples/$P}}
+                          {@for $P in (tests.fluent/geci.tools,tutorials.simple/geci.core,tests.fluent/geci.core,buildfluent/geci.core,geci.jamal.reflection)=
+                            {exports/examples/$P}}
+                          {@for $P in (jamal,jamal.util,jamal.sample,jamal/org.junit.platform.commons,jamal.util/org.junit.platform.commons,jamal.sample/org.junit.platform.commons)=
+                            {opexs/jamal/$P}}
+                          {@for $P in (util,logging)=
+                            --add-exports org.junit.platform.commons/org.junit.platform.commons.$P=ALL-UNNAMED}
                         }
                     }
                     {dependencies|

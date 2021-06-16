@@ -85,12 +85,13 @@
                             --add-opens geci.examples/javax0.geci.tutorials.simple=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tutorials.hello=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tutorials.hello=geci.tools
+                            --add-opens geci.examples/javax0.geci.buildfluent=ALL-UNNAMED
+                            --add-opens geci.examples/javax0.geci.consistency=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tests.templated=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tests.repeated=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tests.mapper=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tests.builder=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.buildfluent=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.consistency=ALL-UNNAMED
+                            --add-opens geci.examples/javax0.geci.test.tools.lexeger=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tests.builder=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tests.cloner=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tests.configBuilder=ALL-UNNAMED
@@ -98,19 +99,23 @@
                             --add-opens geci.examples/javax0.geci.tests.accessor=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.tests.equals=ALL-UNNAMED
                             --add-opens geci.examples/javax0.geci.test.tools.lexeger=ALL-UNNAMED
-                            --add-exports geci.examples/javax0.geci.tutorials.simple=geci.core
                             --add-exports geci.examples/javax0.geci.tests.fluent=geci.tools
+                            --add-exports geci.examples/javax0.geci.tutorials.simple=geci.core
                             --add-exports geci.examples/javax0.geci.tests.fluent=geci.core
                             --add-exports geci.examples/javax0.geci.buildfluent=geci.core
                             --add-exports geci.examples/javax0.geci.geci.jamal.reflection=ALL-UNNAMED
-                            --add-opens geci.jamal/javax0.geci.jamal=ALL-UNNAMED --add-exports geci.jamal/javax0.geci.jamal=ALL-UNNAMED
-                            --add-opens geci.jamal/javax0.geci.jamal.util=ALL-UNNAMED --add-exports geci.jamal/javax0.geci.jamal.util=ALL-UNNAMED
-                            --add-opens geci.jamal/javax0.geci.jamal.sample=ALL-UNNAMED --add-exports geci.jamal/javax0.geci.jamal.sample=ALL-UNNAMED
-                            --add-opens geci.jamal/javax0.geci.jamal=org.junit.platform.commons --add-exports geci.jamal/javax0.geci.jamal=org.junit.platform.commons
-                            --add-opens geci.jamal/javax0.geci.jamal.util=org.junit.platform.commons --add-exports geci.jamal/javax0.geci.jamal.util=org.junit.platform.commons
-                            --add-opens geci.jamal/javax0.geci.jamal.sample=org.junit.platform.commons --add-exports geci.jamal/javax0.geci.jamal.sample=org.junit.platform.commons
-                            --add-exports org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
-                            --add-exports org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
+                            --add-opens geci.jamal/javax0.geci.jamal=ALL-UNNAMED --add-exports
+                            geci.jamal/javax0.geci.jamal=ALL-UNNAMED
+                            --add-opens geci.jamal/javax0.geci.jamal.util=ALL-UNNAMED --add-exports
+                            geci.jamal/javax0.geci.jamal.util=ALL-UNNAMED
+                            --add-opens geci.jamal/javax0.geci.jamal.sample=ALL-UNNAMED --add-exports
+                            geci.jamal/javax0.geci.jamal.sample=ALL-UNNAMED
+                            --add-opens geci.jamal/javax0.geci.jamal=org.junit.platform.commons --add-exports
+                            geci.jamal/javax0.geci.jamal=org.junit.platform.commons
+                            --add-opens geci.jamal/javax0.geci.jamal.util=org.junit.platform.commons --add-exports
+                            geci.jamal/javax0.geci.jamal.util=org.junit.platform.commons
+                            --add-opens geci.jamal/javax0.geci.jamal.sample=org.junit.platform.commons --add-exports
+                            geci.jamal/javax0.geci.jamal.sample=org.junit.platform.commons
                             --add-exports org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
                             --add-exports org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
                         </argLine>

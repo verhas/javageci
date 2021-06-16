@@ -1,4 +1,4 @@
-package javax0.geci.jamal.test.tools.lexeger;
+package javax0.geci.test.tools.lexeger;
 
 import javax0.geci.api.Segment;
 import javax0.geci.api.Source;
