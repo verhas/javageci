@@ -1,18 +1,19 @@
 {@import https://raw.githubusercontent.com/central7/pom/main/pom.jim}
 {@import ../version.jim}
-{project javageci jamal}
+{project javageci testengine}
     {packaging jar}
-    {GAV ::javageci-jamal:{VERSION}}
+    {GAV ::javageci-testengine:{VERSION}}
     {parent :{GROUPID}:javageci-parent}
-    {description|Javageci jamal macro library}
+    {description|Javageci Junit 5 Test Engine}
 
     {@include ../plugins.jim}
 
     {dependencies#
-        {@for MODULE in (api,core,engine,tools,annotation)=
+        {@for MODULE in (jamal)=
             {dependency :{GROUPID}:javageci-MODULE::}}
+        {@for MODULE in (tools,api,engine)=
+            {dependency :com.javax0.jamal:jamal-MODULE:{JAMAL_VERSION}:compile}}
         {@for MODULE in (api,engine)=
             {dependency :org.junit.jupiter:junit-jupiter-MODULE::compile}}
-        {@for MODULE in (engine,snippet,io,plantuml,ruby,groovy,scriptbasic,yaml,api,tools)={dependency :com.javax0.jamal:jamal-MODULE:{JAMAL_VERSION}:compile}}
     }
 {end project}

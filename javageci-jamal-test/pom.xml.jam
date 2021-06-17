@@ -10,6 +10,7 @@
 
     {dependencies#
         {dependency :{GROUPID}:javageci-jamal:{VERSION}:test}
+        {dependency :{GROUPID}:javageci-testengine:{VERSION}:test}
         {@for MODULE in (api,engine)=
             {dependency :org.junit.jupiter:junit-jupiter-MODULE::test}}
         {@for MODULE in (testsupport)={dependency :com.javax0.jamal:jamal-MODULE:{JAMAL_VERSION}:}}

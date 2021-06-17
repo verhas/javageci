@@ -8,7 +8,7 @@
     {packaging pom}
     {GAV :{GROUPID}:javageci-parent:{VERSION}}
     {description/Java GEnerate Code Inline source code generation framework}
-    {modules|javageci-engine,javageci-api,javageci-tools,javageci-core,javageci-annotation,javageci-examples,javageci-jamal,javageci-jamal-test,javageci-core-annotations}
+    {modules|javageci-engine,javageci-api,javageci-tools,javageci-core,javageci-annotation,javageci-examples,javageci-jamal,javageci-jamal-test,javageci-core-annotations,javageci-testengine}
     {license|The Apache License, Version 2.0|http://www.apache.org/licenses/LICENSE-2.0.txt}
     {developer|Peter Verhas|peter@verhas.com}
     {github|verhas|javageci}
@@ -45,8 +45,6 @@
                             {opens/examples/$P}}
                           {@for $P in (tests.fluent/geci.tools,tutorials.simple/geci.core,tests.fluent/geci.core,buildfluent/geci.core,geci.jamal.reflection)=
                             {exports/examples/$P}}
-                          {@for $P in (jamal,jamal.util,jamal.sample,jamal/org.junit.platform.commons,jamal.util/org.junit.platform.commons,jamal.sample/org.junit.platform.commons)=
-                            {opexs/jamal/$P}}
                           {@for $P in (util,logging)=
                             --add-exports org.junit.platform.commons/org.junit.platform.commons.$P=ALL-UNNAMED}
                         }
@@ -95,9 +93,9 @@
     }
     {dependencyManagement|
         {dependencies|
-            {@for MODULE in (api,core,tools,engine,annotation,core-annotations)={dependency :{GROUPID}:javageci-MODULE:{VERSION}:}}
+            {@for MODULE in (api,core,tools,engine,annotation,core-annotations,jamal,testengine)={dependency :{GROUPID}:javageci-MODULE:{VERSION}:}}
             {@for MODULE in (api,engine)={dependency :org.junit.jupiter:junit-jupiter-MODULE:{JUPITER_VERSION}:test}}
-            {@for MODULE in (engine,testsupport,snippet,io,plantuml,ruby,groovy,scriptbasic,yaml)={dependency :com.javax0.jamal:jamal-MODULE:{JAMAL_VERSION}:test}}
+            {@for MODULE in (engine,testsupport,snippet,io,plantuml,ruby,groovy,scriptbasic,yaml,tools,api)={dependency :com.javax0.jamal:jamal-MODULE:{JAMAL_VERSION}:test}}
             {dependency :org.assertj:assertj-core:{ASSERTJ_VERSION}:test}
         }
     }
