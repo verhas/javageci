@@ -16,7 +16,7 @@
                         [configuration]
                             <transformFrom>\.jam$</transformFrom>
                             <transformTo></transformTo>
-                            <filePattern>.*pom\.xml\.jam$</filePattern>
+                            <filePattern>(.*pom\.xml\.jam|.*\.yml\.jam)$</filePattern>
                             <exclude>target|\.iml$|\.java$|\.xml$</exclude>
                             <sourceDirectory>.</sourceDirectory>
                             <targetDirectory>.</targetDirectory>
@@ -26,6 +26,13 @@
                         [end configuration]
                     [end execution]
                 [end executions]
+                 <dependencies>
+                    <dependency>
+                        <groupId>com.javax0.jamal</groupId>
+                        <artifactId>jamal-yaml</artifactId>
+                        <version>1.7.7</version>
+                    </dependency>
+                </dependencies>
             [end plugin]
         [end plugins]
     [end build]
