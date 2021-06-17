@@ -277,7 +277,7 @@ public interface Source {
     Logger getLogger();
 
     /**
-     * <p>Set serves as an identifier class for a source set. Essentially {@code Set} is nothing else but a string
+     * <p>Set serves as an identifier class for a source set. Essentially {@code Set} is nothing else, but a string
      * encapsulated in the class. The constructor and the methods help the definition and the generation of this
      * identifying string.</p>
      *
@@ -419,10 +419,10 @@ public interface Source {
     }
 
     class NamedSourceSet {
-        final Set set;
-        final String[] directories;
+        final public Set set;
+        final public String[] directories;
 
-        NamedSourceSet(Set set, String[] directories) {
+        public NamedSourceSet(Set set, String[] directories) {
             this.set = set;
             this.directories = directories;
         }

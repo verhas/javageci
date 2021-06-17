@@ -13,12 +13,17 @@ import static javax0.geci.jamal.macros.ArgumentFormatters.CallArgs;
 import static javax0.geci.jamal.macros.ArgumentFormatters.ClassList;
 
 module geci.jamal {
-    requires geci.engine;
-    requires geci.tools;
-    requires geci.api;
-    requires jamal.engine;
-    requires jamal.api;
-    requires jamal.tools;
+    requires transitive geci.engine;
+    requires transitive geci.tools;
+    requires transitive geci.api;
+    requires transitive jamal.engine;
+    requires transitive jamal.api;
+    requires transitive jamal.tools;
+    requires transitive org.junit.jupiter.engine;
+    requires transitive org.junit.jupiter.api;
+    requires transitive org.junit.platform.engine;
+    exports javax0.geci.jamal;
+    exports javax0.geci.jamal.util to geci.jamal.test;
     provides javax0.jamal.api.Macro with
         Methods,
         Fields,

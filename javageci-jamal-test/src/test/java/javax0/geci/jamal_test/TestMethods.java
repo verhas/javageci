@@ -1,4 +1,4 @@
-package javax0.geci.jamal;
+package javax0.geci.jamal_test;
 
 import javax0.jamal.api.BadSyntax;
 import javax0.jamal.testsupport.TestThat;
@@ -12,7 +12,7 @@ public class TestMethods {
     @Test
     @DisplayName("Macro methods return all methods for TestMethods")
     void testC() throws InvocationTargetException, NoSuchMethodException, InstantiationException, BadSyntax, IllegalAccessException {
-        TestThat.theInput("{#methods {@define $class=javax0.geci.jamal.TestMethods}}").results(
+        TestThat.theInput("{#methods {@define $class=javax0.geci.jamal_test.TestMethods}}").results(
             "java.lang.Object|clone|," +
                 "java.lang.Object|finalize|," +
                 "java.lang.Object|toString|," +
@@ -24,16 +24,16 @@ public class TestMethods {
                 "java.lang.Object|wait|long," +
                 "java.lang.Object|wait|long:int," +
                 "java.lang.Object|hashCode|," +
-                "javax0.geci.jamal.TestMethods|testC|," +
-                "javax0.geci.jamal.TestMethods|testD|"
+                "javax0.geci.jamal_test.TestMethods|testC|," +
+                "javax0.geci.jamal_test.TestMethods|testD|"
         );
     }
 
     @Test
     void testD() throws InvocationTargetException, NoSuchMethodException, InstantiationException, BadSyntax, IllegalAccessException {
-        TestThat.theInput("{#methods {@define $class=javax0.geci.jamal.TestMethods}{@define $selector=package}}").results(
-            "javax0.geci.jamal.TestMethods|testC|" +
-                ",javax0.geci.jamal.TestMethods|testD|"
+        TestThat.theInput("{#methods {@define $class=javax0.geci.jamal_test.TestMethods}{@define $selector=package}}").results(
+            "javax0.geci.jamal_test.TestMethods|testC|" +
+                ",javax0.geci.jamal_test.TestMethods|testD|"
         );
     }
 }

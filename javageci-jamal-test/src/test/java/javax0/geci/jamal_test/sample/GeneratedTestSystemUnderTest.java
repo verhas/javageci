@@ -1,4 +1,4 @@
-package javax0.geci.jamal.sample;
+package javax0.geci.jamal_test.sample;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 /**
  * This is a demonstration sample file that shows how you can generate unit test proxy inner class in a unit test.
  * <p>
- * The tested class is {@link javax0.geci.jamal.sample.SystemUnderTest}.
+ * The tested class is {@link javax0.geci.jamal_test.sample.SystemUnderTest}.
  * <p>
  * The test file {@link ManualTestSystemUnderTest} is the manual implementation of the same test containing a manually
  * crafted proxy inner class.
@@ -37,10 +37,10 @@ public class GeneratedTestSystemUnderTest {
     {%@import res:geci.jim%}\
     {%beginCode SystemUnderTest proxy generated%}
     private static class SystemUnderTest {
-        private javax0.geci.jamal.sample.SystemUnderTest sut = new javax0.geci.jamal.sample.SystemUnderTest();
+        private javax0.geci.jamal_test.sample.SystemUnderTest sut = new javax0.geci.jamal_test.sample.SystemUnderTest();
     {%!#for ($name,$type,$args) in
             ({%#methods
-            {%class javax0.geci.jamal.sample.SystemUnderTest%}
+            {%class javax0.geci.jamal_test.sample.SystemUnderTest%}
             {%selector private %}
             {%format/$name|$type|$args%}
             %}) =
@@ -53,7 +53,7 @@ public class GeneratedTestSystemUnderTest {
     %}
     {%!#for ($name,$type,$args) in
             ({%#methods
-            {%class javax0.geci.jamal.sample.SystemUnderTest%}
+            {%class javax0.geci.jamal_test.sample.SystemUnderTest%}
             {%selector/ !private & declaringClass -> ( ! canonicalName ~ /java.lang.Object/ )%}
             {%format/$name|$type|$args%}
             %}) =
@@ -64,7 +64,7 @@ public class GeneratedTestSystemUnderTest {
     %}
     {%!#for ($name,$type) in
             ({%#fields
-            {%class javax0.geci.jamal.sample.SystemUnderTest%}
+            {%class javax0.geci.jamal_test.sample.SystemUnderTest%}
             {%selector/ private %}
             {%format/$name|$type%}
             %}) =
@@ -83,7 +83,7 @@ public class GeneratedTestSystemUnderTest {
     %}
     {%!#for ($name,$type) in
             ({%#fields
-            {%class javax0.geci.jamal.sample.SystemUnderTest%}
+            {%class javax0.geci.jamal_test.sample.SystemUnderTest%}
             {%selector/ !private %}
             {%format/$name|$type%}
             %}) =
@@ -101,7 +101,7 @@ public class GeneratedTestSystemUnderTest {
      */
     //<editor-fold desc="SystemUnderTest proxy generated">
     private static class SystemUnderTest {
-        private javax0.geci.jamal.sample.SystemUnderTest sut = new javax0.geci.jamal.sample.SystemUnderTest();
+        private javax0.geci.jamal_test.sample.SystemUnderTest sut = new javax0.geci.jamal_test.sample.SystemUnderTest();
 
 
         private void increment() throws Exception {

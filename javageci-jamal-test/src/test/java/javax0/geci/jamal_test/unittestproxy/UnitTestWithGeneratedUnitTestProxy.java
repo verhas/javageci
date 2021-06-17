@@ -1,8 +1,7 @@
-package javax0.geci.jamal.unittestproxy;
+package javax0.geci.jamal_test.unittestproxy;
 
-import org.junit.jupiter.api.Test;
+import javax0.geci.jamal_test.sample.SystemUnderTest;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -12,14 +11,14 @@ public class UnitTestWithGeneratedUnitTestProxy {
     {%@import res:unittestproxy.jim%}\
 
     {%beginCode SystemUnderTest proxy generated%}
-    {%proxy javax0.geci.jamal.unittestproxy.TestSystemUnderTest%}
+    {%proxy javax0.geci.jamal_test.unittestproxy.TestSystemUnderTest%}
     {%endCode%}
      */
 
     //<editor-fold desc="SystemUnderTest proxy generated">
 
     private static class TestSystemUnderTest {
-        private javax0.geci.jamal.unittestproxy.TestSystemUnderTest sut = new javax0.geci.jamal.unittestproxy.TestSystemUnderTest();
+        private javax0.geci.jamal_test.unittestproxy.TestSystemUnderTest sut = new javax0.geci.jamal_test.unittestproxy.TestSystemUnderTest();
 
 
         private void privateChildVoidMethodArgless() throws Exception {
@@ -43,8 +42,8 @@ public class UnitTestWithGeneratedUnitTestProxy {
             }
 
 
-        private void privateChildVoidMethodOneArgTestClass(javax0.geci.jamal.sample.SystemUnderTest arg0) throws Exception {
-            Method m = sut.getClass().getDeclaredMethod("privateChildVoidMethodOneArgTestClass",javax0.geci.jamal.sample.SystemUnderTest.class);
+        private void privateChildVoidMethodOneArgTestClass(javax0.geci.jamal_test.sample.SystemUnderTest arg0) throws Exception {
+            Method m = sut.getClass().getDeclaredMethod("privateChildVoidMethodOneArgTestClass",javax0.geci.jamal_test.sample.SystemUnderTest.class);
             m.setAccessible(true);
             m.invoke(sut,arg0);
             }
@@ -73,7 +72,7 @@ public class UnitTestWithGeneratedUnitTestProxy {
             }
 
 
-        private void publicChildVoidMethodOneArgTestClass(javax0.geci.jamal.sample.SystemUnderTest arg0)  {
+        private void publicChildVoidMethodOneArgTestClass(javax0.geci.jamal_test.sample.SystemUnderTest arg0)  {
             sut.publicChildVoidMethodOneArgTestClass(arg0);
             }
 
@@ -93,7 +92,7 @@ public class UnitTestWithGeneratedUnitTestProxy {
             }
 
 
-        private void publicParentVoidMethodOneArgTestClass(javax0.geci.jamal.sample.SystemUnderTest arg0)  {
+        private void publicParentVoidMethodOneArgTestClass(javax0.geci.jamal_test.sample.SystemUnderTest arg0)  {
             sut.publicParentVoidMethodOneArgTestClass(arg0);
             }
 
@@ -113,7 +112,7 @@ public class UnitTestWithGeneratedUnitTestProxy {
             }
 
 
-        private void packageChildVoidMethodOneArgTestClass(javax0.geci.jamal.sample.SystemUnderTest arg0)  {
+        private void packageChildVoidMethodOneArgTestClass(javax0.geci.jamal_test.sample.SystemUnderTest arg0)  {
             sut.packageChildVoidMethodOneArgTestClass(arg0);
             }
 
@@ -133,7 +132,7 @@ public class UnitTestWithGeneratedUnitTestProxy {
             }
 
 
-        private void packageParentVoidMethodOneArgTestClass(javax0.geci.jamal.sample.SystemUnderTest arg0)  {
+        private void packageParentVoidMethodOneArgTestClass(javax0.geci.jamal_test.sample.SystemUnderTest arg0)  {
             sut.packageParentVoidMethodOneArgTestClass(arg0);
             }
 
@@ -153,7 +152,7 @@ public class UnitTestWithGeneratedUnitTestProxy {
             }
 
 
-        private void setPrivateChildTestField(javax0.geci.jamal.sample.SystemUnderTest privateChildTestField) throws Exception {
+        private void setPrivateChildTestField(javax0.geci.jamal_test.sample.SystemUnderTest privateChildTestField) throws Exception {
             Field f = sut.getClass().getDeclaredField("privateChildTestField");
             f.setAccessible(true);
             f.set(sut,privateChildTestField);
@@ -182,10 +181,10 @@ public class UnitTestWithGeneratedUnitTestProxy {
             }
 
 
-        private javax0.geci.jamal.sample.SystemUnderTest getPrivateChildTestField() throws Exception {
+        private javax0.geci.jamal_test.sample.SystemUnderTest getPrivateChildTestField() throws Exception {
             Field f = sut.getClass().getDeclaredField("privateChildTestField");
             f.setAccessible(true);
-            return (javax0.geci.jamal.sample.SystemUnderTest)f.get(sut);
+            return (javax0.geci.jamal_test.sample.SystemUnderTest)f.get(sut);
             }
 
 
@@ -214,7 +213,7 @@ public class UnitTestWithGeneratedUnitTestProxy {
             }
 
 
-        private void setPackageChildTestField(javax0.geci.jamal.sample.SystemUnderTest packageChildTestField) {
+        private void setPackageChildTestField(javax0.geci.jamal_test.sample.SystemUnderTest packageChildTestField) {
             sut.packageChildTestField = packageChildTestField;
             }
 
@@ -229,7 +228,7 @@ public class UnitTestWithGeneratedUnitTestProxy {
             }
 
 
-        private void setPackageParentTestField(javax0.geci.jamal.sample.SystemUnderTest packageParentTestField) {
+        private void setPackageParentTestField(javax0.geci.jamal_test.sample.SystemUnderTest packageParentTestField) {
             sut.packageParentTestField = packageParentTestField;
             }
 
@@ -244,7 +243,7 @@ public class UnitTestWithGeneratedUnitTestProxy {
             }
 
 
-        private void setPublicChildTestField(javax0.geci.jamal.sample.SystemUnderTest publicChildTestField) {
+        private void setPublicChildTestField(javax0.geci.jamal_test.sample.SystemUnderTest publicChildTestField) {
             sut.publicChildTestField = publicChildTestField;
             }
 
@@ -259,7 +258,7 @@ public class UnitTestWithGeneratedUnitTestProxy {
             }
 
 
-        private void setPublicParentTestField(javax0.geci.jamal.sample.SystemUnderTest publicParentTestField) {
+        private void setPublicParentTestField(javax0.geci.jamal_test.sample.SystemUnderTest publicParentTestField) {
             sut.publicParentTestField = publicParentTestField;
             }
 
@@ -275,7 +274,7 @@ public class UnitTestWithGeneratedUnitTestProxy {
             }
 
 
-        private javax0.geci.jamal.sample.SystemUnderTest getPackageChildTestField() {
+        private javax0.geci.jamal_test.sample.SystemUnderTest getPackageChildTestField() {
             return sut.packageChildTestField;
             }
 
@@ -290,7 +289,7 @@ public class UnitTestWithGeneratedUnitTestProxy {
             }
 
 
-        private javax0.geci.jamal.sample.SystemUnderTest getPackageParentTestField() {
+        private javax0.geci.jamal_test.sample.SystemUnderTest getPackageParentTestField() {
             return sut.packageParentTestField;
             }
 
@@ -305,7 +304,7 @@ public class UnitTestWithGeneratedUnitTestProxy {
             }
 
 
-        private javax0.geci.jamal.sample.SystemUnderTest getPublicChildTestField() {
+        private javax0.geci.jamal_test.sample.SystemUnderTest getPublicChildTestField() {
             return sut.publicChildTestField;
             }
 
@@ -325,7 +324,7 @@ public class UnitTestWithGeneratedUnitTestProxy {
             }
 
 
-        private javax0.geci.jamal.sample.SystemUnderTest getPublicParentTestField() {
+        private javax0.geci.jamal_test.sample.SystemUnderTest getPublicParentTestField() {
             return sut.publicParentTestField;
             }
 

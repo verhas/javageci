@@ -5,7 +5,7 @@ It is an article published on javax0.wordpress.com
 
 %}
 {%@import https://raw.githubusercontent.com/central7/wordpress/main/wp.jim%}
-{%@snip:collect from=src/test/java/%}\
+{%@snip:collect from=../javageci-jamal-test/src/test/java/%}\
 
 {%#reflow
 # Introduction
@@ -174,7 +174,7 @@ The following code shows an implementation of this class, which I created manual
 {%@snip SUTPROXYMANUAL
 [sourcecode language="java"]
 private static class SystemUnderTest {
-    private javax0.geci.jamal.sample.SystemUnderTest sut = new javax0.geci.jamal.sample.SystemUnderTest();
+    private javax0.geci.jamal_test.sample.SystemUnderTest sut = new javax0.geci.jamal_test.sample.SystemUnderTest();
 
     private void setCounter(int z) throws NoSuchFieldException, IllegalAccessException {
         Field f = sut.getClass().getDeclaredField("counter");
@@ -262,10 +262,10 @@ You can do that with the IDE or using Lombok or some other tool.
 Perhaps after reading this article, you can try and implement the setter/getter generation using Jamal just for fun and to practice.
 
 {%@define classFormat=`$simpleName`%}
-The previous code snippets were from the class {%@java:class javax0.geci.jamal.sample.ManualTestSystemUnderTest%}.
+The previous code snippets were from the class {%@java:class javax0.geci.jamal_test.sample.ManualTestSystemUnderTest%}.
 This class contains the manually created delegating inner class.
 I created this class for demonstration purposes.
-The other testing class, {%@java:class javax0.geci.jamal.sample.GeneratedTestSystemUnderTest%} contains the generated sample code.
+The other testing class, {%@java:class javax0.geci.jamal_test.sample.GeneratedTestSystemUnderTest%} contains the generated sample code.
 We will look at the code in this file and how Java::Geci generates it automatically.
 
 Before looking at the code, however, I have to make two notes:
@@ -280,7 +280,7 @@ The macros generating the delegating inner class are defined in a resource file.
 It is written once, you do not need to write them all the time.
 I will show you at the end of this article how it is invoked.
 
-Let's have a look at the class {%@java:class javax0.geci.jamal.sample.GeneratedTestSystemUnderTest%}!
+Let's have a look at the class {%@java:class javax0.geci.jamal_test.sample.GeneratedTestSystemUnderTest%}!
 This class contains the following Jamal template in a Java comment:
 %}
 
@@ -489,7 +489,7 @@ For example, it will generate a setter for a `final` field.
 
 If you want to use this code generation, you can use the macro `proxy(KLASS)` defined in the resource file `res:unittestproxy.jim`.
 
-You can have a look at the class {%@java:class javax0.geci.jamal.unittestproxy.UnitTestWithGeneratedUnitTestProxy%}, which is a tad more complex than the sample and tests these macros.
+You can have a look at the class {%@java:class javax0.geci.jamal_test.unittestproxy.UnitTestWithGeneratedUnitTestProxy%}, which is a tad more complex than the sample and tests these macros.
 The start of the generated code is the following:
 %}
 

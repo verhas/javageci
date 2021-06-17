@@ -1,4 +1,4 @@
-package javax0.geci.jamal;
+package javax0.geci.jamal_test;
 
 import java.util.Map;
 
@@ -14,9 +14,9 @@ public class PreprocessedFile {
 
     /*!jamal
     {%@define z=13%}int i = {%z%};
-    {%@import res:javax0/geci/jamal/setters.jim%}\
+    {%@import res:javax0/geci/jamal_test/setters.jim%}\
 //        {%#for ($modifiers,$type,$name,$arg) in ({%#methods
-//                  {%class javax0.geci.jamal.PreprocessedFile%}
+//                  {%class javax0.geci.jamal_test.PreprocessedFile%}
 //                  {%selector=true%}
 //                  {%argsep=:%}
 //                  {%exsep=:%}
@@ -24,7 +24,7 @@ public class PreprocessedFile {
 //         $modifiers $type $name $arg {%@comment
 //
 //%}        %}
-    {%class javax0.geci.jamal.PreprocessedFile%}
+    {%class javax0.geci.jamal_test.PreprocessedFile%}
     {%setters%}
      */
     int i = 13;

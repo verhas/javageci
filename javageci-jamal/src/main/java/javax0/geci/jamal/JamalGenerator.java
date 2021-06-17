@@ -42,47 +42,53 @@ public class JamalGenerator extends AbstractGeneratorEx {
             throw new GeciException("Jamal processor opening threw exception", ex);
         }
         var lines = source.getLines();
-        try( final var output = source.open()) {
-            var state = PROCESSING.COPY;
-            final var macro = new StringBuilder();
-            var lineNr = 0;
-            int positionLineNr = 0;
-            for (final var line : lines) {
-                lineNr++;
-                switch (state) {
-                    case COPY:
-                        output.write(line);
-                        if (START.matcher(line).matches()) {
-                            state = PROCESSING.INSOURCE;
+        var touched = false;
+        final var sb = new StringBuilder();
+        var state = PROCESSING.COPY;
+        final var macro = new StringBuilder();
+        var lineNr = 0;
+        int positionLineNr = 0;
+        for (final var line : lines) {
+            lineNr++;
+            switch (state) {
+                case COPY:
+                    sb.append(line).append("\n");
+                    if (START.matcher(line).matches()) {
+                        touched = true;
+                        state = PROCESSING.INSOURCE;
+                        macro.delete(0, macro.length());
+                        positionLineNr = lineNr + 1;
+                    }
+                    break;
+                case INSOURCE:
+                    sb.append(line).append("\n");
+                    if (COMMENT_END.matcher(line).matches()) {
+                        state = PROCESSING.OUTPUT;
+                        final String result;
+                        try {
+                            result = processor.process(new Input(macro.toString(),
+                                new Position(source.getAbsoluteFile(), positionLineNr)));
                             macro.delete(0, macro.length());
-                            positionLineNr = lineNr + 1;
+                        } catch (BadSyntax badSyntax) {
+                            throw new GeciException("Macro processing in file '"
+                                + source.getAbsoluteFile() + "' threw exception", badSyntax);
                         }
-                        break;
-                    case INSOURCE:
-                        output.write(line);
-                        if (COMMENT_END.matcher(line).matches()) {
-                            state = PROCESSING.OUTPUT;
-                            final String result;
-                            try {
-                                result = processor.process(new Input(macro.toString(),
-                                    new Position(source.getAbsoluteFile(), positionLineNr)));
-                                macro.delete(0, macro.length());
-                            } catch (BadSyntax badSyntax) {
-                                throw new GeciException("Macro processing in file '"
-                                                            + source.getAbsoluteFile() + "' threw exception", badSyntax);
-                            }
-                            output.write(result);
-                        } else {
-                            macro.append(line).append("\n");
-                        }
-                        break;
-                    case OUTPUT:
-                        if (SEGMENT_END.matcher(line).matches()) {
-                            output.write(line);
-                            state = PROCESSING.COPY;
-                        }
-                        break;
-                }
+                        sb.append(result);
+                    } else {
+                        macro.append(line).append("\n");
+                    }
+                    break;
+                case OUTPUT:
+                    if (SEGMENT_END.matcher(line).matches()) {
+                        sb.append(line).append("\n");
+                        state = PROCESSING.COPY;
+                    }
+                    break;
+            }
+        }
+        if (touched) {
+            try (final var output = source.open()) {
+                output.write(sb.toString());
             }
         }
     }

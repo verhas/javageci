@@ -1,4 +1,4 @@
-package javax0.geci.jamal.sample;
+package javax0.geci.jamal_test.sample;
 
 import javax0.jamal.api.BadSyntax;
 import javax0.jamal.engine.Processor;

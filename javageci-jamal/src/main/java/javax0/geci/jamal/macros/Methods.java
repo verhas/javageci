@@ -69,7 +69,7 @@ public class Methods implements Macro, InnerScopeDependent {
         try {
             klass = GeciReflectionTools.classForName(klassName);
         } catch (ClassNotFoundException e) {
-            throw new BadSyntax("Class " + klassName + "cannot be found for the macro `methods`");
+            throw new BadSyntax("Class '" + klassName + "' cannot be found for the macro `methods`");
         }
         final var format = reader.readValue("$mformat").orElse("$class|$name|$args");
         final var argsep = reader.readValue("$argsep").orElse(":");

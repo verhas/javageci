@@ -1,4 +1,4 @@
-package javax0.geci.jamal.sample;
+package javax0.geci.jamal_test.sample;
 
 /**
  * A simple demonstration class that can be used as a system under test to demonstrate how to invoke private methods and

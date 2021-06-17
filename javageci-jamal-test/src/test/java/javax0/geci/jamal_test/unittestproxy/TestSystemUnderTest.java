@@ -1,6 +1,6 @@
-package javax0.geci.jamal.unittestproxy;
+package javax0.geci.jamal_test.unittestproxy;
 
-import javax0.geci.jamal.sample.SystemUnderTest;
+import javax0.geci.jamal_test.sample.SystemUnderTest;
 
 public class TestSystemUnderTest extends ParentSystemUnderTest{
 

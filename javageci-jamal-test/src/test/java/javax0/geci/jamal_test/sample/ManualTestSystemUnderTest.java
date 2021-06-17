@@ -1,4 +1,4 @@
-package javax0.geci.jamal.sample;
+package javax0.geci.jamal_test.sample;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ public class ManualTestSystemUnderTest {
 
     // snippet SystemUnderTestManual
     private static class SystemUnderTest {
-        private javax0.geci.jamal.sample.SystemUnderTest sut = new javax0.geci.jamal.sample.SystemUnderTest();
+        private javax0.geci.jamal_test.sample.SystemUnderTest sut = new javax0.geci.jamal_test.sample.SystemUnderTest();
 
         private void setCounter(int z) throws NoSuchFieldException, IllegalAccessException {
             Field f = sut.getClass().getDeclaredField("counter");

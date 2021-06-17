@@ -1,5 +1,6 @@
-package javax0.geci.jamal.util;
+package javax0.geci.jamal_test.util;
 
+import javax0.geci.jamal.util.EntityStringer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,15 +28,15 @@ public class TestEntityStringer {
     @DisplayName("creates the expected fingerprint for the methods")
     void testMethod2Fingerprint() throws NoSuchMethodException {
         final var format = "$class|$name|$args";
-        Assertions.assertEquals("javax0.geci.jamal.util.TestEntityStringer|argless|",
+        Assertions.assertEquals("javax0.geci.jamal_test.util.TestEntityStringer|argless|",
             EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("argless"), format, ":", ":"));
-        Assertions.assertEquals("javax0.geci.jamal.util.TestEntityStringer|arg1pri|int[][]",
+        Assertions.assertEquals("javax0.geci.jamal_test.util.TestEntityStringer|arg1pri|int[][]",
             EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arg1pri", int[][].class), format, ":", ":"));
-        Assertions.assertEquals("javax0.geci.jamal.util.TestEntityStringer|arg1obj|java.lang.Integer",
+        Assertions.assertEquals("javax0.geci.jamal_test.util.TestEntityStringer|arg1obj|java.lang.Integer",
             EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arg1obj", Integer.class), format, ":", ":"));
-        Assertions.assertEquals("javax0.geci.jamal.util.TestEntityStringer|arg1objarr|java.util.Map:java.util.Set...",
+        Assertions.assertEquals("javax0.geci.jamal_test.util.TestEntityStringer|arg1objarr|java.util.Map:java.util.Set...",
             EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arg1objarr", Map.class, Set[].class), format, ":", ":"));
-        Assertions.assertEquals("javax0.geci.jamal.util.TestEntityStringer|arg1objarra|java.util.Map:java.util.Set[]",
+        Assertions.assertEquals("javax0.geci.jamal_test.util.TestEntityStringer|arg1objarra|java.util.Map:java.util.Set[]",
             EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arg1objarra", Map.class, Set[].class), format, ":", ":"));
     }
 }

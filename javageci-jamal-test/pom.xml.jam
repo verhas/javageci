@@ -1,0 +1,18 @@
+{@import https://raw.githubusercontent.com/central7/pom/main/pom.jim}
+{@import ../version.jim}
+{project javageci jamal-test}
+    {packaging jar}
+    {GAV ::javageci-jamal-test:{VERSION}}
+    {parent :{GROUPID}:javageci-parent}
+    {description|Javageci jamal macro library tests}
+
+    {@include ../plugins.jim}
+
+    {dependencies#
+        {dependency :{GROUPID}:javageci-jamal:{VERSION}:test}
+        {dependency :{GROUPID}:javageci-testengine:{VERSION}:test}
+        {@for MODULE in (api,engine)=
+            {dependency :org.junit.jupiter:junit-jupiter-MODULE::test}}
+        {@for MODULE in (testsupport)={dependency :com.javax0.jamal:jamal-MODULE:{JAMAL_VERSION}:}}
+    }
+{end project}
