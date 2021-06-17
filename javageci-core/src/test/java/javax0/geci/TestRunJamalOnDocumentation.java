@@ -40,13 +40,14 @@ public class TestRunJamalOnDocumentation {
     }
 
     @Test
-    @DisplayName("Run Jamal on all of the *.jam files except the pom.xml.jam files")
+    @DisplayName("Run Jamal on all of the *.jam files except the pom.xml.jam and *.yml.jamfiles")
     void runJamal() throws Exception {
         for (final var p :
             Files.walk(Paths.get(getDirectory()), Integer.MAX_VALUE)
                 .filter(Files::isRegularFile)
                 .filter(s -> s.toString().endsWith(".jam"))
                 .filter(s -> !s.toString().endsWith("pom.xml.jam"))
+                .filter(s -> !s.toString().endsWith("javageci-build.yml.jam"))
                 .filter(s -> !s.toString().endsWith("/ARTICLE1.wp.jam"))
                 .filter(s -> !s.toString().endsWith("/variables.jam"))
                 .collect(Collectors.toList())) {
