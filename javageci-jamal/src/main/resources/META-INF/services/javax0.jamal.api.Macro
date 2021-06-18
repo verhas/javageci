@@ -10,3 +10,4 @@ javax0.geci.jamal.macros.IfVoid
 javax0.geci.jamal.macros.Replace
 javax0.geci.jamal.macros.Equals
 javax0.geci.jamal.macros.Set
+javax0.geci.jamal.macros.ClassMacro
