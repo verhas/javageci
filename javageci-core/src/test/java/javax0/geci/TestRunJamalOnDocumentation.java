@@ -48,8 +48,8 @@ public class TestRunJamalOnDocumentation {
                 .filter(s -> s.toString().endsWith(".jam"))
                 .filter(s -> !s.toString().endsWith("pom.xml.jam"))
                 .filter(s -> !s.toString().endsWith("javageci-build.yml.jam"))
-                .filter(s -> !s.toString().endsWith("/ARTICLE1.wp.jam"))
-                .filter(s -> !s.toString().endsWith("/variables.jam"))
+                .filter(s -> !s.toString().endsWith("ARTICLE1.wp.jam"))
+                .filter(s -> !s.toString().endsWith("variables.jam"))
                 .collect(Collectors.toList())) {
             executeJamal(p, Paths.get(p.toString().replaceAll("\\.jam$", "")));
         }

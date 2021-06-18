@@ -262,7 +262,7 @@ You can do that with the IDE or using Lombok or some other tool.
 Perhaps after reading this article, you can try and implement the setter/getter generation using Jamal just for fun and to practice.
 
 {%@define classFormat=`$simpleName`%}
-The previous code snippets were from the class {%@java:classs javax0.geci.jamal_test.sample.ManualTestSystemUnderTest%}.
+The previous code snippets were from the class {%@java:class javax0.geci.jamal_test.sample.ManualTestSystemUnderTest%}.
 This class contains the manually created delegating inner class.
 I created this class for demonstration purposes.
 The other testing class, {%@java:class javax0.geci.jamal_test.sample.GeneratedTestSystemUnderTest%} contains the generated sample code.

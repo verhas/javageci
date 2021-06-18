@@ -1,5 +1,4 @@
 import javax0.geci.jamal.macros.Cap;
-import javax0.geci.jamal.macros.ClassMacro;
 import javax0.geci.jamal.macros.Contains;
 import javax0.geci.jamal.macros.Equals;
 import javax0.geci.jamal.macros.Fields;
@@ -37,6 +36,6 @@ module geci.jamal {
         IfVoid,
         Replace,
         Equals,
-        Set, ClassMacro
+        Set
         ;
 }
