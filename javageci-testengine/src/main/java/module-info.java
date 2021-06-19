@@ -4,6 +4,7 @@ module geci.testengine {
     requires geci.jamal;
     requires geci.tools;
     requires geci.api;
+    requires geci.engine;
     requires org.junit.jupiter.engine;
     requires org.junit.jupiter.api;
     requires org.junit.platform.engine;

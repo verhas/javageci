@@ -31,23 +31,6 @@
         <dependency>
             <groupId>com.javax0.geci</groupId>
             <artifactId>javageci-jamal</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.javax0.jamal</groupId>
-            <artifactId>jamal-tools</artifactId>
-            <version>1.7.7</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.javax0.jamal</groupId>
-            <artifactId>jamal-api</artifactId>
-            <version>1.7.7</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.javax0.jamal</groupId>
-            <artifactId>jamal-engine</artifactId>
-            <version>1.7.7</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

@@ -9,10 +9,7 @@
     {@include ../plugins.jim}
 
     {dependencies#
-        {@for MODULE in (jamal)=
-            {dependency :{GROUPID}:javageci-MODULE::}}
-        {@for MODULE in (tools,api,engine)=
-            {dependency :com.javax0.jamal:jamal-MODULE:{JAMAL_VERSION}:compile}}
+        {dependency :{GROUPID}:javageci-jamal::compile}
         {@for MODULE in (api,engine)=
             {dependency :org.junit.jupiter:junit-jupiter-MODULE::compile}}
     }
