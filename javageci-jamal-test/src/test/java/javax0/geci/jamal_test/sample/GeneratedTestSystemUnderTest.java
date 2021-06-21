@@ -38,37 +38,22 @@ public class GeneratedTestSystemUnderTest {
     {%beginCode SystemUnderTest proxy generated%}
     private static class SystemUnderTest {
         private javax0.geci.jamal_test.sample.SystemUnderTest sut = new javax0.geci.jamal_test.sample.SystemUnderTest();
-    {%!#for ($name,$type,$args) in
-            ({%#methods
-            {%class javax0.geci.jamal_test.sample.SystemUnderTest%}
-            {%selector private %}
-            {%format/$name|$type|$args%}
-            %}) =
-            {%@options skipForEmpty%}
+    {%!#for [skipEmpty] ($name,$type,$args) in
+            ({%#methods (class=javax0.geci.jamal_test.sample.SystemUnderTest selector=private format=$name|$type|$args)%}) =
         private $type $name({%`@argList $args%}) throws Exception {
             Method m = sut.getClass().getDeclaredMethod("$name"{%`#classList ,$args%});
             m.setAccessible(true);
             m.invoke(sut{%`#callArgs ,$args%});
             }
     %}
-    {%!#for ($name,$type,$args) in
-            ({%#methods
-            {%class javax0.geci.jamal_test.sample.SystemUnderTest%}
-            {%selector/ !private & declaringClass -> ( ! canonicalName ~ /java.lang.Object/ )%}
-            {%format/$name|$type|$args%}
-            %}) =
-        {%@options skipForEmpty%}
+    {%!#for [skipEmpty] ($name,$type,$args) in
+            ({%#methods (class=javax0.geci.jamal_test.sample.SystemUnderTest selector="!private & declaringClass -> ( ! canonicalName ~ /java.lang.Object/ )" format=$name|$type|$args)%}) =
         private $type $name({%`@argList $args%}) {
             {%`#ifNotVoid $type return %}sut.$name({%`#callArgs $args%});
             }
     %}
-    {%!#for ($name,$type) in
-            ({%#fields
-            {%class javax0.geci.jamal_test.sample.SystemUnderTest%}
-            {%selector/ private %}
-            {%format/$name|$type%}
-            %}) =
-        {%@options skipForEmpty%}
+    {%!#for [skipEmpty] ($name,$type) in
+            ({%#fields (class=javax0.geci.jamal_test.sample.SystemUnderTest selector=private format=$name|$type)%}) =
         private void {%setter=$name%}($type $name) throws Exception {
             Field f = sut.getClass().getDeclaredField("$name");
             f.setAccessible(true);
@@ -81,13 +66,8 @@ public class GeneratedTestSystemUnderTest {
             return ($type)f.get(sut);
             }
     %}
-    {%!#for ($name,$type) in
-            ({%#fields
-            {%class javax0.geci.jamal_test.sample.SystemUnderTest%}
-            {%selector/ !private %}
-            {%format/$name|$type%}
-            %}) =
-        {%@options skipForEmpty%}
+    {%!#for [skipEmpty] ($name,$type) in
+            ({%#fields (class=javax0.geci.jamal_test.sample.SystemUnderTest selector=!private format=$name|$type)%}) =
         private void {%setter/$name%}($type $name) {
             sut.$name = $name;
             }

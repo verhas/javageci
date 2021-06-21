@@ -23,6 +23,9 @@ All operation for which the module is needed performed during the unit test comp
 == Configuration
 
 Although there is no need for configuration it is possible to configure the file sets the code generator should work on.
+
+=== Default directories
+
 If nothing is configured, then the code generator will run for the project files that are the standard for a Maven project structure.
 These files are in the directories
 
@@ -31,9 +34,111 @@ These files are in the directories
 * `src/test/java`
 * `src/test/resources`
 
+This is the most sensible configuration in most of the cases.
 
+=== Configuring directories
+
+If you want to configure directories differently, you should have a `junit-platform.properties` file on the classpath.
+Using maven the most reasonable place is `test/resources/junit-platform.properties`.
+
+This is a standard properties file.
+To configure the Java::Geci Jamal generator test engine the keys starting with the prefix `geci.` are taken into account.
+Using the `junit-platform.properties` file you can configure
+
+* the source directories that the generator framework will scan searching for files to process
+* `only` and `ignore` patterns to match against the file names to limit the set of files to be processed
+* option to ignore binary files
+
+To specify the source directories you have to specify the key `geci.sourceSets`.
+The following sample defines three source sets.
+
+[source,properties]
+----
+geci.sourceSets=otherModule,mainModule,external
+otherModule=../otherModule/src/main/java,./otherModule/src/main/java
+mainModule=./src/main/java,../src/main/java
+external=/Users/goddeveloper/projects/myPreciousProject/src/main/resources
+----
+
+The value of this key is the comma separated names of the sets.
+The names of the sets have to be used as key in the configuration to specify the alternative directory locations for the source sets.
+When the source set is scanned for files these directory locations are consulted in the order they are specified.
+When the scanning process finds a directory name that exists the other alternatives, which some later are not consulted.
+This is the approach Java::Geci uses to avoid using absolute file names and still find the files when there is no guaranteed current working directory.
+
+The alternative directory names should be listed as comma separated values.
+
+=== Filtering files
+
+While scanning an existing directory for files Java::Geci can ignore certain files based on the file names.
+To configure this you can specify two different patterns:
+
+. `only` patterns, and
+. `ignore` patterns.
+
+These patterns are regular expressions that should match part of the file.
+
+When one or more `only` patterns are defined the scanning process ignores all file names that do not match any `only` pattern.
+If there is no `only` pattern defined then this selection is not performed.
+When there is at least one `ignore` pattern the scanning process ignores all file names that match at least one of the `ignore` patterns.
+
+If you have only one `ignore` and/or `only` pattern you can simply specify it as
+
+[source,properties]
+----
+# include only the '.java' files
+geci.only=.*\.java$
+----
+
+When you have more than one `ignore` and/or `only` pattern you can number them appending `.N` to the key:
+
+[source,properties]
+----
+# include only the '.java' files
+geci.only=.*\.java$
+# additional patterns can be defined with numbering the keys
+geci.only.0=.*\.kotlin
+geci.only.1=.*\.groovy
+geci.only.2=.*\.rb
+----
+
+Note that you can use the both the numbered and simple key in the configuration.
+The all number between zero and 99 (inclusive) will be used and all `N > 99` numbers for which there is a `(N-1)` in the configuration.
+For example:
+
+[source,properties]
+----
+geci.ignore=this will always be processed
+geci.ignore.0=can start with zero, or 1 or anything below 100
+geci.ignore.1=just usual to number continuously
+geci.ignore.7=missing 2,3,...,6 is not a problem
+...
+geci.ignore.99=it is not a problem that numbers are missing from the configuration below 100
+geci.ignore.100=still works, because there was 99
+geci.ignore.101=still works, because there was 100
+geci.ignore.103=this is not used because processing stopped when there was no 102
+----
+
+=== Binary files
+
+Sometimes the source directories contain some binary files.
+These binary files usually do not cause harm, because they are not likely happen to contain anything that would trigger a code generator.
+However, in some cases reading this files may also issues.
+The reading of the files eventually happens before scanning for any content to find generator trigger.
+If such an error happens Java::Geci stops with an exception.
+This exception can be ignored when the option
+
+[source,properties]
+----
+geci.ignoreBinary=true
+----
+
+It is recommended to explicitly ignore the file based on the actual file name.
+If you use the `geci.ignoreBinary` option instead it may hide errors with other files that seem to be binary, cause an exception for a different reason and should not have been ignored.
+
+== General architecture
 
 This module is the implementation of a JUnit5 TestEngine.
-
-
-When this module is on the classpath or on the module path then the JUnit5 framework autmatically uses this TestEngine
+When this module is on the classpath or on the module path then the JUnit5 framework automatically uses this TestEngine.
+A TestEngine is invoked multiple times by the different JUnit5 invoking frameworks.
+First they invoke the

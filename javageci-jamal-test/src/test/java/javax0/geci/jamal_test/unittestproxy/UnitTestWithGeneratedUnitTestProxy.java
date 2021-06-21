@@ -1,7 +1,5 @@
 package javax0.geci.jamal_test.unittestproxy;
 
-import javax0.geci.jamal_test.sample.SystemUnderTest;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -331,6 +329,9 @@ public class UnitTestWithGeneratedUnitTestProxy {
     }
 
     //</editor-fold>
-
     //__END__
 }
+
+
+
+

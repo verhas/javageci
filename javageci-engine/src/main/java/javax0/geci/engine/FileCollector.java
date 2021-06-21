@@ -284,7 +284,7 @@ class FileCollector {
                                         final AtomicBoolean processed,
                                         final DirectoryLocator locator
     ) {
-        try (final var tracePosition = Tracer.push("Alternative", "File collecting started for alternative '" + directory + "'")) {
+        try (final var __ = Tracer.push("Alternative", "File collecting started for alternative '" + directory + "'")) {
             collectDirectory(directory, entry, onlySet, ignoreSet, outputSets, processedSome, processed, locator);
         } catch (IOException ioException) {
             throw new GeciException("The directory '"

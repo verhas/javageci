@@ -1,16 +1,15 @@
-{%@define class(:class)={%@define $class=:class%}%}
-{%@define selector(:selector)={%@define $selector=:selector%}%}
 
-{%@define simpleName(:class)={%#replace {%@options regex%}|:class|.*\.(.*)|$1%}%}
+Calculate the simple name of the class from the fully qualified name.
+To do that we use the 'replace' macro from the snippet module.
+The calculation does a replaceAll type replace replacing the fully qualified class name with the part that comes after the last dot.
+
+{%@define simpleName(:class)={%#replace (regex)|:class|.*\.(.*)|$1%}%}
 
 define the argument separator that comes from the macro methods
 {%@define argsep(:argsep)={%@define $argsep=:argsep%}%}
 define the exceptions separator that comes from the macro methods
 {%@define exsep(:exsep)={%@define $exsep=:exsep%}%}
 
-{%@define mformat(:mformat)={%@define $mformat=:mformat%}%}
-{%@define fformat(:fformat)={%@define $fformat=:fformat%}%}
-{%@define format(:format)={%@define $fformat=:format%}{%@define $mformat=:format%}%}
 {%@define setter(name)=set{%`#cap name%}%}
 {%@define getter(name,type)={%`#if/{%#equals/{%#replace type B b%}/boolean%}/is/get%}{%`@cap name%}%}
 

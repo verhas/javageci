@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static javax0.geci.api.Source.maven;
 
 /**
  * A JUnit5 test engine that will start the Java::Geci Jamal generator for the source and resources directories on the
@@ -76,7 +75,7 @@ public class Engine implements TestEngine {
         final var listener = executionRequest.getEngineExecutionListener();
         listener.executionStarted(td);
         javax0.geci.api.Geci geci = new Geci();
-        for (final var s : getNamedSourceSet(cp)) {
+        for (final var s : getNamedSourceSets(cp)) {
             geci = geci.source(s);
         }
         for (final var s : getIgnorePatterns(cp)) {
@@ -89,7 +88,6 @@ public class Engine implements TestEngine {
         if (ignoreBinary.isPresent() && ignoreBinary.get()) {
             geci.ignoreBinary();
         }
-
         try {
             LOG.info("GECI Jamal executing code generator for all the files in the source set");
             if (geci.register(new JamalGenerator())
@@ -100,7 +98,7 @@ public class Engine implements TestEngine {
             }
         } catch (Exception e) {
             LOG.info("GECI Jamal There was an exception executing the code generation.");
-            listener.executionFinished(td, TestExecutionResult.aborted(e));
+            listener.executionFinished(td, TestExecutionResult.failed(e));
         }
         LOG.info("Junit5::Geci execute()");
     }
@@ -155,7 +153,7 @@ public class Engine implements TestEngine {
      * Configuration usually looks like:
      * <pre>{@code
      * # include only the '.java' files
-     * geci.ignore=.*\.java$
+     * geci.only=.*\.java$
      * # additional patterns can be defined with numbering the keys
      * geci.only.0=.*\.kotlin
      * geci.only.1=.*\.groovy
@@ -203,7 +201,7 @@ public class Engine implements TestEngine {
      * @param cp the configuration read by the framework
      * @return the list of the source sets on which the Jamal generator should work on
      */
-    private List<Source.NamedSourceSet> getNamedSourceSet(ConfigurationParameters cp) {
+    private List<Source.NamedSourceSet> getNamedSourceSets(ConfigurationParameters cp) {
         final var sets = new ArrayList<Source.NamedSourceSet>();
         final var setsOpt = cp.get("geci.sourceSets");
         if (setsOpt.isPresent()) {
@@ -217,14 +215,6 @@ public class Engine implements TestEngine {
                 sets.add(new Source.NamedSourceSet(Source.Set.set(setName),
                     Arrays.stream(setOpt.get().split(",")).map(String::trim).toArray(String[]::new)));
             }
-        }
-
-        if (sets.size() == 0) {
-            LOG.info("GECI Jamal using default source set, maven src and resources directories for both main and test");
-            sets.add(maven().mainSource());
-            sets.add(maven().mainResources());
-            sets.add(maven().testSource());
-            sets.add(maven().testResources());
         }
         return sets;
     }

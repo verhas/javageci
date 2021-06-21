@@ -2,74 +2,46 @@
 {%@define proxy(KLASS)=
     private static class {%simpleName KLASS%} {
         private KLASS sut = new KLASS();
-    {%!#for ($name,$type,$args,$exceptions) in
-            ({%#methods
-            {%class KLASS%}
-            {%selector private %}
-            {%format/$name|$type|$args|$exceptions%}
-            %}) =
-            {%@options skipForEmpty%}
+    {%!#for [skipEmpty]($name,$type,$args,$exceptions) in
+            ({%#methods (class="KLASS" selector="private" format="$name|$type|$args|$exceptions")%}) =
         private $type $name({%`@argList $args%}) throws Exception {
             Method m = sut.getClass().getDeclaredMethod("$name"{%`#classList ,$args%});
             m.setAccessible(true);
             m.invoke(sut{%`#callArgs ,$args%});
             }
     %}
-    {%!#for ($name,$type,$args,$exceptions) in
-            ({%#methods
-            {%class KLASS%}
-            {%selector/ !private & declaringClass -> ( ! canonicalName ~ /java.lang.Object/ )%}
-            {%format/$name|$type|$args|$exceptions%}
-            %}) =
-        {%@options skipForEmpty%}
+    {%!#for [skipEmpty] ($name,$type,$args,$exceptions) in
+            ({%#methods (class="KLASS"
+                         selector="!private & declaringClass -> ( ! canonicalName ~ /java.lang.Object/ )"
+                         format="$name|$type|$args|$exceptions")%}) =
         private $type $name({%`@argList $args%}) {%`@if/$exceptions/throws %}$exceptions {
             {%`#ifNotVoid $type return %}sut.$name({%`#callArgs $args%});
             }
     %}
-    {%!#for ($name,$type) in
-            ({%#fields
-            {%class KLASS%}
-            {%selector/ private & ! final %}
-            {%format/$name|$type%}
-            %}) =
-        {%@options skipForEmpty%}
-        private void {%setter=$name%}($type $name) throws Exception {
+    {%!#for [skipEmpty] ($name,$type) in
+            ({%#fields (class="KLASS" selector="private & ! final" format="$name|$type")%}) =
+        private void {%setter/$name%}($type $name) throws Exception {
             Field f = sut.getClass().getDeclaredField("$name");
             f.setAccessible(true);
             f.set(sut,$name);
             }
     %}
-    {%!#for ($name,$type) in
-            ({%#fields
-            {%class KLASS%}
-            {%selector/ private %}
-            {%format/$name|$type%}
-            %}) =
-        {%@options skipForEmpty%}
+    {%!#for [skipEmpty] ($name,$type) in
+            ({%#fields (class="KLASS" selector="private" format="$name|$type")%}) =
         private $type {%getter/$name/$type%}() throws Exception {
             Field f = sut.getClass().getDeclaredField("$name");
             f.setAccessible(true);
             return ($type)f.get(sut);
             }
     %}
-    {%!#for ($name,$type) in
-            ({%#fields
-            {%class KLASS%}
-            {%selector/ !private & ! final %}
-            {%format/$name|$type%}
-            %}) =
-        {%@options skipForEmpty%}
+    {%!#for [skipEmpty] ($name,$type) in
+            ({%#fields (class="KLASS" selector="!private & ! final" format="$name|$type")%}) =
         private void {%setter/$name%}($type $name) {
             sut.$name = $name;
             }
     %}
-    {%!#for ($name,$type) in
-            ({%#fields
-            {%class KLASS%}
-            {%selector/ !private & ! static %}
-            {%format/$name|$type%}
-            %}) =
-        {%@options skipForEmpty%}
+    {%!#for [skipEmpty] ($name,$type) in
+            ({%#fields (class="KLASS" selector="!private & ! static" format="$name|$type")%}) =
         private $type {%getter/$name/$type%}() {
             return sut.$name;
             }

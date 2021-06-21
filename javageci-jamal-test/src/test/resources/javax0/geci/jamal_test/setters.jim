@@ -1,7 +1,7 @@
 {%@import res:geci.jim%}
 {%@define setters=
     {%!#for ($name,$type) in
-        ({%#fields {%format=$name|$type%} %})=
+        ({%#fields (format=$name|$type)%})=
     public void {%setter/$name%}($type $name){
         this.$name = $name;
         }

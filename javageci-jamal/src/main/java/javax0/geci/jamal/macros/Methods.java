@@ -1,7 +1,6 @@
 package javax0.geci.jamal.macros;
 
 import javax0.geci.jamal.util.EntityStringer;
-import javax0.geci.jamal.util.MacroReader;
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.reflection.Selector;
 import javax0.jamal.api.BadSyntax;
@@ -9,9 +8,7 @@ import javax0.jamal.api.InnerScopeDependent;
 import javax0.jamal.api.Input;
 import javax0.jamal.api.Macro;
 import javax0.jamal.api.Processor;
-
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import javax0.jamal.tools.Params;
 
 /**
  * Macro to get all the methods of a class. Templates utilizing this macro can best use the output in a multi-variable
@@ -54,29 +51,38 @@ import java.util.stream.Collectors;
  * to ensure that these macros inside are evaluated before the {@code methods} macro starts to be evaluated.
  * <p>
  * The information about the methods are joined using coma.
- *
  */
 public class Methods implements Macro, InnerScopeDependent {
 
     @Override
     public String evaluate(Input in, Processor processor) throws BadSyntax {
-        final var reader = new MacroReader(processor);
-        final var selector = Selector.compile(reader.readValue("$selector").orElse("true"));
-        final var klassName = reader.readValue("$class").orElseThrow(
-            () -> new BadSyntax("There is no $class defined for the macro `methods`")
-        );
+        final var selectorPar = Params.<String>holder("$selector", "selector").orElse("true");
+        final var klassName = Params.<String>holder("$class", "class");
+        final var format = Params.<String>holder("$mformat", "format", "methodFormat").orElse("$class|$name|$args");
+        final var argsep = Params.<String>holder("$argsep", "argsep", "argumentSeparator").orElse(":");
+        final var exsep = Params.<String>holder("$exsep", "exsep", "exceptionsSeparator").orElse(":");
+        Params.using(processor).from(this).between("()").keys(selectorPar, klassName, format, argsep, exsep).parse(in);
+        if (!klassName.isPresent()) {
+            throw new BadSyntax("There is no $class defined for the macro `methods`");
+        }
+        final var selector = Selector.compile(selectorPar.get());
         final Class<?> klass;
         try {
-            klass = GeciReflectionTools.classForName(klassName);
+            klass = GeciReflectionTools.classForName(klassName.get());
         } catch (ClassNotFoundException e) {
             throw new BadSyntax("Class '" + klassName + "' cannot be found for the macro `methods`");
         }
-        final var format = reader.readValue("$mformat").orElse("$class|$name|$args");
-        final var argsep = reader.readValue("$argsep").orElse(":");
-        final var exsep = reader.readValue("$exsep").orElse(":");
+
+
         var allMethods = GeciReflectionTools.getAllMethodsSorted(klass);
-        return Arrays.stream(allMethods).filter(selector::match)
-            .map(m -> EntityStringer.method2Fingerprint(m, format, argsep, exsep))
-            .collect(Collectors.joining(","));
+        final var sb = new StringBuilder();
+        String s = "";
+        for (final var m : allMethods) {
+            if (selector.match(m)) {
+                sb.append(s).append(EntityStringer.method2Fingerprint(m, format.get(), argsep.get(), exsep.get()));
+                s = ",";
+            }
+        }
+        return sb.toString();
     }
 }
