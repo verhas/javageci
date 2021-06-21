@@ -10,6 +10,31 @@ example the `1.4.1-SNAPSHOT` version was in this file for some time and then
 the cumulated changes were so significant, the version became
 `1.5.0-SNAPSHOT` without releasing `1.4.1` ever.
 
+# 1.6.2.1
+
+Same as 1.6.2 except top-level pom.xml was modified so that the deployment to maven central is automatic. Up to 1.6.1 there was an error that uploaded the artifacts and left the repo open and did not release.
+
+Jamal 1.6.3 is used, where you can
+
+```
+            {%#for (a,b,c) in `END`list,with,), in, it `END` = ... %}
+```
+
+# 1.6.2
+
+Jamal dependency version upped up to 1.6.3
+
+# 1.6.1 Jamal templating
+
+Support macros for Jamal templating were redesigned and it uses now Jamal 1.5.3
+There is a sample to generate unit test proxy static inner class
+
+# 1.6.0 - mvn central deployment pending
+
+Documentation update. It should have been 1.5.1 but accidentally it became 1.6.0
+
+This version uses the OSSH deploy plugin and is configured to send the artifacts automatically to maven central without manual hacking.
+
 # 1.5.0
 
 * A fix in the fluent generator.

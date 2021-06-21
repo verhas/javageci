@@ -1,6 +1,15 @@
 # Documentation Generation using SNIPPETS
 
-To use docugen generators, add the following maven dependency to your project:
+## DEPRECATED
+
+Docugen generator is discontinued.
+The same result can be reached using the Jamal macro processor that is 
+
+* architecturally more fir for the purpose
+* has more features
+* can be extended easier.
+
+To (DO NOT) use docugen generators, add the following maven dependency to your project:
 
 ```xml
 <dependency>

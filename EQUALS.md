@@ -1,7 +1,7 @@
 # equals() and hashCode() Code Generator
 
 The generator `equals` generates the `equals()` and the `hashCode()` methods.
-Generating these two functions takes into account all fields, except static fields.
+Generating these two functions takes into account all fields by default, except static fields.
 This can be altered using the `filter` configuration parameter.
 
 If `equals()` is provided by manual code then it will not be generated.
@@ -47,4 +47,5 @@ If subclassing is enabled then the `equals()` method will be declared `final`.
 ## `hashFilter='true'`
 
 You can specify a [filter expressions](FILTER_EXPRESSIONS.adoc) to exclude certain fields from the generated `hashCode()` method.
-Note that the fields for the `hashCode()` method are filtered by the filter expression `filter` first and then using the optional `hashFilter`, thus it is not possible to include a field into the calculation of the hash code, which field is not used in the generated `equals()` method.
+Note that the fields for the `hashCode()` method are filtered by the filter expression `filter` first and then using the optional `hashFilter`.
+It is not possible to include a field into the calculation of the hash code, which field is not used in the generated `equals()` method.

@@ -16,12 +16,37 @@ import org.opentest4j.AssertionFailedError;
 import org.opentest4j.TestAbortedException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static javax0.geci.api.Source.maven;
 
+/**
+ * A JUnit5 test engine that will start the Java::Geci Jamal generator for the source and resources directories on the
+ * project overwriting the source files. This engine is automatically invoked by the JUnit 5 framework if the module
+ * containing this class is on the classpath or it is on the modulepath.
+ * <p>
+ * This test engine makes the use of the Java::Geci Jamal generator as simple as adding a dependency to the project.
+ * <p>
+ * Most frameworks will invoke this engine if there is somethign testable in the project. It means that you should have
+ * at least one unit test.
+ * <p>
+ * A side effect, having this engine configured into your project that it will always run generating the code, or at
+ * least checking that the code is properly generated and does not need regeneration. When this engine is configured
+ * you cannot just start one test from your IDE, that will also run this generator.
+ * <p>
+ * Note that the code generation "test" will report a failure if code was generated. This is to signal that your source
+ * code was changed, and you need to recompile the code. When this engine reports failure the solution is usually to run
+ * it again.
+ * <p>
+ * In some rare cases, when a generated code depends on other code, which is also generated, it may happen that you need
+ * to run the compilation, and the tests a few times. It is possible to create circular dependency with contradicting
+ * generated code. In that case the code generation will never succeed. This situation is not likely and in practice it
+ * should not happen. If it does your code generation structures and dependencies are severely flowed.
+ */
 public class Engine implements TestEngine {
     @Override
     public String getId() {
@@ -54,6 +79,16 @@ public class Engine implements TestEngine {
         for (final var s : getNamedSourceSet(cp)) {
             geci = geci.source(s);
         }
+        for (final var s : getIgnorePatterns(cp)) {
+            geci = geci.ignore(s);
+        }
+        for (final var s : getOnlyPatterns(cp)) {
+            geci = geci.only(s);
+        }
+        final var ignoreBinary = cp.getBoolean("geci.ignoreBinary");
+        if (ignoreBinary.isPresent() && ignoreBinary.get()) {
+            geci.ignoreBinary();
+        }
 
         try {
             LOG.info("GECI Jamal executing code generator for all the files in the source set");
@@ -70,65 +105,126 @@ public class Engine implements TestEngine {
         LOG.info("Junit5::Geci execute()");
     }
 
+    /**
+     * Get the patterns from the configuration that should be ignored.
+     * <p>
+     * These patterns will be passed as strings to the {@link Geci#ignore(String...)} method.
+     * <p>
+     * Configuration usually looks like:
+     * <pre>{@code
+     * # ignore all the text files
+     * geci.ignore=.*\.txt
+     * # additional patterns can be defined with numbering the keys
+     * geci.ignore.0=.*\.pdf
+     * geci.ignore.1=.*\.zip
+     * geci.ignore.2=.*\.zap
+     * ...
+     * }</pre>
+     * <p>
+     * The configuration key is {@code geci.ignore} and/or {@code geci.ignore.N} where {@code N} should be a non-negative integer number.
+     * The number {@code N} should not have leading zeroes, spaces or + sign at the start.
+     * All {@code geci.ignore.N} values will be processed where {@code N} is
+     * less than 100. If there are more than 99 items then the processing will stop when it does not find a key for a
+     * given {@code N}. This way, for example
+     *
+     * <pre>{@code
+     * geci.ignore=this will always be processed
+     * geci.ignore.0=can start with zero, or 1 or anything below 100
+     * geci.ignore.1=just usual to number continuously
+     * geci.ignore.7=missing 2,3,...,6 is not a problem
+     * ...
+     * geci.ignore.99=it is not a problem that numbers are missing from the configuration below 100
+     * geci.ignore.100=still works, because there was 99
+     * geci.ignore.101=still works, because there was 100
+     * geci.ignore.103=this is not used because processing stopped when there was no 102
+     * }</pre>
+     *
+     * @param cp the configuration
+     * @return the list of the patters
+     */
+    private List<String> getIgnorePatterns(ConfigurationParameters cp) {
+        return getPatterns(cp, "ignore");
+    }
+
+    /**
+     * Get the patterns from the configuration that should be included only.
+     * <p>
+     * These patterns will be passed as strings to the {@link Geci#only(String...)} method.
+     * If no value is configured the {@link Geci#only(String...)} will not be invoked.
+     * <p>
+     * Configuration usually looks like:
+     * <pre>{@code
+     * # include only the '.java' files
+     * geci.ignore=.*\.java$
+     * # additional patterns can be defined with numbering the keys
+     * geci.only.0=.*\.kotlin
+     * geci.only.1=.*\.groovy
+     * geci.only.2=.*\.rb
+     * ...
+     * }</pre>
+     * The numbers should follow the same rules and are processed the same way as in case of the {@code geci.ignore}
+     * option. For more information see the documentation of the method
+     * {@link #getIgnorePatterns(ConfigurationParameters) getIgnorePatterns()}.
+     *
+     * @param cp the configuration
+     * @return the list of the patters
+     */
+    private List<String> getOnlyPatterns(ConfigurationParameters cp) {
+        return getPatterns(cp, "only");
+    }
+
+    private List<String> getPatterns(ConfigurationParameters cp, String keyword) {
+        final var ignores = new ArrayList<String>();
+        var ignore = cp.get("geci." + keyword);
+        if (ignore.isPresent()) {
+            ignores.add(ignore.get());
+        }
+        for (int i = 0; true; i++) {
+            ignore = cp.get("geci." + keyword + "." + i);
+            if (!ignore.isPresent() && i > 100) {
+                break;
+            }
+            ignores.add(ignore.get());
+        }
+        return ignores;
+    }
+
+    /**
+     * Get the directory sets as named sets, if they are configured in the 'junit-platform.properties' file.
+     * If nothing is configured then the maven directories, {@code src/main/java}, {@code src/test/java}, {@code
+     * src/main/resources} and {@code src/test/resources} will be used.
+     * <p>
+     * To configure the source directories the key {@code geci.sourceSets} should be the comma separated list of the
+     * source set names. Each listed source set name should be present in the file as a key and should have the comma
+     * separated list of the directories that belong to that set.
+     *
+     * @param cp the configuration read by the framework
+     * @return the list of the source sets on which the Jamal generator should work on
+     */
     private List<Source.NamedSourceSet> getNamedSourceSet(ConfigurationParameters cp) {
         final var sets = new ArrayList<Source.NamedSourceSet>();
-        final var mavenSourceSet = getConfiguredMavenSourceSet(cp);
-        if (mavenSourceSet != null) {
-            sets.add(mavenSourceSet);
-        }
         final var setsOpt = cp.get("geci.sourceSets");
         if (setsOpt.isPresent()) {
             LOG.info("GECI Jamal source sets defined are: ", setsOpt.get());
-            for (final var setName : setsOpt.get().split(",")) {
+            for (final var setName : Arrays.stream(setsOpt.get().split(",")).map(String::trim).collect(Collectors.toList())) {
                 final var setOpt = cp.get(setName);
                 if (setOpt.isEmpty()) {
                     throw new TestAbortedException(format("Set named '%s' is not configured in the file '%s'",
                         setName, ConfigurationParameters.CONFIG_FILE_NAME));
                 }
-                sets.add(new Source.NamedSourceSet(Source.Set.set(setName), setOpt.get().split(",")));
+                sets.add(new Source.NamedSourceSet(Source.Set.set(setName),
+                    Arrays.stream(setOpt.get().split(",")).map(String::trim).toArray(String[]::new)));
             }
         }
 
         if (sets.size() == 0) {
-            LOG.info("GECI Jamal using default source set");
+            LOG.info("GECI Jamal using default source set, maven src and resources directories for both main and test");
             sets.add(maven().mainSource());
+            sets.add(maven().mainResources());
+            sets.add(maven().testSource());
+            sets.add(maven().testResources());
         }
         return sets;
-    }
-
-    private Source.NamedSourceSet getConfiguredMavenSourceSet(ConfigurationParameters cp) {
-        var maven = maven();
-        final var moduleOpt = cp.get("geci.maven.module");
-        if (moduleOpt.isPresent()) {
-            LOG.info("GECI Jamal processing source in the maven module %s", moduleOpt.get());
-            maven = maven.module(moduleOpt.get());
-        }
-        final var sourceOpt = cp.get("geci.maven.source");
-        final Source.NamedSourceSet mavenSourceSet;
-        if (sourceOpt.isPresent()) {
-            switch (sourceOpt.get()) {
-                case "testSource":
-                    mavenSourceSet = maven.testSource();
-                    break;
-                case "mainResources":
-                    mavenSourceSet = maven.mainResources();
-                    break;
-                case "testResources":
-                    mavenSourceSet = maven.testResources();
-                    break;
-                default:
-                    mavenSourceSet = maven.mainSource();
-                    break;
-            }
-        } else {
-            mavenSourceSet = maven.mainSource();
-        }
-        if (moduleOpt.isPresent() || sourceOpt.isPresent()) {
-            LOG.info("GECI Jamal maven %s=(%s)", mavenSourceSet.set.toString(), String.join(",", mavenSourceSet.directories));
-            return mavenSourceSet;
-        } else {
-            return null;
-        }
     }
 
     @Override

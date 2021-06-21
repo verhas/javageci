@@ -239,32 +239,34 @@ public interface Geci {
     }
 
     /**
-     * Set filters to filter the sources. The absolute file names of the
-     * files are matched against the patterns and a file is only
+     * Add filters to filter the sources. The absolute file names of the
+     * files are matched against the patterns, and a file is only
      * processed by the generators if at least one regular expression
      * pattern matches the absolute file name.
      * <p>
      * The matching is done calling the regular expression matcher
      * method {@link Matcher#find()}. It means that the regular
-     * expression pattern needs to match a substring in the file name
-     * and does not need to match the whole file. This is because
-     * usually the caller specifies a specific directory or package name
+     * expression pattern needs to match a substring in the file name,
+     * and does not need to match the whole file name. This is because
+     * usually the caller specifies a specific directory or package name,
      * or the name of the source file. Using {@link Matcher#matches()}
      * would require adding {@code .*} to the start and to the end of
      * the patterns. On the other hand if the caller needs in a rare
-     * case a matching aganst the whole absolute file name, then the
+     * case a matching against the whole absolute file name, then the
      * pattern can be started with the {@code ^} character and ended
      * with the {@code $} character. In this case the pattern is
-     * probably already complex (at least presumably if we assume that
-     * the pattern is operating system independent.)
+     * probably already complex, at least presumably if we assume that
+     * the pattern is operating system independent.
      * <p>
      * It is recommended not to use this method, and restrict the
      * operation of a generator using annotations. The gain provided by
      * this filtering in terms of test execution speedup may not be
      * significant and on the other hand it makes the generator
-     * configuration more complex, relying on file names and it is
+     * configuration more complex, relying on file names, and it is
      * fairly easy to induce operating system dependent errors.
-     *
+     * <p>
+     * This method can be called more than one time. Every time the
+     * patterns will be added to the already configured patterns.
      * @param patterns regular expression patterns used to filter the
      *                 source files
      * @return {@code this}
