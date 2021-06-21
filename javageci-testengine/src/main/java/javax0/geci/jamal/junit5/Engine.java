@@ -184,7 +184,9 @@ public class Engine implements TestEngine {
             if (!ignore.isPresent() && i > 100) {
                 break;
             }
-            ignores.add(ignore.get());
+            if (ignore.isPresent()) {
+                ignores.add(ignore.get());
+            }
         }
         return ignores;
     }

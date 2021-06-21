@@ -1,7 +1,7 @@
 = Java::Geci Junit5 TestEngine
 == Introduction
 
-Putting this module on the classpath or on the modulepath will execute the Java::Geci Jamal code generator automatically when tests are executed.
+Putting this module on the `classpath` or on the `modulepath` will execute the Java::Geci Jamal code generator automatically when tests are executed.
 To do that simply put
 
 [source,xml]
@@ -10,11 +10,28 @@ To do that simply put
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-core</artifactId>
     <version>1.6.3-SNAPSHOT</version>
+    <scope>test</scope>
 </dependency>
 ----
 
 into your Maven project.
 No other configuration is needed.
+
+The dependency is non-invasive in the sense that your production code will not include it and it will not depend on it.
+All operation for which the module is needed performed during the unit test compilation phase.
+
+== Configuration
+
+Although there is no need for configuration it is possible to configure the file sets the code generator should work on.
+If nothing is configured, then the code generator will run for the project files that are the standard for a Maven project structure.
+These files are in the directories
+
+* `src/main/java`
+* `src/main/resources`
+* `src/test/java`
+* `src/test/resources`
+
+
 
 This module is the implementation of a JUnit5 TestEngine.
 
