@@ -37,7 +37,7 @@ public class GeneratedTestSystemUnderTest {
     {%@import res:geci.jim%}\
     {%beginCode SystemUnderTest proxy generated%}
     private static class SystemUnderTest {
-        private javax0.geci.jamal_test.sample.SystemUnderTest sut = new javax0.geci.jamal_test.sample.SystemUnderTest();
+        private final javax0.geci.jamal_test.sample.SystemUnderTest sut = new javax0.geci.jamal_test.sample.SystemUnderTest();
     {%!#for [skipEmpty] ($name,$type,$args) in
             ({%#methods (class=javax0.geci.jamal_test.sample.SystemUnderTest selector=private format=$name|$type|$args)%}) =
         private $type $name({%`@argList $args%}) throws Exception {
@@ -112,4 +112,7 @@ public class GeneratedTestSystemUnderTest {
     //</editor-fold>
     //__END__
 }
+
+
+
 

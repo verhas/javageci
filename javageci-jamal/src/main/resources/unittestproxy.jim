@@ -1,7 +1,7 @@
 {%@import res:geci.jim%}
 {%@define proxy(KLASS)=
     private static class {%simpleName KLASS%} {
-        private KLASS sut = new KLASS();
+        private final KLASS sut = new KLASS();
     {%!#for [skipEmpty]($name,$type,$args,$exceptions) in
             ({%#methods (class="KLASS" selector="private" format="$name|$type|$args|$exceptions")%}) =
         private $type $name({%`@argList $args%}) throws Exception {

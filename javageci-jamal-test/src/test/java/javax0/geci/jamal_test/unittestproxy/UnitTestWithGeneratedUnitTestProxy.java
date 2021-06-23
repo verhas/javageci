@@ -16,7 +16,7 @@ public class UnitTestWithGeneratedUnitTestProxy {
     //<editor-fold desc="SystemUnderTest proxy generated">
 
     private static class TestSystemUnderTest {
-        private javax0.geci.jamal_test.unittestproxy.TestSystemUnderTest sut = new javax0.geci.jamal_test.unittestproxy.TestSystemUnderTest();
+        private final javax0.geci.jamal_test.unittestproxy.TestSystemUnderTest sut = new javax0.geci.jamal_test.unittestproxy.TestSystemUnderTest();
 
         private void privateChildVoidMethodArgless() throws Exception {
             Method m = sut.getClass().getDeclaredMethod("privateChildVoidMethodArgless");
@@ -276,6 +276,7 @@ public class UnitTestWithGeneratedUnitTestProxy {
     //</editor-fold>
     //__END__
 }
+
 
 
 
