@@ -10,22 +10,48 @@ import java.lang.reflect.InvocationTargetException;
 public class TestMethods {
 
     @Test
+    @DisplayName("Test that Set collects and creates good formatting user defined macros")
+    void testQ()throws Exception {
+        TestThat.theInput("{@set class=javax0.geci.jamal_test.TestMethods methods id=\"methodsOfTestMethods\"}" +
+            "{!@for $m from methodsOfTestMethods=" +
+            "{$m type}|{$m name}|{$m throws}\n" +
+            "}"
+        ).results(
+            "Object|clone|throw CloneNotSupportedException\n" +
+                "void|finalize|throw Throwable\n" +
+                "String|toString|\n" +
+                "boolean|equals|\n" +
+                "Class|getClass|\n" +
+                "void|notify|\n" +
+                "void|notifyAll|\n" +
+                "void|wait|throw InterruptedException\n" +
+                "void|wait|throw InterruptedException\n" +
+                "void|wait|throw InterruptedException\n" +
+                "int|hashCode|\n" +
+                "void|testC|throw reflect.InvocationTargetException,NoSuchMethodException,InstantiationException,javax0.jamal.api.BadSyntax,IllegalAccessException\n" +
+                "void|testD|throw reflect.InvocationTargetException,NoSuchMethodException,InstantiationException,javax0.jamal.api.BadSyntax,IllegalAccessException\n" +
+                "void|testQ|throw Exception\n"
+        );
+    }
+
+    @Test
     @DisplayName("Macro methods return all methods for TestMethods")
     void testC() throws InvocationTargetException, NoSuchMethodException, InstantiationException, BadSyntax, IllegalAccessException {
-        TestThat.theInput("{#methods {@define $class=javax0.geci.jamal_test.TestMethods}}").results(
-            "java.lang.Object|clone|," +
-                "java.lang.Object|finalize|," +
-                "java.lang.Object|toString|," +
-                "java.lang.Object|equals|java.lang.Object," +
-                "java.lang.Object|getClass|," +
-                "java.lang.Object|notify|," +
-                "java.lang.Object|notifyAll|," +
-                "java.lang.Object|wait|," +
-                "java.lang.Object|wait|long," +
-                "java.lang.Object|wait|long:int," +
-                "java.lang.Object|hashCode|," +
+        TestThat.theInput("{#methods (class=javax0.geci.jamal_test.TestMethods)}").results(
+            "Object|clone|," +
+                "Object|finalize|," +
+                "Object|toString|," +
+                "Object|equals|java.lang.Object," +
+                "Object|getClass|," +
+                "Object|notify|," +
+                "Object|notifyAll|," +
+                "Object|wait|," +
+                "Object|wait|long," +
+                "Object|wait|long:int," +
+                "Object|hashCode|," +
                 "javax0.geci.jamal_test.TestMethods|testC|," +
-                "javax0.geci.jamal_test.TestMethods|testD|"
+                "javax0.geci.jamal_test.TestMethods|testD|," +
+                "javax0.geci.jamal_test.TestMethods|testQ|"
         );
     }
 
@@ -33,7 +59,8 @@ public class TestMethods {
     void testD() throws InvocationTargetException, NoSuchMethodException, InstantiationException, BadSyntax, IllegalAccessException {
         TestThat.theInput("{#methods {@define $class=javax0.geci.jamal_test.TestMethods}{@define $selector=package}}").results(
             "javax0.geci.jamal_test.TestMethods|testC|" +
-                ",javax0.geci.jamal_test.TestMethods|testD|"
+                ",javax0.geci.jamal_test.TestMethods|testD|" +
+                ",javax0.geci.jamal_test.TestMethods|testQ|"
         );
     }
 }

@@ -1,28 +1,13 @@
 package javax0.geci.jamal.macros.holders;
 
-import javax0.jamal.api.BadSyntax;
-import javax0.jamal.api.ObjectHolder;
-import javax0.jamal.api.UserDefinedMacro;
+import java.util.Arrays;
 
-import java.lang.reflect.Method;
-
-public class MethodsHolder implements UserDefinedMacro, ObjectHolder<Method[]> {
-    final Method[] methods;
+public class MethodsHolder extends Holder<String[]> {
     final String id;
 
-    public MethodsHolder(Method[] methods, String id) {
-        this.methods = methods;
+    public MethodsHolder(MethodHolder[] methods, String id) {
+        super(Arrays.stream(methods).map(MethodHolder::getId).toArray(String[]::new));
         this.id = id;
-    }
-
-    @Override
-    public String evaluate(String... parameters) throws BadSyntax {
-        return "";
-    }
-
-    @Override
-    public int expectedNumberOfArguments() {
-        return 0;
     }
 
     @Override
@@ -31,7 +16,7 @@ public class MethodsHolder implements UserDefinedMacro, ObjectHolder<Method[]> {
     }
 
     @Override
-    public Method[] getObject() {
-        return methods;
+    public String[] getObject() {
+        return object;
     }
 }

@@ -2,12 +2,14 @@ package javax0.geci.jamal;
 
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Source;
+import javax0.geci.jamal.macros.holders.ImportsHolder;
 import javax0.geci.tools.AbstractGeneratorEx;
 import javax0.jamal.api.BadSyntax;
 import javax0.jamal.api.Position;
 import javax0.jamal.engine.Processor;
 import javax0.jamal.tools.Input;
 
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**
@@ -32,16 +34,23 @@ public class JamalGenerator extends AbstractGeneratorEx {
     private static final Pattern START = Pattern.compile("^\\s*/\\*!jamal\\s*$");
     private static final Pattern COMMENT_END = Pattern.compile("^\\s*\\*/\\s*$");
     private static final Pattern SEGMENT_END = Pattern.compile("^\\s*//\\s*__END__\\s*$");
+    private static final Pattern IMPORT = Pattern.compile("^\\s*import\\s*(.*);\\s*$");
+    private static final Pattern CLASS_START = Pattern.compile("^\\s*(:?private\\s+|protected\\s+|public\\s+)?class\\s+.*$");
 
     @Override
     public void processEx(Source source) {
-        final Processor processor;
-        try {
-            processor = new Processor("{%", "%}");
-        } catch (IllegalArgumentException ex) {
-            throw new GeciException("Jamal processor opening threw exception", ex);
-        }
+        Processor processor = null;
         var lines = source.getLines();
+        var imports = new ArrayList<String>();
+        for (final var line : lines) {
+            final var matcher = IMPORT.matcher(line);
+            if (matcher.matches()) {
+                imports.add(matcher.group(1));
+            }
+            if (CLASS_START.matcher(line).matches()) {
+                break;
+            }
+        }
         var touched = false;
         final var sb = new StringBuilder();
         var state = PROCESSING.COPY;
@@ -66,6 +75,14 @@ public class JamalGenerator extends AbstractGeneratorEx {
                         state = PROCESSING.OUTPUT;
                         final String result;
                         try {
+                            if (processor == null) {
+                                try {
+                                    processor = new Processor("{%", "%}");
+                                    processor.define(new ImportsHolder(imports.toArray(String[]::new)));
+                                } catch (IllegalArgumentException ex) {
+                                    throw new GeciException("Jamal processor opening threw exception", ex);
+                                }
+                            }
                             result = processor.process(new Input(macro.toString(),
                                 new Position(source.getAbsoluteFile(), positionLineNr)));
                             macro.delete(0, macro.length());
@@ -90,6 +107,9 @@ public class JamalGenerator extends AbstractGeneratorEx {
             try (final var output = source.open()) {
                 output.write(sb.toString());
             }
+        }
+        if (processor != null) {
+            processor.close();
         }
     }
 

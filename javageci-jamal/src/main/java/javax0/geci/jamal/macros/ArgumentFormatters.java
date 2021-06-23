@@ -7,17 +7,17 @@ import javax0.jamal.api.Processor;
 import javax0.jamal.tools.InputHandler;
 
 /**
- * Contains a few utility inner classes implementing macros that help formatting arguments for Java code.
+ * Contains a few utility inner classes implementing macros that help format arguments for Java code.
  * <p>
  * Each of these macros convert the argument type list to some format that is to be used in the generated code. The
- * argument type list in in the macro input. It is always the types of the arguments separated by ":" characters.
+ * argument type list in the macro input. It is always the types of the arguments separated by ":" characters.
  * <p>
  * The output of the macros are comma separated list of the transformed argument type list.
  * <p>
  * When the input starts with a comma then the returned string will also contain a comma character at the start if there
  * is any element in the list of the argument types. This makes it easy to add the argument list to the end of an
  * already existing argument list. For example when calling a method using reflection then the first argument is the
- * object on which the method is invoked and the rest of the arguments are the expresions for the values.
+ * object on which the method is invoked, and the rest of the arguments are the expresions for the values.
  * <p>
  * For an example we can have a look at a line in the file {@code unittestproxy.jim}
  * <pre>{@code

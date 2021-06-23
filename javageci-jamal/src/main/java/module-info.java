@@ -5,7 +5,6 @@ import javax0.geci.jamal.macros.Fields;
 import javax0.geci.jamal.macros.IfNotVoid;
 import javax0.geci.jamal.macros.IfVoid;
 import javax0.geci.jamal.macros.Methods;
-import javax0.geci.jamal.macros.Replace;
 import javax0.geci.jamal.macros.Set;
 
 import static javax0.geci.jamal.macros.ArgumentFormatters.ArgList;
@@ -34,7 +33,6 @@ module geci.jamal {
         ClassList,
         IfNotVoid,
         IfVoid,
-        Replace,
         Equals,
         Set
         ;

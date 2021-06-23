@@ -44,18 +44,26 @@ public class EntityStringer {
      * @return the formatted method representation
      */
     public static String method2Fingerprint(Method method, String format, String argSep, String exceptionSep) {
-        final var className = method.getDeclaringClass().getCanonicalName();
+        final var className = method.getDeclaringClass().getCanonicalName().replaceAll("^java.lang.","");
         final var argList = getTypeList(method, argSep);
-        final var modifiers = new ModifiersBuilder(method.getModifiers()).toString().trim();
-        final var type = GeciReflectionTools.getGenericTypeName(method.getReturnType());
+        final var modifiers = GeciReflectionTools.modifiersString(method).trim();
+        final var type = GeciReflectionTools.getGenericTypeName(method.getReturnType()).replaceAll("^java.lang.","");
         final var exceptions = Arrays.stream(method.getExceptionTypes())
             .map(Type::getTypeName)
+            .map(s -> s.replaceAll("^java.lang.",""))
             .collect(Collectors.joining(exceptionSep));
+        final String throwExceptions;
+        if( exceptions.length() > 0 ){
+            throwExceptions = "throw " + exceptions;
+        }else{
+            throwExceptions = "";
+        }
 
         return format.replaceAll("\\$class", className)
             .replaceAll("\\$modifiers", modifiers + (modifiers.length() > 0 ? " " : ""))
             .replaceAll("\\$name", method.getName())
             .replaceAll("\\$exceptions", exceptions)
+            .replaceAll("\\$throws", throwExceptions)
             .replaceAll("\\$args", argList)
             .replaceAll("\\$type", type)
             ;
@@ -85,7 +93,7 @@ public class EntityStringer {
      *
      * <p>
      *
-     * @param field to convert to a fingerprint
+     * @param field  to convert to a fingerprint
      * @param format the format string
      * @return the fingerprint
      */

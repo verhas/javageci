@@ -5,24 +5,14 @@ import javax0.jamal.api.ObjectHolder;
 import javax0.jamal.api.UserDefinedMacro;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
-public class FieldsHolder implements UserDefinedMacro, ObjectHolder<Field[]> {
-    final Field[] fields;
+public class FieldsHolder extends Holder<String[]> {
     final String id;
 
-    public FieldsHolder(Field[] fields, String id) {
-        this.fields = fields;
+    public FieldsHolder(FieldHolder[] fields, String id) {
+        super(Arrays.stream(fields).map(FieldHolder::getId).toArray(String[]::new));
         this.id = id;
-    }
-
-    @Override
-    public String evaluate(String... parameters) throws BadSyntax {
-        return "";
-    }
-
-    @Override
-    public int expectedNumberOfArguments() {
-        return 0;
     }
 
     @Override
@@ -31,7 +21,7 @@ public class FieldsHolder implements UserDefinedMacro, ObjectHolder<Field[]> {
     }
 
     @Override
-    public Field[] getObject() {
-        return fields;
+    public String[] getObject() {
+        return object;
     }
 }

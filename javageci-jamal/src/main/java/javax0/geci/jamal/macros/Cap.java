@@ -8,7 +8,7 @@ import javax0.jamal.api.Processor;
 import static javax0.jamal.tools.InputHandler.skipWhiteSpaces;
 
 /**
- * Upper case the fist character of the input. This is an auxiliary macro defined here to help avoid unneded dependency
+ * Upper case the fist character of the input. This is an auxiliary macro defined here to help avoid unneeded dependency
  * on any other macro library.
  */
 public class Cap implements Macro {

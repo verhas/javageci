@@ -11,7 +11,7 @@
             <plugin>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-maven-plugin</artifactId>
-                <version>1.7.7</version>
+                <version>1.7.8-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>execution</id>

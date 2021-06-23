@@ -7,14 +7,16 @@ import javax0.jamal.api.Processor;
 import javax0.jamal.tools.InputHandler;
 
 /**
- * A simple implementation of the String.contains functionality. It can be used as
+ * A simple implementation of the String {@link String#contains(CharSequence) contains()} functionality.
+ * It can be used as
  *
  * <pre>{@code
  *  {%@contains /something/ in a string%}
  * }</pre>
  * <p>
- * The arguments can be separated by space in case the {@code something} does not contain any space, using any non alpha
- * numeric character or using `regex` as defined in {@link javax0.jamal.tools.InputHandler#getParts(Input) getParts()}
+ * The arguments can be separated by space in case the {@code something} does not contain any space, using any
+ * non-alphanumeric character or using `regex` as defined in {@link javax0.jamal.tools.InputHandler#getParts(Input)
+ * getParts()}
  */
 public class Contains implements Macro {
     @Override

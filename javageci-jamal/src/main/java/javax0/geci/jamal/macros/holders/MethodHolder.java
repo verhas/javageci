@@ -1,35 +1,47 @@
 package javax0.geci.jamal.macros.holders;
 
+import javax0.geci.jamal.util.EntityStringer;
 import javax0.jamal.api.BadSyntax;
-import javax0.jamal.api.ObjectHolder;
-import javax0.jamal.api.UserDefinedMacro;
 
 import java.lang.reflect.Method;
 
-public class MethodHolder implements UserDefinedMacro, ObjectHolder<Method> {
-    final Method method;
+public class MethodHolder extends Holder<Method> {
 
     public MethodHolder(Method method) {
-        this.method = method;
+        super(method);
+    }
+
+
+    @Override
+    public int expectedNumberOfArguments() {
+        return 1;
     }
 
     @Override
     public String evaluate(String... parameters) throws BadSyntax {
-        return "";
-    }
-
-    @Override
-    public int expectedNumberOfArguments() {
-        return 0;
+        if (parameters.length == 0) {
+            return object.getName();
+        }
+        if (parameters.length == 1) {
+            switch (parameters[0]) {
+                case "name":
+                case "modifiers":
+                case "class":
+                case "type":
+                case "throws":
+                case "exceptions":
+                case "args":
+                    return EntityStringer.method2Fingerprint(object, "$" + parameters[0], ",", ",");
+                default: // use the parameter as a template
+                    return EntityStringer.method2Fingerprint(object,  parameters[0], ",", ",");
+            }
+        }
+        return super.evaluate(parameters);
     }
 
     @Override
     public String getId() {
-        return method.getName();
+        return object.getName();
     }
 
-    @Override
-    public Method getObject() {
-        return method;
-    }
 }

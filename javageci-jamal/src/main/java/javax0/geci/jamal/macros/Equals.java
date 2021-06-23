@@ -8,7 +8,7 @@ import javax0.jamal.api.Processor;
 import static javax0.jamal.tools.InputHandler.getParts;
 
 /**
- * A simple implementation of the String.equals functionality. It can be used as
+ * A simple implementation of the String {@link String#equals(Object) equals()} functionality. It can be used as
  *
  * <pre>{@code
  *  {%@equals /something/something%}
@@ -16,8 +16,9 @@ import static javax0.jamal.tools.InputHandler.getParts;
  * <p>
  * The return value of the macro is either the string literal {@code true} or the string literal {@code false}.
  * <p>
- * The arguments can be separated by space in case the {@code something} does not contain any space, using any non alpha
- * numeric character or using `regex` as defined in {@link javax0.jamal.tools.InputHandler#getParts(Input) getParts()}
+ * The arguments can be separated by space in case the {@code something} does not contain any space, using any
+ * non-alphanumeric character or using `regex` as defined in {@link javax0.jamal.tools.InputHandler#getParts(Input)
+ * getParts()}
  */
 public class Equals implements Macro {
     @Override
