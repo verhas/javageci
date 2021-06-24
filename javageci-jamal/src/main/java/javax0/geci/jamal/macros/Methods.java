@@ -1,5 +1,6 @@
 package javax0.geci.jamal.macros;
 
+import javax0.geci.jamal.macros.holders.ImportsHolder;
 import javax0.geci.jamal.util.EntityStringer;
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.reflection.Selector;
@@ -7,6 +8,7 @@ import javax0.jamal.api.BadSyntax;
 import javax0.jamal.api.InnerScopeDependent;
 import javax0.jamal.api.Input;
 import javax0.jamal.api.Macro;
+import javax0.jamal.api.ObjectHolder;
 import javax0.jamal.api.Processor;
 import javax0.jamal.tools.Params;
 
@@ -73,13 +75,20 @@ public class Methods implements Macro, InnerScopeDependent {
             throw new BadSyntax("Class '" + klassName + "' cannot be found for the macro `methods`");
         }
 
+        final var importsOp = processor.getRegister().getUserDefined(ImportsHolder.NAME).filter(c -> c instanceof ObjectHolder<?>);
+        final String[] imports;
+        if (importsOp.isPresent()) {
+            imports = (String[]) ((ObjectHolder<?>) importsOp.get()).getObject();
+        } else {
+            imports = null;
+        }
 
         var allMethods = GeciReflectionTools.getAllMethodsSorted(klass);
         final var sb = new StringBuilder();
         String s = "";
         for (final var m : allMethods) {
             if (selector.match(m)) {
-                sb.append(s).append(EntityStringer.method2Fingerprint(m, format.get(), argsep.get(), exsep.get()));
+                sb.append(s).append(EntityStringer.method2Fingerprint(m, format.get(), argsep.get(), exsep.get(), imports));
                 s = ",";
             }
         }

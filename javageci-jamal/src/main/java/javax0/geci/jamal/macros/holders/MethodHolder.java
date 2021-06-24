@@ -31,9 +31,9 @@ public class MethodHolder extends Holder<Method> {
                 case "throws":
                 case "exceptions":
                 case "args":
-                    return EntityStringer.method2Fingerprint(object, "$" + parameters[0], ",", ",");
+                    return EntityStringer.method2Fingerprint(object, "$" + parameters[0], ",",",",null);
                 default: // use the parameter as a template
-                    return EntityStringer.method2Fingerprint(object,  parameters[0], ",", ",");
+                    return EntityStringer.method2Fingerprint(object,  parameters[0], ",", ",",null);
             }
         }
         return super.evaluate(parameters);

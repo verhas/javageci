@@ -35,14 +35,14 @@ public class TestEntityStringer {
     @DisplayName("Creates the method for the argument less method that does not throw exceptions")
     void testArglessMethod() throws NoSuchMethodException {
         Assertions.assertEquals("javax0.geci.jamal_test.util.TestEntityStringer|argless|||",
-            EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("argless"), mformat, ":", ":"));
+            EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("argless"), mformat, ":", ":",null));
     }
 
     @Test
     @DisplayName("Creates the method for the argument less method that throws exceptions")
     void testArglessMethodWithExceptions() throws NoSuchMethodException {
         Assertions.assertEquals("javax0.geci.jamal_test.util.TestEntityStringer|arglesse||throw javax0.jamal.api.BadSyntax|",
-            EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arglesse"), mformat, ":", ":"));
+            EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arglesse"), mformat, ":", ":",null));
     }
 
     @Test
@@ -50,7 +50,7 @@ public class TestEntityStringer {
     void testOneargMethod() throws NoSuchMethodException {
         final var format = "$class|$name|$args|";
         Assertions.assertEquals("javax0.geci.jamal_test.util.TestEntityStringer|arg1pri|int[][]|",
-            EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arg1pri", int[][].class), format, ":", ":"));
+            EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arg1pri", int[][].class), format, ":", ":",null));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class TestEntityStringer {
     void testPrimitiveArgumentMethod() throws NoSuchMethodException {
         final var format = "$class|$name|$args|";
         Assertions.assertEquals("javax0.geci.jamal_test.util.TestEntityStringer|arg1obj|java.lang.Integer|",
-            EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arg1obj", Integer.class), format, ":", ":"));
+            EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arg1obj", Integer.class), format, ":", ":",null));
     }
 
     @Test
@@ -66,7 +66,7 @@ public class TestEntityStringer {
     void testTwoArgumentMethod() throws NoSuchMethodException {
         final var format = "$class|$name|$args|";
         Assertions.assertEquals("javax0.geci.jamal_test.util.TestEntityStringer|arg1objarr|java.util.Map:java.util.Set...|",
-            EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arg1objarr", Map.class, Set[].class), format, ":", ":"));
+            EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arg1objarr", Map.class, Set[].class), format, ":", ":",null));
     }
 
     @Test
@@ -74,6 +74,6 @@ public class TestEntityStringer {
     void testTwoArgumentArrayMethod() throws NoSuchMethodException {
         final var format = "$class|$name|$args|";
         Assertions.assertEquals("javax0.geci.jamal_test.util.TestEntityStringer|arg1objarra|java.util.Map:java.util.Set[]|",
-            EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arg1objarra", Map.class, Set[].class), format, ":", ":"));
+            EntityStringer.method2Fingerprint(TestEntityStringer.class.getDeclaredMethod("arg1objarra", Map.class, Set[].class), format, ":", ":",null));
     }
 }

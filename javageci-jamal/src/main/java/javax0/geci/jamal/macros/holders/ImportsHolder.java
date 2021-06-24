@@ -1,6 +1,7 @@
 package javax0.geci.jamal.macros.holders;
 
 public class ImportsHolder extends Holder<String[]> {
+    public static final String NAME = "$imports";
 
     public ImportsHolder(String[] imports) {
         super(imports);
@@ -8,7 +9,7 @@ public class ImportsHolder extends Holder<String[]> {
 
     @Override
     public String getId() {
-        return "`imports";
+        return NAME;
     }
 
     @Override
