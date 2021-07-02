@@ -22,7 +22,7 @@ import static javax0.geci.javacomparator.LexicalElement.Type.SYMBOL;
  * Create a new CompoundParams object out of a string. The string should
  * start with the {@code id} and it is optionally followed by {@code
  * key=value} pairs, where {@code key} is an identifier and {@code
- * value} is a single or double quoted string.
+ * value} is a single or double-quoted string.
  *
  * <p> Such lines appear in editor-folds or in the {@code value}
  * argument of a {@code Geci} annotation and also in other places where

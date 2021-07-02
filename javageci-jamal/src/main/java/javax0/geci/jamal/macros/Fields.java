@@ -1,5 +1,6 @@
 package javax0.geci.jamal.macros;
 
+import javax0.geci.jamal.macros.holders.ImportsHolder;
 import javax0.geci.jamal.util.EntityStringer;
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.reflection.Selector;
@@ -69,11 +70,12 @@ public class Fields implements Macro, InnerScopeDependent {
             throw new BadSyntax("Class '" + klassName + "' cannot be found for the macro `methods`");
         }
         var declaredFields = GeciReflectionTools.getAllFieldsSorted(klass);
+        final var imports = ImportsHolder.instance(processor);
         final var sb = new StringBuilder();
         String s = "";
         for (final var m : declaredFields) {
             if (selector.match(m)) {
-                sb.append(s).append(EntityStringer.field2Fingerprint(m, format.get()));
+                sb.append(s).append(EntityStringer.field2Fingerprint(m, format.get(), imports));
                 s = ",";
             }
         }

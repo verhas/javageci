@@ -31,6 +31,6 @@ version in a maven property because that cannot be used to reference the parent.
 {@define MAVEN_SOURCE_PLUGIN_VERSION=3.2.1}
 {@define MAVEN_COMPILER_PLUGIN_VERSION=3.8.1}
 {@define MAVEN_JAVADOC_PLUGIN_VERSION=3.2.0}
-{@define JAMAL_VERSION=1.7.8-SNAPSHOT}
+{@define JAMAL_VERSION=1.7.8}
 {@define JABEL_VERSION=0.2.0}
 {@define ASSERTJ_VERSION=3.9.1}

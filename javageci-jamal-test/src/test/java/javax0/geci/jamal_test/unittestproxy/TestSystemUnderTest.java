@@ -1,6 +1,7 @@
 package javax0.geci.jamal_test.unittestproxy;
 
 import javax0.geci.jamal_test.sample.SystemUnderTest;
+import javax0.geci.jamal_test.sample.TestGenerateArticle;
 
 public class TestSystemUnderTest extends ParentSystemUnderTest{
 
@@ -13,6 +14,7 @@ public class TestSystemUnderTest extends ParentSystemUnderTest{
     SystemUnderTest packageChildTestField;
     Object packageChildObjectField;
     public int publicChildIntField;
+    TestGenerateArticle wuff;
     public SystemUnderTest publicChildTestField;
     public Object publicChildObjectField;
     public final Object publicFinalChildObjectField = null;

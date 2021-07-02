@@ -75,13 +75,7 @@ public class Methods implements Macro, InnerScopeDependent {
             throw new BadSyntax("Class '" + klassName + "' cannot be found for the macro `methods`");
         }
 
-        final var importsOp = processor.getRegister().getUserDefined(ImportsHolder.NAME).filter(c -> c instanceof ObjectHolder<?>);
-        final String[] imports;
-        if (importsOp.isPresent()) {
-            imports = (String[]) ((ObjectHolder<?>) importsOp.get()).getObject();
-        } else {
-            imports = null;
-        }
+        final var imports = ImportsHolder.instance(processor);
 
         var allMethods = GeciReflectionTools.getAllMethodsSorted(klass);
         final var sb = new StringBuilder();

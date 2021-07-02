@@ -7,8 +7,10 @@ import java.lang.reflect.Method;
 
 public class MethodHolder extends Holder<Method> {
 
-    public MethodHolder(Method method) {
+    private final String[] imports;
+    public MethodHolder(Method method, String[] imports) {
         super(method);
+        this.imports = imports;
     }
 
 
@@ -29,11 +31,13 @@ public class MethodHolder extends Holder<Method> {
                 case "class":
                 case "type":
                 case "throws":
+                case "fqThrows":
                 case "exceptions":
+                case "fqExceptions":
                 case "args":
-                    return EntityStringer.method2Fingerprint(object, "$" + parameters[0], ",",",",null);
+                    return EntityStringer.method2Fingerprint(object, "$" + parameters[0], ",",",",imports);
                 default: // use the parameter as a template
-                    return EntityStringer.method2Fingerprint(object,  parameters[0], ",", ",",null);
+                    return EntityStringer.method2Fingerprint(object,  parameters[0], ",", ",",imports);
             }
         }
         return super.evaluate(parameters);

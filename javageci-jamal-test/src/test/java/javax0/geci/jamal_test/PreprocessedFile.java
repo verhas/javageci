@@ -24,19 +24,22 @@ public class PreprocessedFile {
      */
     int i = 13;
     //        
-//         protected Object clone          
-//         protected void finalize          
-//         public String mimosa java.lang.Integer:java.util.Map         
-//         public String toString          
-//         public boolean equals java.lang.Object         
-//         public final Class getClass          
-//         public final void notify          
-//         public final void notifyAll          
-//         public final void wait          
-//         public final void wait long         
-//         public final void wait long:int         
-//         public int hashCode          
-//         public void dummy          
+//         protected  Object clone          
+//         protected  void finalize          
+//         public  String mimosa java.lang.Integer:Map         
+//         public  String toString          
+//         public  boolean equals java.lang.Object         
+//         public final  Class getClass          
+//         public final  void notify          
+//         public final  void notifyAll          
+//         public final  void wait          
+//         public final  void wait long         
+//         public final  void wait long:int         
+//         public  int hashCode          
+//         public  void dummy          
+//         public  void setA int         
+//         public  void setI int         
+//         public  void setMyMap Map         
 
 
 
@@ -48,10 +51,9 @@ public class PreprocessedFile {
         this.i = i;
         }
 
-    public void setMyMap(java.util.Map myMap){
+    public void setMyMap(Map myMap){
         this.myMap = myMap;
         }
-
 
 
     //__END__
@@ -66,7 +68,6 @@ public class PreprocessedFile {
         //<editor-fold desc="the generatedCode">
         var j = 13;
         //</editor-fold>
-
         //__END__
 
         /*!jamal
@@ -77,7 +78,7 @@ public class PreprocessedFile {
         //<editor-fold desc="the generatedCode">
         var k = 666;
         //</editor-fold>
-
         //__END__
     }
 }
+

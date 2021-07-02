@@ -35,14 +35,20 @@ public class EntityStringer {
      * not imported
      */
     private static String importedClass(String fqClassName, String[] imports) {
-        if( imports != null ) {
+        if (imports != null) {
             for (final var cn : imports) {
-                if (cn != null && cn.equals(fqClassName)){
+                if (cn != null) {
                     int i = fqClassName.lastIndexOf('.');
-                    if( i == -1 ){
-                        return fqClassName;
+                    if (cn.equals(fqClassName)) {
+                        if (i == -1) {
+                            return fqClassName;
+                        }
+                        return fqClassName.substring(i + 1);
+                    } else {
+                        if (cn.endsWith("*") && fqClassName.startsWith(cn.substring(0, cn.length() - 1))) {
+                            return fqClassName.substring(i + 1);
+                        }
                     }
-                    return fqClassName.substring(i+1);
                 }
             }
         }
@@ -69,28 +75,42 @@ public class EntityStringer {
      * @return the formatted method representation
      */
     public static String method2Fingerprint(Method method, String format, String argSep, String exceptionSep, String[] imports) {
-        final var className = importedClass(method.getDeclaringClass().getCanonicalName().replaceAll("^java.lang.", ""), imports);
-        final var argList = getTypeList(method, argSep,imports);
+        final var fqClassName = method.getDeclaringClass().getCanonicalName();
+        final var className = importedClass(fqClassName.replaceAll("^java.lang.", ""), imports);
+        final var fqArgs = getTypeList(method, argSep, null);
+        final var args = getTypeList(method, argSep, imports);
         final var modifiers = GeciReflectionTools.modifiersString(method).trim();
-        final var type = importedClass(GeciReflectionTools.getGenericTypeName(method.getReturnType()).replaceAll("^java.lang.", ""),imports);
+        final var fqType = GeciReflectionTools.getGenericTypeName(method.getReturnType());
+        final var type = importedClass(fqType.replaceAll("^java.lang.", ""), imports);
+        final var fqExceptions = Arrays.stream(method.getExceptionTypes())
+            .map(Type::getTypeName)
+            .collect(Collectors.joining(exceptionSep));
         final var exceptions = Arrays.stream(method.getExceptionTypes())
             .map(Type::getTypeName)
             .map(s -> s.replaceAll("^java.lang.", ""))
-            .map( tn -> importedClass(tn,imports))
+            .map(tn -> importedClass(tn, imports))
             .collect(Collectors.joining(exceptionSep));
         final String throwExceptions;
+        final String throwFqExceptions;
         if (exceptions.length() > 0) {
             throwExceptions = "throw " + exceptions;
+            throwFqExceptions = "throw " + fqExceptions;
         } else {
             throwExceptions = "";
+            throwFqExceptions = "";
         }
 
         return format.replaceAll("\\$class", className)
+            .replaceAll("\\$fqClass", fqClassName)
             .replaceAll("\\$modifiers", modifiers + (modifiers.length() > 0 ? " " : ""))
             .replaceAll("\\$name", method.getName())
             .replaceAll("\\$exceptions", exceptions)
+            .replaceAll("\\$fqExceptions", fqExceptions)
             .replaceAll("\\$throws", throwExceptions)
-            .replaceAll("\\$args", argList)
+            .replaceAll("\\$fqThrows", throwFqExceptions)
+            .replaceAll("\\$args", args)
+            .replaceAll("\\$fqArgs", fqArgs)
+            .replaceAll("\\$fqType", fqType)
             .replaceAll("\\$type", type)
             ;
     }
@@ -98,7 +118,7 @@ public class EntityStringer {
     private static String getTypeList(final Method method, final String argSep, String[] imports) {
         final var argList = Arrays.stream(method.getGenericParameterTypes())
             .map(Type::getTypeName)
-            .map(tn -> importedClass(tn,imports))
+            .map(tn -> importedClass(tn, imports))
             .collect(Collectors.joining(argSep));
         if (argList.endsWith("[]") && method.isVarArgs()) {
             return argList.substring(0, argList.length() - 2) + "...";
@@ -124,13 +144,17 @@ public class EntityStringer {
      * @param format the format string
      * @return the fingerprint
      */
-    public static String field2Fingerprint(Field field, String format) {
-        final var className = field.getDeclaringClass().getCanonicalName();
-        final var type = GeciReflectionTools.getGenericTypeName(field.getType());
+    public static String field2Fingerprint(Field field, String format, String[] imports) {
+        final var fqClassName = field.getDeclaringClass().getCanonicalName();
+        final var className = importedClass(fqClassName,imports);
+        final var fqType =GeciReflectionTools.getGenericTypeName(field.getType());
+        final var type = importedClass(fqType,imports);
         final var modifiers = new ModifiersBuilder(field.getModifiers()).field().toString().trim();
         return format.replaceAll("\\$class", className)
+            .replaceAll("\\$fqClass", fqClassName)
             .replaceAll("\\$name", field.getName())
             .replaceAll("\\$type", type)
+            .replaceAll("\\$fqType", fqType)
             .replaceAll("\\$modifiers", modifiers + (modifiers.length() > 0 ? " " : ""))
             ;
     }

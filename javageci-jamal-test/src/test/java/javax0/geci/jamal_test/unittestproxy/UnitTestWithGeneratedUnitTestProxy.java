@@ -2,6 +2,7 @@ package javax0.geci.jamal_test.unittestproxy;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import javax0.geci.jamal_test.sample.TestGenerateArticle;
 
 public class UnitTestWithGeneratedUnitTestProxy {
 
@@ -218,6 +219,10 @@ public class UnitTestWithGeneratedUnitTestProxy {
             sut.publicParentTestField = publicParentTestField;
             }
 
+        private void setWuff(TestGenerateArticle wuff) {
+            sut.wuff = wuff;
+            }
+
 
         private int getPackageChildIntField() {
             return sut.packageChildIntField;
@@ -271,11 +276,17 @@ public class UnitTestWithGeneratedUnitTestProxy {
             return sut.publicParentTestField;
             }
 
+        private TestGenerateArticle getWuff() {
+            return sut.wuff;
+            }
+
     }
 
     //</editor-fold>
     //__END__
 }
+
+
 
 
 

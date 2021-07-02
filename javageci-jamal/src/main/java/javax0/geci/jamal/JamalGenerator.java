@@ -1,9 +1,11 @@
 package javax0.geci.jamal;
 
+import javax0.geci.api.CompoundParams;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Source;
 import javax0.geci.jamal.macros.holders.ImportsHolder;
 import javax0.geci.tools.AbstractGeneratorEx;
+import javax0.geci.tools.CompoundParamsBuilder;
 import javax0.jamal.api.BadSyntax;
 import javax0.jamal.api.Position;
 import javax0.jamal.engine.Processor;
@@ -31,10 +33,11 @@ import java.util.regex.Pattern;
  * result the 'code part'.
  */
 public class JamalGenerator extends AbstractGeneratorEx {
-    private static final Pattern START = Pattern.compile("^\\s*/\\*!jamal\\s*$");
+    private static final Pattern START = Pattern.compile("^\\s*/\\*!(jamal\\s*.*)$");
     private static final Pattern COMMENT_END = Pattern.compile("^\\s*\\*/\\s*$");
     private static final Pattern SEGMENT_END = Pattern.compile("^\\s*//\\s*__END__\\s*$");
     private static final Pattern IMPORT = Pattern.compile("^\\s*import\\s*(.*);\\s*$");
+    private static final Pattern PACKAGE = Pattern.compile("^\\s*package\\s*(.*);\\s*$");
     private static final Pattern CLASS_START = Pattern.compile("^\\s*(:?private\\s+|protected\\s+|public\\s+)?class\\s+.*$");
 
     @Override
@@ -43,9 +46,13 @@ public class JamalGenerator extends AbstractGeneratorEx {
         var lines = source.getLines();
         var imports = new ArrayList<String>();
         for (final var line : lines) {
-            final var matcher = IMPORT.matcher(line);
-            if (matcher.matches()) {
-                imports.add(matcher.group(1));
+            final var packageMatcher = PACKAGE.matcher(line);
+            if (packageMatcher.matches()) {
+                imports.add(packageMatcher.group(1) + ".*");
+            }
+            final var importMatcher = IMPORT.matcher(line);
+            if (importMatcher.matches()) {
+                imports.add(importMatcher.group(1));
             }
             if (CLASS_START.matcher(line).matches()) {
                 break;
@@ -57,12 +64,15 @@ public class JamalGenerator extends AbstractGeneratorEx {
         final var macro = new StringBuilder();
         var lineNr = 0;
         int positionLineNr = 0;
+        String optionsLine = "";
         for (final var line : lines) {
             lineNr++;
             switch (state) {
                 case COPY:
                     sb.append(line).append("\n");
-                    if (START.matcher(line).matches()) {
+                    final var startMatcher = START.matcher(line);
+                    if (startMatcher.matches()) {
+                        optionsLine = startMatcher.group(1);
                         touched = true;
                         state = PROCESSING.INSOURCE;
                         macro.delete(0, macro.length());
@@ -76,7 +86,10 @@ public class JamalGenerator extends AbstractGeneratorEx {
                         final String result;
                         try {
                             if (processor == null) {
+                                CompoundParams params = new CompoundParamsBuilder(optionsLine).build();
+                                final var debug = params.get("debug", "");
                                 try {
+                                    System.setProperty("jamal.debug", debug);
                                     processor = new Processor("{%", "%}");
                                     processor.define(new ImportsHolder(imports.toArray(String[]::new)));
                                 } catch (IllegalArgumentException ex) {

@@ -4,8 +4,7 @@
 
 The Jamal module of Java::Geci contains one code generator and a few Jamal macros.
 This code generator reads the source files, and it interprets some comments as Jamal macros.
-Jamal macros evaluate into strings.
-In the case of a code generator these strings contain presumably Java program code.
+The resulting strings are used to update the source code inserting and updating generated code.
 The created program code is inserted after the comment that contains the Jamal macro.
 
 Jamal is an extremely powerful macro language.
@@ -14,8 +13,12 @@ Using Jamal you can define and use macros defined earlier, and you can also use 
 There is a built-in set of Java programmed macros in the Jamal library, and another set is defined in the Java::Geci Jamal module.
 The set of the macros can also be extended in the application in the main or in the test sources or in libraries.
 
-The generator is not Java specific, although most of the support macros included in this module are based on reflection.
+The generator is not Java specific, although most of the support macros included in this module are based on Java reflection.
 The generator will run for all the files that are configured in the unit test that starts the code generation.
+
+The generator can also be started using the Java::Geci TestEngine link:../javageci-testengine/README.adoc[module].
+In that case all you have to do it add the module as a dependency to your project
+The code generation will run automatically along with the other JUnit 5 tests.
 
 The Java source code using the Jamal module of Java::Geci is supposed to have the following structure:
 
@@ -39,7 +42,15 @@ The macro closing string by default is set to `%}`.
 
 == Examples
 
-The simplest example is that generates setters.
+The simplest example would be one generating setters.
+This was the example in the previous documentation.
+However, there are many setter/getter generators and many readers just stopped there thinking "Oh... yeh, another setter getter generator."
+Java::Geci is much more than that, and the Jamal code generator is only one part of the whole framework.
+
+To emphasize this, here we will descibe two examples.
+The first one is a very simple, but very specific example, that needs simple skills to understand and apply.
+The second example is a more complex example that shows the power of the Jaba::Geci Jamal code generation.
+
 To generate setters there are many solutions.
 The aim of this example is not to depict the best way to generate setters.
 There are better ways to generate setters.

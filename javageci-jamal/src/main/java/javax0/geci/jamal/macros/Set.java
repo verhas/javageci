@@ -3,6 +3,7 @@ package javax0.geci.jamal.macros;
 import javax0.geci.jamal.macros.holders.ClassHolder;
 import javax0.geci.jamal.macros.holders.FieldHolder;
 import javax0.geci.jamal.macros.holders.FieldsHolder;
+import javax0.geci.jamal.macros.holders.ImportsHolder;
 import javax0.geci.jamal.macros.holders.MethodHolder;
 import javax0.geci.jamal.macros.holders.MethodsHolder;
 import javax0.geci.tools.GeciReflectionTools;
@@ -45,12 +46,12 @@ public class Set implements Macro, InnerScopeDependent {
         if (isMethods.is()) {
             identifier = id.get();
             processor.define(new MethodsHolder(Arrays.stream(GeciReflectionTools.getAllMethodsSorted(klass)).filter(selector::match)
-                .map(m -> defineAndExport(new MethodHolder(m), processor))
+                .map(m -> defineAndExport(new MethodHolder(m, ImportsHolder.instance(processor)), processor))
                 .toArray(MethodHolder[]::new), identifier));
         } else if (isFields.is()) {
             identifier = id.get();
             processor.define(new FieldsHolder(Arrays.stream(GeciReflectionTools.getAllFieldsSorted(klass)).filter(selector::match)
-                .map(f -> defineAndExport(new FieldHolder(f), processor))
+                .map(f -> defineAndExport(new FieldHolder(f, ImportsHolder.instance(processor)), processor))
                 .toArray(FieldHolder[]::new), identifier));
         } else {
             identifier = klass.getSimpleName();
