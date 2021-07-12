@@ -108,7 +108,7 @@ public class TestGeciReflectionTools {
 
     @Test
     void testInvokeOnExistingMethod() throws Exception {
-        final var tempi = new Template(JVM8Tools.asMap());
+        final var tempi = new Template(Map.of());
         // snippet Geci_GeciReflectionTools_invoke_sample
         String resolver = (String) GeciReflectionTools
             .invoke("resolve")

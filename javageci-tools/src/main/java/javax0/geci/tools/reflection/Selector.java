@@ -1,6 +1,5 @@
 package javax0.geci.tools.reflection;
 
-import javax0.geci.tools.JVM8Tools;
 import javax0.geci.tools.MethodTool;
 
 import java.lang.reflect.AnnotatedElement;
@@ -90,7 +89,7 @@ public class Selector<T> {
         converter("enclosingClass", m -> only(m, Class.class) ? ((Class) m).getEnclosingClass() : null);
         converter("enclosingMethod", m -> only(m, Class.class) ? ((Class) m).getEnclosingMethod() : null);
         converter("componentType", m -> only(m, Class.class) ? ((Class) m).getComponentType() : null);
-        converter("nestHost", m -> only(m, Class.class) ? JVM8Tools.getNestHost((Class) m) : null);
+        converter("nestHost", m -> only(m, Class.class) ? ((Class) m).getNestHost() : null);
     }
 
     /**
@@ -115,7 +114,7 @@ public class Selector<T> {
         if (m instanceof Field) {
             return ((Field) m).getDeclaringClass();
         }
-        if( m == null ){
+        if (m == null) {
             return null;
         }
         throw illegalArgumentException("Selector cannot be applied to " + m.getClass());
@@ -442,26 +441,26 @@ public class Selector<T> {
          *
          * * `public` is `true` if the examined member is public.
          */
-        selector("public", m -> m != null  && Modifier.isPublic(getModifiers(m)));
+        selector("public", m -> m != null && Modifier.isPublic(getModifiers(m)));
         /**
          * -
          *
          * * `static` is `true` if the examined member is static.
          */
-        selector("static", m -> m != null  && Modifier.isStatic(getModifiers(m)));
+        selector("static", m -> m != null && Modifier.isStatic(getModifiers(m)));
         /**
          * -
          *
          * * `static` is `true` if the examined member is final.
          */
-        selector("final", m -> m != null  && Modifier.isFinal(getModifiers(m)));
+        selector("final", m -> m != null && Modifier.isFinal(getModifiers(m)));
 
         /**
          * -
          *
          * * `name ~ /regex/` is `true` if the examined member's name matches the regular expression.
          */
-        regexSelector("name", (m, regex) -> m != null  && regex.matcher(getName(m)).find());
+        regexSelector("name", (m, regex) -> m != null && regex.matcher(getName(m)).find());
     }
 
     private String getName(T m) {
@@ -800,11 +799,11 @@ public class Selector<T> {
             pattern.matcher(a.annotationType().getCanonicalName()).find());
     }
 
-    private IllegalArgumentException illegalArgumentException(final String message){
-        final var exception = new IllegalArgumentException(message +" in expression '"+expression+"'");
+    private IllegalArgumentException illegalArgumentException(final String message) {
+        final var exception = new IllegalArgumentException(message + " in expression '" + expression + "'");
         final var elements = exception.getStackTrace();
-        final var trace = new StackTraceElement[elements.length-1];
-        System.arraycopy(elements,1,trace,0,trace.length);
+        final var trace = new StackTraceElement[elements.length - 1];
+        System.arraycopy(elements, 1, trace, 0, trace.length);
         exception.setStackTrace(trace);
         return exception;
     }

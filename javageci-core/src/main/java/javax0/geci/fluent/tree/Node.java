@@ -1,7 +1,5 @@
 package javax0.geci.fluent.tree;
 
-import javax0.geci.tools.JVM8Tools;
-
 import java.util.Map;
 
 /**
@@ -21,11 +19,11 @@ public abstract class Node implements Comparable<Node> {
     public static final int ONE_OF = 0x00000008;
     public static final int ONE_TERMINAL_OF = 0x00000010;
     private static final Map<Integer, String> stringMap =
-            JVM8Tools.asMap(ONCE, "",
-                    OPTIONAL, "?",
-                    ZERO_OR_MORE, "*",
-                    ONE_OF, "{OR}",
-                    ONE_TERMINAL_OF, "{OR}");
+        Map.of(ONCE, "",
+            OPTIONAL, "?",
+            ZERO_OR_MORE, "*",
+            ONE_OF, "{OR}",
+            ONE_TERMINAL_OF, "{OR}");
     private final int modifier;
     private String name = null;
 

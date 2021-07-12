@@ -35,7 +35,7 @@ public class GeciReflectionTools {
     public static final int PACKAGE = 0x00010000;
     private static final Selector inheritedField = Selector.compile("!static & !private");
     private static final Selector inheritedFieldDifferentPackage = Selector.compile("!static & !private & !package");
-    private static final Map<String, Class<?>> PRIMITIVES = JVM8Tools.asMap(
+    private static final Map<String, Class<?>> PRIMITIVES = Map.of(
         "byte", byte.class,
         "char", char.class,
         "short", short.class,
@@ -102,13 +102,13 @@ public class GeciReflectionTools {
      * }</pre>
      *
      * <p>For example:</p>
-     *
+     * <p>
      * <!-- snip Geci_GeciReflectionTools_invoke_sample trim="to=0" -->
      * String resolver = (String) GeciReflectionTools
-     *     .invoke("resolve")
-     *     .on(tempi)
-     *     .types(String.class)
-     *     .args("this is a template test with no parameters");
+     * .invoke("resolve")
+     * .on(tempi)
+     * .types(String.class)
+     * .args("this is a template test with no parameters");
      * <!-- end snip -->
      *
      * @param methodName the name of the method to invoke
@@ -218,8 +218,8 @@ public class GeciReflectionTools {
      */
     public static String normalizeTypeName(String s, Class<?> klass) {
         s = normalizeTypeName(s);
-        if (s.startsWith(JVM8Tools.getPackageName(klass) + ".")) {
-            s = s.substring(JVM8Tools.getPackageName(klass).length() + 1);
+        if (s.startsWith(klass.getPackageName() + ".")) {
+            s = s.substring(klass.getPackageName().length() + 1);
         }
         return s;
     }
@@ -299,7 +299,7 @@ public class GeciReflectionTools {
      */
     public static String getLocalGenericClassName(Class<?> t) {
         return normalizeTypeName(t.getCanonicalName()
-            .substring(JVM8Tools.getPackageName(t).length() + 1))
+            .substring(t.getPackageName().length() + 1))
             + getGenericParametersString(t);
     }
 

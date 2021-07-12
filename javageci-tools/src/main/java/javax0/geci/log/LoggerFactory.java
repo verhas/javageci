@@ -9,15 +9,9 @@ package javax0.geci.log;
  *
  * <p>Note that performance creating a logger should not be an issue with the usual way of creating loggers as they are usually
  * objects referenced static and final fields and that way they get invoked only once per class.</p>
- *
  */
 public class LoggerFactory {
     public static Logger getLogger() {
-        // return new Logger( StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass());
-        try {
-            return new Logger(Class.forName(Thread.currentThread().getStackTrace()[1].getClassName()));
-        } catch (ClassNotFoundException e) {
-            return new Logger(LoggerFactory.class);
-        }
+        return new Logger(StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass());
     }
 }

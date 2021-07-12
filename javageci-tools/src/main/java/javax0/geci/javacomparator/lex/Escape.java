@@ -1,7 +1,6 @@
 package javax0.geci.javacomparator.lex;
 
 import javax0.geci.api.GeciException;
-import javax0.geci.tools.JVM8Tools;
 
 public class Escape {
     static char octal(StringBuilder sb, int maxLen, StringBuilder original) {
@@ -110,7 +109,7 @@ public class Escape {
         if (countNewLines == 0) {
             countNewLines++;
         }
-        output.append(JVM8Tools.string('\n', countNewLines));
+        output.append("\n".repeat(countNewLines));
     }
 
     static StringBuilder createOutput(StringBuilder sb, String string) {

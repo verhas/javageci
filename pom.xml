@@ -231,67 +231,67 @@
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-engine</artifactId>
-                <version>1.7.8</version>
+                <version>1.7.9</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-testsupport</artifactId>
-                <version>1.7.8</version>
+                <version>1.7.9</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-snippet</artifactId>
-                <version>1.7.8</version>
+                <version>1.7.9</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-io</artifactId>
-                <version>1.7.8</version>
+                <version>1.7.9</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-plantuml</artifactId>
-                <version>1.7.8</version>
+                <version>1.7.9</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-ruby</artifactId>
-                <version>1.7.8</version>
+                <version>1.7.9</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-groovy</artifactId>
-                <version>1.7.8</version>
+                <version>1.7.9</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-scriptbasic</artifactId>
-                <version>1.7.8</version>
+                <version>1.7.9</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-yaml</artifactId>
-                <version>1.7.8</version>
+                <version>1.7.9</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-tools</artifactId>
-                <version>1.7.8</version>
+                <version>1.7.9</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-api</artifactId>
-                <version>1.7.8</version>
+                <version>1.7.9</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -303,47 +303,6 @@
         </dependencies>
     </dependencyManagement>
     <profiles>
-        <profile>
-            <id>JVM8</id>
-            <properties>
-                <profile>JVM8</profile>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.8.1</version>
-                        <configuration>
-                            <excludes>
-                                <exclude>module-info.java</exclude>
-                                <exclude>javax0/geci/log/LoggerJDK9.java</exclude>
-                            </excludes>
-                            <encoding>UTF-8</encoding>
-                            <release>8</release>
-                            <annotationProcessorPaths>
-                                <annotationProcessorPath>
-                                    <groupId>com.github.bsideup.jabel</groupId>
-                                    <artifactId>jabel-javac-plugin</artifactId>
-                                    <version>0.2.0</version>
-                                </annotationProcessorPath>
-                            </annotationProcessorPaths>
-                            <annotationProcessors>
-                                <annotationProcessor>com.github.bsideup.jabel.JabelJavacProcessor</annotationProcessor>
-                            </annotationProcessors>
-                            <source>13</source>
-                            <target>13</target>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-            <repositories>
-                <repository>
-                    <id>jitpack.io</id>
-                    <url>https://jitpack.io</url>
-                </repository>
-            </repositories>
-        </profile>
         <profile>
             <id>release</id>
             <build>

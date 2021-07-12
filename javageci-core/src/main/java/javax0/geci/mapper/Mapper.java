@@ -7,7 +7,6 @@ import javax0.geci.core.annotations.AnnotationBuilder;
 import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
-import javax0.geci.tools.JVM8Tools;
 import javax0.geci.tools.reflection.Selector;
 
 import java.io.IOException;
@@ -23,7 +22,6 @@ import java.util.function.Function;
  * <p>
  * The {@code fromMap()} method creates a new object. To do that it uses the factory that can be configured
  * in the Geci annotation of the class, or else it just tries to use the default constructor of the class.
- *
  */
 @AnnotationBuilder
 public class Mapper extends AbstractJavaGenerator {
@@ -34,21 +32,21 @@ public class Mapper extends AbstractJavaGenerator {
     public static class Config {
         /**
          * -
-         *
+         * <p>
          * * `filter` can be used to to select the define the selector expression to select the fields that will be taken into account for the map conversion.
          * If a `final` field is selected by the expression it will be taken in to account when generating the `tMap()` method, but it will be excluded from the `fromMap()` method because being `final` there is no way the `fromMethod()` could modify the value of the field.
          */
         private String filter = "!transient & !static";
         /**
          * -
-         *
+         * <p>
          * * `generatedAnnotation` can ge used to specify the annotation that is used to annotate the generated methods.
          * By default it is the `javax0.geci.annotations.Generated` class.
          */
         private Class<? extends Annotation> generatedAnnotation = javax0.geci.annotations.Generated.class;
         /**
          * -
-         *
+         * <p>
          * * `field2MapKeyMapper` is a function that converts the name of the field, which is already a string into another string.
          * It is useful in case you want to use different key names in the map.
          * You can, for example convert the field names to all capital or insert a prefix before the names.
@@ -57,7 +55,7 @@ public class Mapper extends AbstractJavaGenerator {
         private Function<String, String> field2MapKeyMapper = s -> s;
         /**
          * -
-         *
+         * <p>
          * * `factory` is a string that is the code to create a new instance of the class.
          * The default is a "new {{ClassName}}()" like expression where the actual class name is used after the keyword `new`.
          */
@@ -100,7 +98,7 @@ public class Mapper extends AbstractJavaGenerator {
             }
         }
         segment.write("return map;")
-                ._l("}");
+            ._l("}");
     }
 
     /**
@@ -113,8 +111,8 @@ public class Mapper extends AbstractJavaGenerator {
      * @throws IOException if the file was not found
      */
     private String getResourceString(String resource) throws IOException {
-        return new String(JVM8Tools.readAllBytes(getClass().getResourceAsStream(resource)), StandardCharsets.UTF_8)
-                .replaceAll("\r", "");
+        return new String(getClass().getResourceAsStream(resource).readAllBytes(), StandardCharsets.UTF_8)
+            .replaceAll("\r", "");
     }
 
     private String field2MapKey(String name) {
@@ -155,14 +153,14 @@ public class Mapper extends AbstractJavaGenerator {
                 final var name = field.getName();
                 if (hasFromMap(field.getType())) {
                     segment.write("it.%s = %s.fromMap0(({{Map}}<String,Object>)map.get(\"%s\"),cache);",
-                            name,
-                            field.getType().getCanonicalName(),
-                            field2MapKey(name));
+                        name,
+                        field.getType().getCanonicalName(),
+                        field2MapKey(name));
                 } else {
                     segment.write("it.%s = (%s)map.get(\"%s\");",
-                            name,
-                            field.getType().getCanonicalName(),
-                            field2MapKey(name));
+                        name,
+                        field.getType().getCanonicalName(),
+                        field2MapKey(name));
                 }
             }
         }
@@ -173,11 +171,12 @@ public class Mapper extends AbstractJavaGenerator {
     private String configuredMnemonic = "mapper";
 
     @Override
-    public String mnemonic(){
+    public String mnemonic() {
         return configuredMnemonic;
     }
 
     private final Config config = new Config();
+
     public static Mapper.Builder builder() {
         return new Mapper().new Builder();
     }
@@ -192,13 +191,14 @@ public class Mapper extends AbstractJavaGenerator {
     public java.util.Set<String> implementedKeys() {
         return implementedKeys;
     }
+
     public class Builder implements javax0.geci.api.GeneratorBuilder {
         public Builder factory(String factory) {
             config.factory = factory;
             return this;
         }
 
-        public Builder field2MapKeyMapper(java.util.function.Function<String,String> field2MapKeyMapper) {
+        public Builder field2MapKeyMapper(java.util.function.Function<String, String> field2MapKeyMapper) {
             config.field2MapKeyMapper = field2MapKeyMapper;
             return this;
         }
@@ -222,7 +222,8 @@ public class Mapper extends AbstractJavaGenerator {
             return Mapper.this;
         }
     }
-    private Config localConfig(CompoundParams params){
+
+    private Config localConfig(CompoundParams params) {
         final var local = new Config();
         local.factory = params.get("factory", config.factory);
         local.field2MapKeyMapper = config.field2MapKeyMapper;

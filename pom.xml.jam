@@ -101,37 +101,6 @@
     }
 
     {profiles|
-        {profile JVM8}
-            {properties|{property :profile:JVM8}}
-            {build|
-                {plugins|
-                    {plugin|
-                        {GAV :org.apache.maven.plugins:maven-compiler-plugin:{MAVEN_COMPILER_PLUGIN_VERSION}}
-                        {configuration|
-                            {excludes|
-                                {exclude :module-info.java}
-                                {exclude :javax0/geci/log/LoggerJDK9.java}
-                            }
-                            {encoding :UTF-8}
-                            {release :8}
-                            {annotationProcessorPaths|
-                                {annotationProcessorPath|
-                                    {GAV :com.github.bsideup.jabel:jabel-javac-plugin:{JABEL_VERSION}}
-                                }
-                            }
-                            {annotationProcessors|
-                                {annotationProcessor|com.github.bsideup.jabel.JabelJavacProcessor}
-                            }
-                            {source :13}
-                            {target :13}
-                        }
-                    }
-                }
-            }
-            {repositories|
-                {repository |jitpack.io|https://jitpack.io}
-            }
-        {end profile}
         {profile release}
             {build|
                 {plugins|

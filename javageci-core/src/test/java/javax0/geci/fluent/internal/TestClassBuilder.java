@@ -10,8 +10,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
-import static javax0.geci.tools.JVM8Tools.readAllBytes;
-
 public class TestClassBuilder {
 
     @Test
@@ -22,21 +20,21 @@ public class TestClassBuilder {
 
     private static void assertEqualToFile(String result, String resourceName) throws Exception {
         try (var output = Files.newOutputStream(
-                FileSystems.getDefault().getPath("target", resourceName),
-                StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
+            FileSystems.getDefault().getPath("target", resourceName),
+            StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
             output.write(result.getBytes(StandardCharsets.UTF_8));
         }
         var is = TestClassBuilder.class.getResourceAsStream(resourceName);
-        var expected = new String(readAllBytes(is), StandardCharsets.UTF_8).replace("\r", "");
+        var expected = new String(is.readAllBytes(), StandardCharsets.UTF_8).replace("\r", "");
         Assertions.assertEquals(expected, result);
     }
 
     @Test
     public void testTerminalsBuildup() throws Exception {
         var fluent = FluentBuilder.from(TestClass.class)
-                .one("a")
-                .optional("b")
-                .oneOf("a", "b", "c", "d");
+            .one("a")
+            .optional("b")
+            .oneOf("a", "b", "c", "d");
         var result = new ClassBuilder((FluentBuilderImpl) fluent).build();
         assertEqualToFile(result, "testTerminalsBuildup.txt");
     }
@@ -44,11 +42,11 @@ public class TestClassBuilder {
     @Test
     public void testTerminalsBuildupFullSample() throws Exception {
         var fluent = FluentBuilder.from(TestClass.class)
-                .one("a")
-                .optional("b")
-                .oneOrMore("c")
-                .zeroOrMore("d")
-                .oneOf("a", "b");
+            .one("a")
+            .optional("b")
+            .oneOrMore("c")
+            .zeroOrMore("d")
+            .oneOf("a", "b");
         var result = new ClassBuilder((FluentBuilderImpl) fluent).build();
         assertEqualToFile(result, "testTerminalsBuildupFullSample.txt");
     }
@@ -58,8 +56,8 @@ public class TestClassBuilder {
         var f = FluentBuilder.from(TestClass.class);
         var aOrB = f.oneOf("a", "b");
         var fluent = f.one("a")
-                .optional(aOrB)
-                .oneOf("a", "b", "c", "d");
+            .optional(aOrB)
+            .oneOf("a", "b", "c", "d");
         var result = new ClassBuilder((FluentBuilderImpl) fluent).build();
         assertEqualToFile(result, "testTreeBuildup.txt");
     }
@@ -69,10 +67,10 @@ public class TestClassBuilder {
         var f = FluentBuilder.from(TestClass.class);
         var aOrB = f.oneOf("a", "b");
         var fluent = f.one("a")
-                .optional(aOrB)
-                .one("c")
-                .zeroOrMore(aOrB)
-                .oneOf("a", "b", "c", "d");
+            .optional(aOrB)
+            .one("c")
+            .zeroOrMore(aOrB)
+            .oneOf("a", "b", "c", "d");
         var result = new ClassBuilder((FluentBuilderImpl) fluent).build();
         assertEqualToFile(result, "testComplexTreeBuildup.txt");
     }
@@ -82,8 +80,8 @@ public class TestClassBuilder {
         var f = FluentBuilder.from(TestClass.class);
         var aOrB = f.oneOf(f.optional("a"), f.one("b"));
         var fluent = f.one("a")
-                .optional(aOrB)
-                .one("c").cloner("copy");
+            .optional(aOrB)
+            .one("c").cloner("copy");
         var result = new ClassBuilder((FluentBuilderImpl) fluent).build();
         assertEqualToFile(result, "testOptionalInOptionalTreeBuildup.txt");
     }
