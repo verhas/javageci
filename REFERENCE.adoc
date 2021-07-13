@@ -373,13 +373,26 @@ The arguments to the bi-predicate are the lists of strings that contain the sour
 
 ==== Tracing the execution
 
-When the code generation does not work the way as expected then there is a trace functionality to debug the situation.
+When the code generation does not work the way as expected there is a trace functionality to debug the situation.
 In some cases the generators do not touch some file, in other cases they may alter some file that they were not supposed to.
-To get detailed trace information about the actual actions the framework and the generators do you can specify a file calling the `trace(&quot;fileName&quot;)` method on the `Geci` object before calling generate.
+To get detailed trace information about the actual actions the framework, and the generators do you can specify a file calling the `trace(&quot;fileName&quot;)` method on the `Geci` object before calling generate.
 
 The trace information will ba saved into the trace file in XML format.
-Although the XML format is not too sexy it is extremely practical.
+Although, the XML format is not too sexy, it is practical.
 If you look at it using some editor that supports XML then you can not only search in it like in case of standard log files, but you can also navigate hierarchically exploding and closing levels of trace information.
+
+
+==== View Diff
+
+Java::Geci can be configured calling the `diffOutput()` method to save the original and the new content into a temporary file.
+The argument of this function should be a directory name.
+Java::Geci will save the new content of a file into the folder `generated`, and the original content into `original`.
+These files are generated if there is any difference between the original and the generated content.
+The generated content may be identical with the original differing only in comment or formatting.
+In those cases the source file is not modified, and the test does not fail.
+The diff files are generated even in this case.
+
+The generated files can be opened in any standard diff tool to see what is or what would have been changed.
 
 ==== Generate
 

@@ -5,7 +5,7 @@ version in a maven property because that cannot be used to reference the parent.
 -- you have to execute `mvn -f genpom.xml` to generate all the pom.xml files
 
 
-{@define VERSION=1.6.3-SNAPSHOT}
+{@define VERSION=1.6.3}
 
 
 
@@ -33,3 +33,4 @@ version in a maven property because that cannot be used to reference the parent.
 {@define MAVEN_JAVADOC_PLUGIN_VERSION=3.2.0}
 {@define JAMAL_VERSION=1.7.9}
 {@define ASSERTJ_VERSION=3.9.1}
+{@define NEXUS_STAGING_MAVEN_PLUGIN=1.6.8}

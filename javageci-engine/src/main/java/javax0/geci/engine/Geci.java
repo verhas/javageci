@@ -8,6 +8,7 @@ import javax0.geci.api.GlobalGenerator;
 import javax0.geci.api.Segment;
 import javax0.geci.api.SegmentSplitHelper;
 import javax0.geci.api.Source;
+import javax0.geci.engine.Source.SourceIsBinary;
 import javax0.geci.javacomparator.Comparator;
 import javax0.geci.log.Logger;
 import javax0.geci.log.LoggerFactory;
@@ -16,7 +17,10 @@ import javax0.geci.tools.Tracer;
 import javax0.geci.util.DirectoryLocator;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,7 +38,6 @@ import java.util.stream.Stream;
 
 import static javax0.geci.api.Source.Predicates.exists;
 import static javax0.geci.api.Source.Set.set;
-import javax0.geci.engine.Source.SourceIsBinary;
 
 public class Geci implements javax0.geci.api.Geci {
     /**
@@ -63,6 +66,7 @@ public class Geci implements javax0.geci.api.Geci {
     private Source.Set lastSet = null;
     private boolean ignoreBinary = false;
     private String traceFileName = null;
+    private String diffDirectory = null;
 
 // Jdocify constants to be used in Javadoc
 //DEFINE EXCEPTIONS=the list of exceptions that are caught and suppressed
@@ -353,6 +357,12 @@ public class Geci implements javax0.geci.api.Geci {
     }
 
     @Override
+    public javax0.geci.api.Geci diffOutput(String directoryName) {
+        diffDirectory = directoryName;
+        return this;
+    }
+
+    @Override
     public boolean generate() throws IOException {
         try {
             final var exceptions = new ArrayList<SourceIsBinary>();
@@ -447,11 +457,9 @@ public class Geci implements javax0.geci.api.Geci {
                 exceptions.forEach(Tracer::log);
             }
             final var geciE = new GeciException("Cannot read the files\n" +
-                    String.join("\n",
-                            exceptions.stream().map(SourceIsBinary::getAbsoluteFile).collect(Collectors.toList())
-                    ) +
-                    "\nThey are probably binary file. Use '.ignore()' to filter binary files out");
-            exceptions.forEach(e -> geciE.addSuppressed(e));
+                exceptions.stream().map(SourceIsBinary::getAbsoluteFile).collect(Collectors.joining("\n")) +
+                "\nThey are probably binary file. Use '.ignore()' to filter binary files out");
+            exceptions.forEach(geciE::addSuppressed);
             throw geciE;
         }
     }
@@ -590,13 +598,19 @@ public class Geci implements javax0.geci.api.Geci {
             ).collect(Collectors.toSet());
             for (var source : allSources) {
                 try {
-                    if (source.isTouched() && source.isModified(getSourceComparator(source))) {
+                    final var comparator = getSourceComparator(source);
+                    final var modified = source.isModified(comparator);
+                    if (source.isTouched() && modified) {
                         Tracer.log("SaveSource", source.getAbsoluteFile());
                         source.save();
                         modifiedSources.add(source);
                         generated = true;
                     } else {
                         Tracer.log("SourceUnchanged", source.getAbsoluteFile());
+                    }
+                    // if we create diff, and they are different even if not different enough to fail
+                    if (diffDirectory != null && ((comparator == EQUALS_COMPARATOR && modified) || source.isModified(EQUALS_COMPARATOR))) {
+                        createDiffFiles(source);
                     }
                 } catch (GeciException e) {
                     throw new SourcedGeciException(source, e);
@@ -623,6 +637,25 @@ public class Geci implements javax0.geci.api.Geci {
                 }
             }
             return generated;
+        }
+    }
+
+    private void createDiffFiles(javax0.geci.engine.Source source) throws IOException {
+        Path pathOriginal = Paths.get(diffDirectory + "/geci/original", source.relativeFile);
+        assertDirectoryExistsForPath(pathOriginal);
+        Path pathNew = Paths.get(diffDirectory + "/geci/generated", source.relativeFile);
+        assertDirectoryExistsForPath(pathNew);
+        Files.write(pathOriginal, source.originals, StandardCharsets.UTF_8);
+        Files.write(pathNew, source.getLines(), StandardCharsets.UTF_8);
+    }
+
+    private void assertDirectoryExistsForPath(Path path) {
+        Path parent = path.getParent();
+        if (!Files.exists(parent)) {
+            try {
+                Files.createDirectories(parent);
+            } catch (Exception ignored) {
+            }
         }
     }
 

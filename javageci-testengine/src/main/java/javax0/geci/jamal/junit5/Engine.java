@@ -88,6 +88,10 @@ public class Engine implements TestEngine {
         if (ignoreBinary.isPresent() && ignoreBinary.get()) {
             geci.ignoreBinary();
         }
+        final var diffOutput = cp.get("geci.diffOutput");
+        if( diffOutput.isPresent()){
+            geci = geci.diffOutput(diffOutput.get());
+        }
         try {
             LOG.info("GECI Jamal executing code generator for all the files in the source set");
             if (geci.register(new JamalGenerator())

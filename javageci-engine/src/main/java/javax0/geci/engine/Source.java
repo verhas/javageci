@@ -27,10 +27,10 @@ import java.util.function.BiPredicate;
 public class Source implements javax0.geci.api.Source {
     final List<String> lines = new ArrayList<>();
     private final String className;
-    private final String relativeFile;
+    final String relativeFile;
     final String absoluteFile;
     private final Map<String, Segment> segments = new HashMap<>();
-    private final List<String> originals = new ArrayList<>();
+    final List<String> originals = new ArrayList<>();
     private final FileCollector collector;
     private final SegmentSplitHelper splitHelper;
     boolean inMemory = false;
@@ -468,15 +468,15 @@ public class Source implements javax0.geci.api.Source {
      * Saves the modified lines to the file.
      */
     void save() throws IOException {
-        Path path = Paths.get(absoluteFile);
-        Path parent = path.getParent();
+        final Path path = Paths.get(absoluteFile);
+        final Path parent = path.getParent();
         if (!Files.exists(parent)) {
             try {
                 Files.createDirectories(parent);
             } catch (Exception ignored) {
             }
         }
-        Files.write(Paths.get(absoluteFile), lines, StandardCharsets.UTF_8);
+        Files.write(path, lines, StandardCharsets.UTF_8);
     }
 
     /**

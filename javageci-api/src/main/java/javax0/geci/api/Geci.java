@@ -41,6 +41,15 @@ public interface Geci {
     Geci trace(final String fileName);
 
     /**
+     * Instruct the framework to save a backup of the original source as well as the mdified source into a temporary
+     * file so that some external tool can easily compare them.
+     *
+     * @param directoryName the name of the directory where to save the files
+     * @return {@code this}
+     */
+    Geci diffOutput(final String directoryName);
+
+    /**
      * Add a new directory to the list of source directories that Geci
      * should process. See {@link #source(String...)} and also {@link
      * #source(Source.Set, Predicate, String...)} on the use of the
@@ -157,7 +166,7 @@ public interface Geci {
      * you can simply specify the source set as, for
      * example {@code geci.source(set("otherName"), maven.mainSource());}.
      *
-     * @param set the set that contains the name of the set
+     * @param set        the set that contains the name of the set
      * @param nameAndSet the name of the set and the directories array
      * @return {@code this}
      */
@@ -172,10 +181,9 @@ public interface Geci {
      * you can simply specify the source set as, for
      * example {@code geci.source("otherName", maven.mainSource());}.
      *
-     * @param set the set name as string
+     * @param set        the set name as string
      * @param nameAndSet the name of the set and the directories array
      * @return {@code this}
-     *
      */
     default Geci source(String set, Source.NamedSourceSet nameAndSet) {
         return source(Source.Set.set(set), nameAndSet.directories);
@@ -231,7 +239,7 @@ public interface Geci {
      *                          {@code build()} method on them
      * @return {@code this}
      */
-    default Geci register(GeneratorBuilder ...generatorBuilders){
+    default Geci register(GeneratorBuilder... generatorBuilders) {
         final var generators = Arrays.stream(generatorBuilders)
             .map(GeneratorBuilder::build)
             .toArray(Generator[]::new);
@@ -267,6 +275,7 @@ public interface Geci {
      * <p>
      * This method can be called more than one time. Every time the
      * patterns will be added to the already configured patterns.
+     *
      * @param patterns regular expression patterns used to filter the
      *                 source files
      * @return {@code this}

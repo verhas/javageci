@@ -8,7 +8,7 @@ import java.util.function.BiPredicate;
 
 /**
  * <p>Compare two Java source code, both given as list of strings. If
- * the strings are equal then then it is okay (return {@code
+ * the strings are equal then it is okay (return {@code
  * false}).</p>
  *
  * <p>If the strings in the lists are not the same then the two source

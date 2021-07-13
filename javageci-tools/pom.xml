@@ -4,11 +4,11 @@
     <name>javageci tools</name>
     <packaging>jar</packaging>
     <artifactId>javageci-tools</artifactId>
-    <version>1.6.3-SNAPSHOT</version>
+    <version>1.6.3</version>
     <parent>
         <groupId>com.javax0.geci</groupId>
         <artifactId>javageci-parent</artifactId>
-        <version>1.6.3-SNAPSHOT</version>
+        <version>1.6.3</version>
     </parent>
     <description>Javageci tools</description>
     <build>
