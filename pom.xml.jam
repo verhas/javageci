@@ -74,7 +74,7 @@
                     }
                 }
                 {plugin|
-                      {GAV :org.sonatype.plugins:nexus-staging-maven-plugin:NEXUS_STAGING_MAVEN_PLUGIN}
+                      {GAV :org.sonatype.plugins:nexus-staging-maven-plugin:{NEXUS_STAGING_MAVEN_PLUGIN}}
                       {extensions :true}
                       {configuration|
                         <serverId>ossrh</serverId>

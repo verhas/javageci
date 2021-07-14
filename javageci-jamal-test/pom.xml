@@ -30,12 +30,6 @@
     <dependencies>
         <dependency>
             <groupId>com.javax0.geci</groupId>
-            <artifactId>javageci-jamal</artifactId>
-            <version>1.6.4-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.javax0.geci</groupId>
             <artifactId>javageci-testengine</artifactId>
             <version>1.6.4-SNAPSHOT</version>
             <scope>test</scope>

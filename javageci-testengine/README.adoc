@@ -9,7 +9,7 @@ To do that simply put
 <dependency>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-core</artifactId>
-    <version>1.6.3</version>
+    <version>1.6.4-SNAPSHOT</version>
     <scope>test</scope>
 </dependency>
 ----
