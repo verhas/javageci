@@ -272,7 +272,7 @@ public class UnitTestWithGeneratedUnitTestProxy {
             return sut.publicParentObjectField;
             }
 
-        private javax0.geci.jamal_test.sample.SystemUnderTest getPublicParentTestField() {
+        private javax0.geci.jamal_test.sample.SystemUnderTest getPublicParentstField() {
             return sut.publicParentTestField;
             }
 
@@ -285,10 +285,3 @@ public class UnitTestWithGeneratedUnitTestProxy {
     //</editor-fold>
     //__END__
 }
-
-
-
-
-
-
-
