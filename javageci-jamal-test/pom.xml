@@ -4,11 +4,11 @@
     <name>javageci jamal-test</name>
     <packaging>jar</packaging>
     <artifactId>javageci-jamal-test</artifactId>
-    <version>1.6.4-SNAPSHOT</version>
+    <version>1.6.4</version>
     <parent>
         <groupId>com.javax0.geci</groupId>
         <artifactId>javageci-parent</artifactId>
-        <version>1.6.4-SNAPSHOT</version>
+        <version>1.6.4</version>
     </parent>
     <description>Javageci jamal macro library tests</description>
     <build>
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>com.javax0.geci</groupId>
             <artifactId>javageci-testengine</artifactId>
-            <version>1.6.4-SNAPSHOT</version>
+            <version>1.6.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>com.javax0.jamal</groupId>
             <artifactId>jamal-testsupport</artifactId>
-            <version>1.7.9</version>
+            <version>1.9.0</version>
         </dependency>
     </dependencies>
 </project>

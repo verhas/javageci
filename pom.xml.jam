@@ -73,15 +73,6 @@
                         {release :{JAVA_RELEASE}}
                     }
                 }
-                {plugin|
-                      {GAV :org.sonatype.plugins:nexus-staging-maven-plugin:{NEXUS_STAGING_MAVEN_PLUGIN}}
-                      {extensions :true}
-                      {configuration|
-                        <serverId>ossrh</serverId>
-                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                      }
-                }
             }
         }
         {resources|
@@ -104,6 +95,17 @@
         {profile release}
             {build|
                 {plugins|
+                    {plugin|
+                          {GAV :org.sonatype.plugins:nexus-staging-maven-plugin:{NEXUS_STAGING_MAVEN_PLUGIN}}
+                          {extensions :true}
+                          {configuration|
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                          }
+                          {@comment Remove after OSSRH-66257, NEXUS-26993 are fixed, possibly via https://github.com/sonatype/nexus-maven-plugins/pull/91}
+                          {dependencies {dependency :com.thoughtworks.xstream:xstream:1.4.15}}
+                    }
                     {plugin|
                         {GAV :org.apache.maven.plugins:maven-gpg-plugin:1.6}
                         {executions|{execution

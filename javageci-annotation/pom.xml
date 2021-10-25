@@ -4,11 +4,11 @@
     <name>javageci annotation</name>
     <packaging>jar</packaging>
     <artifactId>javageci-annotation</artifactId>
-    <version>1.6.4-SNAPSHOT</version>
+    <version>1.6.4</version>
     <parent>
         <groupId>com.javax0.geci</groupId>
         <artifactId>javageci-parent</artifactId>
-        <version>1.6.4-SNAPSHOT</version>
+        <version>1.6.4</version>
     </parent>
     <description>Javageci annotations</description>
     <build>

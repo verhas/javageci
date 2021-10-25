@@ -8,8 +8,8 @@ To do that simply put
 ----
 <dependency>
     <groupId>com.javax0.geci</groupId>
-    <artifactId>javageci-core</artifactId>
-    <version>1.6.4-SNAPSHOT</version>
+    <artifactId>javageci-testengine</artifactId>
+    <version>1.6.4</version>
     <scope>test</scope>
 </dependency>
 ----
