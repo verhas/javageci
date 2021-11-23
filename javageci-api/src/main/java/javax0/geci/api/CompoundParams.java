@@ -16,7 +16,7 @@ public interface CompoundParams {
 
     /**
      * Set the constraints that this {@code CompoundParameters} should
-     * adhere. The constrain is simply the set of the allowed key
+     * adhere. The constraint is simply the set of the allowed key
      * strings. The other argument are only used to construct a
      * meaningful exception during checking.
      *

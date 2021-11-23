@@ -5,7 +5,7 @@ version in a maven property because that cannot be used to reference the parent.
 -- you have to execute `mvn -f genpom.xml` to generate all the pom.xml files
 
 
-{@define VERSION=1.6.4}
+{@define VERSION=1.6.5-SNAPSHOT}
 
 
 
