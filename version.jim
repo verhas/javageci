@@ -5,7 +5,7 @@ version in a maven property because that cannot be used to reference the parent.
 -- you have to execute `mvn -f genpom.xml` to generate all the pom.xml files
 
 
-{@define VERSION=1.6.5-SNAPSHOT}
+{@define VERSION=1.6.5}
 
 
 
@@ -26,11 +26,12 @@ version in a maven property because that cannot be used to reference the parent.
 {@define MODULE_PREFIX=geci.}
 
 -- the different plugin and dependency versions we use
-{@define JUPITER_VERSION=5.7.0}
+{@define JUPITER_VERSION=5.2.0}
 {@define SUREFIRE_VERSION=3.0.0-M4}
 {@define MAVEN_SOURCE_PLUGIN_VERSION=3.2.1}
 {@define MAVEN_COMPILER_PLUGIN_VERSION=3.8.1}
 {@define MAVEN_JAVADOC_PLUGIN_VERSION=3.2.0}
-{@define JAMAL_VERSION=1.9.0}
+{@define MAVEN_GPG_PLUGIN_VERSION=3.0.1}
+{@define JAMAL_VERSION=1.10.0}
 {@define ASSERTJ_VERSION=3.9.1}
 {@define NEXUS_STAGING_MAVEN_PLUGIN=1.6.8}

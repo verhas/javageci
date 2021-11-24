@@ -1,5 +1,15 @@
 {@import https://raw.githubusercontent.com/central7/pom/main/pom.jim}
 {@import version.jim}
+{@define taglets($x)=<taglets>$x</taglets>}
+{@define taglet($x)=<taglet>$x</taglet>}
+{@define tagletArtifacts($x)=<tagletArtifacts>$x</tagletArtifacts>}
+{@define tagletArtifact($x)=<tagletArtifact>$x</tagletArtifact>}
+{@define tagletClass($x)=<tagletClass>$x</tagletClass>}
+{@define additionalOptions($x)=<additionalOptions>$x</additionalOptions>}
+{@define additionalOption($x)=<additionalOption>$x</additionalOption>}
+{@define docletArtifact($x)=<docletArtifact>$x</docletArtifact>}
+{@define doclet($x)=<doclet>$x</doclet>}
+{@define doclint($x)=<doclint>$x</doclint>}
 {@define opens($module,$package,...$to)=--add-opens {MODULE_PREFIX}$module/{PACKAGE_PREFIX}$package={#if/$to/$to/ALL-UNNAMED}}
 {@define exports($module,$package,...$to)=--add-exports {MODULE_PREFIX}$module/{PACKAGE_PREFIX}$package={#if/$to/$to/ALL-UNNAMED}}
 {@define opexs($module,$package,...$to)={opens/$module/$package/$to} {exports/$module/$package/$to}}
@@ -22,7 +32,15 @@
     }
     {build|
             {plugins|
-                {plugin|{GAV :org.sonatype.plugins:nexus-staging-maven-plugin: }}
+                {plugin |{GAV :org.sonatype.plugins:nexus-staging-maven-plugin:{NEXUS_STAGING_MAVEN_PLUGIN}}}
+                {plugin|
+                    {GAV :org.apache.maven.plugins:maven-gpg-plugin:{MAVEN_GPG_PLUGIN_VERSION}}
+                    {executions|{execution
+                        {id :sign-artifacts}
+                        {phase :verify}
+                        {goals|{goal :sign}}
+                    }}
+                }
             }
             {pluginManagement|{plugins|
                 {plugin|
@@ -64,7 +82,25 @@
                 }
                 {plugin|
                     {GAV :org.apache.maven.plugins:maven-javadoc-plugin:{MAVEN_JAVADOC_PLUGIN_VERSION}}
-                    {configuration|{detectOfflineLinks|false}}
+                    {configuration|
+                        {detectOfflineLinks false}
+                        {doclint none}
+                        {doclet javax0.jamal.doclet.JamalDoclet}
+                        {docletArtifact {GAV :com.javax0.jamal:jamal-doclet:{JAMAL_VERSION}}}
+                        {additionalOptions
+                            {additionalOption |--source-root}
+                            {additionalOption {@escape* ``${project.build.sourceDirectory}``}}
+                        }
+                        {taglets|
+                            {taglet|
+                                {tagletClass javax0.jamal.doclet.JamalTaglet}
+                                {tagletArtifact {GAV :com.javax0.jamal:jamal-doclet:{JAMAL_VERSION}}}
+                            }
+                            {tagletArtifacts
+                                {tagletArtifact {GAV :com.javax0.jamal:jamal-io:{JAMAL_VERSION}}}
+                            }
+                        }
+                    }
                     {executions|{execution|{id|attach-javadocs}{goals|{goal|jar}}}}
                 }
                 {plugin|
@@ -89,33 +125,5 @@
             {@for MODULE in (engine,testsupport,snippet,io,plantuml,ruby,groovy,scriptbasic,yaml,tools,api)={dependency :com.javax0.jamal:jamal-MODULE:{JAMAL_VERSION}:test}}
             {dependency :org.assertj:assertj-core:{ASSERTJ_VERSION}:test}
         }
-    }
-
-    {profiles|
-        {profile release}
-            {build|
-                {plugins|
-                    {plugin|
-                          {GAV :org.sonatype.plugins:nexus-staging-maven-plugin:{NEXUS_STAGING_MAVEN_PLUGIN}}
-                          {extensions :true}
-                          {configuration|
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                          }
-                          {@comment Remove after OSSRH-66257, NEXUS-26993 are fixed, possibly via https://github.com/sonatype/nexus-maven-plugins/pull/91}
-                          {dependencies {dependency :com.thoughtworks.xstream:xstream:1.4.15}}
-                    }
-                    {plugin|
-                        {GAV :org.apache.maven.plugins:maven-gpg-plugin:1.6}
-                        {executions|{execution
-                            {id :sign-artifacts}
-                            {phase :verify}
-                            {goals|{goal :sign}}
-                        }}
-                    }
-                }
-           }
-        {end profile}
     }
 {end project}

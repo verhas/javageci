@@ -2,21 +2,23 @@
 
 == Introduction
 
-The Jamal module of Java::Geci contains one code generator and a few Jamal macros.
-This code generator reads the source files, and it interprets some comments as Jamal macros.
-The resulting strings are used to update the source code inserting and updating generated code.
-The created program code is inserted after the comment that contains the Jamal macro.
+The Jamal module of Java::Geci contains is a code generator that generates code into your class based on Jamal templates.
+This way you can include some pseudo code in your class and have it translated into real code.
+The pseudo code is placed in a comment and the real code generated from it is inserted following the comment.
+
+Templates can be extremely powerful as all the Jamal macros and packages are available as well as the Java::Geci code generation Jamal macros.
+These macros can get information form the surrounding code and create code based on the list of classes, methods, fields and so on.
+This way it is a matter of minutes to create templates that generate setters with some specific needs you may have, code that moves data between different classes, methods that invoke other methods in a specific way and so on.
 
 Jamal is an extremely powerful macro language.
 The home page of Jamal is http://github.com/verhas/jamal.
 Using Jamal you can define and use macros defined earlier, and you can also use macros defined in Java code.
-There is a built-in set of Java programmed macros in the Jamal library, and another set is defined in the Java::Geci Jamal module.
 The set of the macros can also be extended in the application in the main or in the test sources or in libraries.
 
 The generator is not Java specific, although most of the support macros included in this module are based on Java reflection.
-The generator will run for all the files that are configured in the unit test that starts the code generation.
+The generator will run for all the files that are configured in the unit test that starts the code generation, or just for all the files if you have the testengine configured.
 
-The generator can also be started using the Java::Geci TestEngine link:../javageci-testengine/README.adoc[module].
+The generator starts automatically without crafting a unit test for it if you use the Java::Geci TestEngine link:../javageci-testengine/README.adoc[module].
 In that case all you have to do it add the module as a dependency to your project
 The code generation will run automatically along with the other JUnit 5 tests.
 
@@ -29,16 +31,6 @@ The Java source code using the Jamal module of Java::Geci is supposed to have th
     code will be generated here until a line that
       contains the // and the __END__ as on the next line
     //__END__
-
-== Note
-
-Every source file processing starts a new Jamal processor.
-It means that the different macros in the different files will not interfere with each other.
-You can, of course, `include` or `import` any file from the directory structure, as a resource from the classpath or from the network.
-`include` and `import` are basic Jamal features.
-
-The macro start string by default is set to `{%.
-The macro closing string by default is set to `%}`.
 
 == Examples
 
@@ -135,6 +127,17 @@ The difference between the two characters controls the macro evaluation order.
 These are used to further fine tune the evaluation order of the macros.
 
 For detailed information about these, and other built-in macros see the documentation of Jamal at https://github.com/verhas/jamal/blob/master/README.adoc
+
+[NOTE]
+====
+Every source file processing starts a new Jamal processor.
+It means that the different macros in the different files will not interfere with each other.
+You can, of course, `include` or `import` any file from the directory structure, as a resource from the classpath or from the network.
+`include` and `import` are basic Jamal features.
+
+The macro start string by default is set to `{%.
+The macro closing string by default is set to `%}`.
+====
 
 == Macros
 

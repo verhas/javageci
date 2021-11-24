@@ -8,6 +8,7 @@ module geci.testengine {
     requires org.junit.jupiter.engine;
     requires org.junit.jupiter.api;
     requires org.junit.platform.engine;
+    requires org.opentest4j;
     exports javax0.geci.jamal.junit5;
     provides org.junit.platform.engine.TestEngine with Engine;
 }

@@ -4,11 +4,11 @@
     <name>javageci core annotations</name>
     <packaging>jar</packaging>
     <artifactId>javageci-core-annotations</artifactId>
-    <version>1.6.4</version>
+    <version>1.6.5</version>
     <parent>
         <groupId>com.javax0.geci</groupId>
         <artifactId>javageci-parent</artifactId>
-        <version>1.6.4</version>
+        <version>1.6.5</version>
     </parent>
     <description>Javageci macro library annotation generator for core generators</description>
     <build>
