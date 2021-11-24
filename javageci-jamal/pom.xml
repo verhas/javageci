@@ -4,11 +4,11 @@
     <name>javageci jamal</name>
     <packaging>jar</packaging>
     <artifactId>javageci-jamal</artifactId>
-    <version>1.6.5</version>
+    <version>1.6.6</version>
     <parent>
         <groupId>com.javax0.geci</groupId>
         <artifactId>javageci-parent</artifactId>
-        <version>1.6.5</version>
+        <version>1.6.6</version>
     </parent>
     <description>Javageci jamal macro library</description>
     <build>
