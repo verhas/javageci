@@ -47,7 +47,7 @@
         <dependency>
             <groupId>com.javax0.jamal</groupId>
             <artifactId>jamal-testsupport</artifactId>
-            <version>1.10.0</version>
+            <version>1.10.1</version>
         </dependency>
     </dependencies>
 </project>
