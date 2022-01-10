@@ -18,11 +18,16 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
- * Reflection selector.
+ * This class is deprecated. The functionality was moved to a separate library. Use
+ *
+ *             {@code com.javax0:refi:1.0.0} or later
+ *
+ * instead.
  *
  * @param <T> the type of the member to test. Field, Class, Method etc.
  */
 @SuppressWarnings("DanglingJavadoc")
+@Deprecated
 public class Selector<T> {
 
     private static final int SYNTHETIC = 0x00001000;

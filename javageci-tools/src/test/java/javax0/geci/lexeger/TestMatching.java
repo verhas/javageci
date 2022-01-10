@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Modifier;
-import java.util.Collections;
 import java.util.regex.Pattern;
 
 import static javax0.geci.lexeger.LexpressionBuilder.character;

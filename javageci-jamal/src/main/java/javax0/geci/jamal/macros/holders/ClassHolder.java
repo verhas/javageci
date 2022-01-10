@@ -1,6 +1,5 @@
 package javax0.geci.jamal.macros.holders;
 
-import javax0.geci.jamal.util.EntityStringer;
 import javax0.jamal.api.BadSyntax;
 
 public class ClassHolder extends Holder<Class> {
@@ -16,8 +15,6 @@ public class ClassHolder extends Holder<Class> {
         }
         if (parameters.length == 1) {
             switch (parameters[0]) {
-                case "name":
-                    return object.getName();
                 case "simpleName":
                     return object.getSimpleName();
                 case "canonical":

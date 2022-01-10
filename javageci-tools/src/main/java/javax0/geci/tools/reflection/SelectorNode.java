@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+@Deprecated
 class SelectorNode {
 
     static class Or extends SelectorNode {

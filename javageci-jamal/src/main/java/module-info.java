@@ -18,6 +18,8 @@ module geci.jamal {
     requires jamal.engine;
     requires jamal.api;
     requires jamal.tools;
+    requires refi;
+
     requires org.junit.jupiter.engine;
     requires org.junit.jupiter.api;
     requires org.junit.platform.engine;

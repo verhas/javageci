@@ -1,5 +1,6 @@
 package javax0.geci.tools.reflection;
 
+@Deprecated
 public class Lexeme {
     public final String string;
     public final Type type;

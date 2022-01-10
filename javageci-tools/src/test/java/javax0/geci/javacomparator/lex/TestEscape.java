@@ -20,7 +20,7 @@ public class TestEscape {
     }
 
     @Test
-    @DisplayName("Method escape replaces the ocatal escape sequences to their corresponding character")
+    @DisplayName("Method escape replaces the octal escape sequences to their corresponding character")
     void testOctalEscape() {
         for (int i = 1; i < 256; i++) {
             int k = i;

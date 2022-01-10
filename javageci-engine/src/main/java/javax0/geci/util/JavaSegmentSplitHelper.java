@@ -2,7 +2,6 @@ package javax0.geci.util;
 
 import javax0.geci.engine.RegexBasedSegmentSplitHelper;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.regex.Pattern;
 

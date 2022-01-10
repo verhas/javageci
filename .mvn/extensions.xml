@@ -3,6 +3,6 @@
     <extension>
         <groupId>com.javax0.jamal</groupId>
         <artifactId>jamal-maven-extension</artifactId>
-        <version>1.9.1</version>
+        <version>1.10.4</version>
     </extension>
 </extensions>

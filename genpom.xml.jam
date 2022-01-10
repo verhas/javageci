@@ -30,7 +30,7 @@
                     <dependency>
                         <groupId>com.javax0.jamal</groupId>
                         <artifactId>jamal-yaml</artifactId>
-                        <version>1.7.9</version>
+                        <version>1.10.4</version>
                     </dependency>
                 </dependencies>
             [end plugin]

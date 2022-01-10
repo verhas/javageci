@@ -7,7 +7,7 @@ import javax0.geci.jamal.macros.holders.ImportsHolder;
 import javax0.geci.jamal.macros.holders.MethodHolder;
 import javax0.geci.jamal.macros.holders.MethodsHolder;
 import javax0.geci.tools.GeciReflectionTools;
-import javax0.geci.tools.reflection.Selector;
+import javax0.refi.selector.Selector;
 import javax0.jamal.api.BadSyntax;
 import javax0.jamal.api.InnerScopeDependent;
 import javax0.jamal.api.Input;

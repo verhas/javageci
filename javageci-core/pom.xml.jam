@@ -15,6 +15,6 @@
             {dependency :org.junit.jupiter:junit-jupiter-MODULE::}}
         {@for MODULE in (engine,snippet,io,plantuml,ruby,groovy,scriptbasic,yaml,cmd)=
             {dependency :com.javax0.jamal:jamal-MODULE:{JAMAL_VERSION}:test}}
-
+            {dependency :com.javax0:refi}
     }
 {end project}

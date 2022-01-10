@@ -1,7 +1,5 @@
 package javax0.geci.tools.reflection;
 
-import java.util.Arrays;
-
 /**
  * <ul>
  * <li>EXPRESSION ::= EXPRESSION1 ['|' EXPRESSION1 ]+ </li>
@@ -12,6 +10,7 @@ import java.util.Arrays;
  * <li>REGEX_MATCH ::= registered regex word '~' '/' regular expression '/'</li>
  * </ul>
  */
+@Deprecated
 class SelectorCompiler {
 
     private Lexer lexer;

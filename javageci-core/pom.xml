@@ -4,11 +4,11 @@
     <name>javageci core</name>
     <packaging>jar</packaging>
     <artifactId>javageci-core</artifactId>
-    <version>1.6.6</version>
+    <version>1.6.7-SNAPSHOT</version>
     <parent>
         <groupId>com.javax0.geci</groupId>
         <artifactId>javageci-parent</artifactId>
-        <version>1.6.6</version>
+        <version>1.6.7-SNAPSHOT</version>
     </parent>
     <description>Javageci generator library core code generators</description>
     <build>
@@ -59,56 +59,60 @@
         <dependency>
             <groupId>com.javax0.jamal</groupId>
             <artifactId>jamal-engine</artifactId>
-            <version>1.10.1</version>
+            <version>1.10.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.javax0.jamal</groupId>
             <artifactId>jamal-snippet</artifactId>
-            <version>1.10.1</version>
+            <version>1.10.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.javax0.jamal</groupId>
             <artifactId>jamal-io</artifactId>
-            <version>1.10.1</version>
+            <version>1.10.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.javax0.jamal</groupId>
             <artifactId>jamal-plantuml</artifactId>
-            <version>1.10.1</version>
+            <version>1.10.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.javax0.jamal</groupId>
             <artifactId>jamal-ruby</artifactId>
-            <version>1.10.1</version>
+            <version>1.10.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.javax0.jamal</groupId>
             <artifactId>jamal-groovy</artifactId>
-            <version>1.10.1</version>
+            <version>1.10.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.javax0.jamal</groupId>
             <artifactId>jamal-scriptbasic</artifactId>
-            <version>1.10.1</version>
+            <version>1.10.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.javax0.jamal</groupId>
             <artifactId>jamal-yaml</artifactId>
-            <version>1.10.1</version>
+            <version>1.10.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.javax0.jamal</groupId>
             <artifactId>jamal-cmd</artifactId>
-            <version>1.10.1</version>
+            <version>1.10.4</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.javax0</groupId>
+            <artifactId>refi</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -48,7 +48,7 @@ public class TestEcho {
     @DisplayName("Testing that echo( null) returns  null")
     void testEcho4(){
         final var sut = new Echo();
-        Assertions.assertEquals( null, sut.echo( null));
+        Assertions.assertNull(sut.echo(null));
     }
 
 //</editor-fold>

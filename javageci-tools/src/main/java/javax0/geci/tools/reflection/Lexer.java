@@ -24,6 +24,7 @@ package javax0.geci.tools.reflection;
  * <p>
  * Lexemes are returned as instances of {@link Lexeme}.
  */
+@Deprecated
 public class Lexer {
     private static final Lexeme EOF = new Lexeme("", Lexeme.Type.EOF);
     private final StringBuilder input;

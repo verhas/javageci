@@ -5,7 +5,7 @@
     <packaging>pom</packaging>
     <groupId>com.javax0.geci</groupId>
     <artifactId>javageci-parent</artifactId>
-    <version>1.6.6</version>
+    <version>1.6.7-SNAPSHOT</version>
     <description>Java GEnerate Code Inline source code generation framework</description>
     <modules>
         <module>javageci-engine</module>
@@ -52,12 +52,6 @@
         </repository>
     </distributionManagement>
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -66,48 +60,48 @@
                     <version>3.0.0-M4</version>
                     <configuration>
                         <argLine>
-                            --add-opens geci.api/javax0.geci.api=ALL-UNNAMED
-                            --add-opens geci.tools/javax0.geci.tools=ALL-UNNAMED
-                            --add-opens geci.tools/javax0.geci.tools.syntax=ALL-UNNAMED
-                            --add-opens geci.tools/javax0.geci.tools.reflection=ALL-UNNAMED
-                            --add-opens geci.tools/javax0.geci.javacomparator=ALL-UNNAMED
-                            --add-opens geci.tools/javax0.geci.lexeger=ALL-UNNAMED
-                            --add-opens geci.tools/javax0.geci.javacomparator.lex=ALL-UNNAMED
-                            --add-opens geci.engine/javax0.geci.util=ALL-UNNAMED
-                            --add-opens geci.engine/javax0.geci.toolsgen=ALL-UNNAMED
-                            --add-opens geci.engine/javax0.geci.engine=ALL-UNNAMED
-                            --add-opens geci.core/javax0.geci.fluent.syntax=ALL-UNNAMED
-                            --add-opens geci.core/javax0.geci.record=ALL-UNNAMED
-                            --add-opens geci.core/javax0.geci.repeated=ALL-UNNAMED
-                            --add-opens geci.core/javax0.geci.iterate=ALL-UNNAMED
-                            --add-opens geci.core/javax0.geci.jdocify=ALL-UNNAMED
-                            --add-opens geci.core/javax0.geci.mapper=ALL-UNNAMED
-                            --add-opens geci.core/javax0.geci=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.tutorials.simple=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.tutorials.hello=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.tutorials.hello=geci.tools
-                            --add-opens geci.examples/javax0.geci.buildfluent=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.consistency=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.tests.templated=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.tests.repeated=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.tests.mapper=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.tests.builder=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.test.tools.lexeger=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.tests.builder=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.tests.cloner=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.tests.configBuilder=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.tests.record=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.tests.accessor=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.tests.equals=ALL-UNNAMED
-                            --add-opens geci.examples/javax0.geci.jamal.test.tools.lexeger=ALL-UNNAMED
-                            --add-exports geci.examples/javax0.geci.tests.fluent=geci.tools
-                            --add-exports geci.examples/javax0.geci.tutorials.simple=geci.core
-                            --add-exports geci.examples/javax0.geci.tests.fluent=geci.core
-                            --add-exports geci.examples/javax0.geci.buildfluent=geci.core
-                            --add-exports geci.examples/javax0.geci.geci.jamal.reflection=ALL-UNNAMED
-                            --add-exports org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
-                            --add-exports org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
-                        </argLine>
+                                --add-opens geci.api/javax0.geci.api=ALL-UNNAMED
+                                --add-opens geci.tools/javax0.geci.tools=ALL-UNNAMED
+                                --add-opens geci.tools/javax0.geci.tools.syntax=ALL-UNNAMED
+                                --add-opens geci.tools/javax0.geci.tools.reflection=ALL-UNNAMED
+                                --add-opens geci.tools/javax0.geci.javacomparator=ALL-UNNAMED
+                                --add-opens geci.tools/javax0.geci.lexeger=ALL-UNNAMED
+                                --add-opens geci.tools/javax0.geci.javacomparator.lex=ALL-UNNAMED
+                                --add-opens geci.engine/javax0.geci.util=ALL-UNNAMED
+                                --add-opens geci.engine/javax0.geci.toolsgen=ALL-UNNAMED
+                                --add-opens geci.engine/javax0.geci.engine=ALL-UNNAMED
+                                --add-opens geci.core/javax0.geci.fluent.syntax=ALL-UNNAMED
+                                --add-opens geci.core/javax0.geci.record=ALL-UNNAMED
+                                --add-opens geci.core/javax0.geci.repeated=ALL-UNNAMED
+                                --add-opens geci.core/javax0.geci.iterate=ALL-UNNAMED
+                                --add-opens geci.core/javax0.geci.jdocify=ALL-UNNAMED
+                                --add-opens geci.core/javax0.geci.mapper=ALL-UNNAMED
+                                --add-opens geci.core/javax0.geci=ALL-UNNAMED
+                                --add-opens geci.examples/javax0.geci.tutorials.simple=ALL-UNNAMED
+                                --add-opens geci.examples/javax0.geci.tutorials.hello=ALL-UNNAMED
+                                --add-opens geci.examples/javax0.geci.tutorials.hello=geci.tools
+                                --add-opens geci.examples/javax0.geci.buildfluent=ALL-UNNAMED
+                                --add-opens geci.examples/javax0.geci.consistency=ALL-UNNAMED
+                                --add-opens geci.examples/javax0.geci.tests.templated=ALL-UNNAMED
+                                --add-opens geci.examples/javax0.geci.tests.repeated=ALL-UNNAMED
+                                --add-opens geci.examples/javax0.geci.tests.mapper=ALL-UNNAMED
+                                --add-opens geci.examples/javax0.geci.tests.builder=ALL-UNNAMED
+                                --add-opens geci.examples/javax0.geci.test.tools.lexeger=ALL-UNNAMED
+                                --add-opens geci.examples/javax0.geci.tests.builder=ALL-UNNAMED
+                                --add-opens geci.examples/javax0.geci.tests.cloner=ALL-UNNAMED
+                                --add-opens geci.examples/javax0.geci.tests.configBuilder=ALL-UNNAMED
+                                --add-opens geci.examples/javax0.geci.tests.record=ALL-UNNAMED
+                                --add-opens geci.examples/javax0.geci.tests.accessor=ALL-UNNAMED
+                                --add-opens geci.examples/javax0.geci.tests.equals=ALL-UNNAMED
+                                --add-opens geci.examples/javax0.geci.jamal.test.tools.lexeger=ALL-UNNAMED
+                                --add-exports geci.examples/javax0.geci.tests.fluent=geci.tools
+                                --add-exports geci.examples/javax0.geci.tutorials.simple=geci.core
+                                --add-exports geci.examples/javax0.geci.tests.fluent=geci.core
+                                --add-exports geci.examples/javax0.geci.buildfluent=geci.core
+                                --add-exports geci.examples/javax0.geci.geci.jamal.reflection=ALL-UNNAMED
+                                --add-exports org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
+                                --add-exports org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
+                            </argLine>
                     </configuration>
                     <dependencies>
                         <dependency>
@@ -168,42 +162,47 @@
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-api</artifactId>
-                <version>1.6.6</version>
+                <version>1.6.7-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-core</artifactId>
-                <version>1.6.6</version>
+                <version>1.6.7-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-tools</artifactId>
-                <version>1.6.6</version>
+                <version>1.6.7-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-engine</artifactId>
-                <version>1.6.6</version>
+                <version>1.6.7-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-annotation</artifactId>
-                <version>1.6.6</version>
+                <version>1.6.7-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-core-annotations</artifactId>
-                <version>1.6.6</version>
+                <version>1.6.7-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-jamal</artifactId>
-                <version>1.6.6</version>
+                <version>1.6.7-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.javax0.geci</groupId>
                 <artifactId>javageci-testengine</artifactId>
-                <version>1.6.6</version>
+                <version>1.6.7-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.javax0</groupId>
+                <artifactId>refi</artifactId>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -220,67 +219,67 @@
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-engine</artifactId>
-                <version>1.10.1</version>
+                <version>1.10.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-testsupport</artifactId>
-                <version>1.10.1</version>
+                <version>1.10.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-snippet</artifactId>
-                <version>1.10.1</version>
+                <version>1.10.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-io</artifactId>
-                <version>1.10.1</version>
+                <version>1.10.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-plantuml</artifactId>
-                <version>1.10.1</version>
+                <version>1.10.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-ruby</artifactId>
-                <version>1.10.1</version>
+                <version>1.10.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-groovy</artifactId>
-                <version>1.10.1</version>
+                <version>1.10.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-scriptbasic</artifactId>
-                <version>1.10.1</version>
+                <version>1.10.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-yaml</artifactId>
-                <version>1.10.1</version>
+                <version>1.10.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-tools</artifactId>
-                <version>1.10.1</version>
+                <version>1.10.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.javax0.jamal</groupId>
                 <artifactId>jamal-api</artifactId>
-                <version>1.10.1</version>
+                <version>1.10.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -296,6 +295,20 @@
             <id>release</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -313,20 +326,6 @@
                                 <version>1.4.15</version>
                             </dependency>
                         </dependencies>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>

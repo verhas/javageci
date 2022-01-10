@@ -4,9 +4,6 @@ import javax0.geci.api.Segment;
 import javax0.geci.tools.GeciReflectionTools;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import static javax0.geci.tools.CaseTools.ucase;
 

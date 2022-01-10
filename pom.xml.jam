@@ -20,102 +20,105 @@
         {snapshotRepository |ossrh|https://oss.sonatype.org/content/repositories/snapshots}
         {repository |ossrh|https://oss.sonatype.org/service/local/staging/deploy/maven2/}
     }
-    {build|
-            {plugins|
-                {plugin|{GAV :org.sonatype.plugins:nexus-staging-maven-plugin: }}
-            }
-            {pluginManagement|{plugins|
-                {plugin|
-                    {GAV :org.apache.maven.plugins:maven-surefire-plugin:{SUREFIRE_VERSION}}
-                    {configuration|
-                        {argLine|
-                            {opens/api/api}
-                          {@for $P in (tools,tools.syntax,tools.reflection,javacomparator,lexeger,javacomparator.lex)=
-                            {opens/tools/$P}}
-                          {@for $P in (util,toolsgen,engine)=
-                            {opens/engine/$P}}
-                          {@for $P in (fluent.syntax,record,repeated,iterate,jdocify,mapper)=
-                            {opens/core/$P}}
-                            --add-opens geci.core/javax0.geci=ALL-UNNAMED
-                          {@for $P in (tutorials.simple,tutorials.hello,tutorials.hello/geci.tools)=
-                            {opens/examples/$P}}
-                          {@for $P in (buildfluent,consistency)=
-                            {opens/examples/$P}}
-                          {@for $P in (tests.templated,tests.repeated,tests.mapper,tests.builder,test.tools.lexeger,tests.builder,tests.cloner,tests.configBuilder,tests.record,tests.accessor,tests.equals,jamal.test.tools.lexeger)=
-                            {opens/examples/$P}}
-                          {@for $P in (tests.fluent/geci.tools,tutorials.simple/geci.core,tests.fluent/geci.core,buildfluent/geci.core,geci.jamal.reflection)=
-                            {exports/examples/$P}}
-                          {@for $P in (util,logging)=
-                            --add-exports org.junit.platform.commons/org.junit.platform.commons.$P=ALL-UNNAMED}
+    {build}
+            {pluginManagement}
+                {plugins|
+                    {plugin|
+                        {GAV :org.apache.maven.plugins:maven-surefire-plugin:{SUREFIRE_VERSION}}
+                        {configuration|
+                            {argLine|
+                                {opens/api/api}
+                              {@for $P in (tools,tools.syntax,tools.reflection,javacomparator,lexeger,javacomparator.lex)=
+                                {opens/tools/$P}}
+                              {@for $P in (util,toolsgen,engine)=
+                                {opens/engine/$P}}
+                              {@for $P in (fluent.syntax,record,repeated,iterate,jdocify,mapper)=
+                                {opens/core/$P}}
+                                --add-opens geci.core/javax0.geci=ALL-UNNAMED
+                              {@for $P in (tutorials.simple,tutorials.hello,tutorials.hello/geci.tools)=
+                                {opens/examples/$P}}
+                              {@for $P in (buildfluent,consistency)=
+                                {opens/examples/$P}}
+                              {@for $P in (tests.templated,tests.repeated,tests.mapper,tests.builder,test.tools.lexeger,tests.builder,tests.cloner,tests.configBuilder,tests.record,tests.accessor,tests.equals,jamal.test.tools.lexeger)=
+                                {opens/examples/$P}}
+                              {@for $P in (tests.fluent/geci.tools,tutorials.simple/geci.core,tests.fluent/geci.core,buildfluent/geci.core,geci.jamal.reflection)=
+                                {exports/examples/$P}}
+                              {@for $P in (util,logging)=
+                                --add-exports org.junit.platform.commons/org.junit.platform.commons.$P=ALL-UNNAMED}
+                            }
+                        }
+                        {dependencies|
+                            {dependency :org.junit.jupiter:junit-jupiter-engine:{JUPITER_VERSION}:}
                         }
                     }
-                    {dependencies|
-                        {dependency :org.junit.jupiter:junit-jupiter-engine:{JUPITER_VERSION}:}
+                    {plugin|
+                        {GAV :org.apache.maven.plugins:maven-source-plugin:{MAVEN_SOURCE_PLUGIN_VERSION}}
+                        {executions|
+                            {execution|
+                                {id|attach-sources}
+                                {goals|{goal|jar}}
+                            }
+                        }
                     }
-                }
-                {plugin|
-                    {GAV :org.apache.maven.plugins:maven-source-plugin:{MAVEN_SOURCE_PLUGIN_VERSION}}
-                    {executions|
-                        {execution|
-                            {id|attach-sources}
-                            {goals|{goal|jar}}
+                    {plugin|
+                        {GAV :org.apache.maven.plugins:maven-javadoc-plugin:{MAVEN_JAVADOC_PLUGIN_VERSION}}
+                        {configuration|{detectOfflineLinks|false}}
+                        {executions|{execution|{id|attach-javadocs}{goals|{goal|jar}}}}
+                    }
+                    {plugin|
+                        {GAV :org.apache.maven.plugins:maven-compiler-plugin:{MAVEN_COMPILER_PLUGIN_VERSION}}
+                        {configuration|
+                            {release :{JAVA_RELEASE}}
                         }
                     }
                 }
-                {plugin|
-                    {GAV :org.apache.maven.plugins:maven-javadoc-plugin:{MAVEN_JAVADOC_PLUGIN_VERSION}}
-                    {configuration|{detectOfflineLinks|false}}
-                    {executions|{execution|{id|attach-javadocs}{goals|{goal|jar}}}}
-                }
-                {plugin|
-                    {GAV :org.apache.maven.plugins:maven-compiler-plugin:{MAVEN_COMPILER_PLUGIN_VERSION}}
-                    {configuration|
-                        {release :{JAVA_RELEASE}}
-                    }
-                }
-            }
-        }
+        {end pluginManagement}
         {resources|
             {resource|
                 {directory :src/main/resources}
                 {filtering :true}
             }
         }
-    }
+    {end build}
+
     {dependencyManagement|
         {dependencies|
             {@for MODULE in (api,core,tools,engine,annotation,core-annotations,jamal,testengine)={dependency :{GROUPID}:javageci-MODULE:{VERSION}:}}
+            {dependency :com.javax0:refi:{REFI_VERSION}}
+
+            {@comment TEST DEPENDENCIES}
+
             {@for MODULE in (api,engine)={dependency :org.junit.jupiter:junit-jupiter-MODULE:{JUPITER_VERSION}:test}}
             {@for MODULE in (engine,testsupport,snippet,io,plantuml,ruby,groovy,scriptbasic,yaml,tools,api)={dependency :com.javax0.jamal:jamal-MODULE:{JAMAL_VERSION}:test}}
             {dependency :org.assertj:assertj-core:{ASSERTJ_VERSION}:test}
         }
     }
 
-    {profiles|
-        {profile release}
-            {build|
-                {plugins|
-                    {plugin|
-                          {GAV :org.sonatype.plugins:nexus-staging-maven-plugin:{NEXUS_STAGING_MAVEN_PLUGIN}}
-                          {extensions :true}
-                          {configuration|
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                          }
-                          {@comment Remove after OSSRH-66257, NEXUS-26993 are fixed, possibly via https://github.com/sonatype/nexus-maven-plugins/pull/91}
-                          {dependencies {dependency :com.thoughtworks.xstream:xstream:1.4.15}}
-                    }
-                    {plugin|
-                        {GAV :org.apache.maven.plugins:maven-gpg-plugin:1.6}
-                        {executions|{execution
-                            {id :sign-artifacts}
-                            {phase :verify}
-                            {goals|{goal :sign}}
-                        }}
-                    }
-                }
-           }
-        {end profile}
-    }
+{#thinXml
+profiles>profile> {@comment Use this profile to upload a new release to Maven Central using mvn deploy -Prelease}
+    id>release
+    build>plugins>
+      plugin>
+        groupId>org.apache.maven.plugins
+        artifactId>maven-gpg-plugin
+        version>{MAVEN_GPG_PLUGIN_VERSION}
+        executions>execution>
+            id>sign-artifacts
+            phase>verify
+            goals>goal>sign
+      plugin>
+        groupId>org.sonatype.plugins
+        artifactId>nexus-staging-maven-plugin
+        version>{NEXUS_STAGING_MAVEN_PLUGIN}
+        extensions>true
+        configuration>
+           serverId>ossrh
+           nexusUrl>https://oss.sonatype.org/
+           autoReleaseAfterClose>true
+        dependencies>dependency>
+           groupId>com.thoughtworks.xstream
+           artifactId>xstream
+           version>1.4.15
+}
+
 {end project}

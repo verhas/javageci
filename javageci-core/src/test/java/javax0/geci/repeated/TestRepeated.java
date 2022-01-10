@@ -2,7 +2,6 @@ package javax0.geci.repeated;
 
 import javax0.geci.api.GeciException;
 import javax0.geci.engine.Source;
-import javax0.geci.repeated.sutclasses.ContainsTemplate;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.CompoundParamsBuilder;
 import org.junit.jupiter.api.Assertions;

@@ -10,7 +10,7 @@ import javax0.geci.tools.AbstractFilteredFieldsGenerator;
 import javax0.geci.tools.CaseTools;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
-import javax0.geci.tools.reflection.Selector;
+import javax0.refi.selector.Selector;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -70,9 +70,9 @@ import static javax0.geci.lexeger.LexpressionBuilder.zeroOrMore;
 @AnnotationBuilder
 public class Record extends AbstractFilteredFieldsGenerator {
 
-    private static final Selector<Field> NON_STATIC = Selector.compile("! static ");
-    private static Selector<Field> NON_FINAL__NON_STATIC = Selector.compile("!final & ! static ");
-    private static final Selector<Method> VOID = Selector.compile("void");
+    private static final Selector<?> NON_STATIC = Selector.compile("! static ");
+    private static final Selector<?> NON_FINAL__NON_STATIC = Selector.compile("!final & ! static ");
+    private static final Selector<?> VOID = Selector.compile("void");
 
     private static class Config {
         private String filter;
@@ -261,7 +261,7 @@ public class Record extends AbstractFilteredFieldsGenerator {
         }
     }
 
-    private static final Selector<Class<?>> NOT_FINAL = Selector.compile("!final");
+    private static final Selector<?> NOT_FINAL = Selector.compile("!final");
 
     /**
      * If the class is not final then insert the {@code final} modifier

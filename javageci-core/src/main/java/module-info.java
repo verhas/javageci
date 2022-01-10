@@ -3,6 +3,7 @@ module geci.core {
     requires geci.api;
     requires geci.core.annotations;
     requires geci.tools;
+    requires refi;
 
     exports javax0.geci.accessor;
     exports javax0.geci.annotationbuilder;

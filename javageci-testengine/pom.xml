@@ -4,11 +4,11 @@
     <name>javageci testengine</name>
     <packaging>jar</packaging>
     <artifactId>javageci-testengine</artifactId>
-    <version>1.6.6</version>
+    <version>1.6.7-SNAPSHOT</version>
     <parent>
         <groupId>com.javax0.geci</groupId>
         <artifactId>javageci-parent</artifactId>
-        <version>1.6.6</version>
+        <version>1.6.7-SNAPSHOT</version>
     </parent>
     <description>Javageci Junit 5 Test Engine</description>
     <build>

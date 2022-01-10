@@ -3,12 +3,11 @@ package javax0.geci.jamal.macros;
 import javax0.geci.jamal.macros.holders.ImportsHolder;
 import javax0.geci.jamal.util.EntityStringer;
 import javax0.geci.tools.GeciReflectionTools;
-import javax0.geci.tools.reflection.Selector;
+import javax0.refi.selector.Selector;
 import javax0.jamal.api.BadSyntax;
 import javax0.jamal.api.InnerScopeDependent;
 import javax0.jamal.api.Input;
 import javax0.jamal.api.Macro;
-import javax0.jamal.api.ObjectHolder;
 import javax0.jamal.api.Processor;
 import javax0.jamal.tools.Params;
 

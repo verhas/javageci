@@ -8,7 +8,7 @@ import javax0.geci.tools.AbstractFilteredFieldsGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.MethodTool;
-import javax0.geci.tools.reflection.Selector;
+import javax0.refi.selector.Selector;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

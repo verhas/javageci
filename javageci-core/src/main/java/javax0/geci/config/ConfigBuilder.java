@@ -8,7 +8,7 @@ import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CaseTools;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
-import javax0.geci.tools.reflection.Selector;
+import javax0.refi.selector.Selector;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -82,7 +82,7 @@ public class ConfigBuilder extends AbstractJavaGenerator {
         }
     }
 
-    private void generateMnemonic(Segment segment, Config local, Class klass) {
+    private void generateMnemonic(Segment segment, Config local, Class<?> klass) {
         if (mnemonicIsConfigurable(local)) {
             segment.write("private String configuredMnemonic = \"%s\";", local.configurableMnemonic)
                     .newline();

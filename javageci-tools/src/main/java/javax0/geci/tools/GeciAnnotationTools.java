@@ -4,7 +4,7 @@ import javax0.geci.annotations.Geci;
 import javax0.geci.annotations.Generated;
 import javax0.geci.api.GeciException;
 import javax0.geci.api.Source;
-import javax0.geci.tools.reflection.Selector;
+import javax0.refi.selector.Selector;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;

@@ -8,4 +8,5 @@ module geci.tools {
     requires geci.annotation;
     requires geci.api;
     requires java.logging;
+    requires refi;
 }

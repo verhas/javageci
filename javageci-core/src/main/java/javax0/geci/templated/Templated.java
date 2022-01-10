@@ -9,7 +9,7 @@ import javax0.geci.tools.AbstractJavaGenerator;
 import javax0.geci.tools.CompoundParams;
 import javax0.geci.tools.GeciReflectionTools;
 import javax0.geci.tools.TemplateLoader;
-import javax0.geci.tools.reflection.Selector;
+import javax0.refi.selector.Selector;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

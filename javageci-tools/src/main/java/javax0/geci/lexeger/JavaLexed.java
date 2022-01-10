@@ -2,7 +2,6 @@ package javax0.geci.lexeger;
 
 import javax0.geci.api.Source;
 import javax0.geci.javacomparator.LexicalElement;
-import javax0.geci.javacomparator.lex.Escape;
 import javax0.geci.javacomparator.lex.Lexer;
 import javax0.geci.lexeger.matchers.Lexpression;
 

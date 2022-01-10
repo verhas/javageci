@@ -3,7 +3,7 @@ package javax0.geci.tools;
 import javax0.geci.annotations.Geci;
 import javax0.geci.api.GeciException;
 import javax0.geci.tools.reflection.ModifiersBuilder;
-import javax0.geci.tools.reflection.Selector;
+import javax0.refi.selector.Selector;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
@@ -33,8 +33,8 @@ import static java.lang.reflect.Modifier.isPublic;
 public class GeciReflectionTools {
 
     public static final int PACKAGE = 0x00010000;
-    private static final Selector inheritedField = Selector.compile("!static & !private");
-    private static final Selector inheritedFieldDifferentPackage = Selector.compile("!static & !private & !package");
+    private static final Selector<?> inheritedField = Selector.compile("!static & !private");
+    private static final Selector<?> inheritedFieldDifferentPackage = Selector.compile("!static & !private & !package");
     private static final Map<String, Class<?>> PRIMITIVES = Map.of(
         "byte", byte.class,
         "char", char.class,
@@ -70,7 +70,7 @@ public class GeciReflectionTools {
     public static class Invoker {
         private String methodName;
         private Object target;
-        Class[] types;
+        Class<?>[] types;
 
         public Invoker1 on(Object target) {
             this.target = target;
@@ -78,7 +78,7 @@ public class GeciReflectionTools {
         }
 
         public class Invoker1 {
-            public Invoker2 types(Class... types) {
+            public Invoker2 types(Class<?>... types) {
                 Invoker.this.types = types;
                 return new Invoker2();
             }
@@ -163,7 +163,7 @@ public class GeciReflectionTools {
     }
 
     /**
-     * Get the type of a field or a method as string.
+     * Get a field's or a method's type as string.
      *
      * @param member of which the type is needed
      * @return string containing the type as string with all the generics.
@@ -178,7 +178,7 @@ public class GeciReflectionTools {
     /**
      * Normalize a generic type name removing all {@code java.lang.} from the type names.
      * <p>
-     * Even the generated code should be human readable, especially when you debug the working of the code. In that case
+     * Even the generated code should be human-readable, especially when you debug the working of the code. In that case
      * the generic names with all the {@code java.lang.String}, {@code java.lang.Integer} and so on are disturbing. This
      * method removes those prefixes.
      * <p>
@@ -246,7 +246,7 @@ public class GeciReflectionTools {
         if (t instanceof ParameterizedType) {
             normalizedName = getGenericParametrizedTypeName((ParameterizedType) t);
         } else if (t instanceof Class<?>) {
-            normalizedName = removeJavaLang(((Class) t).getCanonicalName());
+            normalizedName = removeJavaLang(((Class<?>) t).getCanonicalName());
         } else if (t instanceof WildcardType) {
             normalizedName = getGenericWildcardTypeName((WildcardType) t);
         } else if (t instanceof GenericArrayType) {
@@ -330,7 +330,7 @@ public class GeciReflectionTools {
         if (!(t.getRawType() instanceof Class<?>)) {
             throw new GeciException("'getRawType()' returned something that is not a class : " + t.getClass().getTypeName());
         }
-        final var klass = (Class) t.getRawType();
+        final var klass = (Class<?>) t.getRawType();
         final String klassName = removeJavaLang(klass.getCanonicalName());
         if (types.length > 0) {
             normalizedName = klassName + "<" +
@@ -472,9 +472,9 @@ public class GeciReflectionTools {
     }
 
     private static boolean isNotOverridden(Method currentMethod, ArrayList<Method> allMethods) {
-        return !allMethods.stream()
+        return allMethods.stream()
             .filter(method -> method.getName().equals(currentMethod.getName()))
-            .anyMatch(method -> Arrays.deepEquals(method.getParameterTypes(), currentMethod.getParameterTypes()));
+            .noneMatch(method -> Arrays.deepEquals(method.getParameterTypes(), currentMethod.getParameterTypes()));
     }
 
     private static boolean isVisible(Method method, boolean samePackage) {
@@ -492,13 +492,13 @@ public class GeciReflectionTools {
      * soring order is not guaranteed. Sorting only guarantees that the returned array contains the classes in the same
      * order even if the code runs on different JVMs.
      */
-    public static Class[] getAllClassesSorted(Class<?> klass) {
+    public static Class<?>[] getAllClassesSorted(Class<?> klass) {
         final var classes = Arrays.stream(klass.getClasses()).collect(Collectors.toSet());
         final var declaredClasses = Arrays.stream(klass.getDeclaredClasses()).collect(Collectors.toSet());
         final var allClasses = new HashSet<Class<?>>();
         allClasses.addAll(classes);
         allClasses.addAll(declaredClasses);
-        final Class[] classArray = allClasses.toArray(new Class[0]);
+        final Class<?>[] classArray = allClasses.toArray(new Class[0]);
         Arrays.sort(classArray, Comparator.comparing(Class::getName));
         return classArray;
     }
@@ -512,7 +512,7 @@ public class GeciReflectionTools {
      * @param klass class of which the member classes are returned
      * @return the sorted array of the classes
      */
-    public static Class[] getDeclaredClassesSorted(Class<?> klass) {
+    public static Class<?>[] getDeclaredClassesSorted(Class<?> klass) {
         final var classes = klass.getDeclaredClasses();
         Arrays.sort(classes, Comparator.comparing(Class::getName));
         return classes;
@@ -525,7 +525,7 @@ public class GeciReflectionTools {
      * @param klass the class of which we need the classes
      * @return the array of the classes of the class
      */
-    public static Class[] getClassesSorted(Class<?> klass) {
+    public static Class<?>[] getClassesSorted(Class<?> klass) {
         final var classes = klass.getClasses();
         Arrays.sort(classes, Comparator.comparing(Class::getName));
         return classes;
