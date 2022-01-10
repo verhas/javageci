@@ -21,14 +21,12 @@ public class ImportsHolder extends Holder<String[]> {
     }
 
 
-    public static String[] instance(Processor processor){
-        final var importsOp = processor.getRegister().getUserDefined(ImportsHolder.NAME).filter(c -> c instanceof ObjectHolder<?>);
-        final String[] imports;
-        if (importsOp.isPresent()) {
-            imports = (String[]) ((ObjectHolder<?>) importsOp.get()).getObject();
-        } else {
-            imports = null;
-        }
+    public static String[] instance(Processor processor) {
+        final String[] imports = processor.getRegister()
+            .getUserDefined(ImportsHolder.NAME)
+            .filter(c -> c instanceof ObjectHolder<?>)
+            .map(identified -> (String[]) ((ObjectHolder<?>) identified).getObject())
+            .orElse(null);
         return imports;
     }
 

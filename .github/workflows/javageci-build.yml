@@ -12,7 +12,6 @@ jobs:
     - name: Set up JDK 11
       uses: actions/setup-java@v2
       with: {java-version: '11', distribution: adopt}
-    - {name: Create POM files, run: mvn -f genpom.xml}
     - {name: Build with Maven, run: mvn -B package --file pom.xml}
   windows-latest:
     runs-on: windows-latest
@@ -21,7 +20,6 @@ jobs:
     - name: Set up JDK 11
       uses: actions/setup-java@v2
       with: {java-version: '11', distribution: adopt}
-    - {name: Create POM files, run: mvn -f genpom.xml}
     - {name: Build with Maven, run: mvn -B package --file pom.xml}
   windows-2016:
     runs-on: windows-2016
@@ -30,7 +28,6 @@ jobs:
     - name: Set up JDK 11
       uses: actions/setup-java@v2
       with: {java-version: '11', distribution: adopt}
-    - {name: Create POM files, run: mvn -f genpom.xml}
     - {name: Build with Maven, run: mvn -B package --file pom.xml}
   ubuntu-18:
     runs-on: ubuntu-18.04
@@ -39,7 +36,6 @@ jobs:
     - name: Set up JDK 11
       uses: actions/setup-java@v2
       with: {java-version: '11', distribution: adopt}
-    - {name: Create POM files, run: mvn -f genpom.xml}
     - {name: Build with Maven, run: mvn -B package --file pom.xml}
   macos-latest:
     runs-on: macos-latest
@@ -48,5 +44,4 @@ jobs:
     - name: Set up JDK 11
       uses: actions/setup-java@v2
       with: {java-version: '11', distribution: adopt}
-    - {name: Create POM files, run: mvn -f genpom.xml}
     - {name: Build with Maven, run: mvn -B package --file pom.xml}

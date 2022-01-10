@@ -6,8 +6,6 @@
   with:
     java-version: '11'
     distribution: 'adopt'
-- name: Create POM files
-  run: mvn -f genpom.xml
 - name: Build with Maven
   run: mvn -B package --file pom.xml
 %}

@@ -32,6 +32,11 @@
                         <artifactId>jamal-yaml</artifactId>
                         <version>1.10.4</version>
                     </dependency>
+                    <dependency>
+                        <groupId>com.javax0.jamal</groupId>
+                        <artifactId>jamal-snippet</artifactId>
+                        <version>1.10.4</version>
+                    </dependency>
                 </dependencies>
             [end plugin]
         [end plugins]
