@@ -1,22 +1,20 @@
 package javax0.geci.javacomparator.lex;
 
 import javax0.geci.api.GeciException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class TestEscape {
     @Test
     @DisplayName("Method escape replaces the usual escape sequences to their corresponding character")
     void testUsualEscape() {
-        assertThat(Escape.escape("new line\\nline feed\\rtab-character\\t" +
+        Assertions.assertEquals(Escape.escape("new line\\nline feed\\rtab-character\\t" +
                 "backspace\\bform-feed\\fbackslash\\\\" +
-                "apostrophe\\'quote\\\""))
-                .isEqualTo("new line\nline feed\rtab-character\t" +
-                        "backspace\bform-feed\fbackslash\\" +
-                        "apostrophe'quote\"");
+                "apostrophe\\'quote\\\""), "new line\nline feed\rtab-character\t" +
+                "backspace\bform-feed\fbackslash\\" +
+                "apostrophe'quote\"");
     }
 
     @Test
@@ -29,23 +27,20 @@ public class TestEscape {
                 oct = "" + k % 8 + oct;
                 k /= 8;
             }
-            assertThat(Escape.escape("this is a \\" + oct + " octal char"))
-                    .isEqualTo("this is a " + Character.toString((char)i) + " octal char");
+            Assertions.assertEquals(Escape.escape("this is a \\" + oct + " octal char"), "this is a " + Character.toString((char) i) + " octal char");
         }
     }
 
     @Test
     @DisplayName("Method escape throws an exception when escape sequence is invalid")
     void testInvalidEscape() {
-        assertThatThrownBy(() -> Escape.escape("wuff \\k invalid"))
-                .isInstanceOf(IllegalArgumentException.class);
+        Assertions.assertThrows(IllegalArgumentException.class,() -> Escape.escape("wuff \\k invalid"));
     }
 
     @Test
     @DisplayName("Method escape throws an exception when escape char is at the last position")
     void testEscapeAtLastPosition() {
-        assertThatThrownBy(() -> Escape.escape("wuff \\"))
-                .isInstanceOf(IllegalArgumentException.class);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Escape.escape("wuff \\"));
     }
 
     @Test
@@ -55,9 +50,9 @@ public class TestEscape {
         final StringBuilder output = new StringBuilder();
         final StringBuilder original = new StringBuilder();
         Escape.handleNormalCharacter(sb, output, original);
-        assertThat(sb.length()).isEqualTo(0);
-        assertThat(output.toString()).isEqualTo("a");
-        assertThat(original.toString()).isEqualTo("a");
+        Assertions.assertEquals(sb.length(), 0);
+        Assertions.assertEquals(output.toString(), "a");
+        Assertions.assertEquals(original.toString(), "a");
     }
 
     @Test
@@ -66,8 +61,7 @@ public class TestEscape {
         final StringBuilder sb = new StringBuilder("\n");
         final StringBuilder output = new StringBuilder();
         final StringBuilder original = new StringBuilder();
-        assertThatThrownBy(() -> Escape.handleNormalCharacter(sb, output, original))
-                .isInstanceOf(GeciException.class);
+        Assertions.assertThrows(GeciException.class,() -> Escape.handleNormalCharacter(sb, output, original));
     }
 
     @Test
@@ -76,8 +70,7 @@ public class TestEscape {
         final StringBuilder sb = new StringBuilder("\r");
         final StringBuilder output = new StringBuilder();
         final StringBuilder original = new StringBuilder();
-        assertThatThrownBy(() -> Escape.handleNormalCharacter(sb, output, original))
-                .isInstanceOf(GeciException.class);
+        Assertions.assertThrows(GeciException.class,() -> Escape.handleNormalCharacter(sb, output, original));
     }
 
     @Test
@@ -88,23 +81,21 @@ public class TestEscape {
         final StringBuilder original = new StringBuilder();
         while (sb.length() > 0)
             Escape.handleNormalMultiLineStringCharacter(sb, output, original);
-        assertThat(sb.length()).isEqualTo(0);
-        assertThat(output.toString()).isEqualTo("a\n\nb\nc\nd");
-        assertThat(original.toString()).isEqualTo("a\n\r\nb\r\rc\rd");
+        Assertions.assertEquals(sb.length(), 0);
+        Assertions.assertEquals(output.toString(), "a\n\nb\nc\nd");
+        Assertions.assertEquals(original.toString(), "a\n\r\nb\r\rc\rd");
     }
 
     @Test
     @DisplayName("Create output creates a StringBuilder when the string is long enough")
     void createOutputCreatesOutput() {
-        assertThat(Escape.createOutput(new StringBuilder("aa"), "aa").length())
-                .isEqualTo(0);
+        Assertions.assertEquals(Escape.createOutput(new StringBuilder("aa"), "aa").length(), 0);
     }
 
     @Test
     @DisplayName("Create output creates throws up if string is short")
     void createOutputThrows() {
-        assertThatThrownBy(() -> Escape.createOutput(new StringBuilder("a"), "a"))
-                .isInstanceOf(IllegalArgumentException.class);
+        Assertions.assertThrows(IllegalArgumentException.class,() -> Escape.createOutput(new StringBuilder("a"), "a"));
     }
 
 }

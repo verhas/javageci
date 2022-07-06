@@ -1,9 +1,10 @@
+{@comment
 This file defines the version of the project. This is more effective than defining the project
 version in a maven property because that cannot be used to reference the parent.
 
 -- the current version of the project as in the development. When releasing it has to be modified here and then
 -- you have to execute `mvn -f genpom.xml` to generate all the pom.xml files
-
+}
 
 {@define VERSION=1.6.7-SNAPSHOT}
 
@@ -26,13 +27,14 @@ version in a maven property because that cannot be used to reference the parent.
 {@define MODULE_PREFIX=geci.}
 
 -- the different plugin and dependency versions we use
-{@define JUPITER_VERSION=5.2.0}
-{@define SUREFIRE_VERSION=3.0.0-M4}
-{@define MAVEN_SOURCE_PLUGIN_VERSION=3.2.1}
-{@define MAVEN_COMPILER_PLUGIN_VERSION=3.8.1}
-{@define MAVEN_JAVADOC_PLUGIN_VERSION=3.2.0}
-{@define MAVEN_GPG_PLUGIN_VERSION=3.0.1}
-{@define JAMAL_VERSION=1.10.4}
-{@define ASSERTJ_VERSION=3.9.1}
-{@define NEXUS_STAGING_MAVEN_PLUGIN=1.6.8}
-{@define REFI_VERSION=1.0.0}
+{@define JUPITER_VERSION=5.2.0}                      -- https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api
+{@define SUREFIRE_PLUGIN_VERSION=3.0.0-M5}           -- https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-surefire-plugin
+{@define MAVEN_SOURCE_PLUGIN_VERSION=3.2.1}          -- https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-source-plugin
+{@define MAVEN_COMPILER_PLUGIN_VERSION=3.9.0}        -- https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-compiler-plugin
+{@define MAVEN_JAVADOC_PLUGIN_VERSION=3.3.1}         -- https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-javadoc-plugin
+{@define MAVEN_GPG_PLUGIN_VERSION=3.0.1}             -- https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-gpg-plugin
+{@define ASSERTJ_VERSION=3.9.1}                      -- https://repo.maven.apache.org/maven2/org/assertj/assertj-core
+{@define SONATYPE_PLUGIN_VERSION=1.6.13}             -- https://repo.maven.apache.org/maven2/org/sonatype/plugins/nexus-staging-maven-plugin
+{@define LEVENSHTEIN_VERSION=1.0.0}                  -- https://repo.maven.apache.org/maven2/com/javax0/levenshtein
+{@define JAMAL_VERSION=1.12.2}                       -- https://repo.maven.apache.org/maven2/com/javax0/jamal
+{@define REFI_VERSION=1.0.1}

@@ -3,7 +3,7 @@
 {%#define VERSION={%pom /project/version/text()%}%}\
 == Java Generate Code Inline
 
-Read "link:CONTRIBUTE.md[how to contribute]".
+Read link:CONTRIBUTE.md["how to contribute"].
 
 Java::Geci is a library for generating Java code.
 You can execute code generation programs using Java::Geci to generate new source code or modify existing Java source files.

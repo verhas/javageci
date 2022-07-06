@@ -13,8 +13,8 @@
             {dependency :{GROUPID}:javageci-MODULE::}}
         {@for MODULE in (api,engine)=
             {dependency :org.junit.jupiter:junit-jupiter-MODULE::}}
-        {dependency :org.assertj:assertj-core::}
         {dependency :com.javax0:refi:}
+        {dependency :com.javax0:levenshtein:}
 
     }
 {end project}

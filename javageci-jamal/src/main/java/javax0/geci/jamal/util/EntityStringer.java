@@ -11,14 +11,14 @@ import java.util.stream.Collectors;
 
 /**
  * Entity is a field or a method. Stringer is something that converts to and from string. This class can convert a field
- * (not the value of the field, but the field as in reflection) or a method to string and it can also do the conversion
+ * (not the value of the field, but the field as in reflection) or a method to string, and it can also do the conversion
  * the other way.
- *
- * <p> Methods in this class convert fields or methods to string and back. The Jamal macros that list fields or methods
+ * <p>
+ * Methods in this class convert fields or methods to string and back. The Jamal macros that list fields or methods
  * return comma separated list of fields, or methods. When other macros in a loop work with these strings they need to
  * get the actual methods and fields to work with during code generation.
- *
- * <p> The string format was designed so that this is also human readable, easy to parse, unique for each field and
+ * <p>
+ * The string format was designed so that this is also human-readable, easy to parse, unique for each field and
  * method and do not interfere with the comma separated macro list handling.
  */
 public class EntityStringer {
@@ -28,35 +28,31 @@ public class EntityStringer {
      * Convert a possibly fully qualified class name to class name that can be used inside the source code of a class
      * that declares imports.
      *
-     * @param fqClassName the name of the class to be converted
-     * @param imports     the list of the imported classes as they stand after the {@code import} keyword. It can also
-     *                    be null. In that case no conversion is done of the class name.
+     * @param fqName  the name of the class to be converted
+     * @param imports the list of the imported classes as they stand after the {@code import} keyword. It can also
+     *                be null. In that case no conversion is done of the class name.
      * @return the converted class name, that does not contain the package or the original string in case this class was
      * not imported
      */
-    private static String importedClass(String fqClassName, String[] imports) {
+    private static String importedClass(String fqName, String[] imports) {
+        final int i = fqName.lastIndexOf('.');
+        if (i == -1) {
+            return fqName;
+        }
+        final var simpleName = fqName.substring(i + 1);
+        final var pckg = fqName.substring(0, i);
         if (imports != null) {
-            for (final var cn : imports) {
-                if (cn != null) {
-                    int i = fqClassName.lastIndexOf('.');
-                    if (cn.equals(fqClassName)) {
-                        if (i == -1) {
-                            return fqClassName;
-                        }
-                        return fqClassName.substring(i + 1);
-                    } else {
-                        if (cn.endsWith("*") && fqClassName.startsWith(cn.substring(0, cn.length() - 1))) {
-                            return fqClassName.substring(i + 1);
-                        }
-                    }
-                }
+            if (Arrays.stream(imports)
+                .anyMatch(imprt -> imprt != null && (imprt.endsWith(".*") && pckg.equals(imprt.substring(0, imprt.length() - 2)))
+                    || fqName.equals(imprt))) {
+                return simpleName;
             }
         }
-        return fqClassName;
+        return fqName;
     }
 
     /**
-     * Format the method. The returned string will replace
+     * Format the method. The returned string will replace the placeholders
      *
      * <ul>
      *     <li>{@code $name}</li>
@@ -72,6 +68,8 @@ public class EntityStringer {
      * @param format       the format string
      * @param argSep       the separator character in the list of arguments
      * @param exceptionSep the separator character in the list of exceptions
+     * @param imports the list of the imported classes as they stand after the {@code import} keyword. It can also
+     *                be null. In that case no conversion is done of the class name.
      * @return the formatted method representation
      */
     public static String method2Fingerprint(Method method, String format, String argSep, String exceptionSep, String[] imports) {
@@ -142,13 +140,15 @@ public class EntityStringer {
      *
      * @param field  to convert to a fingerprint
      * @param format the format string
+     * @param imports the list of the imported classes as they stand after the {@code import} keyword. It can also
+     *                be null. In that case no conversion is done of the class name.
      * @return the fingerprint
      */
     public static String field2Fingerprint(Field field, String format, String[] imports) {
         final var fqClassName = field.getDeclaringClass().getCanonicalName();
-        final var className = importedClass(fqClassName,imports);
-        final var fqType =GeciReflectionTools.getGenericTypeName(field.getType());
-        final var type = importedClass(fqType,imports);
+        final var className = importedClass(fqClassName, imports);
+        final var fqType = GeciReflectionTools.getGenericTypeName(field.getType());
+        final var type = importedClass(fqType, imports);
         final var modifiers = new ModifiersBuilder(field.getModifiers()).field().toString().trim();
         return format.replaceAll("\\$class", className)
             .replaceAll("\\$fqClass", fqClassName)

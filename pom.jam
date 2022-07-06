@@ -24,7 +24,7 @@
             {pluginManagement}
                 {plugins|
                     {plugin|
-                        {GAV :org.apache.maven.plugins:maven-surefire-plugin:{SUREFIRE_VERSION}}
+                        {GAV :org.apache.maven.plugins:maven-surefire-plugin:{SUREFIRE_PLUGIN_VERSION}}
                         {configuration|
                             {argLine|
                                 {opens/api/api}
@@ -85,12 +85,13 @@
         {dependencies|
             {@for MODULE in (api,core,tools,engine,annotation,core-annotations,jamal,testengine)={dependency :{GROUPID}:javageci-MODULE:{VERSION}:}}
             {dependency :com.javax0:refi:{REFI_VERSION}}
+            {dependency :com.javax0:levenshtein:{LEVENSHTEIN_VERSION}}
 
             {@comment TEST DEPENDENCIES}
 
-            {@for MODULE in (api,engine)={dependency :org.junit.jupiter:junit-jupiter-MODULE:{JUPITER_VERSION}:test}}
-            {@for MODULE in (engine,testsupport,snippet,io,plantuml,ruby,groovy,scriptbasic,yaml,tools,api)={dependency :com.javax0.jamal:jamal-MODULE:{JAMAL_VERSION}:test}}
-            {dependency :org.assertj:assertj-core:{ASSERTJ_VERSION}:test}
+            {@for MODULE in (api,engine)={dependency :org.junit.jupiter:junit-jupiter-MODULE:{JUPITER_VERSION}:}}
+            {dependency :com.javax0.jamal:jamal-all:{JAMAL_VERSION}:}
+            {dependency :org.assertj:assertj-core:{ASSERTJ_VERSION}:}
         }
     }
 
@@ -109,7 +110,7 @@ profiles>profile> {@comment Use this profile to upload a new release to Maven Ce
       plugin>
         groupId>org.sonatype.plugins
         artifactId>nexus-staging-maven-plugin
-        version>{NEXUS_STAGING_MAVEN_PLUGIN}
+        version>{SONATYPE_PLUGIN_VERSION}
         extensions>true
         configuration>
            serverId>ossrh

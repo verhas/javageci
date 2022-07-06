@@ -1,5 +1,6 @@
 package javax0.geci;
 
+import javax0.jamal.DocumentConverter;
 import javax0.jamal.api.Input;
 import javax0.jamal.api.Position;
 import javax0.jamal.engine.Processor;
@@ -19,6 +20,8 @@ import java.util.stream.Collectors;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
+import static javax0.jamal.DocumentConverter.exclude;
+import static javax0.jamal.DocumentConverter.include;
 
 public class TestRunJamalOnDocumentation {
 
@@ -46,6 +49,7 @@ public class TestRunJamalOnDocumentation {
             Files.walk(Paths.get(getDirectory()), Integer.MAX_VALUE)
                 .filter(Files::isRegularFile)
                 .filter(s -> s.toString().endsWith(".jam"))
+                .filter(s -> !s.toString().endsWith("pom.jam"))
                 .filter(s -> !s.toString().endsWith("pom.xml.jam"))
                 .filter(s -> !s.toString().endsWith("javageci-build.yml.jam"))
                 .filter(s -> !s.toString().endsWith("ARTICLE1.wp.jam"))
@@ -60,7 +64,7 @@ public class TestRunJamalOnDocumentation {
         try (final var processor = new Processor("{%", "%}")) {
             result = processor.process(createInput(inputPath));
         }
-        Files.writeString(outputPath, result, StandardCharsets.UTF_8, WRITE, TRUNCATE_EXISTING,CREATE);
+        Files.writeString(outputPath, result, StandardCharsets.UTF_8, WRITE, TRUNCATE_EXISTING, CREATE);
     }
 
     private Input createInput(Path inputFile) throws IOException {

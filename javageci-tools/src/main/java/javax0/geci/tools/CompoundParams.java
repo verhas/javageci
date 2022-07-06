@@ -17,11 +17,11 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import javax0.levenshtein.Levenshtein;
 import static javax0.geci.api.CompoundParams.toBoolean;
 
 /**
- * A parameter set that is composed from two or more parameter maps. The
+ * A parameter set that is composed of two or more parameter maps. The
  * parameter maps are passed to the constructor in the order they should
  * be looked at from left to right. When a parameter is retrieved by any
  * method first the leftmost parameter map is consulted, then the next
@@ -92,9 +92,9 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
      */
     private static List<String> valueToList(Object value) {
         if (value instanceof List) {
-            return assertListOfStrings((List)value);
+            return assertListOfStrings((List<?>)value);
         } else if (value instanceof String) {
-            return new ArrayList(Collections.singletonList((String) value));
+            return new ArrayList<>(Collections.singletonList((String) value));
         } else {
             throw new IllegalArgumentException(value.getClass()
                                                    + " cannot be used in "
@@ -103,7 +103,7 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
         }
     }
 
-    private static List<String> assertListOfStrings(List value) {
+    private static List<String> assertListOfStrings(List<?> value) {
         for (final var string : value) {
             if (!(string instanceof String)) {
                 throw new IllegalArgumentException(value.getClass()
@@ -112,7 +112,7 @@ public class CompoundParams implements javax0.geci.api.CompoundParams {
                                                        + " as parameter value as it contains non-String elements.");
             }
         }
-        return value;
+        return (List<String>)value;
     }
 
     /**

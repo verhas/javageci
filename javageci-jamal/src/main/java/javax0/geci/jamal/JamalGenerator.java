@@ -37,8 +37,8 @@ public class JamalGenerator extends AbstractGeneratorEx {
     private static final Pattern START = Pattern.compile("^\\s*/\\*!(jamal\\s*.*)$");
     private static final Pattern COMMENT_END = Pattern.compile("^\\s*\\*/\\s*$");
     private static final Pattern SEGMENT_END = Pattern.compile("^\\s*//\\s*__END__\\s*$");
-    private static final Pattern IMPORT = Pattern.compile("^\\s*import\\s*(.*);\\s*$");
-    private static final Pattern PACKAGE = Pattern.compile("^\\s*package\\s*(.*);\\s*$");
+    private static final Pattern IMPORT = Pattern.compile("^\\s*import\\s+(.*?)\\s*;\\s*$");
+    private static final Pattern PACKAGE = Pattern.compile("^\\s*package\\s+(.*?)\\s*;\\s*$");
     private static final Pattern CLASS_START = Pattern.compile("^\\s*(:?private\\s+|protected\\s+|public\\s+)?class\\s+.*$");
 
     @Override
@@ -63,7 +63,7 @@ public class JamalGenerator extends AbstractGeneratorEx {
                         optionsLine = startMatcher.group(1);
                         touched = true;
                         state = PROCESSING.INSOURCE;
-                        macro.delete(0, macro.length());
+                        macro.setLength(0);
                         positionLineNr = lineNr + 1;
                     }
                     break;

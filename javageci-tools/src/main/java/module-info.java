@@ -9,4 +9,5 @@ module geci.tools {
     requires geci.api;
     requires java.logging;
     requires refi;
+    requires levenshtein;
 }

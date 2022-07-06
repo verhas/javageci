@@ -1,26 +1,39 @@
 = Java::Geci Jamal Module
+{%@import ../version.jim%}
 
 == Introduction
 
-The Jamal module of Java::Geci contains is a code generator that generates code into your class based on Jamal templates.
-This way you can include some pseudo code in your class and have it translated into real code.
-The pseudo code is placed in a comment and the real code generated from it is inserted following the comment.
+This module generates code into your class based on Jamal templates.
+You can include some pseudocode in your class and have it translated into real code.
+The pseudocode is placed in a comment and the real code generated from it is inserted following the comment.
 
-Templates can be extremely powerful as all the Jamal macros and packages are available as well as the Java::Geci code generation Jamal macros.
-These macros can get information form the surrounding code and create code based on the list of classes, methods, fields and so on.
-This way it is a matter of minutes to create templates that generate setters with some specific needs you may have, code that moves data between different classes, methods that invoke other methods in a specific way and so on.
+Templates can be extremely powerful.
+You can use every Jamal macro and package.
+In addition to that the module also provides extra macros that help code generation templates.
+These macros can get information form the surrounding code using reflection and create code based on the list of classes, methods, fields and so on.
+This way it is a matter of minutes to create templates that generate, for example
 
-Jamal is an extremely powerful macro language.
+* setters with some specific needs you may have,
+
+* code that moves data between different classes, methods that invoke other methods in a specific way,
+
+* and other code, which can be generated.
+
+The templating language, Jamal is an extremely powerful macro language.
 The home page of Jamal is http://github.com/verhas/jamal.
 Using Jamal you can define and use macros defined earlier, and you can also use macros defined in Java code.
-The set of the macros can also be extended in the application in the main or in the test sources or in libraries.
+The set of the Java defined macros can also be extended in the application in the main or in the test sources or in libraries.
+In other words, you can write your own macros easily.
 
 The generator is not Java specific, although most of the support macros included in this module are based on Java reflection.
-The generator will run for all the files that are configured in the unit test that starts the code generation, or just for all the files if you have the testengine configured.
+The generator will run for all the files configured in the unit test that starts the code generation, or just for all the files if you have the testengine configured.
 
 The generator starts automatically without crafting a unit test for it if you use the Java::Geci TestEngine link:../javageci-testengine/README.adoc[module].
 In that case all you have to do it add the module as a dependency to your project
 The code generation will run automatically along with the other JUnit 5 tests.
+
+NOTE: It also needs other tests, or else JUnit does not fire up.
+However, this must not be a program in any reasonable project.
 
 The Java source code using the Jamal module of Java::Geci is supposed to have the following structure:
 
@@ -37,11 +50,11 @@ The Java source code using the Jamal module of Java::Geci is supposed to have th
 The simplest example would be one generating setters.
 This was the example in the previous documentation.
 However, there are many setter/getter generators and many readers just stopped there thinking "Oh... yeh, another setter getter generator."
-Java::Geci is much more than that, and the Jamal code generator is only one part of the whole framework.
+Java::Geci is much more than that, and the Jamal based code generator is only a small part of the whole framework.
 
-To emphasize this, here we will descibe two examples.
+To emphasize this, here we will describe two examples.
 The first one is a very simple, but very specific example, that needs simple skills to understand and apply.
-The second example is a more complex example that shows the power of the Jaba::Geci Jamal code generation.
+The second example is a more complex example that shows the power of the Jamal code generation.
 
 To generate setters there are many solutions.
 The aim of this example is not to depict the best way to generate setters.
@@ -51,6 +64,7 @@ There are even sophisticated and fine-tuned setter generators even in Java::Geci
 However, generating setters is a relatively simple task and therefore seems to be a good example to learn from.
 
 The sample code in the Java class `PreprocessedFile` contains
+
     {%@sep[ ]%}
     /*!jamal
     {%@import res:javax0/geci/jamal/setters.jim%}\
@@ -59,14 +73,18 @@ The sample code in the Java class `PreprocessedFile` contains
     */
     //__END__
     [@sep]
+
 This code imports the `setter.jim` macro file.
-It defines the macros for creating the setters.
+The file name is prefixed with `res:` meaning that the file is a Java resource file.
+It is included in the library jar.
+The included file defines the macros for creating the setters.
 It also shows that it is a good practice to move the code generation macros into an imported file.
-Following that it defines the `class` and then invokes, uses the `setters` macro.
+Following that it defines the `class` and then invokes/uses the `setters` macro.
 The {%@escape`|`{%class...%}`|`%}` is a user defined macro defined in some imported file.
 In this case it sets the class name for which the setters are generated.
 
 Let us have a look at the `setters.jim` file:
+
     {%@sep[ ]%}
     {%@import res:geci.jim%}
     {%@define setters=
@@ -78,45 +96,54 @@ Let us have a look at the `setters.jim` file:
         %}
     %}
     [@sep]
+
 This file imports the `geci.jim` file.
-This file is part of the library as a resource file.
-You can see that because the file name starts with the prefix `res:`.
+This file is also a resource provided in the jar.
 The resource file `geci.jim` defines a lot of macros that can be used in code generation.
 One of them is {%@escape`|``{%class %}``|`%}, and it is defined as:
-{%@sep[ ]%}
+
+    {%@sep[ ]%}
     {%@define class(:class)={%@define $class=:class%}%}
-[@sep]
+    [@sep]
+
 Later when we write in the code
-{%@sep[ ]%}
+
+    {%@sep[ ]%}
     {%class javax0.geci.jamal.PreprocessedFile%}
-[@sep]
-it will mean
-{%@sep[ ]%}
+    [@sep]
+
+it will be evaluated as
+
+    {%@sep[ ]%}
     {%@define $class=javax0.geci.jamal.PreprocessedFile%}
-[@sep]
-which will define the macro `$class`, which is used later in the `setter.jim` file.
+    [@sep]
+
+which will define the macro `$class` used later in the `setter.jim` file.
 
 The macro `setters` has a complex for loop in it.
 The loop has two variables `$name` and `$type`.
 These variables will get the name and the type of the fields.
-Generally multi-variable for loops iterate through the elements of a string that is defined in the "`in (...)`" part of the macro invocation.
+Generally multi-variable for loops iterate through the elements of a string defined in the "`in (...)`" part of the macro invocation.
 The string between the parenthesis should contain a comma separated list of strings.
 Each string should contain the `|` separated values for the for loop variables.
 
 This is exactly the format that the Java implemented macro `fields` returns.
 It uses the value of the `$fformat` (field format) macro, which is set using the macro {%@escape`|``{%format %}``|`%}
 The template for the individual setters is:
-{%@sep[ ]%}
+
+    {%@sep[ ]%}
     public void {%setter/$name%}($type $name){
         this.$name = $name;
         }
-[@sep]
+    [@sep]
+
 This code uses the loop variables and the macro `setter`, also defined in `geci.jim`.
 It calculates the name of the setter from the name of the field.
 This is fairly straightforward, since it is only then constant `set`, and the name of the field capitalized
-{%@sep[ ]%}
+    {%@sep[ ]%}
     {%@define setter(name)=set{%`#cap name%}%}
-[@sep]
+    [@sep]
+
 There are few things in this example, which are not detailed here.
 Without the details, these are
 
@@ -133,24 +160,61 @@ For detailed information about these, and other built-in macros see the document
 Every source file processing starts a new Jamal processor.
 It means that the different macros in the different files will not interfere with each other.
 You can, of course, `include` or `import` any file from the directory structure, as a resource from the classpath or from the network.
-`include` and `import` are basic Jamal features.
+`include` and `import` are basic Jamal features.{%@sep[ ]%}
 
 The macro start string by default is set to `{%`.
-The macro closing string by default is set to `%}`.
+The macro closing string by default is set to `%}`.[@sep]
 ====
+
+== Debugging
+
+The processing of Jamal execution can be debugged.
+To do that the Jamal debugger has to be on the classpath, for example adding the following line to the pom file.
+
+[source,xml]
+----
+        <dependency>
+            <groupId>com.javax0.jamal</groupId>
+            <artifactId>jamal-debug</artifactId>
+            <version>{%VERSION%}</version>
+            <scope>test</scope>
+        </dependency>
+----
+
+This is a prerequisite, because Jamal only provides debugging interface, but it does not have a built-in debugger.
+The debugger added to the classpath in the pom file will include a debugger that supports a web interface.
+
+To trigger the debugger to hook itself into the execution there are three possibilities:
+
+1. Set the environment variable `JAMAL_DEBUG` to `http:8080`.
+
+2. Setting the system variable `jamal.debug` to `http:8080`.
+
+3. Writing `debug=http:8080` after the `/*!jamal` comment.
+
+The value `http:8080` specifies that the debugger should listen on the http port `8080`.
+You can specify different port number if you want.
+
+The advantage of the third possibility is that you can start the debugger selectively for only on or for only a few files.
+
+After the code generation was started when the debugged file starts processing Jamal stops and starts to listen on the port `8080`.
+You can open a browser of your choice and open the URL `http://localhost:8080`.
+It will load the user interface of the debugger.
+This is a React.js app.
+The use of the debugger is straightforward.
+You can execute the macro evaluations step by step, you can inspect the value of the macros, execute Jamal expressions ad-hoc, set breakpoints and so on.
 
 == Macros
 
-In addition to the generator code the modul contains Java implemented macros and so-called user defined macros.
+In addition to the generator code, the module contains Java implemented macros and so-called user defined macros.
 
 * The user defined macros should be imported using the `{%@escape`|`{%@import res:...%}`|`%}` macro.
 They can be seen on GitHub in the directory https://github.com/verhas/javageci/tree/master/javageci-jamal/src/main/resources.
 Their documentation is included in their source code.
-[]
-Note that these files are `imported` and not `include` d, therefore any string, which does not define a macro is ignored by Jamal as comment.
+
++
+Note that these files are imported and not included, therefore any string, which does not define a macro is ignored by Jamal as comment.
 
 * The Java defined macros can be found in the package `javax0.geci.jamal.macros`.
 The source code can be seen in https://github.com/verhas/javageci/tree/master/javageci-jamal/src/main/java/javax0/geci/jamal/macros.
 The documentation of the individual macros is contained in their class level JavaDoc.
-[]
-Some of the macro class files are inner classes. In that case the inner class JavaDoc documentation is to be read.

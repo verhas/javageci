@@ -10,8 +10,8 @@
 
     {dependencies#
         {@for MODULE in (api,engine)=
-            {dependency :org.junit.jupiter:junit-jupiter-MODULE::}}
-        {dependency :{JAMAL}:jamal-engine::}
+            {dependency :org.junit.jupiter:junit-jupiter-MODULE::compile}}
+        {dependency :{JAMAL}:jamal-all::}
         {dependency :com.javax0.geci:javageci-annotation::}
     }
 {end project}

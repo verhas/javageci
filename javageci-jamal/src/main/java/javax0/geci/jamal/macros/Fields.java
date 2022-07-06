@@ -12,12 +12,11 @@ import javax0.jamal.api.Processor;
 import javax0.jamal.tools.Params;
 
 /**
- * Macro to get all the fields of a class. Templates utilizing this macro can best use the output in a multi-variable
- * for a loop.
- * <p>
+ * Get all the fields of a class. Templates utilizing this macro can best use the output in a multi-variable for a loop.
+ *
  * The macro looks up the fields (inherited and declared) of a class and returns a list of the fields. The format of the
  * information, the selection criteria, which fields to include in the output.
- * <p>
+ *
  * The format of the data about the individual fields is driven by the user defined macro {@code $fformat}. It can be
  * set in the code template file using the macro {@code fformat} or {@code format} defined in {@code res:geci.jim}. (The
  * macro {@code format} sets also the user defined macro {@code mformat}, which is used by the macro {@link Methods}.
